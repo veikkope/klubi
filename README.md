@@ -1,83 +1,83 @@
 # Klubi
 
-Verkkosivu-uudistus **Lahden Suomalainen Klubi ry:lle**. Vanha vuoden 2007 sivusto korvataan modernilla rakenteella, jota yhdistyksen sihteeri pystyy päivittämään Sanity Studiossa ilman koodausta.
+A website rebuild for **Lahden Suomalainen Klubi ry**, a Finnish association founded in 2007. The old site is being replaced with a modern structure that the association's secretary can maintain in Sanity Studio without writing code.
 
 **Demo:** [klubi-blond.vercel.app](https://klubi-blond.vercel.app/)
 
-## Konteksti
+## Context
 
-Yhdistys on toiminut yli viisitoista vuotta ja kerännyt sivuilleen tapahtumakalentereita, jalkapallotilastoja, ravintola-arvosteluja ja uutisia. Tavoitteet uudistukselle:
+The association has been active for over fifteen years and accumulated event calendars, football statistics, restaurant reviews and news on its site. Goals for the rebuild:
 
-- sisältö säilyy mutta rakenne uudistuu mobiililähtöiseksi
-- sihteeri (oma isäni) pystyy päivittämään kaiken ilman teknistä apua
-- vanhat URL:t ohjautuvat 301:llä uusiin
-- saavutettavuus AA-tasolla
+- preserve the content but make the structure mobile-first
+- let the secretary (my dad) update everything without technical help
+- 301-redirect every legacy URL to its new home
+- meet WCAG 2.1 AA accessibility
 
-## Teknologiat
+## Stack
 
 - **Next.js 16** (App Router, Turbopack) — TypeScript, Tailwind CSS v4
-- **Sanity CMS** — Studio upotettu `/studio`-polkuun, skeemat ja Studion UI suomeksi
-- **Vercel** — hosting, tag-pohjainen revalidointi
+- **Sanity CMS** — Studio embedded at `/studio`, schemas and Studio UI in Finnish
+- **Vercel** — hosting and tag-based revalidation
 - React 19, `@portabletext/react`, `lucide-react`
 
-## Toteutetut reitit
+## Routes implemented
 
-| Reitti | Kuvaus |
+| Route | Description |
 |---|---|
-| `/` | Etusivu, lohkot Sanity-singletonista |
-| `/[...slug]` | Hierarkkiset sisältösivut (esim. `/klubi/saannot`) |
-| `/yhteystiedot` | Yhteystiedot Sanity-singletonista |
-| `/tapahtumat` | Tulevat + menneet, JSON-LD `Event` |
-| `/tapahtumat/[slug]/ics` | Kalenterivienti (RFC 5545) |
-| `/uutiset` | Lista + kategoriasuodatin URL-parametrilla |
-| `/uutiset/[slug]` | Liittyvät jutut, JSON-LD `NewsArticle` |
-| `/galleria` | Albumit |
-| `/galleria/[slug]` | Yksittäinen albumi + saavutettava lightbox |
-| `/ravintolat` | Suodatettava hakemisto (kaupunki / ruokatyyppi / tähdet / hinta) |
-| `/ravintolat/[slug]` | Klubin arvostelu + hyväksytyt käyttäjäarvostelut, JSON-LD `Restaurant` |
-| `/studio` | Sanity Studio sihteerille |
+| `/` | Home page, blocks driven by a Sanity singleton |
+| `/[...slug]` | Hierarchical content pages (e.g. `/klubi/saannot`) |
+| `/yhteystiedot` | Contact info from Sanity singleton |
+| `/tapahtumat` | Upcoming + past events, JSON-LD `Event` |
+| `/tapahtumat/[slug]/ics` | Calendar export (RFC 5545) |
+| `/uutiset` | News list with URL-driven category filter |
+| `/uutiset/[slug]` | Related stories, JSON-LD `NewsArticle` |
+| `/galleria` | Photo albums |
+| `/galleria/[slug]` | Single album with accessible lightbox |
+| `/ravintolat` | Filterable restaurant directory (city / cuisine / stars / price) |
+| `/ravintolat/[slug]` | Club's review + approved user reviews, JSON-LD `Restaurant` |
+| `/studio` | Sanity Studio for the secretary |
 
-## Suunnitteluratkaisuja
+## Notable design choices
 
-- **Kaikki sisältö Sanitysta** — navigaatio, etusivun lohkot, yhteystiedot, sivut. Mitään ei kovakoodattu komponentteihin.
-- **Graceful fallbacks** — `lib/defaults.ts` peilaa Sanity-singletoneiden `initialValue`-arvot. Sivusto rakentuu ja toimii myös ilman Sanity-projektin alustusta — `npx sanity init` voi tehdä myöhemmin ilman että kehitysympäristö rikkoutuu.
-- **Catch-all `[...slug]` `sivu`-tyypille** — yksi sivu-dokumentti per polku, slug voi sisältää kauttaviivoja (`klubi/saannot`). Custom slugify säilyttää `/`-merkit, validointi estää varatut top-level-polut. Murupolku rakennetaan esi-isien otsikoista yhdellä GROQ-kyselyllä.
-- **Suodattimet pelkkinä `<Link>`-elementteinä** — ravintoloiden ja uutisten suodattimet toimivat ilman JavaScriptia, tila URL:ssa. Facets-kysely näyttää vain ne arvot joista on tuloksia.
-- **DIY-lightbox** — focus trap, ESC, nuolinäppäimet, body-scroll-lukko, portal `document.body`yn. Ei ulkoista riippuvuutta.
-- **JSON-LD per sivutyyppi** — Event, NewsArticle, Restaurant + AggregateRating. Schema.org-ystävällinen.
+- **Everything is Sanity-driven** — navigation, home page blocks, contact info, content pages. Nothing is hardcoded into components.
+- **Graceful fallbacks** — `lib/defaults.ts` mirrors the `initialValue` of each Sanity singleton, so the site builds and runs even before `sanity init` has been executed. The dev environment doesn't break when the project ID is missing.
+- **Catch-all `[...slug]` for the `sivu` type** — one document per path, slugs may contain slashes (`klubi/saannot`). A custom slugify preserves `/`, validation rejects reserved top-level paths. Breadcrumbs are built from ancestor titles in a single GROQ query.
+- **Filters as plain `<Link>` elements** — restaurant and news filters work without JavaScript, state lives in the URL. A facets query only shows values that actually have results.
+- **DIY lightbox** — focus trap, ESC, arrow keys, body-scroll lock, portal to `document.body`. No external dependency.
+- **JSON-LD per content type** — Event, NewsArticle, Restaurant + AggregateRating. Schema.org friendly.
 
-## Paikallinen kehitys
+## Local development
 
 ```bash
 npm install
-cp .env.example .env.local   # täytä NEXT_PUBLIC_SANITY_PROJECT_ID jos haluat oikean Sanity-datan
+cp .env.example .env.local   # fill NEXT_PUBLIC_SANITY_PROJECT_ID for real Sanity data
 npm run dev                  # http://localhost:3000
 ```
 
-Komennot:
+Commands:
 
 ```bash
-npm run dev         # kehityspalvelin (Turbopack)
+npm run dev         # dev server (Turbopack)
 npm run type-check  # tsc --noEmit
 npm run lint        # ESLint
-npm run build       # tuotantokäännös
+npm run build       # production build
 ```
 
-## Rakenne
+## Structure
 
 ```
-app/(public)/    Julkiset reitit (header + footer route group -layoutista)
+app/(public)/    Public routes (header + footer from a route group layout)
 app/studio/      Sanity Studio embedded
-components/      UI-komponentit, blokit, gallery, jaetut kortit
-sanity/          Skeemat, GROQ-kyselyt, fetch-wrapperi, env
-lib/             Apurit (cn, format, ics, path, defaults, types)
-docs/            Suunnitteludokumentit — sisältöauditointi, IA, design, build plan
+components/      UI components, blocks, gallery, shared cards
+sanity/          Schemas, GROQ queries, fetch wrapper, env
+lib/             Helpers (cn, format, ics, path, defaults, types)
+docs/            Planning docs — content audit, IA, design, build plan
 ```
 
 ## Status
 
-Sprint 4 kesken. Avoinna: jalkapalloarkisto (hub + alasivut + tilastotaulukot), stadionit, jäsenhakemuslomake (Server Action + sähköposti), kartta ravintoloihin, lopullinen sisältömigraatio vanhalta sivustolta, 301-redirectit.
+Sprint 4 in progress. Still open: football archive (hub + sub-pages + stat tables), stadiums, membership application form (Server Action + email), map for restaurants, final content migration from the legacy site, 301 redirects.
 
-## Lisenssi
+## License
 
-Projektin koodi on yhdistyksen käyttöön. Skeemat, komponentit ja apurit voi käyttää referenssinä.
+The code is for the association's use. Schemas, components and helpers may be referenced.
