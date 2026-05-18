@@ -14,11 +14,12 @@ export default function Home() {
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-relaxed text-brand-100">
             Yhdistys joka kokoaa lahtelaiset perinteen, jalkapallon ja hyvän
-            seuran ääreen. Tapahtumat, jäsenyys ja arkisto — yhdessä paikassa.
+            seuran ääreen. Tapahtumat, uutiset ja laaja jalkapalloarkisto —
+            samasta paikasta.
           </p>
           <div className="mt-10 flex flex-wrap gap-4">
             <Link
-              href="/jasenyys/liity"
+              href="/klubi/liity"
               className="inline-flex h-12 items-center justify-center rounded-full bg-white px-6 font-medium text-brand-900 transition hover:bg-brand-50"
             >
               Liity jäseneksi
@@ -45,22 +46,27 @@ export default function Home() {
           esinäkymä — sisältö siirretään vanhalta sivustolta vaiheittain.
           Tervetuloa pian takaisin.
         </p>
-        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {[
             {
+              title: "Klubi",
+              text: "Yhdistyksen esittely, hallitus, säännöt ja palloveikkaus.",
+              href: "/klubi",
+            },
+            {
               title: "Tapahtumat",
-              text: "Tulevat ja menneet tilaisuudet.",
+              text: "Vuosikokous, vappu, mölkky ja muut tilaisuudet.",
               href: "/tapahtumat",
             },
             {
-              title: "Jäsenyys",
-              text: "Liity klubin jäseneksi.",
-              href: "/jasenyys",
+              title: "Uutiset",
+              text: "Klubin tiedotteet, raportit ja arkistoidut kommentit.",
+              href: "/uutiset",
             },
             {
-              title: "Arkisto",
-              text: "Jalkapallotilastot, stadionit ja ravintolaarvostelut.",
-              href: "/jalkapallo",
+              title: "Jalkapalloarkisto",
+              text: "Huuhkajat, mestarit, eurocupit ja stadionit.",
+              href: "/jalkapalloarkisto",
             },
           ].map((item) => (
             <Link

@@ -15,7 +15,17 @@ const BASE = "https://www.lahdensuomalainenklubi.com";
 
 const TARGETS = [
   "/",
-  // Jalkapalloarkisto
+  // Päänavigaation 10+1 linkkiä
+  "/etusivu.htm",
+  "/yleista.htm",
+  "/klubi.htm",
+  "/ottelut.htm",
+  "/arvostelu.htm",
+  "/veikkaus.htm",
+  "/kommentit.htm",
+  "/blogi.htm",
+  "/historia.htm",
+  // Jalkapalloarkiston yksittäissivut
   "/fifaranking.htm",
   "/suomi.htm",
   "/suomenvalmentajat.htm",

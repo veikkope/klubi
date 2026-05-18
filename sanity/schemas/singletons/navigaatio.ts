@@ -1,5 +1,12 @@
 import { defineArrayMember, defineField, defineType } from "sanity";
 
+/**
+ * Päänavigaation singleton. Esitäytetty valmiilla 6 päälinkillä + CTA:lla
+ * sivuston julkaisua varten. Isä voi muokata Studiossa raahaamalla.
+ *
+ * Rakenne perustuu vanhan sivuston 10+1 linkin auditointiin
+ * (ks. docs/02-information-architecture.md).
+ */
 export const navigaatio = defineType({
   name: "navigaatio",
   title: "Navigaatio",
@@ -33,10 +40,46 @@ export const navigaatio = defineType({
               ],
             },
           ],
-          preview: { select: { title: "label", subtitle: "href" } },
+          preview: {
+            select: { title: "label", subtitle: "href", highlight: "highlight" },
+            prepare: ({ title, subtitle, highlight }) => ({
+              title: highlight ? `★ ${title}` : title,
+              subtitle,
+            }),
+          },
         }),
       ],
       validation: (rule) => rule.max(7).warning("Maksimi 7 päälinkkiä mobiilin luettavuuden takia."),
+      initialValue: [
+        {
+          label: "Klubi",
+          href: "/klubi",
+          highlight: false,
+          children: [
+            { label: "Esittely", href: "/klubi" },
+            { label: "Hallitus", href: "/klubi/hallitus" },
+            { label: "Säännöt", href: "/klubi/saannot" },
+            { label: "Palloveikkaus", href: "/klubi/palloveikkaus" },
+            { label: "Yhteystiedot", href: "/klubi/yhteystiedot" },
+          ],
+        },
+        { label: "Tapahtumat", href: "/tapahtumat", highlight: false },
+        { label: "Uutiset", href: "/uutiset", highlight: false },
+        {
+          label: "Jalkapalloarkisto",
+          href: "/jalkapalloarkisto",
+          highlight: false,
+          children: [
+            { label: "Huuhkajat", href: "/jalkapalloarkisto/huuhkajat" },
+            { label: "Suomen mestarit", href: "/jalkapalloarkisto/mestarit" },
+            { label: "Eurocupit", href: "/jalkapalloarkisto/eurocupit" },
+            { label: "Vuoden pelaajat", href: "/jalkapalloarkisto/vuoden-pelaajat" },
+            { label: "Stadionit", href: "/jalkapalloarkisto/stadionit" },
+          ],
+        },
+        { label: "Ravintolat", href: "/ravintolat", highlight: false },
+        { label: "Liity jäseneksi", href: "/klubi/liity", highlight: true },
+      ],
     }),
   ],
   preview: { prepare: () => ({ title: "Navigaatio" }) },
