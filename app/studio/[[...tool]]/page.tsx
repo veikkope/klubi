@@ -4,11 +4,9 @@
  * Tämä reitti renderöi koko Studion. Käytä `npm run dev` ja avaa
  * http://localhost:3000/studio.
  */
-import { NextStudio } from "next-sanity/studio";
-import config from "../../../sanity.config";
+import Studio from "./Studio";
 
-export const dynamic = "force-static";
-export const revalidate = 0;
+export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "Sanity Studio — Lahden Suomalainen Klubi",
@@ -16,5 +14,5 @@ export const metadata = {
 };
 
 export default function StudioPage() {
-  return <NextStudio config={config} />;
+  return <Studio />;
 }

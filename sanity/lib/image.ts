@@ -1,10 +1,13 @@
 import createImageUrlBuilder from "@sanity/image-url";
-import { dataset, projectId } from "../env";
+import { dataset, hasSanity, projectId } from "../env";
 
-const builder = createImageUrlBuilder({ projectId, dataset });
+const builder = hasSanity
+  ? createImageUrlBuilder({ projectId: projectId!, dataset })
+  : null;
 
-type ImageSource = Parameters<typeof builder.image>[0];
+type ImageSource = Parameters<NonNullable<typeof builder>["image"]>[0];
 
-export function urlForImage(source: ImageSource) {
+export function urlForImage(source: ImageSource | undefined | null) {
+  if (!builder || !source) return null;
   return builder.image(source).auto("format").fit("max");
 }
