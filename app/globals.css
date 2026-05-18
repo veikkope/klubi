@@ -1,0 +1,143 @@
+@import "tailwindcss";
+
+/* ============================================================
+   Lahden Suomalainen Klubi ry — design tokens
+   Sininen + valkoinen. Klassinen, elegantti, moderni.
+   ============================================================ */
+
+:root {
+  /* Brändivärit */
+  --brand-50: #eff6ff;
+  --brand-100: #dbeafe;
+  --brand-200: #bfdbfe;
+  --brand-300: #93c5fd;
+  --brand-400: #60a5fa;
+  --brand-500: #3b82f6;
+  --brand-600: #2563eb;
+  --brand-700: #1d4ed8;
+  --brand-800: #1e40af;
+  --brand-900: #1e3a8a;
+  --brand-950: #172554;
+
+  /* Neutraalit */
+  --background: #ffffff;
+  --surface: #f8fafc;
+  --surface-strong: #f1f5f9;
+  --foreground: #0f172a;
+  --muted: #475569;
+  --muted-soft: #64748b;
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
+
+  /* Aksentit */
+  --accent: var(--brand-700);
+  --accent-hover: var(--brand-800);
+  --accent-soft: var(--brand-50);
+  --ring: var(--brand-500);
+
+  /* Tila & varjot */
+  --radius-sm: 4px;
+  --radius: 8px;
+  --radius-lg: 16px;
+  --shadow-sm: 0 1px 2px 0 rgb(15 23 42 / 0.06);
+  --shadow: 0 4px 14px 0 rgb(15 23 42 / 0.08);
+  --shadow-lg: 0 20px 40px -10px rgb(15 23 42 / 0.18);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-strong: var(--surface-strong);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-muted-soft: var(--muted-soft);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+
+  --color-brand-50: var(--brand-50);
+  --color-brand-100: var(--brand-100);
+  --color-brand-200: var(--brand-200);
+  --color-brand-300: var(--brand-300);
+  --color-brand-400: var(--brand-400);
+  --color-brand-500: var(--brand-500);
+  --color-brand-600: var(--brand-600);
+  --color-brand-700: var(--brand-700);
+  --color-brand-800: var(--brand-800);
+  --color-brand-900: var(--brand-900);
+  --color-brand-950: var(--brand-950);
+
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-soft: var(--accent-soft);
+  --color-ring: var(--ring);
+
+  --font-sans: var(--font-sans);
+  --font-serif: var(--font-serif);
+
+  --radius-sm: var(--radius-sm);
+  --radius: var(--radius);
+  --radius-lg: var(--radius-lg);
+}
+
+/* Tumma teema — käyttöjärjestelmän mukaan, sama syvä sininen säilyy */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0b1220;
+    --surface: #111a2e;
+    --surface-strong: #16223a;
+    --foreground: #f8fafc;
+    --muted: #94a3b8;
+    --muted-soft: #cbd5e1;
+    --border: #1e293b;
+    --border-strong: #334155;
+    --accent: var(--brand-400);
+    --accent-hover: var(--brand-300);
+    --accent-soft: #172554;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  font-feature-settings: "ss01", "cv11";
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Otsikoissa serif-fontti — klassinen, arvokas, mutta moderni */
+h1, h2, h3, .font-serif {
+  font-family: var(--font-serif), Georgia, "Times New Roman", serif;
+  font-feature-settings: "ss01";
+  letter-spacing: -0.01em;
+}
+
+/* Saavutettavuus: näppäimistöfokus näkyvä */
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Linkit oletusarvoisesti aksenttiväriset */
+a {
+  color: var(--accent);
+  text-underline-offset: 3px;
+}
+a:hover { color: var(--accent-hover); }
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Valinta-väri brändiin */
+::selection {
+  background: var(--brand-200);
+  color: var(--brand-950);
+}

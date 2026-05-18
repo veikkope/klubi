@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir C:UsersveikkKlubi *)",
+      "WebSearch",
+      "WebFetch(domain:www.lahdensuomalainenklubi.com)",
+      "WebFetch(domain:lahdensuomalainenklubi.blogspot.com)",
+      "WebFetch(domain:www.youtube.com)",
+      "WebFetch(domain:lahdensuomalainenklubi.com)"
+    ]
+  }
+}
