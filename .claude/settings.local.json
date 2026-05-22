@@ -38,7 +38,10 @@
       "Bash(curl -s -o /dev/null -w \"/ravintolat?kaupunki=lahti&tahdet=4        %{http_code}\\\\n\" \"http://localhost:3001/ravintolat?kaupunki=lahti&tahdet=4\")",
       "Bash(curl -s -o /dev/null -w \"/ravintolat?ruoka=pizza&hinta=%E2%82%AC     %{http_code}\\\\n\" \"http://localhost:3001/ravintolat?ruoka=pizza&hinta=%E2%82%AC\")",
       "Bash(curl -s -o /dev/null -w \"/ravintolat?tahdet=bad                     %{http_code}\\\\n\" \"http://localhost:3001/ravintolat?tahdet=bad\")",
-      "Bash(curl -s -o /dev/null -w \"/ravintolat/jokumika                       %{http_code}\\\\n\" http://localhost:3001/ravintolat/jokumika)"
+      "Bash(curl -s -o /dev/null -w \"/ravintolat/jokumika                       %{http_code}\\\\n\" http://localhost:3001/ravintolat/jokumika)",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('tsconfig.json','utf8'\\)\\)\")",
+      "Bash(git add *)",
+      "Bash(git commit *)"
     ]
   }
 }
