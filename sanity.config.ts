@@ -10,7 +10,7 @@ export default defineConfig({
   name: "klubi",
   title: "Lahden Suomalainen Klubi ry",
   basePath: "/studio",
-  projectId,
+  projectId: projectId || "",
   dataset,
   schema: {
     types: schemaTypes,

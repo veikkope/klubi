@@ -1,13 +1,15 @@
-import { createClient } from "next-sanity";
-import { apiVersion, dataset, projectId } from "../env";
+import { createClient, type SanityClient } from "next-sanity";
+import { apiVersion, dataset, hasSanity, projectId } from "../env";
 
-export const client = createClient({
-  projectId,
-  dataset,
-  apiVersion,
-  useCdn: true,
-  perspective: "published",
-  stega: {
-    studioUrl: "/studio",
-  },
-});
+export const client: SanityClient | null = hasSanity
+  ? createClient({
+      projectId: projectId!,
+      dataset,
+      apiVersion,
+      useCdn: true,
+      perspective: "published",
+      stega: {
+        studioUrl: "/studio",
+      },
+    })
+  : null;
