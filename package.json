@@ -9,9 +9,15 @@
     "start": "next start",
     "lint": "eslint",
     "type-check": "tsc --noEmit",
-    "scrape": "tsx scripts/scrape-old-site.ts",
     "import-sanity": "sanity dataset import data/migration.ndjson production",
-    "redirects": "tsx scripts/generate-redirects.ts"
+    "redirects": "tsx scripts/generate-redirects.ts",
+    "parse:ravintolat": "tsx scripts/parse-ravintolat.ts",
+    "typegen": "sanity schema extract --path sanity/extract.json && sanity typegen generate",
+    "crawl": "tsx scripts/crawl-old-site.ts",
+    "verify:redirects": "tsx scripts/verify-redirects.ts",
+    "images": "tsx scripts/download-images.ts",
+    "import:ravintolat": "tsx scripts/import-ravintolat.ts",
+    "import:kuvat": "tsx scripts/import-kuvat.ts"
   },
   "dependencies": {
     "@portabletext/react": "^6.2.0",
@@ -24,13 +30,15 @@
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "sanity": "^5.25.1",
-    "styled-components": "^6.4.1"
+    "styled-components": "^6.4.1",
+    "tailwind-merge": "^3.7.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "cheerio": "^1.2.0",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
     "tailwindcss": "^4",

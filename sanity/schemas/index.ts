@@ -13,6 +13,9 @@ import { ravintolaKayttajaArvostelu } from "./documents/ravintolaKayttajaArvoste
 import { stadion } from "./documents/stadion";
 import { jalkapalloTilasto } from "./documents/jalkapalloTilasto";
 import { galleriaAlbumi } from "./documents/galleriaAlbumi";
+import { klubiToiminta } from "./documents/klubiToiminta";
+import { arvokisa } from "./documents/arvokisa";
+import { pelaaja } from "./documents/pelaaja";
 
 import { yhteystiedot } from "./singletons/yhteystiedot";
 import { navigaatio } from "./singletons/navigaatio";
@@ -39,6 +42,9 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   stadion,
   jalkapalloTilasto,
   galleriaAlbumi,
+  klubiToiminta,
+  arvokisa,
+  pelaaja,
   yhteystiedot,
   navigaatio,
   asetukset,

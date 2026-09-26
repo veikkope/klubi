@@ -3,6 +3,15 @@ import { LinkButton } from "@/components/ui/button";
 import { SanityImage } from "@/components/sanity-image";
 import type { EtusivuData } from "@/lib/types";
 
+/**
+ * Etusivun hero.
+ *
+ * Tämä on sivun LCP-elementti. Siksi:
+ *  - taustakuva renderöidään `priority`-lipulla eikä sitä lazy-loadata
+ *  - kuvan puuttuessa tausta on puhdas CSS-gradientti, jolloin LCP on otsikko
+ *  - korkeus tulee sisällöstä eikä kuvasta, joten kuvan latautuminen ei
+ *    aiheuta layout shiftiä
+ */
 export function Hero({ data }: { data: EtusivuData }) {
   const ctas = data.heroCtas ?? [];
   const hasImage = Boolean(data.heroImage?.asset);
@@ -13,45 +22,63 @@ export function Hero({ data }: { data: EtusivuData }) {
         <div className="absolute inset-0 -z-10">
           <SanityImage
             image={data.heroImage!}
-            width={2000}
-            height={1100}
+            width={2400}
+            height={1350}
             sizes="100vw"
-            className="h-full w-full object-cover opacity-40"
+            className="h-full w-full object-cover opacity-45"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-brand-950/70 via-brand-950/60 to-brand-950" />
+          {/* Kaksi päällekkäistä liukua: ylhäällä luettavuus, alhaalla sulava
+              siirtymä seuraavaan lohkoon. */}
+          <div className="absolute inset-0 bg-gradient-to-b from-brand-950/85 via-brand-950/65 to-brand-950" />
         </div>
       ) : (
-        <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_rgba(59,130,246,0.35),_transparent_60%)]" />
+        <div
+          aria-hidden
+          className="absolute inset-0 -z-10 bg-[radial-gradient(120%_90%_at_15%_0%,rgba(59,130,246,0.40),transparent_62%),radial-gradient(90%_80%_at_95%_15%,rgba(30,64,175,0.55),transparent_60%)]"
+        />
       )}
 
-      <Container className="py-24 sm:py-32 lg:py-40">
-        {data.heroEyebrow && (
-          <p className="text-sm uppercase tracking-[0.2em] text-brand-200">
-            {data.heroEyebrow}
+      <Container
+        size="wide"
+        className="py-24 sm:py-32 lg:py-40 xl:py-44"
+      >
+        <div className="max-w-3xl">
+          {data.heroEyebrow && (
+            <p className="flex items-center gap-3 text-sm font-medium uppercase tracking-[0.22em] text-brand-200">
+              <span aria-hidden className="h-px w-8 bg-brand-200/60" />
+              {data.heroEyebrow}
+            </p>
+          )}
+
+          <h1 className="mt-5 text-balance font-serif text-4xl font-medium leading-[1.08] tracking-tight sm:text-6xl lg:text-7xl">
+            {data.heroTitle}
+          </h1>
+
+          <p className="mt-6 max-w-2xl text-pretty text-lg leading-relaxed text-brand-100 sm:text-xl">
+            {data.heroDescription}
           </p>
-        )}
-        <h1 className="mt-4 font-serif text-5xl font-medium leading-tight sm:text-7xl">
-          {data.heroTitle}
-        </h1>
-        <p className="mt-6 max-w-2xl text-lg leading-relaxed text-brand-100">
-          {data.heroDescription}
-        </p>
-        {ctas.length > 0 && (
-          <div className="mt-10 flex flex-wrap gap-4">
-            {ctas.map((cta) => (
-              <LinkButton
-                key={cta.href + cta.label}
-                href={cta.href}
-                size="lg"
-                variant={cta.primary ? "primary" : "onDark"}
-                className={cta.primary ? "!bg-white !text-brand-900 hover:!bg-brand-50" : undefined}
-              >
-                {cta.label}
-              </LinkButton>
-            ))}
-          </div>
-        )}
+
+          {ctas.length > 0 && (
+            <div className="mt-10 flex flex-wrap gap-3 sm:gap-4">
+              {ctas.map((cta) => (
+                <LinkButton
+                  key={`${cta.href}-${cta.label}`}
+                  href={cta.href}
+                  size="lg"
+                  variant={cta.primary ? "primary" : "onDark"}
+                  className={
+                    cta.primary
+                      ? "!bg-white !text-brand-900 hover:!bg-brand-50"
+                      : undefined
+                  }
+                >
+                  {cta.label}
+                </LinkButton>
+              ))}
+            </div>
+          )}
+        </div>
       </Container>
     </section>
   );

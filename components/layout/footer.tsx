@@ -89,8 +89,22 @@ export async function Footer() {
                 Tapahtumat
               </Link>
             </li>
+            {/*
+              Galleria ei ole päänavigaatiossa (docs/02), mutta sen on
+              löydyttävä jostain — muuten se on orpo sivu jota ei indeksoida.
+            */}
             <li>
-              <Link className="hover:text-accent" href="/yhteystiedot">
+              <Link className="hover:text-accent" href="/galleria">
+                Kuvagalleria
+              </Link>
+            </li>
+            <li>
+              <Link className="hover:text-accent" href="/uutiset/arkisto">
+                Uutisarkisto
+              </Link>
+            </li>
+            <li>
+              <Link className="hover:text-accent" href="/klubi/yhteystiedot">
                 Yhteystiedot
               </Link>
             </li>

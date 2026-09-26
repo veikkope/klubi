@@ -1,18 +1,25 @@
-import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { notFound } from "next/navigation";
+
 import { Container } from "@/components/layout/container";
-import { Breadcrumbs } from "@/components/layout/breadcrumbs";
+import { PageHeader } from "@/components/layout/page-header";
 import { AlbumGrid } from "@/components/gallery/album-grid";
+import { imageCountLabel } from "@/components/gallery/album-tile";
+import { JsonLd } from "@/components/seo/json-ld";
 import { sanityFetch } from "@/sanity/lib/fetch";
+import { allGalleriaSlugsQuery } from "@/sanity/lib/queries";
 import {
-  allGalleriaSlugsQuery,
-  galleriaBySlugQuery,
-} from "@/sanity/lib/queries";
+  galleriaAlbumiBySlugQuery,
+  type GalleriaAlbumFull,
+} from "@/sanity/lib/queries/galleria";
 import { hasSanity } from "@/sanity/env";
+import { breadcrumbSchema, collectionPageSchema } from "@/lib/schema-org";
+import { buildMetadata, resolveDescription } from "@/lib/seo";
+import { rootCrumb } from "@/lib/nav-sections";
 import { formatDate } from "@/lib/format";
-import { urlForImage } from "@/sanity/lib/image";
-import type { AlbumFull } from "@/lib/types";
+
+export const revalidate = 3600;
 
 type Params = { slug: string };
 
@@ -27,12 +34,26 @@ export async function generateStaticParams(): Promise<Params[]> {
 }
 
 async function getAlbum(slug: string) {
-  return sanityFetch<AlbumFull | null>({
-    query: galleriaBySlugQuery,
+  return sanityFetch<GalleriaAlbumFull | null>({
+    query: galleriaAlbumiBySlugQuery,
     params: { slug },
     tags: ["galleriaAlbumi", `galleriaAlbumi:${slug}`],
     fallback: null,
   });
+}
+
+/**
+ * Albumin kuvaus.
+ *
+ * Ensisijaisesti isän kirjoittama `tiivistelma` — se on se teksti, jonka
+ * hakukone tai vastausmoottori lainaa. Vasta jos sitä ei ole, kootaan
+ * itsenäinen lause albumin metatiedoista; katkaistua leipätekstiä ei käytetä.
+ */
+function fallbackDescription(album: GalleriaAlbumFull): string {
+  const base = `${imageCountLabel(album.images.length)} albumissa ${album.title} — kuvattu ${formatDate(album.date)}.`;
+  return album.event
+    ? `${base} Albumi liittyy tapahtumaan ${album.event.title}.`
+    : base;
 }
 
 export async function generateMetadata({
@@ -42,17 +63,18 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const album = await getAlbum(slug);
-  if (!album) return {};
-  const builder = urlForImage(album.coverImage);
-  return {
+  if (!album) return { title: "Albumia ei löytynyt" };
+
+  return buildMetadata({
     title: album.title,
-    description: `${album.images.length} kuvan albumi — ${formatDate(album.date)}.`,
-    openGraph: {
-      images: builder
-        ? [{ url: builder.width(1200).height(630).url() }]
-        : undefined,
-    },
-  };
+    description: resolveDescription(
+      album.tiivistelma,
+      fallbackDescription(album),
+    ),
+    path: `/galleria/${album.slug}`,
+    image: album.coverImage,
+    modifiedAt: album._updatedAt,
+  });
 }
 
 export default async function AlbumPage({
@@ -64,40 +86,78 @@ export default async function AlbumPage({
   const album = await getAlbum(slug);
   if (!album) notFound();
 
+  const path = `/galleria/${album.slug}`;
+  const description = resolveDescription(
+    album.tiivistelma,
+    fallbackDescription(album),
+  );
+  const trail = [
+    rootCrumb,
+    { label: "Galleria", href: "/galleria" },
+    { label: album.title },
+  ];
+
   return (
     <>
-      <Container className="pt-12">
-        <Breadcrumbs
-          items={[
-            { label: "Etusivu", href: "/" },
-            { label: "Galleria", href: "/galleria" },
-            { label: album.title },
-          ]}
+      <JsonLd
+        schema={[
+          breadcrumbSchema(trail),
+          collectionPageSchema({
+            title: album.title,
+            description,
+            path,
+            itemCount: album.images.length,
+          }),
+        ]}
+      />
+
+      <Container size="wide" className="pt-10 sm:pt-14">
+        <PageHeader
+          title={album.title}
+          lead={album.tiivistelma}
+          breadcrumbs={trail}
+          eyebrow="Galleria"
+          meta={
+            <>
+              <span className="text-sm text-muted">
+                {formatDate(album.date)}
+              </span>
+              <span aria-hidden className="text-border-strong">
+                ·
+              </span>
+              <span className="text-sm text-muted">
+                {imageCountLabel(album.images.length)}
+              </span>
+              {album.event && (
+                <>
+                  <span aria-hidden className="text-border-strong">
+                    ·
+                  </span>
+                  <Link
+                    href={`/tapahtumat/${album.event.slug}`}
+                    className="inline-flex min-h-11 items-center text-sm font-medium text-accent hover:text-accent-hover"
+                  >
+                    {album.event.title}
+                  </Link>
+                </>
+              )}
+            </>
+          }
         />
-        <header className="mt-8">
-          <p className="text-sm uppercase tracking-[0.18em] text-muted">
-            {formatDate(album.date)} · {album.images.length} kuvaa
-          </p>
-          <h1 className="mt-3 font-serif text-4xl leading-tight sm:text-5xl">
-            {album.title}
-          </h1>
-          {album.event && (
-            <p className="mt-3 text-muted">
-              Liittyy tapahtumaan{" "}
-              <Link
-                href={`/tapahtumat/${album.event.slug}`}
-                className="text-accent hover:underline"
-              >
-                {album.event.title}
-              </Link>
-              .
-            </p>
-          )}
-        </header>
       </Container>
 
-      <Container className="py-12">
-        <AlbumGrid images={album.images} />
+      <Container size="wide" className="py-10 sm:py-14">
+        <h2 className="sr-only">Albumin kuvat</h2>
+        <AlbumGrid images={album.images} albumTitle={album.title} />
+      </Container>
+
+      <Container size="wide" className="pb-16">
+        <Link
+          href="/galleria"
+          className="inline-flex min-h-11 items-center gap-1 text-sm font-medium text-accent hover:text-accent-hover"
+        >
+          <span aria-hidden>←</span> Kaikki albumit
+        </Link>
       </Container>
     </>
   );

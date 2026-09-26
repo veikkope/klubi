@@ -35,6 +35,16 @@
   --accent-soft: var(--brand-50);
   --ring: var(--brand-500);
 
+  /* Tilavärit — virheet, varoitukset, onnistumiset.
+     Brändisininen ei kelpaa virheelle: se ei erotu linkeistä. */
+  --danger: #b91c1c;
+  --danger-soft: #fef2f2;
+  --danger-border: #fecaca;
+  --success: #15803d;
+  --success-soft: #f0fdf4;
+  --warning: #a16207;
+  --warning-soft: #fefce8;
+
   /* Tila & varjot */
   --radius-sm: 4px;
   --radius: 8px;
@@ -66,6 +76,14 @@
   --color-brand-900: var(--brand-900);
   --color-brand-950: var(--brand-950);
 
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-danger-border: var(--danger-border);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+
   --color-accent: var(--accent);
   --color-accent-hover: var(--accent-hover);
   --color-accent-soft: var(--accent-soft);
@@ -93,6 +111,13 @@
     --accent: var(--brand-400);
     --accent-hover: var(--brand-300);
     --accent-soft: #172554;
+    --danger: #f87171;
+    --danger-soft: #2a1113;
+    --danger-border: #7f1d1d;
+    --success: #4ade80;
+    --success-soft: #0c2417;
+    --warning: #facc15;
+    --warning-soft: #2a2410;
   }
 }
 

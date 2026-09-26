@@ -9,7 +9,10 @@ export default function PublicLayout({
   return (
     <>
       <Header />
-      <main className="flex-1">{children}</main>
+      {/* id vastaa juurilayoutin "Siirry sisältöön" -linkkiä. */}
+      <main id="sisalto" className="flex-1">
+        {children}
+      </main>
       <Footer />
     </>
   );

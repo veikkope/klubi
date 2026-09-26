@@ -1,4 +1,9 @@
 import { defineField, defineType } from "sanity";
+import {
+  legacyUrlField,
+  needsReviewField,
+  tiivistelmaField,
+} from "../objects/contentMeta";
 
 export const galleriaAlbumi = defineType({
   name: "galleriaAlbumi",
@@ -18,6 +23,7 @@ export const galleriaAlbumi = defineType({
       options: { source: "title", maxLength: 80 },
       validation: (rule) => rule.required(),
     }),
+    tiivistelmaField(),
     defineField({
       name: "date",
       title: "Päivämäärä",
@@ -43,6 +49,8 @@ export const galleriaAlbumi = defineType({
       of: [{ type: "imageWithAlt" }],
       validation: (rule) => rule.required().min(1).error("Vähintään yksi kuva tarvitaan."),
     }),
+    needsReviewField(),
+    legacyUrlField(),
   ],
   orderings: [
     { title: "Päivämäärä (uusin ensin)", name: "dateDesc", by: [{ field: "date", direction: "desc" }] },

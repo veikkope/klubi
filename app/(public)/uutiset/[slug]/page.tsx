@@ -1,42 +1,57 @@
-import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { notFound } from "next/navigation";
+
 import { Container } from "@/components/layout/container";
-import { Breadcrumbs } from "@/components/layout/breadcrumbs";
-import { SanityImage } from "@/components/sanity-image";
-import { PortableText } from "@/components/portable-text";
+import { PageHeader } from "@/components/layout/page-header";
 import { NewsCard } from "@/components/news-card";
-import { sanityFetch } from "@/sanity/lib/fetch";
-import {
-  allUutinenSlugsQuery,
-  relatedUutisetQuery,
-  uutinenBySlugQuery,
-} from "@/sanity/lib/queries";
-import { hasSanity } from "@/sanity/env";
+import { PortableText } from "@/components/portable-text";
+import { SanityImage } from "@/components/sanity-image";
+import { JsonLd } from "@/components/seo/json-ld";
 import { formatDate } from "@/lib/format";
+import { rootCrumb } from "@/lib/nav-sections";
+import { articleSchema, breadcrumbSchema } from "@/lib/schema-org";
+import { buildMetadata, resolveDescription } from "@/lib/seo";
 import { categoryLabel } from "@/lib/uutinen-categories";
+import { hasSanity } from "@/sanity/env";
+import { sanityFetch } from "@/sanity/lib/fetch";
 import { urlForImage } from "@/sanity/lib/image";
-import type { UutinenCard, UutinenFull } from "@/lib/types";
+import {
+  relatedUutisetQuery,
+  uutinenDetailQuery,
+  uutinenSlugsQuery,
+  type UutinenDetail,
+  type UutinenListItem,
+} from "@/sanity/lib/queries/uutiset";
+
+export const revalidate = 3600;
 
 type Params = { slug: string };
 
 export async function generateStaticParams(): Promise<Params[]> {
   if (!hasSanity) return [];
   const slugs = await sanityFetch<string[]>({
-    query: allUutinenSlugsQuery,
+    query: uutinenSlugsQuery,
     tags: ["uutinen"],
     fallback: [],
   });
   return slugs.map((slug) => ({ slug }));
 }
 
-async function getNews(slug: string) {
-  return sanityFetch<UutinenFull | null>({
-    query: uutinenBySlugQuery,
+async function getUutinen(slug: string) {
+  return sanityFetch<UutinenDetail | null>({
+    query: uutinenDetailQuery,
     params: { slug },
     tags: ["uutinen", `uutinen:${slug}`],
     fallback: null,
   });
+}
+
+function ogImageUrl(news: UutinenDetail): string | null {
+  return (
+    urlForImage(news.coverImage)?.width(1200).height(630).fit("crop").url() ??
+    null
+  );
 }
 
 export async function generateMetadata({
@@ -45,23 +60,29 @@ export async function generateMetadata({
   params: Promise<Params>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const news = await getNews(slug);
-  if (!news) return {};
-  const ogImage = news.seo?.ogImage ?? news.coverImage;
-  const ogBuilder = ogImage ? urlForImage(ogImage) : null;
-  return {
-    title: news.seo?.metaTitle || news.title,
-    description: news.seo?.metaDescription || news.excerpt,
-    openGraph: {
-      title: news.title,
-      description: news.excerpt,
-      type: "article",
-      publishedTime: news.publishedAt,
-      images: ogBuilder
-        ? [{ url: ogBuilder.width(1200).height(630).url() }]
-        : undefined,
-    },
-  };
+  const news = await getUutinen(slug);
+
+  if (!news) {
+    return buildMetadata({
+      title: "Uutista ei löytynyt",
+      path: `/uutiset/${slug}`,
+      noIndex: true,
+    });
+  }
+
+  return buildMetadata({
+    title: news.seoTitle || news.title,
+    description: resolveDescription(
+      news.seoDescription,
+      news.tiivistelma,
+      news.excerpt,
+    ),
+    path: `/uutiset/${news.slug}`,
+    image: news.coverImage,
+    publishedAt: news.publishedAt,
+    modifiedAt: news._updatedAt,
+    type: "article",
+  });
 }
 
 export default async function UutinenPage({
@@ -70,59 +91,84 @@ export default async function UutinenPage({
   params: Promise<Params>;
 }) {
   const { slug } = await params;
-  const news = await getNews(slug);
+  const news = await getUutinen(slug);
   if (!news) notFound();
 
-  const related = await sanityFetch<UutinenCard[]>({
+  const related = await sanityFetch<UutinenListItem[]>({
     query: relatedUutisetQuery,
     params: { slug: news.slug, categories: news.categories ?? [], count: 3 },
     tags: ["uutinen"],
     fallback: [],
   });
 
+  const path = `/uutiset/${news.slug}`;
+  const trail = [
+    rootCrumb,
+    { label: "Uutiset", href: "/uutiset" },
+    { label: news.title },
+  ];
+  const publishedYear = news.publishedAt?.slice(0, 4);
+
   return (
     <article>
+      <JsonLd
+        schema={[
+          breadcrumbSchema(trail),
+          articleSchema({
+            title: news.title,
+            description: news.tiivistelma ?? news.excerpt,
+            path,
+            image: ogImageUrl(news),
+            publishedAt: news.publishedAt,
+            modifiedAt: news._updatedAt,
+          }),
+        ]}
+      />
+
       <Container size="narrow" className="pt-12">
-        <Breadcrumbs
-          items={[
-            { label: "Etusivu", href: "/" },
-            { label: "Uutiset", href: "/uutiset" },
-            { label: news.title },
-          ]}
-        />
-        <header className="mt-8">
-          {news.categories && news.categories.length > 0 && (
-            <div className="flex flex-wrap gap-1.5">
-              {news.categories.map((c) => (
-                <Link
-                  key={c}
-                  href={`/uutiset?kategoria=${c}`}
-                  className="rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-800 hover:bg-brand-100"
-                >
-                  {categoryLabel(c)}
-                </Link>
-              ))}
+        <PageHeader
+          title={news.title}
+          lead={news.tiivistelma ?? news.excerpt}
+          breadcrumbs={trail}
+          meta={
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-muted">
+              <time dateTime={news.publishedAt}>
+                {formatDate(news.publishedAt)}
+              </time>
+              {news.author?.name && (
+                <>
+                  <span aria-hidden>·</span>
+                  <span>
+                    {news.author.name}
+                    {news.author.role && (
+                      <span className="text-muted-soft">
+                        {" "}
+                        · {news.author.role}
+                      </span>
+                    )}
+                  </span>
+                </>
+              )}
             </div>
-          )}
-          <h1 className="mt-4 font-serif text-4xl leading-tight sm:text-5xl">
-            {news.title}
-          </h1>
-          <p className="mt-4 text-lg text-muted">{news.excerpt}</p>
-          <div className="mt-6 flex items-center gap-3 text-sm text-muted">
-            <time dateTime={news.publishedAt}>{formatDate(news.publishedAt)}</time>
-            {news.author && (
-              <>
-                <span aria-hidden>·</span>
-                <span>
-                  {news.author.name}
-                  {news.author.role && (
-                    <span className="text-muted-soft"> · {news.author.role}</span>
-                  )}
-                </span>
-              </>
-            )}
-          </div>
-        </header>
+          }
+        />
+
+        {news.categories && news.categories.length > 0 && (
+          <nav aria-label="Uutisen kategoriat" className="mt-6">
+            <ul className="flex list-none flex-wrap gap-2 p-0">
+              {news.categories.map((category) => (
+                <li key={category}>
+                  <Link
+                    href={`/uutiset?kategoria=${category}`}
+                    className="inline-flex min-h-11 items-center rounded-full border border-border bg-surface px-4 text-sm font-medium text-foreground transition hover:border-accent hover:text-accent"
+                  >
+                    {categoryLabel(category)}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )}
       </Container>
 
       {news.coverImage?.asset && (
@@ -132,7 +178,7 @@ export default async function UutinenPage({
               image={news.coverImage}
               width={1600}
               height={900}
-              sizes="(min-width: 1024px) 1024px, 100vw"
+              sizes="(min-width: 1280px) 1152px, 100vw"
               className="h-auto w-full object-cover"
               priority
             />
@@ -142,44 +188,44 @@ export default async function UutinenPage({
 
       <Container size="narrow" className="py-16">
         <PortableText value={news.body} />
+
+        <p className="mt-12 text-sm text-muted">
+          <Link href="/uutiset" className="text-accent hover:underline">
+            Kaikki uutiset
+          </Link>
+          {publishedYear && (
+            <>
+              <span aria-hidden> · </span>
+              <Link
+                href={`/uutiset/arkisto/${publishedYear}`}
+                className="text-accent hover:underline"
+              >
+                Arkisto {publishedYear}
+              </Link>
+            </>
+          )}
+        </p>
       </Container>
 
       {related.length > 0 && (
-        <section className="border-t border-border bg-surface py-16">
+        <section
+          aria-labelledby="lue-lisaa"
+          className="border-t border-border bg-surface py-16"
+        >
           <Container>
-            <h2 className="font-serif text-2xl sm:text-3xl">Lue lisää</h2>
-            <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <h2 id="lue-lisaa" className="font-serif text-2xl sm:text-3xl">
+              Lue lisää
+            </h2>
+            <ul className="mt-8 grid list-none grid-cols-1 gap-6 p-0 sm:grid-cols-2 lg:grid-cols-3">
               {related.map((item) => (
-                <NewsCard key={item._id} news={item} />
+                <li key={item._id} className="flex">
+                  <NewsCard news={item} />
+                </li>
               ))}
-            </div>
+            </ul>
           </Container>
         </section>
       )}
-
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(buildArticleJsonLd(news)),
-        }}
-      />
     </article>
   );
-}
-
-function buildArticleJsonLd(news: UutinenFull) {
-  return {
-    "@context": "https://schema.org",
-    "@type": "NewsArticle",
-    headline: news.title,
-    description: news.excerpt,
-    datePublished: news.publishedAt,
-    author: news.author
-      ? { "@type": "Person", name: news.author.name }
-      : { "@type": "Organization", name: "Lahden Suomalainen Klubi ry" },
-    publisher: {
-      "@type": "Organization",
-      name: "Lahden Suomalainen Klubi ry",
-    },
-  };
 }

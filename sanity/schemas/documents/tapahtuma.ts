@@ -1,5 +1,10 @@
 import { defineField, defineType } from "sanity";
 import { seoFields } from "../objects/seoFields";
+import {
+  legacyUrlField,
+  needsReviewField,
+  tiivistelmaField,
+} from "../objects/contentMeta";
 
 export const tapahtuma = defineType({
   name: "tapahtuma",
@@ -26,6 +31,7 @@ export const tapahtuma = defineType({
       validation: (rule) => rule.required(),
       group: "perustiedot",
     }),
+    tiivistelmaField("perustiedot"),
     defineField({
       name: "startsAt",
       title: "Alkamisaika",
@@ -72,7 +78,9 @@ export const tapahtuma = defineType({
       type: "email",
       group: "ilmoittautuminen",
     }),
+    needsReviewField("perustiedot"),
     ...seoFields,
+    legacyUrlField("seo"),
   ],
   orderings: [
     {

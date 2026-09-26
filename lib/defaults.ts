@@ -16,6 +16,7 @@ export const defaultNavigation: NavigationData = {
       highlight: false,
       children: [
         { label: "Esittely", href: "/klubi" },
+        { label: "Toiminta", href: "/klubi/toiminta" },
         { label: "Hallitus", href: "/klubi/hallitus" },
         { label: "Säännöt", href: "/klubi/saannot" },
         { label: "Palloveikkaus", href: "/klubi/palloveikkaus" },
@@ -30,8 +31,10 @@ export const defaultNavigation: NavigationData = {
       highlight: false,
       children: [
         { label: "Huuhkajat", href: "/jalkapalloarkisto/huuhkajat" },
+        { label: "Arvokisat", href: "/jalkapalloarkisto/arvokisat" },
         { label: "Suomen mestarit", href: "/jalkapalloarkisto/mestarit" },
         { label: "Eurocupit", href: "/jalkapalloarkisto/eurocupit" },
+        { label: "Pelaajat", href: "/jalkapalloarkisto/pelaajat" },
         { label: "Vuoden pelaajat", href: "/jalkapalloarkisto/vuoden-pelaajat" },
         { label: "Stadionit", href: "/jalkapalloarkisto/stadionit" },
       ],

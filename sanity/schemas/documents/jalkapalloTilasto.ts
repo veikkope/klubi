@@ -1,5 +1,10 @@
 import { defineField, defineType } from "sanity";
 import { seoFields } from "../objects/seoFields";
+import {
+  legacyUrlField,
+  needsReviewField,
+  tiivistelmaField,
+} from "../objects/contentMeta";
 
 export const jalkapalloTilasto = defineType({
   name: "jalkapalloTilasto",
@@ -26,6 +31,7 @@ export const jalkapalloTilasto = defineType({
       validation: (rule) => rule.required(),
       group: "perustiedot",
     }),
+    tiivistelmaField("perustiedot"),
     defineField({
       name: "category",
       title: "Kategoria",
@@ -35,8 +41,11 @@ export const jalkapalloTilasto = defineType({
         list: [
           { title: "FIFA-ranking", value: "fifa-ranking" },
           { title: "Suomen mestarit", value: "champions" },
+          { title: "Huuhkajien ottelut", value: "huuhkajat" },
           { title: "Huuhkajien valmentajat", value: "valmentajat" },
+          { title: "Valmentajien palkat", value: "valmentajien-palkat" },
           { title: "Vuoden pelaaja", value: "vuoden-pelaaja" },
+          { title: "Lupaavat pelaajat", value: "lupaavat" },
           { title: "Ballon d'Or", value: "ballon-dor" },
           { title: "Suomen jalkapallon saavutukset", value: "saavutukset" },
           { title: "Champions League / Eurocup", value: "eurocup" },
@@ -125,7 +134,9 @@ export const jalkapalloTilasto = defineType({
       of: [{ type: "url" }],
       group: "data",
     }),
+    needsReviewField("perustiedot"),
     ...seoFields,
+    legacyUrlField("seo"),
   ],
   preview: {
     select: { title: "title", category: "category" },

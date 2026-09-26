@@ -1,18 +1,45 @@
 import Link from "next/link";
+
 import { cn } from "@/lib/cn";
 import { UUTINEN_CATEGORIES } from "@/lib/uutinen-categories";
 import type { UutinenCategory } from "@/lib/types";
 
+/**
+ * Kategoriasuodatin uutislistaukselle.
+ *
+ * Toteutettu GET-lomakkeena: valinta päätyy URL-parametriksi ilman
+ * JavaScriptiä, joten suodatettu näkymä on jaettavissa, palvelinrenderöity ja
+ * toimii myös silloin kun selain estää skriptit. Sivunumeroa ei kuljeteta
+ * mukana — suodattimen vaihto palauttaa aina listan alkuun.
+ */
+
 type Props = {
   /** Aktiivinen kategoria URL-parametrista, tai null kaikille. */
   active: UutinenCategory | null;
-  /** Pohjapolku jolle suodatin linkittää (esim. "/uutiset"). */
+  /** Pohjapolku jolle suodatin lähettää (esim. "/uutiset"). */
   basePath: string;
-  /** Vain ne kategoriat joista on uutisia näytetään (silloin kun annettu). */
+  /** Vain ne kategoriat joista on sisältöä. Jos puuttuu, näytetään kaikki. */
   available?: Set<string>;
+  /** Kyselyparametrin nimi. */
+  paramName?: string;
+  className?: string;
 };
 
-export function CategoryFilter({ active, basePath, available }: Props) {
+const chipBase =
+  "inline-flex min-h-11 items-center rounded-full border px-4 text-sm font-medium transition";
+
+const chipActive = "border-accent bg-accent text-white";
+
+const chipIdle =
+  "border-border bg-background text-foreground hover:border-accent hover:text-accent";
+
+export function CategoryFilter({
+  active,
+  basePath,
+  available,
+  paramName = "kategoria",
+  className,
+}: Props) {
   const items = available
     ? UUTINEN_CATEGORIES.filter((c) => available.has(c.value))
     : UUTINEN_CATEGORIES;
@@ -20,48 +47,39 @@ export function CategoryFilter({ active, basePath, available }: Props) {
   if (items.length === 0) return null;
 
   return (
-    <nav
-      aria-label="Suodata kategorian mukaan"
-      className="flex flex-wrap gap-2"
+    <form
+      method="get"
+      action={basePath}
+      className={cn("flex flex-wrap items-center gap-2", className)}
     >
-      <FilterLink
-        href={basePath}
-        label="Kaikki"
-        active={active === null}
-      />
-      {items.map((c) => (
-        <FilterLink
-          key={c.value}
-          href={`${basePath}?kategoria=${c.value}`}
-          label={c.label}
-          active={active === c.value}
-        />
-      ))}
-    </nav>
-  );
-}
+      <fieldset className="contents">
+        <legend className="sr-only">Suodata uutisia kategorian mukaan</legend>
 
-function FilterLink({
-  href,
-  label,
-  active,
-}: {
-  href: string;
-  label: string;
-  active: boolean;
-}) {
-  return (
-    <Link
-      href={href}
-      aria-current={active ? "page" : undefined}
-      className={cn(
-        "rounded-full border px-4 py-1.5 text-sm font-medium transition",
-        active
-          ? "border-accent bg-accent text-white"
-          : "border-border bg-background text-foreground hover:border-accent hover:text-accent",
-      )}
-    >
-      {label}
-    </Link>
+        {/* "Kaikki" on linkki eikä painike, jotta osoite pysyy siistinä. */}
+        <Link
+          href={basePath}
+          aria-current={active === null ? "page" : undefined}
+          className={cn(chipBase, active === null ? chipActive : chipIdle)}
+        >
+          Kaikki
+        </Link>
+
+        {items.map((category) => (
+          <button
+            key={category.value}
+            type="submit"
+            name={paramName}
+            value={category.value}
+            aria-current={active === category.value ? "page" : undefined}
+            className={cn(
+              chipBase,
+              active === category.value ? chipActive : chipIdle,
+            )}
+          >
+            {category.label}
+          </button>
+        ))}
+      </fieldset>
+    </form>
   );
 }

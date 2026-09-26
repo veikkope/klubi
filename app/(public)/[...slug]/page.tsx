@@ -10,8 +10,13 @@ import {
   sivuWithAncestorsQuery,
 } from "@/sanity/lib/queries";
 import { hasSanity } from "@/sanity/env";
+import { JsonLd } from "@/components/seo/json-ld";
+import { breadcrumbSchema, webPageSchema } from "@/lib/schema-org";
+import { buildMetadata, resolveDescription } from "@/lib/seo";
 import { ancestorSlugs, joinSlug, toHref } from "@/lib/path";
 import type { SivuWithAncestors } from "@/lib/types";
+
+export const revalidate = 3600;
 
 type Params = { slug: string[] };
 
@@ -43,10 +48,17 @@ export async function generateMetadata({
   const { slug } = await params;
   const { sivu } = await getSivu(slug);
   if (!sivu) return {};
-  return {
-    title: sivu.seo?.metaTitle || sivu.title,
-    description: sivu.seo?.metaDescription || sivu.ingress || undefined,
-  };
+  return buildMetadata({
+    title: sivu.seoTitle || sivu.title,
+    description: resolveDescription(
+      sivu.seoDescription,
+      sivu.tiivistelma,
+      sivu.ingress,
+    ),
+    path: toHref(sivu.slug),
+    image: sivu.hero,
+    modifiedAt: sivu.updatedAt,
+  });
 }
 
 export default async function SivuPage({
@@ -65,9 +77,21 @@ export default async function SivuPage({
   ];
 
   const hasHero = Boolean(sivu.hero?.asset);
+  const lead = sivu.tiivistelma || sivu.ingress;
 
   return (
     <article>
+      <JsonLd
+        schema={[
+          breadcrumbSchema(crumbs),
+          webPageSchema({
+            title: sivu.title,
+            description: lead,
+            path: toHref(sivu.slug),
+            modifiedAt: sivu.updatedAt,
+          }),
+        ]}
+      />
       {hasHero ? (
         <section className="relative isolate overflow-hidden bg-brand-950 text-white">
           <div className="absolute inset-0 -z-10">
@@ -86,10 +110,8 @@ export default async function SivuPage({
             <h1 className="mt-6 font-serif text-4xl leading-tight sm:text-6xl">
               {sivu.title}
             </h1>
-            {sivu.ingress && (
-              <p className="mt-4 max-w-2xl text-lg text-brand-100">
-                {sivu.ingress}
-              </p>
+            {lead && (
+              <p className="mt-4 max-w-2xl text-lg text-brand-100">{lead}</p>
             )}
           </Container>
         </section>
@@ -99,8 +121,8 @@ export default async function SivuPage({
           <h1 className="mt-6 font-serif text-4xl leading-tight sm:text-5xl">
             {sivu.title}
           </h1>
-          {sivu.ingress && (
-            <p className="mt-4 max-w-2xl text-lg text-muted">{sivu.ingress}</p>
+          {lead && (
+            <p className="mt-4 max-w-2xl text-lg text-muted">{lead}</p>
           )}
         </Container>
       )}

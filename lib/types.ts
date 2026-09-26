@@ -73,6 +73,20 @@ export type EtusivuBlock =
       count?: number;
     }
   | {
+      _type: "jalkapalloarkisto";
+      _key: string;
+      heading?: string;
+      body?: string;
+      ctaLabel?: string;
+      ctaHref?: string;
+    }
+  | {
+      _type: "galleria";
+      _key: string;
+      heading?: string;
+      count?: number;
+    }
+  | {
       _type: "cta";
       _key: string;
       heading: string;
@@ -96,12 +110,16 @@ export type SivuData = {
   slug: string;
   hero?: SanityImage;
   ingress?: string | null;
+  /** Itsenäinen 2–3 virkkeen tiivistelmä — sivun ingressi ja siteerattava vastaus. */
+  tiivistelma?: string | null;
   body?: PortableTextBlock[] | null;
-  seo?: {
-    metaTitle?: string;
-    metaDescription?: string;
-    ogImage?: SanityImage;
-  } | null;
+  /**
+   * SEO-kentät ovat litteitä, koska `seo` on Studion kenttäryhmän nimi eikä
+   * kenttä. Objektimuotoinen `seo`-projektio palautti aina nullin.
+   */
+  seoTitle?: string | null;
+  seoDescription?: string | null;
+  updatedAt?: string | null;
 };
 
 export type SivuAncestor = {
@@ -173,6 +191,7 @@ export type AlbumCard = {
   title: string;
   slug: string;
   date: string;
+  tiivistelma?: string | null;
   coverImage: SanityImage;
   imageCount: number;
 };
@@ -189,8 +208,10 @@ export type AlbumFull = {
   title: string;
   slug: string;
   date: string;
+  tiivistelma?: string | null;
   coverImage: SanityImage;
   images: AlbumImage[];
+  updatedAt?: string | null;
   event?: { title: string; slug: string } | null;
 };
 

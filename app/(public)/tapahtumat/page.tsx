@@ -1,30 +1,48 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+
 import { Container } from "@/components/layout/container";
-import { Breadcrumbs } from "@/components/layout/breadcrumbs";
+import { PageHeader } from "@/components/layout/page-header";
 import { EventCard } from "@/components/event-card";
+import { JsonLd } from "@/components/seo/json-ld";
+import { rootCrumb } from "@/lib/nav-sections";
+import { breadcrumbSchema, collectionPageSchema } from "@/lib/schema-org";
+import { buildMetadata } from "@/lib/seo";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import {
-  allUpcomingTapahtumatQuery,
-  pastTapahtumatQuery,
-} from "@/sanity/lib/queries";
-import type { TapahtumaCard } from "@/lib/types";
+  menneetTapahtumatQuery,
+  tulevatTapahtumatQuery,
+  type TapahtumaListItem,
+} from "@/sanity/lib/queries/uutiset";
 
-export const metadata: Metadata = {
+import { PastEvents } from "./_components/past-events";
+
+export const revalidate = 3600;
+
+const PATH = "/tapahtumat";
+
+const LEAD =
+  "Yhdistys järjestää vuosittain vuosikokouksen, vapunvieton, " +
+  "mölkkyturnauksen, jouluruokailun ja muita tilaisuuksia jäsenille ja " +
+  "heidän vierailleen.";
+
+const trail = [rootCrumb, { label: "Tapahtumat" }];
+
+export const metadata: Metadata = buildMetadata({
   title: "Tapahtumat",
-  description:
-    "Lahden Suomalaisen Klubi ry:n tulevat ja menneet tapahtumat — vuosikokoukset, vapunviettelot, mölkkyturnaukset ja muut tilaisuudet.",
-};
+  description: LEAD,
+  path: PATH,
+});
 
 export default async function TapahtumatPage() {
   const [upcoming, past] = await Promise.all([
-    sanityFetch<TapahtumaCard[]>({
-      query: allUpcomingTapahtumatQuery,
+    sanityFetch<TapahtumaListItem[]>({
+      query: tulevatTapahtumatQuery,
       tags: ["tapahtuma"],
       fallback: [],
     }),
-    sanityFetch<TapahtumaCard[]>({
-      query: pastTapahtumatQuery,
-      params: { count: 24 },
+    sanityFetch<TapahtumaListItem[]>({
+      query: menneetTapahtumatQuery,
       tags: ["tapahtuma"],
       fallback: [],
     }),
@@ -34,15 +52,20 @@ export default async function TapahtumatPage() {
 
   return (
     <>
+      <JsonLd
+        schema={[
+          breadcrumbSchema(trail),
+          collectionPageSchema({
+            title: "Tapahtumat",
+            description: LEAD,
+            path: PATH,
+            itemCount: upcoming.length + past.length,
+          }),
+        ]}
+      />
+
       <Container className="pt-12">
-        <Breadcrumbs items={[{ label: "Etusivu", href: "/" }, { label: "Tapahtumat" }]} />
-        <h1 className="mt-6 font-serif text-4xl leading-tight sm:text-5xl">
-          Tapahtumat
-        </h1>
-        <p className="mt-4 max-w-2xl text-lg text-muted">
-          Yhdistys järjestää vuosittain vuosikokouksen, vapun, mölkkyturnauksen
-          ja muita tilaisuuksia jäsenille ja heidän vierailleen.
-        </p>
+        <PageHeader title="Tapahtumat" lead={LEAD} breadcrumbs={trail} />
       </Container>
 
       <Container className="py-16">
@@ -51,42 +74,43 @@ export default async function TapahtumatPage() {
         ) : (
           <>
             <section aria-labelledby="tulevat">
-              <h2
-                id="tulevat"
-                className="font-serif text-2xl sm:text-3xl"
-              >
-                Tulevat
+              <h2 id="tulevat" className="font-serif text-2xl sm:text-3xl">
+                Tulevat tapahtumat
               </h2>
+
               {upcoming.length === 0 ? (
-                <p className="mt-6 text-muted">
-                  Ei tulevia tapahtumia juuri nyt. Tutustu alla menneisiin
-                  tapahtumiin tai liity jäseneksi saadaksesi kutsuja.
+                <p className="mt-4 max-w-2xl text-muted">
+                  Ei tulevia tapahtumia juuri nyt. Seuraava tilaisuus
+                  ilmoitetaan täällä ja{" "}
+                  <Link href="/uutiset" className="text-accent hover:underline">
+                    uutisissa
+                  </Link>
+                  .
                 </p>
               ) : (
-                <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                  {upcoming.map((event) => (
-                    <EventCard key={event._id} event={event} />
+                <ul className="mt-8 grid list-none grid-cols-1 gap-6 p-0 sm:grid-cols-2 lg:grid-cols-3">
+                  {upcoming.map((event, index) => (
+                    <li key={event._id} className="flex">
+                      <EventCard event={event} priority={index < 3} />
+                    </li>
                   ))}
-                </div>
+                </ul>
               )}
             </section>
 
             {past.length > 0 && (
               <section aria-labelledby="menneet" className="mt-20">
-                <div className="flex items-end justify-between gap-6">
-                  <h2
-                    id="menneet"
-                    className="font-serif text-2xl sm:text-3xl"
-                  >
-                    Menneet
+                <div className="flex flex-wrap items-end justify-between gap-3">
+                  <h2 id="menneet" className="font-serif text-2xl sm:text-3xl">
+                    Menneet tapahtumat
                   </h2>
-                  <span className="text-sm text-muted">{past.length} tapahtumaa</span>
+                  <span className="text-sm text-muted">
+                    {past.length === 1
+                      ? "1 tapahtuma"
+                      : `${past.length} tapahtumaa`}
+                  </span>
                 </div>
-                <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                  {past.map((event) => (
-                    <EventCard key={event._id} event={event} past />
-                  ))}
-                </div>
+                <PastEvents events={past} />
               </section>
             )}
           </>
@@ -100,9 +124,14 @@ function EmptyState() {
   return (
     <div className="rounded-2xl border border-dashed border-border bg-surface p-10 text-center">
       <p className="font-serif text-2xl">Ei vielä tapahtumia</p>
-      <p className="mt-2 max-w-md text-muted mx-auto">
+      <p className="mx-auto mt-2 max-w-md text-muted">
         Tapahtumat lisätään Sanity Studiossa. Heti kun ensimmäinen tapahtuma on
-        julkaistu, se ilmestyy tänne.
+        julkaistu, se ilmestyy tähän — tulevat ensin, menneet omana osionaan.
+      </p>
+      <p className="mt-6">
+        <Link href="/uutiset" className="text-accent hover:underline">
+          Lue uutisia
+        </Link>
       </p>
     </div>
   );

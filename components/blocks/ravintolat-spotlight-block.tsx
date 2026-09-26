@@ -1,8 +1,8 @@
-import Link from "next/link";
 import { Container } from "@/components/layout/container";
+import { BlockHeading } from "@/components/blocks/block-heading";
 import { RestaurantCard } from "@/components/restaurant-card";
 import { sanityFetch } from "@/sanity/lib/fetch";
-import { topRavintolatQuery } from "@/sanity/lib/queries";
+import { etusivuRavintolatQuery } from "@/sanity/lib/queries/etusivu";
 import type { RavintolaCard } from "@/lib/types";
 
 type Props = {
@@ -11,13 +11,21 @@ type Props = {
   count?: number;
 };
 
+/**
+ * Ravintolat-spotlight — parhaiten arvioidut ensin (`ratingOverall` laskevasti).
+ *
+ * Lista on `<ol>`, koska järjestyksellä on merkitys: se on klubin oma
+ * paremmuusjärjestys. Sijaluku näytetään merkkinä kortin kulmassa ja
+ * kerrotaan ruudunlukijalle erikseen, koska selaimet eivät ilmoita
+ * listanumeroa luotettavasti kun `list-style` on pois päältä.
+ */
 export async function RavintolatSpotlightBlock({
   heading = "Parhaat ravintolat",
   cityId = null,
   count = 5,
 }: Props) {
   const items = await sanityFetch<RavintolaCard[]>({
-    query: topRavintolatQuery,
+    query: etusivuRavintolatQuery,
     params: { count, cityId },
     tags: ["ravintola"],
     fallback: [],
@@ -26,22 +34,28 @@ export async function RavintolatSpotlightBlock({
   if (items.length === 0) return null;
 
   return (
-    <section className="py-20">
-      <Container>
-        <div className="flex items-end justify-between gap-6">
-          <h2 className="font-serif text-3xl sm:text-4xl">{heading}</h2>
-          <Link
-            href="/ravintolat"
-            className="text-sm font-medium text-accent hover:text-accent-hover"
-          >
-            Koko hakemisto →
-          </Link>
-        </div>
-        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {items.map((r) => (
-            <RestaurantCard key={r._id} restaurant={r} />
+    <section className="py-20 sm:py-24" aria-labelledby="etusivu-ravintolat">
+      <Container size="wide">
+        <BlockHeading
+          id="etusivu-ravintolat"
+          eyebrow="Klubin arviot"
+          title={heading}
+          action={{ href: "/ravintolat", label: "Koko hakemisto" }}
+        />
+        <ol className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {items.map((restaurant, index) => (
+            <li key={restaurant._id} className="relative grid">
+              <span
+                aria-hidden
+                className="absolute -left-2 -top-2 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full bg-accent text-sm font-semibold text-white shadow-md"
+              >
+                {index + 1}
+              </span>
+              <span className="sr-only">Sijalla {index + 1}:</span>
+              <RestaurantCard restaurant={restaurant} />
+            </li>
           ))}
-        </div>
+        </ol>
       </Container>
     </section>
   );

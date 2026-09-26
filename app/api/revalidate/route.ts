@@ -1,0 +1,65 @@
+import { revalidateTag } from "next/cache";
+import type { NextRequest } from "next/server";
+import { parseBody } from "next-sanity/webhook";
+
+/**
+ * Sanity-webhook: tyhjentää välimuistin kun sisältö muuttuu.
+ *
+ * Ilman tätä isän Studiossa tekemä muutos näkyisi vasta kun sivun
+ * `revalidate`-ikkuna (1 h) umpeutuu. Webhookin kanssa se näkyy sekunneissa.
+ *
+ * Sanity Studiossa: API → Webhooks → luo webhook
+ *   URL:     https://www.lahdensuomalainenklubi.com/api/revalidate
+ *   Dataset: production
+ *   Trigger: Create, Update, Delete
+ *   Secret:  sama arvo kuin SANITY_REVALIDATE_SECRET
+ *   Payload: `{ "_type": _type, "slug": slug.current }`
+ *
+ * Cache-tagit ovat dokumenttityypin nimiä — sama merkkijono jonka sivut
+ * antavat `sanityFetch({ tags })`-kutsussa.
+ */
+
+const secret = process.env.SANITY_REVALIDATE_SECRET;
+
+interface WebhookPayload {
+  _type?: string;
+  slug?: string;
+}
+
+export async function POST(request: NextRequest): Promise<Response> {
+  if (!secret) {
+    return Response.json(
+      { message: "SANITY_REVALIDATE_SECRET puuttuu — webhook ei ole käytössä." },
+      { status: 501 },
+    );
+  }
+
+  try {
+    const { isValidSignature, body } = await parseBody<WebhookPayload>(
+      request,
+      secret,
+    );
+
+    if (!isValidSignature) {
+      return Response.json({ message: "Virheellinen allekirjoitus." }, { status: 401 });
+    }
+    if (!body?._type) {
+      return Response.json({ message: "Payloadista puuttuu _type." }, { status: 400 });
+    }
+
+    // Tyypin tagi kattaa listaukset; slug-tagi yksittäisen dokumentin sivun.
+    const tags = [body._type];
+    if (body.slug) tags.push(`${body._type}:${body.slug}`);
+
+    // Next 16 vaatii cache-profiilin toisena argumenttina. "max" tarkoittaa
+    // tässä: mitätöi riippumatta siitä, kuinka pitkä välimuistin elinikä oli —
+    // webhook laukeaa vain kun sisältö on oikeasti muuttunut.
+    for (const tag of tags) revalidateTag(tag, "max");
+
+    return Response.json({ revalidated: true, tags, now: Date.now() });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Tuntematon virhe";
+    console.error("[revalidate] virhe:", message);
+    return Response.json({ message }, { status: 500 });
+  }
+}
