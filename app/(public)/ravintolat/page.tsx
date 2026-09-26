@@ -29,11 +29,25 @@ import {
 export const revalidate = 3600;
 
 const TITLE = "Ravintolat";
-const LEAD =
-  "Lahden Suomalainen Klubi ry on arvioinut satoja ravintoloita vuodesta 2007 " +
-  "alkaen. Jokainen kohde saa kokonaisarvosanan sekä osa-arviot ruoasta, " +
-  "hinnasta ja viihtyvyydestä. Rajaa hakemistoa kaupungin, ruokatyypin tai " +
-  "arvosanan mukaan.";
+
+/**
+ * Ingressi johdetaan datasta, ei kovakoodata.
+ *
+ * Aiemmin tässä luki "vuodesta 2007", mikä oli väärin: yhdistys perustettiin
+ * 2007, mutta vanhin kirjattu ravintolakäynti on vuodelta 1997. Kovakoodattu
+ * vuosiluku ajautuu erilleen datasta heti kun vanhempaa aineistoa lisätään.
+ */
+function buildLead(facets: RavintolatFacetData): string {
+  const year = facets.firstVisitYear?.slice(0, 4);
+  const since = year ? ` vuodesta ${year} alkaen` : "";
+  const count = facets.total > 0 ? `${facets.total}` : "satoja";
+  return (
+    `Lahden Suomalainen Klubi ry on arvioinut ${count} ravintolaa${since}. ` +
+    "Jokainen kohde saa kokonaisarvosanan sekä osa-arviot ruoasta, hinnasta " +
+    "ja viihtyvyydestä. Rajaa hakemistoa kaupungin, ruokatyypin tai arvosanan " +
+    "mukaan."
+  );
+}
 
 const trail = [rootCrumb, { label: TITLE }];
 
@@ -42,6 +56,7 @@ const emptyFacets: RavintolatFacetData = {
   cuisines: [],
   total: 0,
   closedCount: 0,
+  firstVisitYear: null,
 };
 
 type PageProps = {
@@ -102,6 +117,7 @@ export default async function RavintolatPage({ searchParams }: PageProps) {
 
   const pageCount = Math.max(1, Math.ceil(total / RAVINTOLAT_PAGE_SIZE));
   const isFiltered = hasActiveRavintolaFilters(filters);
+  const lead = buildLead(facets);
 
   return (
     <>
@@ -110,7 +126,7 @@ export default async function RavintolatPage({ searchParams }: PageProps) {
           breadcrumbSchema(trail),
           collectionPageSchema({
             title: TITLE,
-            description: LEAD,
+            description: lead,
             path: "/ravintolat",
             itemCount: total,
           }),
@@ -120,7 +136,7 @@ export default async function RavintolatPage({ searchParams }: PageProps) {
       <Container size="wide" className="py-12 sm:py-16">
         <PageHeader
           title={TITLE}
-          lead={LEAD}
+          lead={lead}
           eyebrow="Klubin arvostelut"
           breadcrumbs={trail}
           actions={

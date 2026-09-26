@@ -5,17 +5,17 @@
  * ravintolat, uutiset, etusivu). Tänne jäävät vain ne, joita useampi osio
  * käyttää tai jotka eivät kuulu millekään yksittäiselle osiolle.
  *
- * Kaksi GROQ-rajoitetta, jotka ohjaavat kaikkia kyselyitä tässä projektissa:
- *  1. Viipaloinnissa on käytettävä vakiolukuja — `[0...$count]` EI kelpaa.
- *     Haetaan siis kiinteä yläraja ja rajataan lopullinen määrä JavaScriptissä.
- *  2. `order()` ei ota kenttänimeä muuttujasta.
+ * Yksi aito GROQ-rajoite tässä projektissa: `order()` ei ota kenttänimeä
+ * muuttujasta — `order($field desc)` tulkitsee `$field`:n arvoksi, ei kentäksi.
+ * Lajittelu on siksi valittava kyselyä rakennettaessa.
+ *
+ * Viipalointi parametreilla (`[0...$count]`, `[$offset...$end]`) sen sijaan
+ * TOIMII Sanityn API:a vasten. Huom: paikallinen `groq-js`-parseri hylkää sen,
+ * joten sillä tehty validointi antaa tässä väärän negatiivisen.
  *
  * SEO-kentät ovat litteitä (`seoTitle`, `seoDescription`) — `seo` on Studion
  * kenttäryhmän nimi, ei kenttä. Sen projisointi palauttaa aina nullin.
  */
-
-/** Nostojen yläraja. Vastaa etusivun lohkojen `count`-kentän maksimia. */
-export const MAX_HIGHLIGHTS = 6;
 
 export const navigationQuery = /* groq */ `
   *[_type == "navigaatio"][0]{
@@ -67,13 +67,10 @@ export const allSivuSlugsQuery = /* groq */ `
   *[_type == "sivu" && defined(slug.current)][].slug.current
 `;
 
-/**
- * Uusimmat uutiset etusivun nostoon. Palauttaa enintään `MAX_HIGHLIGHTS`
- * riviä; kutsuja rajaa lopullisen määrän.
- */
+/** Uusimmat uutiset etusivun nostoon. */
 export const recentUutisetQuery = /* groq */ `
   *[_type == "uutinen" && defined(slug.current)]
-    | order(publishedAt desc)[0...6]{
+    | order(publishedAt desc)[0...$count]{
     _id,
     title,
     "slug": slug.current,
@@ -85,10 +82,10 @@ export const recentUutisetQuery = /* groq */ `
   }
 `;
 
-/** Tulevat tapahtumat etusivun nostoon. Sama viipalointirajoite kuin yllä. */
+/** Tulevat tapahtumat etusivun nostoon. */
 export const upcomingTapahtumatQuery = /* groq */ `
   *[_type == "tapahtuma" && defined(slug.current) && startsAt >= now()]
-    | order(startsAt asc)[0...6]{
+    | order(startsAt asc)[0...$count]{
     _id,
     title,
     "slug": slug.current,

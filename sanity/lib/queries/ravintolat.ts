@@ -79,6 +79,8 @@ export type RavintolatFacetData = {
   cuisines: (string | null)[];
   total: number;
   closedCount: number;
+  /** Varhaisimman kirjatun käynnin päivä, esim. "1997-10-11". */
+  firstVisitYear: string | null;
 };
 
 /** Arvostelulomakkeen valintalista. */
@@ -179,7 +181,9 @@ export const ravintolatFacetsQuery = defineQuery(`{
     },
   "cuisines": array::unique(*[_type == "ravintola" && defined(cuisine)].cuisine[]),
   "total": count(*[_type == "ravintola" && defined(slug.current) && closed != true]),
-  "closedCount": count(*[_type == "ravintola" && closed == true])
+  "closedCount": count(*[_type == "ravintola" && closed == true]),
+  "firstVisitYear": *[_type == "ravintola" && defined(visitedAt)]
+    | order(visitedAt asc)[0].visitedAt
 }`);
 
 export const ravintolaBySlugQuery = defineQuery(`

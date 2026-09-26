@@ -439,13 +439,29 @@ paras perustelu Gate 2:n olemassaololle:
 |---|---|---|
 | `revalidateTag(tag)` ilman toista argumenttia | Ei käänny Next 16:ssa | 3 agenttia itsenäisesti |
 | `seo`-projektio 6 kyselyssä | Palautti aina nullin — `seo` on kenttäryhmä, ei kenttä | Klubi-agentti |
-| Parametrinen viipale `[0...$count]` 5 kyselyssä | GROQ vaatii vakioluvun | 2 agenttia, `groq-js`:llä todennettuna |
+| ~~Parametrinen viipale `[0...$count]`~~ | **Väärä havainto, ks. alla** | 2 agenttia, `groq-js`:llä |
 | `city->{ _ref }` | Palautti aina nullin — dereferoidussa on `_id` | Etusivuagentti |
 | `cn()` ilman `tailwind-merge`a | `className`-ylikirjoitus ei purrut | 2 agenttia |
 
 Lisäksi puuttui: virheväritokenit, `placeSchema`, stadionin `location`-geopoint,
 `absoluteTitle`/`noFollow`, kolme `jalkapalloTilasto`-kategoriaa, etusivun
 `jalkapalloarkisto`- ja `galleria`-lohkot.
+
+### Kumottu havainto: parametrinen viipale
+
+Kaksi agenttia raportoi ja minä toistin, että `[0...$count]` ei ole kelvollista
+GROQ:ia. **Se ei pidä paikkaansa.** Oikeaa datasettiä vasten testattuna:
+
+| Muoto | Sanityn API | `groq-js` |
+|---|---|---|
+| `[0...$count]` | toimii | hylkää |
+| `[$offset...$end]` | toimii | hylkää |
+| `order($field desc)` | **ei toimi** | hylkää |
+
+Vain lajittelurajoite on aito: `order($field desc)` tulkitsee `$field`:n arvoksi
+eikä kentäksi. Opetus: paikallinen `groq-js`-validointi on tiukempi kuin API, ja
+sen antama negatiivinen tulos on varmistettava oikeaa datasettiä vasten ennen
+kuin kyselyä kierretään. Viipalointikiertotie on purettu.
 
 ### Todennettu
 

@@ -2,7 +2,7 @@ import { Container } from "@/components/layout/container";
 import { BlockHeading } from "@/components/blocks/block-heading";
 import { EventCard } from "@/components/event-card";
 import { sanityFetch } from "@/sanity/lib/fetch";
-import { MAX_HIGHLIGHTS, upcomingTapahtumatQuery } from "@/sanity/lib/queries";
+import { upcomingTapahtumatQuery } from "@/sanity/lib/queries";
 import type { TapahtumaCard } from "@/lib/types";
 
 type Props = {
@@ -23,15 +23,12 @@ export async function TapahtumatBlock({
 }: Props) {
   const items = await sanityFetch<TapahtumaCard[]>({
     query: upcomingTapahtumatQuery,
+    params: { count },
     tags: ["tapahtuma"],
     fallback: [],
   });
 
-  // GROQ ei salli parametrista viipalointia, joten kysely palauttaa enintään
-  // MAX_HIGHLIGHTS riviä ja lopullinen määrä rajataan tässä.
-  const shown = items.slice(0, Math.min(count, MAX_HIGHLIGHTS));
-
-  if (shown.length === 0) return null;
+  if (items.length === 0) return null;
 
   return (
     <section
@@ -45,7 +42,7 @@ export async function TapahtumatBlock({
           action={{ href: "/tapahtumat", label: "Kaikki tapahtumat" }}
         />
         <ul className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {shown.map((event) => (
+          {items.map((event) => (
             <li key={event._id} className="grid">
               <EventCard event={event} />
             </li>
