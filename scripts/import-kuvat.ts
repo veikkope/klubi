@@ -73,6 +73,28 @@ function resolveAlt(
   return `Ravintola ${place}${suffix}`.slice(0, 200);
 }
 
+/**
+ * Tunnistaa kuvan todellisen tyypin tavuista.
+ *
+ * Vanhalla sivustolla osa tiedostoista on väärällä päätteellä: kaksi Lahden
+ * ravintolakuvaa on BMP-muodossa `.jpg`-nimen takana. Sanity hylkää ne, jos
+ * ilmoitettu tyyppi ei vastaa sisältöä.
+ */
+function sniffContentType(buffer: Buffer): string | undefined {
+  if (buffer.length < 12) return undefined;
+  if (buffer[0] === 0xff && buffer[1] === 0xd8) return "image/jpeg";
+  if (buffer.subarray(0, 8).toString("hex") === "89504e470d0a1a0a") return "image/png";
+  if (buffer.subarray(0, 3).toString("latin1") === "GIF") return "image/gif";
+  if (buffer.subarray(0, 2).toString("latin1") === "BM") return "image/bmp";
+  if (
+    buffer.subarray(0, 4).toString("latin1") === "RIFF" &&
+    buffer.subarray(8, 12).toString("latin1") === "WEBP"
+  ) {
+    return "image/webp";
+  }
+  return undefined;
+}
+
 async function loadAssetMap(): Promise<AssetMap> {
   try {
     return JSON.parse(await readFile(ASSET_MAP, "utf-8")) as AssetMap;
@@ -133,9 +155,13 @@ async function main() {
     try {
       await stat(path);
       const buffer = await readFile(path);
+      // Tavuista tunnistettu tyyppi voittaa vanhan palvelimen otsakkeen:
+      // osa tiedostoista on väärällä päätteellä.
+      const contentType =
+        sniffContentType(buffer) ?? byFile.get(file)?.contentType ?? undefined;
       const asset = await client.assets.upload("image", buffer, {
         filename: basename(file),
-        contentType: byFile.get(file)?.contentType ?? undefined,
+        contentType,
       });
       assetMap[file] = asset._id;
       uploaded += 1;
