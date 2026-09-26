@@ -16,7 +16,8 @@
     "crawl": "tsx scripts/crawl-old-site.ts",
     "verify:redirects": "tsx scripts/verify-redirects.ts",
     "images": "tsx scripts/download-images.ts",
-    "import:ravintolat": "tsx scripts/import-ravintolat.ts"
+    "import:ravintolat": "tsx scripts/import-ravintolat.ts",
+    "import:kuvat": "tsx scripts/import-kuvat.ts"
   },
   "dependencies": {
     "@portabletext/react": "^6.2.0",

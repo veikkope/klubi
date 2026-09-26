@@ -18,9 +18,14 @@ import { readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
 import type { Ravintola } from "./parse-ravintolat";
+import type { KuvaRecord } from "./download-images";
+import { localImageName } from "./lib/image-names";
+import { bestOwner } from "./lib/match-image-owner";
 
 const SOURCE = join(process.cwd(), "data", "normalized", "ravintolat.json");
 const OUT = join(process.cwd(), "data", "migration-ravintolat.ndjson");
+const IMAGE_MAP = join(process.cwd(), "data", "normalized", "ravintola-kuvat.json");
+const IMAGE_INVENTORY = join(process.cwd(), "data", "normalized", "kuvat.json");
 
 /**
  * Maanimien normalisointi. Avain on slugifioitu segmentti vanhalta sivulta,
@@ -232,12 +237,106 @@ function cityFor(area: string, cities: Map<string, CityDoc>): CityDoc {
   return doc;
 }
 
+interface ImageLink {
+  docId: string;
+  name: string;
+  city: string;
+  images: string[];
+}
+
+/**
+ * Liittää kuvat ravintoloihin tiedostonimen perusteella, ei jäsennysjärjestyksen.
+ *
+ * Jäsennin liittää kuvan siihen ravintolaan, joka oli käsittelyssä kun kuva
+ * kohdattiin. Sivuilla joilla kuvat on koottu listan loppuun se tarkoittaa,
+ * että kaikki kasautuvat viimeiselle ravintolalle — mitattuna 175 liitosta
+ * 477:stä oli väärin.
+ *
+ * Ehdokkaat rajataan saman lähdesivun ravintoloihin, jolloin esim. Lahden
+ * Hesburger ei voi kaapata Helsingin Hesburgerin kuvaa. Jos nimi ei osu
+ * yhteenkään, kuva jätetään liittämättä: väärä kuva on pahempi kuin ei kuvaa.
+ */
+async function linkImages(
+  source: Ravintola[],
+  cities: Map<string, CityDoc>,
+  docIds: Map<Ravintola, string>,
+): Promise<{ imageLinks: ImageLink[]; unmatched: number }> {
+  const inventory = JSON.parse(
+    await readFile(IMAGE_INVENTORY, "utf-8"),
+  ) as KuvaRecord[];
+
+  // Sivu → sillä esiintyvät kuvat (vain onnistuneesti ladatut).
+  const imagesByPage = new Map<string, string[]>();
+  for (const record of inventory) {
+    if (!record.ok) continue;
+    for (const page of record.pages) {
+      const list = imagesByPage.get(page) ?? [];
+      list.push(record.src);
+      imagesByPage.set(page, list);
+    }
+  }
+
+  // Sivu → sillä esiintyvät ravintolat.
+  const restaurantsByPage = new Map<string, Ravintola[]>();
+  for (const r of source) {
+    const list = restaurantsByPage.get(r.sourcePage) ?? [];
+    list.push(r);
+    restaurantsByPage.set(r.sourcePage, list);
+  }
+
+  const byDocId = new Map<string, ImageLink>();
+  const seen = new Set<string>();
+  let unmatched = 0;
+
+  for (const [page, images] of imagesByPage) {
+    const candidates = restaurantsByPage.get(page);
+    if (!candidates || candidates.length === 0) continue;
+
+    const options = candidates
+      .map((r) => ({ key: docIds.get(r) ?? "", name: r.name, restaurant: r }))
+      .filter((o) => o.key);
+
+    for (const src of images) {
+      const dedupeKey = `${page}|${localImageName(src)}`;
+      if (seen.has(dedupeKey)) continue;
+      seen.add(dedupeKey);
+
+      const owner = bestOwner(localImageName(src), options);
+      if (!owner) {
+        unmatched += 1;
+        continue;
+      }
+
+      const restaurant = options.find((o) => o.key === owner.key)!.restaurant;
+      const existing = byDocId.get(owner.key);
+      if (existing) {
+        if (!existing.images.includes(src)) existing.images.push(src);
+      } else {
+        byDocId.set(owner.key, {
+          docId: owner.key,
+          name: restaurant.name,
+          city: cityFor(restaurant.area, cities).name,
+          images: [src],
+        });
+      }
+    }
+  }
+
+  return { imageLinks: [...byDocId.values()], unmatched };
+}
+
 async function main() {
   const source = JSON.parse(await readFile(SOURCE, "utf-8")) as Ravintola[];
 
   const cities = new Map<string, CityDoc>();
   const usedSlugs = new Set<string>();
   const lines: string[] = [];
+  /**
+   * Kuvaliitokset kirjoitetaan erikseen, koska kuvat viedään Sanityyn omana
+   * vaiheenaan (`npm run import:kuvat`). Slug lasketaan vain täällä, joten
+   * dokumentti-id:n on tultava samasta paikasta — muuten liitos osuisi väärin.
+   */
+  const docIds = new Map<Ravintola, string>();
   let skipped = 0;
 
   const restaurants = source.map((r) => {
@@ -253,6 +352,7 @@ async function main() {
       suffix += 1;
     }
     usedSlugs.add(slug);
+    docIds.set(r, `ravintola-${slug}`);
 
     const visits = [r.firstVisit, ...r.visits]
       .map(toIsoDate)
@@ -295,7 +395,10 @@ async function main() {
     lines.push(JSON.stringify(restaurant));
   }
 
+  const { imageLinks, unmatched } = await linkImages(source, cities, docIds);
+
   await writeFile(OUT, `${lines.join("\n")}\n`, "utf-8");
+  await writeFile(IMAGE_MAP, JSON.stringify(imageLinks, null, 2), "utf-8");
 
   const withRating = restaurants.filter((r) => r.ratingOverall !== undefined);
   const withVisits = restaurants.filter((r) => r.visits !== undefined);
@@ -309,8 +412,11 @@ Ravintoloita ............ ${restaurants.length}
   tarkistettavia ........ ${restaurants.filter((r) => r.needsReview).length}
 Ohitettu (ei nimeä) ..... ${skipped}
 Dokumentteja yhteensä ... ${lines.length}
+Kuvaliitoksia ........... ${imageLinks.length} ravintolaa, ${imageLinks.reduce((n, l) => n + l.images.length, 0)} kuvaa
+  liittämättä jääneitä .. ${unmatched} (nimi ei tunnistettavissa tiedostonimestä)
 
 Kirjoitettu: ${OUT}
+             ${IMAGE_MAP}
 
 Tuonti:
   npx sanity dataset import ${OUT} development --replace`);
