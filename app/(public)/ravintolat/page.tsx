@@ -1,125 +1,244 @@
+import Link from "next/link";
 import type { Metadata } from "next";
+
 import { Container } from "@/components/layout/container";
-import { Breadcrumbs } from "@/components/layout/breadcrumbs";
+import { PageHeader } from "@/components/layout/page-header";
+import { JsonLd } from "@/components/seo/json-ld";
 import { RestaurantCard } from "@/components/restaurant-card";
 import {
   RavintolaFilterBar,
-  type RavintolaFilters,
+  buildRavintolaHref,
+  hasActiveRavintolaFilters,
+  parseRavintolaFilters,
+  type RavintolaFilterValues,
+  type RavintolaSearchParams,
 } from "@/components/ravintola-filters";
+import { buildMetadata } from "@/lib/seo";
+import { rootCrumb } from "@/lib/nav-sections";
+import { breadcrumbSchema, collectionPageSchema } from "@/lib/schema-org";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import {
+  RAVINTOLAT_PAGE_SIZE,
+  ravintolatCountQuery,
+  ravintolatDirectoryQuery,
   ravintolatFacetsQuery,
-  ravintolatListQuery,
-} from "@/sanity/lib/queries";
-import {
-  isValidCuisine,
-  isValidPriceLevel,
-} from "@/lib/ravintola-cuisines";
-import type { RavintolaCard, RavintolatFacets } from "@/lib/types";
+  type RavintolaCardData,
+  type RavintolatFacetData,
+} from "@/sanity/lib/queries/ravintolat";
 
-export const metadata: Metadata = {
-  title: "Ravintolat",
-  description:
-    "Lahden Suomalainen Klubi ry:n ravintola-arvostelut — suodata kaupungin, ruokatyypin, tähtien ja hintaluokan mukaan.",
+export const revalidate = 3600;
+
+const TITLE = "Ravintolat";
+const LEAD =
+  "Lahden Suomalainen Klubi ry on arvioinut satoja ravintoloita vuodesta 2007 " +
+  "alkaen. Jokainen kohde saa kokonaisarvosanan sekä osa-arviot ruoasta, " +
+  "hinnasta ja viihtyvyydestä. Rajaa hakemistoa kaupungin, ruokatyypin tai " +
+  "arvosanan mukaan.";
+
+const trail = [rootCrumb, { label: TITLE }];
+
+const emptyFacets: RavintolatFacetData = {
+  cities: [],
+  cuisines: [],
+  total: 0,
+  closedCount: 0,
 };
 
-type SearchParams = {
-  kaupunki?: string;
-  ruoka?: string;
-  tahdet?: string;
-  hinta?: string;
+type PageProps = {
+  searchParams: Promise<RavintolaSearchParams>;
 };
 
-export default async function RavintolatPage({
+/** GROQ-parametrit suodattimista. `null` tarkoittaa "ei rajausta". */
+function queryParams(filters: RavintolaFilterValues) {
+  return {
+    citySlug: filters.kaupunki,
+    cuisine: filters.ruoka,
+    minRating: filters.arvosana,
+    includeClosed: filters.lopettaneet,
+  };
+}
+
+export async function generateMetadata({
   searchParams,
-}: {
-  searchParams: Promise<SearchParams>;
-}) {
-  const sp = await searchParams;
-  const filters = parseFilters(sp);
+}: PageProps): Promise<Metadata> {
+  const filters = parseRavintolaFilters(await searchParams);
+  const filtered = hasActiveRavintolaFilters(filters);
+  const path = buildRavintolaHref(filters);
 
-  const [items, facets] = await Promise.all([
-    sanityFetch<RavintolaCard[]>({
-      query: ravintolatListQuery,
-      params: {
-        citySlug: filters.kaupunki,
-        cuisine: filters.ruoka,
-        minStars: filters.tahdet,
-        price: filters.hinta,
-      },
+  return buildMetadata({
+    title: filters.sivu > 1 ? `${TITLE} — sivu ${filters.sivu}` : TITLE,
+    description:
+      "Klubin ravintola-arvostelut: kokonaisarvosana sekä osa-arviot ruoasta, " +
+      "hinnasta ja viihtyvyydestä. Suodata kaupungin, ruokatyypin ja arvosanan mukaan.",
+    path,
+    // Rajattu näkymä on sama sisältö toisin järjestettynä — ei indeksoitavaksi.
+    noIndex: filtered,
+  });
+}
+
+export default async function RavintolatPage({ searchParams }: PageProps) {
+  const filters = parseRavintolaFilters(await searchParams);
+  const params = queryParams(filters);
+
+  const [items, total, facets] = await Promise.all([
+    sanityFetch<RavintolaCardData[]>({
+      query: ravintolatDirectoryQuery(filters.jarjesta, filters.sivu),
+      params,
       tags: ["ravintola"],
       fallback: [],
     }),
-    sanityFetch<RavintolatFacets>({
-      query: ravintolatFacetsQuery,
+    sanityFetch<number>({
+      query: ravintolatCountQuery,
+      params,
       tags: ["ravintola"],
-      fallback: { cities: [], cuisines: [], priceLevels: [] },
+      fallback: 0,
+    }),
+    sanityFetch<RavintolatFacetData>({
+      query: ravintolatFacetsQuery,
+      tags: ["ravintola", "kaupunki"],
+      fallback: emptyFacets,
     }),
   ]);
 
+  const pageCount = Math.max(1, Math.ceil(total / RAVINTOLAT_PAGE_SIZE));
+  const isFiltered = hasActiveRavintolaFilters(filters);
+
   return (
     <>
-      <Container className="pt-12">
-        <Breadcrumbs
-          items={[{ label: "Etusivu", href: "/" }, { label: "Ravintolat" }]}
+      <JsonLd
+        schema={[
+          breadcrumbSchema(trail),
+          collectionPageSchema({
+            title: TITLE,
+            description: LEAD,
+            path: "/ravintolat",
+            itemCount: total,
+          }),
+        ]}
+      />
+
+      <Container size="wide" className="py-12 sm:py-16">
+        <PageHeader
+          title={TITLE}
+          lead={LEAD}
+          eyebrow="Klubin arvostelut"
+          breadcrumbs={trail}
+          actions={
+            <Link
+              href="/ravintolat/arvostele"
+              className="inline-flex min-h-11 items-center justify-center rounded-full bg-accent px-6 text-sm font-medium text-white shadow-sm transition hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            >
+              Lähetä oma arvostelu
+            </Link>
+          }
         />
-        <h1 className="mt-6 font-serif text-4xl leading-tight sm:text-5xl">
-          Ravintolat
-        </h1>
-        <p className="mt-4 max-w-2xl text-lg text-muted">
-          Klubin oma arvostelukokoelma — yli vuosikymmenen ravintolakäyntejä
-          tähdillä ja kommenteilla. Suodata alapuolella.
-        </p>
-      </Container>
 
-      <Container className="py-10">
-        <RavintolaFilterBar active={filters} facets={facets} />
-      </Container>
-
-      <Container className="pb-16">
-        <div className="mb-4 text-sm text-muted">
-          {items.length === 0
-            ? "Ei tuloksia annetuilla suodattimilla."
-            : `${items.length} ${items.length === 1 ? "ravintola" : "ravintolaa"}`}
+        <div className="mt-10">
+          <RavintolaFilterBar
+            active={filters}
+            facets={facets}
+            resultCount={total}
+          />
         </div>
-        {items.length === 0 ? (
-          <EmptyState hasFilters={Object.values(filters).some(Boolean)} />
-        ) : (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {items.map((r) => (
-              <RestaurantCard key={r._id} restaurant={r} />
-            ))}
-          </div>
-        )}
+
+        <section aria-label="Hakutulokset" className="mt-10">
+          {items.length === 0 ? (
+            <EmptyState isFiltered={isFiltered} hasAnyContent={facets.total > 0} />
+          ) : (
+            <>
+              <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {items.map((restaurant) => (
+                  <li key={restaurant._id} className="flex">
+                    <RestaurantCard restaurant={restaurant} />
+                  </li>
+                ))}
+              </ul>
+              <Pagination filters={filters} pageCount={pageCount} />
+            </>
+          )}
+        </section>
       </Container>
     </>
   );
 }
 
-function parseFilters(sp: SearchParams): RavintolaFilters {
-  const tahdetNum = sp.tahdet ? Number.parseInt(sp.tahdet, 10) : NaN;
-  return {
-    kaupunki: sp.kaupunki && sp.kaupunki.length <= 60 ? sp.kaupunki : null,
-    ruoka: isValidCuisine(sp.ruoka) ? sp.ruoka! : null,
-    tahdet:
-      Number.isInteger(tahdetNum) && tahdetNum >= 1 && tahdetNum <= 5
-        ? tahdetNum
-        : null,
-    hinta: isValidPriceLevel(sp.hinta) ? sp.hinta! : null,
-  };
-}
-
-function EmptyState({ hasFilters }: { hasFilters: boolean }) {
+function EmptyState({
+  isFiltered,
+  hasAnyContent,
+}: {
+  isFiltered: boolean;
+  hasAnyContent: boolean;
+}) {
   return (
     <div className="rounded-2xl border border-dashed border-border bg-surface p-10 text-center">
-      <p className="font-serif text-2xl">
-        {hasFilters ? "Ei vastaavia ravintoloita" : "Ei vielä ravintoloita"}
+      <h3 className="font-serif text-2xl text-foreground">
+        {isFiltered ? "Ei osumia näillä rajauksilla" : "Hakemisto on vielä tyhjä"}
+      </h3>
+      <p className="mx-auto mt-3 max-w-md text-muted">
+        {isFiltered
+          ? "Kokeile väljempiä rajauksia — esimerkiksi matalampaa vähimmäisarvosanaa tai laajempaa kaupunkivalintaa."
+          : hasAnyContent
+            ? "Arvostelut ovat juuri nyt piilossa. Tarkista rajaukset tai palaa hetken kuluttua."
+            : "Ravintola-arvostelut lisätään Sanity Studiossa. Kun ensimmäinen arvostelu on tallennettu, se ilmestyy tähän."}
       </p>
-      <p className="mt-2 max-w-md text-muted mx-auto">
-        {hasFilters
-          ? "Kokeile löysempiä suodattimia tai tyhjennä ne kokonaan."
-          : "Ravintola-arvostelut lisätään Sanity Studiossa."}
-      </p>
+      {isFiltered && (
+        <Link
+          href="/ravintolat"
+          className="mt-6 inline-flex min-h-11 items-center justify-center rounded-full border border-border px-6 text-sm font-medium text-foreground transition hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        >
+          Tyhjennä rajaukset
+        </Link>
+      )}
     </div>
+  );
+}
+
+function Pagination({
+  filters,
+  pageCount,
+}: {
+  filters: RavintolaFilterValues;
+  pageCount: number;
+}) {
+  if (pageCount <= 1) return null;
+  const hasPrev = filters.sivu > 1;
+  const hasNext = filters.sivu < pageCount;
+
+  const linkClass =
+    "inline-flex min-h-11 items-center justify-center rounded-full border border-border px-5 text-sm font-medium text-foreground transition hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
+
+  return (
+    <nav
+      aria-label="Sivutus"
+      className="mt-10 flex flex-wrap items-center justify-between gap-4"
+    >
+      {hasPrev ? (
+        <Link
+          href={buildRavintolaHref(filters, { sivu: filters.sivu - 1 })}
+          rel="prev"
+          className={linkClass}
+        >
+          ← Edellinen sivu
+        </Link>
+      ) : (
+        <span aria-hidden />
+      )}
+
+      <p className="text-sm text-muted">
+        Sivu {filters.sivu} / {pageCount}
+      </p>
+
+      {hasNext ? (
+        <Link
+          href={buildRavintolaHref(filters, { sivu: filters.sivu + 1 })}
+          rel="next"
+          className={linkClass}
+        >
+          Seuraava sivu →
+        </Link>
+      ) : (
+        <span aria-hidden />
+      )}
+    </nav>
   );
 }

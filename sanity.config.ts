@@ -1,5 +1,6 @@
 import { defineConfig } from "sanity";
 import { structureTool } from "sanity/structure";
+import { presentationTool } from "sanity/presentation";
 import { visionTool } from "@sanity/vision";
 
 import { apiVersion, dataset, projectId } from "./sanity/env";
@@ -37,6 +38,19 @@ export default defineConfig({
     },
   },
   plugins: [
+    // Presentation on oletusnäkymä: editori näkee sivun sellaisena kuin se on
+    // ja muokkaa klikkaamalla. Rakennenäkymä jää sen rinnalle niitä kertoja
+    // varten kun halutaan selata dokumenttilistoja.
+    presentationTool({
+      title: "Esikatselu",
+      previewUrl: {
+        preview: "/",
+        previewMode: {
+          enable: "/api/draft-mode/enable",
+          disable: "/api/draft-mode/disable",
+        },
+      },
+    }),
     structureTool({ structure }),
     visionTool({ defaultApiVersion: apiVersion }),
   ],

@@ -1,8 +1,8 @@
-import Link from "next/link";
 import { Container } from "@/components/layout/container";
+import { BlockHeading } from "@/components/blocks/block-heading";
 import { NewsCard } from "@/components/news-card";
 import { sanityFetch } from "@/sanity/lib/fetch";
-import { recentUutisetQuery } from "@/sanity/lib/queries";
+import { MAX_HIGHLIGHTS, recentUutisetQuery } from "@/sanity/lib/queries";
 import type { UutinenCard } from "@/lib/types";
 
 type Props = {
@@ -10,33 +10,44 @@ type Props = {
   count?: number;
 };
 
-export async function UutisetBlock({ heading = "Ajankohtaista", count = 3 }: Props) {
+/**
+ * Ajankohtaista — kolme viimeisintä uutista.
+ *
+ * Ilman uutisia lohkoa ei renderöidä lainkaan: tyhjä laatikko näyttäisi
+ * rikkinäiseltä, eikä etusivulla ole mitään kerrottavaa siitä että uutisia ei
+ * ole.
+ */
+export async function UutisetBlock({
+  heading = "Ajankohtaista",
+  count = 3,
+}: Props) {
   const items = await sanityFetch<UutinenCard[]>({
     query: recentUutisetQuery,
-    params: { count },
     tags: ["uutinen"],
     fallback: [],
   });
 
-  if (items.length === 0) return null;
+  // GROQ ei salli parametrista viipalointia, joten kysely palauttaa enintään
+  // MAX_HIGHLIGHTS riviä ja lopullinen määrä rajataan tässä.
+  const shown = items.slice(0, Math.min(count, MAX_HIGHLIGHTS));
+
+  if (shown.length === 0) return null;
 
   return (
-    <section className="py-20">
-      <Container>
-        <div className="flex items-end justify-between gap-6">
-          <h2 className="font-serif text-3xl sm:text-4xl">{heading}</h2>
-          <Link
-            href="/uutiset"
-            className="text-sm font-medium text-accent hover:text-accent-hover"
-          >
-            Kaikki uutiset →
-          </Link>
-        </div>
-        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {items.map((news) => (
-            <NewsCard key={news._id} news={news} />
+    <section className="py-20 sm:py-24" aria-labelledby="etusivu-uutiset">
+      <Container size="wide">
+        <BlockHeading
+          id="etusivu-uutiset"
+          title={heading}
+          action={{ href: "/uutiset", label: "Kaikki uutiset" }}
+        />
+        <ul className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {shown.map((news) => (
+            <li key={news._id} className="grid">
+              <NewsCard news={news} />
+            </li>
           ))}
-        </div>
+        </ul>
       </Container>
     </section>
   );

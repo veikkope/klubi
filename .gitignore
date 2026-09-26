@@ -51,3 +51,10 @@ next-env.d.ts
 # migration scratch data (regenerable from old site)
 /data/raw-content.json
 /data/migration.ndjson
+
+# vanhan sivuston raakakopio (regeneroitavissa crawlilla)
+/data/raw-html/
+/data/crawl-status.tsv
+/data/external-links.txt
+/data/normalized/
+/sanity/extract.json

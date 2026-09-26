@@ -1,24 +1,93 @@
 # 01 — Sisältöauditointi
 
-Tämä dokumentti listaa nykyisen sivuston **kaiken** sisällön. Tarkka inventaario suoritetaan `scripts/scrape-old-site.ts`-skriptillä; tämä dokumentti pidetään ajan tasalla scrape-tulosten perusteella.
+> **Päivitetty 2026-09-26 täyden crawlin pohjalta.** Aiempi versio laadittiin
+> selaimesta arvaillen ja sisälsi URL:eja joita ei ole olemassa
+> (`/ottelut.htm`, `/klubi.htm`, `/kommentit.htm`, `/blogi.htm`). Alla olevat
+> luvut ovat mitattuja, eivät arvioita. Lähde: `npm run crawl` →
+> `data/raw-html/` + `data/crawl-status.tsv`.
+
+## Mitattu laajuus
+
+| | |
+|---|---|
+| HTML-sivuja | **198** (kaikki HTTP 200) |
+| HTML yhteensä | 7,8 MB |
+| Uniikkeja kuvia | **1 112** |
+| Ravintola-arvioita | **497** (jäsennetty, 1 vaatii tarkistuksen) |
+| Linkkejä Blogspotiin | ~450 |
+| PDF- tai muita liitteitä | 0 |
+
+Sivusto on **FrontPage-frameset**: `index.html` määrittelee kehykset, ja jokainen
+osio on oma `.htm`-tiedostonsa. Osoiterivi ei siis vaihdu osiota vaihdettaessa,
+mutta se on puhtaasti kosmeettista — jokainen sivu on suoraan haettavissa omalla
+URL:llaan, eikä sisällön poimintaan tarvita selainautomaatiota.
 
 ## Vanhan päänavigaation 10+1 linkkiä
 
-Vanhalla sivustolla on yläpalkissa nämä linkit. Tämä audit tehtiin 2026-05-18.
+Todelliset kohteet `links.htm`-kehyssivulta luettuna.
 
-| # | Linkki (vanha) | Vanha URL | Sisältö lyhyesti | Uusi sijainti |
+| # | Linkki | Vanha URL | Sisältö | Uusi sijainti |
 |---|---|---|---|---|
-| 1 | ETUSIVU | `/` (`/etusivu.htm`) | Pääuutiset, ajankohtaiset | `/` |
-| 2 | YLEISTÄ | `/yleista.htm` | Yhdistyksen esittely, perustettu 2007, tavoitteet, järjestetyt tapahtumat | `/klubi` |
-| 3 | OTTELUT | `/ottelut.htm` | **404** — sivu ei toimi | (poistetaan) → `/tapahtumat` |
-| 4 | ARVOSTELU | `/arvostelu.htm` | Huuhkajien pelaajatilastot (Pukki 45, Sparv 30), avauskokoonpanot, otteluhistoria | `/jalkapalloarkisto/huuhkajat` |
-| 5 | VEIKKAUS | `/veikkaus.htm` | Klubin sisäinen ennustuskilpailu: maaottelujen, arvokisojen ja Veikkausliigan veikkaus | `/klubi/palloveikkaus` |
-| 6 | KOMMENTIT | `/kommentit.htm` | Vuoden 2007 jalkapallo-uutiset ja kommentit, arkisto 2005–2006 | `/uutiset/arkisto` |
-| 7 | STADIONIT | `/stadionit.htm` | Stadionopas: Suomi, Tshekki, Venäjä, Latvia, Viro, Englanti, Kreikka, Tanska | `/jalkapalloarkisto/stadionit` |
-| 8 | RUOKAILU | `/ruokailu.htm` | Ravintola-arvioinnit 1,0–5,0 asteikolla, Suomi + ulkomaat | `/ravintolat` |
-| 9 | HISTORIA | `/historia.htm` | Suomen ja kv. jalkapallon historia, tilastot, FIFA-ranking, valmentajat | `/jalkapalloarkisto` (hub) |
-| 10 | BLOGI | `/blogi.htm` | Suomalainen jalkapalloblogi 2007: maajoukkue, seurat, Lahden jalkapallo | `/uutiset` |
-| 11 | KLUBI | `/klubi.htm` | **404** — sivu ei toimi | (poistetaan) → `/klubi` |
+| 1 | ETUSIVU | `/etusivu.htm` | Viimeisimmät otsikot, laskuri seuraavaan otteluun | `/` |
+| 2 | YLEISTÄ | `/yleista.htm` | Yhdistyksen esittely, perustettu 2007 | `/klubi` |
+| 3 | OTTELUT | `/otteluihin.htm` | Otteluarkisto | `/jalkapalloarkisto/huuhkajat` |
+| 4 | ARVOSTELU | `/arvostelu.htm` | Huuhkajien pelaajatilastot | `/jalkapalloarkisto/huuhkajat` |
+| 5 | VEIKKAUS | `/veikkaus.htm` | Klubin ennustuskilpailu | `/klubi/palloveikkaus` |
+| 6 | KOMMENTIT | `/Kommentit2022.htm` | Uutisarkiston uusin vuosi | `/uutiset/arkisto` |
+| 7 | STADIONIT | `/stadionit.htm` | Stadionopas | `/jalkapalloarkisto/stadionit` |
+| 8 | RUOKAILU | `/ruokailu.htm` | Ravintolahakemisto | `/ravintolat` |
+| 9 | HISTORIA | `/historia.htm` | Jalkapalloarkiston hub | `/jalkapalloarkisto` |
+| 10 | BLOGI | `/blogi2017.htm` | Blogiarkiston uusin vuosi | `/uutiset/arkisto` |
+| 11 | KLUBI | *(ulkoinen)* | Blogspot — klubin elävä kanava | säilyy ulkoisena |
+
+**Huomio:** KLUBI-linkki osoittaa Blogspotiin, ei sivuston omalle sivulle.
+Yhdistyksen ajankohtainen toiminta on siis Blogspotissa ja tämä sivusto on
+käytännössä jalkapalloarkisto + ravintolahakemisto. Blogspot-migraatio on oma
+projektinsa (RSS-syötteen kautta), eikä kuulu tähän vaiheeseen.
+
+## Sivuperheet mitattuna
+
+| Ryhmä | Tiedostokuvio | Sivuja | Uusi sijainti |
+|---|---|---:|---|
+| Ravintolat | `ruokailu*.htm` | 46 | `/ravintolat` |
+| Uutisarkisto | `kommentit*.htm` | 28 | `/uutiset/arkisto/[vuosi]` |
+| Blogiarkisto | `blogi*.htm` | 19 | `/uutiset/arkisto/[vuosi]` |
+| Otteluarkisto | `ottelut*.htm` | 11 | `/jalkapalloarkisto/huuhkajat` |
+| Stadionit | `stadion*.htm` | 15 | `/jalkapalloarkisto/stadionit` |
+| Arvokisat | `MM20*.htm`, `EM20*.htm`, `*tilasto.htm` | ~12 | `/jalkapalloarkisto/arvokisat` |
+| Pelaajat | `litmanen*.htm`, `pelaaja*.htm` | ~6 | `/jalkapalloarkisto/pelaajat` |
+| Klubin toiminta | `talkoot`, `vappu`, `molkky`, … | ~10 | `/klubi/toiminta/[slug]` |
+| Veikkaus | `veikkaus*.htm` | 4 | `/klubi/palloveikkaus` |
+
+Kolme viimeistä perhettä puuttuivat alkuperäisestä informaatioarkkitehtuurista
+kokonaan. Ne lisättiin `docs/11-maali-ja-rinnakkaistoteutus.md` §1:ssä.
+
+## Ravintoladatan rakenne
+
+Vanha muoto on poikkeuksellisen säännöllinen ja siksi koneellisesti purettavissa:
+
+```
+(03) 23.12.2003 Mamma Maria
+Vapaudenkatu 10 / 15110 Lahti
+**** ( 3,6  Ruoka 3,5 / Hinta 4,0 / Viihtyvyys 3,6 )
+Jouluruokailu / 01.05.2007 / 14.07.2008 / ...
+03 751 6716
+```
+
+Jäsennystulos (`npm run parse:ravintolat` → `data/normalized/ravintolat.json`):
+
+| Kenttä | Osumia |
+|---|---:|
+| Kokonaisarvosana | 488 / 497 |
+| Osa-arviot (Ruoka / Hinta / Viihtyvyys) | 476 |
+| Osoite | 493 |
+| Puhelin | 336 |
+| Käyntimerkintöjä | 467 |
+| Lopettaneita | 34 |
+| Vaatii tarkistuksen | 1 |
+
+Suurimmat alueet: Helsinki 112, Lahti 94, Venäjä 35, Tampere 24, Uusimaa 24,
+Lappeenranta 23, Lontoo 23.
 
 ## Sisältöryhmien tiivistelmä
 
@@ -73,10 +142,10 @@ Siirretään jalkapalloarkiston alle.
 | `/stadionlahtiurheilukeskus.htm` | `/jalkapalloarkisto/stadionit/lahti` |
 | `/stadionhelsinkiolympiastadion.htm` | `/jalkapalloarkisto/stadionit/helsinki-olympiastadion` |
 
-(Lisää stadionsivuja selvitettävä scrape-skriptillä.)
+Stadionsivuja on yhteensä 15; täysi lista `data/crawl-status.tsv`:ssä (`stadion*.htm`).
 
 ### E. Ravintolat
-Kaupungeittain järjestetty, ~93 ravintolaa Lahdessa, lisäksi muita kaupunkeja ja ulkomaita. Arvioinnit 1,0–5,0.
+Kaupungeittain järjestetty, yhteensä 497 arviota 46 sivulla (ks. mitattu taulukko yllä). Arvioinnit 0–5 yhden desimaalin tarkkuudella, lisäksi kolme osa-arviota.
 
 | Vanha URL | Uusi sijainti |
 |---|---|
@@ -89,15 +158,13 @@ Kaupungeittain järjestetty, ~93 ravintolaa Lahdessa, lisäksi muita kaupunkeja 
 | `/ruokailuuusimaa.htm` | `/ravintolat?kaupunki=uusimaa` |
 | `/ruokailukreikka.htm` | `/ravintolat?maa=kreikka` |
 
-## Tehtävät auditin viimeistelyyn
+## Jäljellä olevat selvitykset
 
-- [ ] Aja `npm run scrape` → tuloksena `data/raw-content.json`
-- [ ] Laske tarkka sivumäärä, ravintolamäärä, kuvamäärä
-- [ ] Tunnista 404-linkit (kuolleet ulkoiset linkit)
-- [ ] Listaa kaikki kuva-URL:t
-- [ ] Tunnista yhteystiedot (kysy isältä jos puuttuu)
-- [ ] Tunnista hallituksen kokoonpano (kysy isältä)
-- [ ] Tunnista jäsenyysmaksut ja hakuprosessi (kysy isältä)
-- [ ] Tunnista palloveikkauksen säännöt (selvitettävä veikkaus.htm:stä)
+Nämä eivät ole vanhalla sivustolla eikä niitä voi scrapeta — kysyttävä isältä:
 
-Päivitä tämä dokumentti scrape-tulosten perusteella konkreettisilla luvuilla.
+- [ ] Yhdistyksen yhteystiedot (osoite, Y-tunnus, IBAN)
+- [ ] Hallituksen kokoonpano ja kuvat
+- [ ] Säännöt (PDF tai teksti)
+- [ ] Jäsenmaksut ja hakuprosessi
+- [ ] Päätös: päästetäänkö tekoälycrawlerit sisään (`app/robots.ts`, ks. docs/11 §7)
+- [ ] Selvitettävä: Sanityn asset-raja 1 112 kuvalle

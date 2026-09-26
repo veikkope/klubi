@@ -1,5 +1,10 @@
 import { defineField, defineType } from "sanity";
 import { seoFields } from "../objects/seoFields";
+import {
+  legacyUrlField,
+  needsReviewField,
+  tiivistelmaField,
+} from "../objects/contentMeta";
 
 /**
  * Yleisen sisältösivun dokumenttityyppi. Yksi `sivu` per polku — slug voi
@@ -90,6 +95,7 @@ export const sivu = defineType({
         rule.required().custom((slug) => validateSlugPath(slug?.current)),
       group: "sisalto",
     }),
+    tiivistelmaField("sisalto"),
     defineField({
       name: "hero",
       title: "Yläbanneri (hero-kuva)",
@@ -111,7 +117,9 @@ export const sivu = defineType({
       type: "portableText",
       group: "sisalto",
     }),
+    needsReviewField("sisalto"),
     ...seoFields,
+    legacyUrlField("seo"),
   ],
   preview: {
     select: { title: "title", subtitle: "slug.current", media: "hero" },

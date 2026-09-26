@@ -107,6 +107,63 @@ export const etusivu = defineType({
           preview: { prepare: () => ({ title: "Ravintolat-spotlight" }) },
         }),
         defineArrayMember({
+          name: "jalkapalloarkisto",
+          title: "Jalkapalloarkisto-nosto",
+          type: "object",
+          fields: [
+            {
+              name: "heading",
+              title: "Otsikko",
+              type: "string",
+              initialValue: "Jalkapalloarkisto",
+            },
+            {
+              name: "body",
+              title: "Teksti",
+              type: "text",
+              rows: 2,
+              description: "Lyhyt kuvaus siitä, mitä arkisto sisältää.",
+            },
+            {
+              name: "ctaLabel",
+              title: "Napin teksti",
+              type: "string",
+              initialValue: "Selaa arkistoa",
+            },
+            {
+              name: "ctaHref",
+              title: "Napin linkki",
+              type: "string",
+              initialValue: "/jalkapalloarkisto",
+            },
+          ],
+          preview: {
+            select: { title: "heading" },
+            prepare: ({ title }) => ({ title: title || "Jalkapalloarkisto-nosto" }),
+          },
+        }),
+        defineArrayMember({
+          name: "galleria",
+          title: "Galleria-nosto",
+          type: "object",
+          fields: [
+            {
+              name: "heading",
+              title: "Otsikko",
+              type: "string",
+              initialValue: "Kuvagalleria",
+            },
+            {
+              name: "count",
+              title: "Näytettävien albumien määrä",
+              type: "number",
+              initialValue: 3,
+              validation: (r) => r.min(1).max(6),
+            },
+          ],
+          preview: { prepare: () => ({ title: "Galleria-nosto" }) },
+        }),
+        defineArrayMember({
           name: "cta",
           title: "CTA-lohko",
           type: "object",

@@ -1,5 +1,10 @@
 import { defineField, defineType } from "sanity";
 import { seoFields } from "../objects/seoFields";
+import {
+  legacyUrlField,
+  needsReviewField,
+  tiivistelmaField,
+} from "../objects/contentMeta";
 
 export const stadion = defineType({
   name: "stadion",
@@ -25,12 +30,21 @@ export const stadion = defineType({
       validation: (rule) => rule.required(),
       group: "perustiedot",
     }),
+    tiivistelmaField("perustiedot"),
     defineField({
       name: "city",
       title: "Kaupunki",
       type: "reference",
       to: [{ type: "kaupunki" }],
       validation: (rule) => rule.required(),
+      group: "perustiedot",
+    }),
+    defineField({
+      name: "location",
+      title: "Karttapaikka",
+      description:
+        "Stadionin sijainti kartalla. Näkyy sivulla ja kerrotaan hakukoneille.",
+      type: "geopoint",
       group: "perustiedot",
     }),
     defineField({
@@ -60,7 +74,9 @@ export const stadion = defineType({
       of: [{ type: "imageWithAlt" }],
       group: "perustiedot",
     }),
+    needsReviewField("perustiedot"),
     ...seoFields,
+    legacyUrlField("seo"),
   ],
   preview: {
     select: { title: "name", city: "city.name", capacity: "capacity", media: "images.0" },
