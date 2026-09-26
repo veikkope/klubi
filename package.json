@@ -14,7 +14,8 @@
     "parse:ravintolat": "tsx scripts/parse-ravintolat.ts",
     "typegen": "sanity schema extract --path sanity/extract.json && sanity typegen generate",
     "crawl": "tsx scripts/crawl-old-site.ts",
-    "verify:redirects": "tsx scripts/verify-redirects.ts"
+    "verify:redirects": "tsx scripts/verify-redirects.ts",
+    "images": "tsx scripts/download-images.ts"
   },
   "dependencies": {
     "@portabletext/react": "^6.2.0",
