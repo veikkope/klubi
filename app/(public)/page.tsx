@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Hero } from "@/components/blocks/hero";
 import { UutisetBlock } from "@/components/blocks/uutiset-block";
 import { TapahtumatBlock } from "@/components/blocks/tapahtumat-block";
+import { OtteluohjelmaBlock } from "@/components/blocks/otteluohjelma-block";
 import { EsittelyBlock } from "@/components/blocks/esittely-block";
 import { RavintolatSpotlightBlock } from "@/components/blocks/ravintolat-spotlight-block";
 import { JalkapalloarkistoBlock } from "@/components/blocks/jalkapalloarkisto-block";
@@ -23,27 +24,17 @@ export const revalidate = 3600;
  * Etusivun runko silloin kun Sanity-projektia ei vielä ole.
  *
  * `sanityFetch` palauttaa tällöin täsmälleen saman `defaultEtusivu`-viitteen,
- * josta tilanne tunnistetaan. Järjestys on docs/02 §"Etusivun rakenne",
- * galleria-nosto arkiston jälkeen. Data-vetoiset lohkot piilottavat itsensä
- * kun sisältöä ei ole, joten tyhjällä datalla näkyviin jää hero,
- * jalkapalloarkiston nosto ja päätösbanneri.
+ * josta tilanne tunnistetaan. Järjestys on tyylioppaan (Sivut v3) etusivu:
+ * otteluohjelma + tapahtumat, jutut, ravintola-arviot, Klubista. Data-vetoiset
+ * lohkot piilottavat itsensä kun sisältöä ei ole. Ei liittymiskehotetta.
  *
  * Kun Sanity on pystyssä, tätä ei käytetä: lohkot tulevat singletonista.
  */
 const scaffoldBlocks: EtusivuBlock[] = [
-  { _type: "uutiset", _key: "scaffold-uutiset", count: 3 },
-  { _type: "tapahtumat", _key: "scaffold-tapahtumat", count: 3 },
+  { _type: "otteluohjelma", _key: "scaffold-otteluohjelma" },
+  { _type: "uutiset", _key: "scaffold-uutiset" },
+  { _type: "ravintolatSpotlight", _key: "scaffold-ravintolat" },
   ...defaultEtusivu.blocks,
-  { _type: "ravintolatSpotlight", _key: "scaffold-ravintolat", count: 5 },
-  { _type: "jalkapalloarkisto", _key: "scaffold-arkisto" },
-  { _type: "galleria", _key: "scaffold-galleria", count: 3 },
-  {
-    _type: "cta",
-    _key: "scaffold-cta",
-    heading: "Liity jäseneksi",
-    ctaLabel: "Lue lisää jäsenyydestä",
-    ctaHref: "/klubi/liity",
-  },
 ];
 
 async function getEtusivu(): Promise<EtusivuData> {
@@ -86,10 +77,13 @@ function renderBlock(block: EtusivuBlock) {
       return (
         <UutisetBlock
           key={block._key}
+          eyebrow={block.eyebrow}
           heading={block.heading}
           count={block.count}
         />
       );
+    case "otteluohjelma":
+      return <OtteluohjelmaBlock key={block._key} {...block} />;
     case "tapahtumat":
       return (
         <TapahtumatBlock
@@ -104,6 +98,7 @@ function renderBlock(block: EtusivuBlock) {
       return (
         <RavintolatSpotlightBlock
           key={block._key}
+          eyebrow={block.eyebrow}
           heading={block.heading}
           count={block.count}
           cityId={block.city?._ref ?? null}
@@ -154,6 +149,8 @@ export default async function Home() {
 
       <Hero data={data} />
       {blocks.map((block) => renderBlock(withoutNulls(block)))}
+      {/* Viimeinen osio liittyy suoraan footeriin (tyyliopas). */}
+      <span data-flush-footer hidden />
     </>
   );
 }

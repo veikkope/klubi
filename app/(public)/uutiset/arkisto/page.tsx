@@ -70,7 +70,7 @@ export default async function UutisarkistoPage() {
 
         {decades.length === 0 ? (
           <div className="mt-12 rounded-2xl border border-dashed border-border bg-surface p-10 text-center">
-            <p className="font-serif text-2xl">Arkisto on vielä tyhjä</p>
+            <p className="font-display text-2xl">Arkisto on vielä tyhjä</p>
             <p className="mx-auto mt-2 max-w-md text-muted">
               Vuodet ilmestyvät tähän automaattisesti sitä mukaa kun uutisia
               julkaistaan Studiossa — luetteloa ei tarvitse ylläpitää käsin.
@@ -96,7 +96,7 @@ export default async function UutisarkistoPage() {
                 <div className="flex flex-wrap items-baseline justify-between gap-3 border-b border-border pb-3">
                   <h2
                     id={`vuosikymmen-${decade.decade}`}
-                    className="font-serif text-2xl sm:text-3xl"
+                    className="font-display text-2xl sm:text-3xl"
                   >
                     {decade.label}
                   </h2>

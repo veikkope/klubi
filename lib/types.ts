@@ -47,8 +47,17 @@ export type EtusivuBlock =
   | {
       _type: "uutiset";
       _key: string;
+      eyebrow?: string;
       heading?: string;
       count?: number;
+    }
+  | {
+      _type: "otteluohjelma";
+      _key: string;
+      ottelutHeading?: string;
+      ottelutCount?: number;
+      tapahtumatHeading?: string;
+      tapahtumatCount?: number;
     }
   | {
       _type: "tapahtumat";
@@ -59,6 +68,7 @@ export type EtusivuBlock =
   | {
       _type: "esittely";
       _key: string;
+      eyebrow?: string;
       heading?: string;
       body?: PortableTextBlock[] | null;
       image?: SanityImage;
@@ -68,6 +78,7 @@ export type EtusivuBlock =
   | {
       _type: "ravintolatSpotlight";
       _key: string;
+      eyebrow?: string;
       heading?: string;
       city?: { _ref: string; name?: string } | null;
       count?: number;
@@ -101,7 +112,7 @@ export type EtusivuData = {
   heroDescription: string;
   heroImage?: SanityImage;
   heroCtas?: HeroCta[];
-  /** Vanhan etusivun "Seuraavaksi"-nosto. Näytetään vain ennen ottelua. */
+  /** Vanhan etusivun "Seuraavaksi"-nosto. Ei enää näytetä (otteluohjelma korvaa). */
   seuraavaOttelu?: { ottelu?: string | null; kilpailu?: string | null; aika?: string | null } | null;
   blocks: EtusivuBlock[];
 };
@@ -135,11 +146,14 @@ export type SivuWithAncestors = {
 };
 
 export type UutinenCategory =
+  | "otteluraportti"
+  | "kannattajakulttuuri"
   | "tiedote"
   | "tapahtumaraportti"
   | "jasentieto"
   | "jalkapallo"
-  | "ravintola";
+  | "ravintola"
+  | "blogi";
 
 export type UutinenCard = {
   _id: string;
@@ -174,6 +188,10 @@ export type TapahtumaCard = {
   startsAt: string;
   endsAt?: string | null;
   location?: string | null;
+  /** Yhden rivin kuvaus korttiin. */
+  tiivistelma?: string | null;
+  /** Juhla tai merkkipäivä: kortti saa messinkikorostuksen. */
+  juhla?: boolean | null;
   image?: SanityImage;
 };
 

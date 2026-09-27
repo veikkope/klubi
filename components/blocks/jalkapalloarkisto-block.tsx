@@ -87,7 +87,7 @@ export async function JalkapalloarkistoBlock({
             />
 
             {body && (
-              <p className="mt-5 max-w-xl text-pretty text-lg leading-relaxed text-muted">
+              <p className="mt-5 max-w-xl text-pretty text-xl leading-relaxed text-muted">
                 {body}
               </p>
             )}
@@ -99,7 +99,7 @@ export async function JalkapalloarkistoBlock({
                   // mutta luku näytetään ylempänä (luettavuus).
                   <div key={entry.label} className="flex flex-col-reverse">
                     <dt className="mt-1 text-sm text-muted">{entry.label}</dt>
-                    <dd className="font-serif text-3xl leading-none tabular-nums text-foreground">
+                    <dd className="font-display text-3xl leading-none tabular-nums text-foreground">
                       {entry.value}
                     </dd>
                   </div>
@@ -113,7 +113,7 @@ export async function JalkapalloarkistoBlock({
                   <li key={item.href}>
                     <Link
                       href={item.href}
-                      className="inline-flex min-h-11 items-center rounded-full border border-border bg-background px-4 text-sm text-muted transition hover:border-brand-300 hover:text-foreground"
+                      className="inline-flex min-h-11 items-center rounded-sm border border-border bg-background px-4 text-sm text-muted transition hover:border-accent hover:text-foreground"
                     >
                       {item.label}
                     </Link>

@@ -29,7 +29,7 @@ export function ArchiveList({ items }: { items: UutinenListItem[] }) {
               {formatDate(item.publishedAt)}
             </time>
             <span className="min-w-0">
-              <span className="block font-serif text-xl leading-snug text-foreground transition group-hover:text-accent">
+              <span className="block font-display text-xl leading-snug text-foreground transition group-hover:text-accent">
                 {item.title}
               </span>
               <span className="mt-1 block text-sm leading-relaxed text-muted">

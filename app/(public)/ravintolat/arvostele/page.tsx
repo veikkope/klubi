@@ -25,7 +25,7 @@ const LEAD =
 
 const trail = [
   rootCrumb,
-  { label: "Ravintolat", href: "/ravintolat" },
+  { label: "Ravintola-arviot", href: "/ravintolat" },
   { label: TITLE },
 ];
 
@@ -97,7 +97,7 @@ export default async function ArvostelePage({
 function UnavailableNotice() {
   return (
     <div className="rounded-2xl border border-dashed border-border bg-surface p-8">
-      <h2 className="font-serif text-2xl text-foreground">
+      <h2 className="font-display text-2xl text-foreground">
         Lomake ei ole juuri nyt käytettävissä
       </h2>
       <p className="mt-3 leading-relaxed text-muted">
@@ -114,7 +114,7 @@ function UnavailableNotice() {
       </p>
       <Link
         href="/ravintolat"
-        className="mt-6 inline-flex min-h-11 items-center justify-center rounded-full border border-border px-6 text-sm font-medium text-foreground transition hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        className="mt-6 inline-flex min-h-11 items-center justify-center rounded-sm border border-border px-6 text-sm font-medium text-foreground transition hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       >
         Selaa ravintolahakemistoa
       </Link>

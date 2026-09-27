@@ -4,7 +4,7 @@ type Tone = "neutral" | "brand" | "muted";
 
 const tones: Record<Tone, string> = {
   neutral: "bg-surface-strong text-foreground",
-  brand: "bg-brand-50 text-brand-800",
+  brand: "bg-blue-tint text-navy",
   muted: "bg-transparent text-muted border border-border",
 };
 
@@ -18,7 +18,7 @@ export function Badge({ tone = "neutral", className, children }: BadgeProps) {
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium",
+        "inline-flex items-center rounded-xs px-2.5 py-1 text-[13px] font-semibold",
         tones[tone],
         className,
       )}

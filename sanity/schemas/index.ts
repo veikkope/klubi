@@ -5,6 +5,7 @@ import { portableText } from "./objects/portableText";
 
 import { sivu } from "./documents/sivu";
 import { tapahtuma } from "./documents/tapahtuma";
+import { ottelu } from "./documents/ottelu";
 import { uutinen } from "./documents/uutinen";
 import { hallitusJasen } from "./documents/hallitusJasen";
 import { kaupunki } from "./documents/kaupunki";
@@ -34,6 +35,7 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   portableText,
   sivu,
   tapahtuma,
+  ottelu,
   uutinen,
   hallitusJasen,
   kaupunki,

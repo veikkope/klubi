@@ -35,8 +35,13 @@ export const etusivuQuery = defineQuery(`
     blocks[]{
       _type,
       _key,
+      eyebrow,
       heading,
       count,
+      ottelutHeading,
+      ottelutCount,
+      tapahtumatHeading,
+      tapahtumatCount,
       body,
       image,
       ctaLabel,
@@ -63,9 +68,12 @@ export const etusivuRavintolatQuery = defineQuery(`
     name,
     "slug": slug.current,
     "city": city->{ name, "slug": slug.current },
-    "stars": coalesce(ratingOverall, stars, 0),
+    stars,
+    ratingOverall,
     priceLevel,
     cuisine,
+    tuomio,
+    stadionHuomio,
     "image": images[0]
   }
 `);

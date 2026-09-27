@@ -93,7 +93,7 @@ export default async function SivuPage({
         ]}
       />
       {hasHero ? (
-        <section className="relative isolate overflow-hidden bg-brand-950 text-white">
+        <section className="relative isolate overflow-hidden bg-navy text-white">
           <div className="absolute inset-0 -z-10">
             <SanityImage
               image={sivu.hero!}
@@ -103,22 +103,22 @@ export default async function SivuPage({
               className="h-full w-full object-cover opacity-50"
               priority
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-brand-950/60 to-brand-950" />
+            <div className="absolute inset-0 bg-gradient-to-b from-navy/60 to-navy" />
           </div>
           <Container className="py-20 sm:py-28">
-            <Breadcrumbs className="text-brand-100" items={crumbs} />
-            <h1 className="mt-6 font-serif text-4xl leading-tight sm:text-6xl">
+            <Breadcrumbs className="text-on-chrome-muted" items={crumbs} />
+            <h1 className="mt-6 font-display text-4xl leading-[1.1] text-on-chrome sm:text-5xl">
               {sivu.title}
             </h1>
             {lead && (
-              <p className="mt-4 max-w-2xl text-lg text-brand-100">{lead}</p>
+              <p className="mt-4 max-w-2xl text-lg text-on-chrome-muted">{lead}</p>
             )}
           </Container>
         </section>
       ) : (
         <Container className="pt-12">
           <Breadcrumbs items={crumbs} />
-          <h1 className="mt-6 font-serif text-4xl leading-tight sm:text-5xl">
+          <h1 className="mt-6 font-display text-4xl leading-tight sm:text-5xl">
             {sivu.title}
           </h1>
           {lead && (

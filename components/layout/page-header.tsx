@@ -14,6 +14,8 @@ interface PageHeaderProps {
   /** Sisällön `tiivistelma`-kenttä. */
   lead?: string | null;
   eyebrow?: string | null;
+  /** Aihepiirin väri yläotsakkeessa: sininen = jalkapallo, messinki = ruoka. */
+  topic?: "football" | "food";
   breadcrumbs?: Crumb[];
   /** Esim. tähtiarvio, päivämäärä tai laskurit otsikon alle. */
   meta?: React.ReactNode;
@@ -25,6 +27,7 @@ export function PageHeader({
   title,
   lead,
   eyebrow,
+  topic = "football",
   breadcrumbs,
   meta,
   actions,
@@ -38,12 +41,17 @@ export function PageHeader({
 
       <div className="flex flex-col gap-3">
         {eyebrow && (
-          <p className="text-sm font-medium uppercase tracking-[0.18em] text-accent">
+          <p
+            className={cn(
+              "text-[13px] font-semibold uppercase tracking-[0.12em]",
+              topic === "food" ? "text-brass-text" : "text-accent",
+            )}
+          >
             {eyebrow}
           </p>
         )}
 
-        <h1 className="font-serif text-4xl leading-tight tracking-tight text-foreground sm:text-5xl">
+        <h1 className="font-display text-4xl leading-[1.1] text-heading sm:text-5xl">
           {title}
         </h1>
 

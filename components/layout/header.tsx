@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Container } from "./container";
 import { HeaderClient } from "./header-client";
@@ -13,17 +14,29 @@ export async function Header() {
     fallback: defaultNavigation,
   });
 
+  // Tyyliopas (Sivut v3): valkoinen ylätunniste, alareunassa ohut viiva.
+  // Logo: merkki 50 px + tekstilogo 25 px, väli 14 px (mobiilissa 38 + 17).
+  // Ei CTA-painiketta.
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur">
-      <Container size="wide" className="flex h-16 items-center justify-between gap-6">
-        <Link
-          href="/"
-          className="font-serif text-lg leading-none text-foreground hover:text-accent"
-        >
-          <span className="block text-[11px] uppercase tracking-[0.18em] text-muted">
-            Lahden
-          </span>
-          <span>Suomalainen Klubi</span>
+    <header className="sticky top-0 z-40 border-b border-border bg-surface">
+      <Container size="wide" className="flex items-center justify-between gap-6 py-3.5 sm:py-[22px]">
+        <Link href="/" className="flex shrink-0 items-center gap-2.5 sm:gap-3.5">
+          <Image
+            src="/brand/mark-blue.png"
+            alt=""
+            width={45}
+            height={50}
+            priority
+            className="h-[38px] w-auto sm:h-[50px]"
+          />
+          <Image
+            src="/brand/wordmark-blue.png"
+            alt="Lahden Suomalainen Klubi ry — etusivu"
+            width={159}
+            height={25}
+            priority
+            className="h-[17px] w-auto sm:h-[25px]"
+          />
         </Link>
         <HeaderClient items={nav.items} />
       </Container>

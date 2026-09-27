@@ -209,7 +209,7 @@ export default async function TapahtumaPage({
 
           <aside className="lg:sticky lg:top-24 lg:self-start">
             <div className="rounded-2xl border border-border bg-surface p-6">
-              <h2 className="font-serif text-xl">Tapahtumatiedot</h2>
+              <h2 className="font-display text-xl">Tapahtumatiedot</h2>
               <dl className="mt-4 space-y-4 text-sm">
                 <div className="flex gap-3">
                   <Calendar
@@ -218,7 +218,7 @@ export default async function TapahtumaPage({
                     size={18}
                   />
                   <div>
-                    <dt className="text-xs font-medium uppercase tracking-[0.18em] text-muted">
+                    <dt className="font-sans text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-soft">
                       Aika
                     </dt>
                     <dd className="mt-1 text-foreground">
@@ -237,7 +237,7 @@ export default async function TapahtumaPage({
                       size={18}
                     />
                     <div>
-                      <dt className="text-xs font-medium uppercase tracking-[0.18em] text-muted">
+                      <dt className="font-sans text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-soft">
                         Paikka
                       </dt>
                       <dd className="mt-1 text-foreground">{event.location}</dd>
@@ -253,7 +253,7 @@ export default async function TapahtumaPage({
                       size={18}
                     />
                     <div>
-                      <dt className="text-xs font-medium uppercase tracking-[0.18em] text-muted">
+                      <dt className="font-sans text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-soft">
                         Ilmoittautumiset
                       </dt>
                       <dd className="mt-1">

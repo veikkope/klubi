@@ -127,7 +127,7 @@ export default async function HallitusPage() {
                     className="size-28 rounded-full object-cover"
                   />
                 )}
-                <h2 className="mt-4 font-serif text-xl text-foreground">
+                <h2 className="mt-4 font-display text-xl text-foreground">
                   {jasen.name}
                 </h2>
                 <p className="mt-1 text-sm font-medium uppercase tracking-[0.14em] text-accent">

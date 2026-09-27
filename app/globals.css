@@ -2,38 +2,52 @@
 
 /* ============================================================
    Lahden Suomalainen Klubi ry — design tokens
-   Sininen + valkoinen. Klassinen, elegantti, moderni.
+   Lähde: verkkosivujen tyyliopas (design handoff, syyskuu 2026).
+   Värit tulevat logosta: kirkas klubinsininen aaltomerkki ja
+   yönsininen antiikvateksti. Asiallinen, rauhallinen, paljon tilaa.
+   Pintasuhde: 60 % vaalea pohja · 20 % yönsininen · 12 % klubinsininen.
+   Perustelut ja käyttösäännöt: docs/04-design-direction.md
    ============================================================ */
 
 :root {
   /* Brändivärit */
-  --brand-50: #eff6ff;
-  --brand-100: #dbeafe;
-  --brand-200: #bfdbfe;
-  --brand-300: #93c5fd;
-  --brand-400: #60a5fa;
-  --brand-500: #3b82f6;
-  --brand-600: #2563eb;
-  --brand-700: #1d4ed8;
-  --brand-800: #1e40af;
-  --brand-900: #1e3a8a;
-  --brand-950: #172554;
+  --blue: #1a2cd8;          /* Klubinsininen: vain klikattava + logo */
+  --navy: #141f4d;          /* Yönsininen: otsikot, footer, tummat osiot */
+  --blue-tint: #e6e9fb;     /* Tagit, korostuspohjat, fokusrengas */
+  /* Kategoriavärit: sininen = jalkapallo, messinki = ruoka ja ravintolat
+     (myös juhlatapahtumat). Käytetään yläotsakkeissa, korttien yläreunoissa
+     ja tageissa. */
+  --brass: #b8862e;         /* Messinki: ravintolat, arvosanapisteet, juhla */
+  --brass-text: #8a6420;    /* Messinki tekstinä (AA valkoisella) */
+  --brass-tint: #f3ead8;    /* Ruokatagin pohja */
+  --brass-tint-text: #5c4315;
 
-  /* Neutraalit */
-  --background: #ffffff;
-  --surface: #f8fafc;
-  --surface-strong: #f1f5f9;
-  --foreground: #0f172a;
-  --muted: #475569;
-  --muted-soft: #64748b;
-  --border: #e2e8f0;
-  --border-strong: #cbd5e1;
+  /* Pinnat ja teksti */
+  --background: #f7f6f2;    /* Paperi: sivun tausta */
+  --surface: #ffffff;       /* Kortit, header */
+  --surface-strong: #efeee8;/* Neutraali hover-/korostuspinta */
+  --foreground: #1b1d26;    /* Muste: leipäteksti */
+  --heading: var(--navy);
+  --muted: #4a4d5c;
+  --muted-soft: #6b6e7c;    /* Kuvatekstit, meta */
+  --border: #ecebe5;        /* Erottimet */
+  --border-strong: #c9c8c0; /* Lomakekenttien reunat */
 
-  /* Aksentit */
-  --accent: var(--brand-700);
-  --accent-hover: var(--brand-800);
-  --accent-soft: var(--brand-50);
-  --ring: var(--brand-500);
+  /* Linkit ja toiminnot */
+  --accent: var(--blue);
+  --accent-hover: var(--navy);
+  --accent-soft: var(--blue-tint);
+  --ring: var(--blue);
+  --primary: var(--blue);
+  --primary-hover: var(--navy);
+  --on-primary: #ffffff;
+
+  /* Yönsininen pinta: hero, footer, tummat osiot */
+  --chrome: var(--navy);
+  --on-chrome: #ffffff;
+  --on-chrome-muted: #d4d8f0;
+  --on-chrome-eyebrow: #aeb6f2;
+  --chrome-border: rgb(255 255 255 / 0.16);
 
   /* Tilavärit — virheet, varoitukset, onnistumiset.
      Brändisininen ei kelpaa virheelle: se ei erotu linkeistä. */
@@ -45,13 +59,13 @@
   --warning: #a16207;
   --warning-soft: #fefce8;
 
-  /* Tila & varjot */
+  /* Pyöristys 4 px (napit, kentät, kortit), 6 px isot paneelit, 3 px tagit */
+  --radius-tag: 3px;
   --radius-sm: 4px;
-  --radius: 8px;
-  --radius-lg: 16px;
-  --shadow-sm: 0 1px 2px 0 rgb(15 23 42 / 0.06);
-  --shadow: 0 4px 14px 0 rgb(15 23 42 / 0.08);
-  --shadow-lg: 0 20px 40px -10px rgb(15 23 42 / 0.18);
+  --radius-lg: 6px;
+
+  /* Varjo vain isoille paneeleille */
+  --shadow-panel: 0 1px 3px rgb(20 31 77 / 0.08), 0 12px 40px rgb(20 31 77 / 0.08);
 }
 
 @theme inline {
@@ -59,22 +73,33 @@
   --color-surface: var(--surface);
   --color-surface-strong: var(--surface-strong);
   --color-foreground: var(--foreground);
+  --color-heading: var(--heading);
   --color-muted: var(--muted);
   --color-muted-soft: var(--muted-soft);
   --color-border: var(--border);
   --color-border-strong: var(--border-strong);
 
-  --color-brand-50: var(--brand-50);
-  --color-brand-100: var(--brand-100);
-  --color-brand-200: var(--brand-200);
-  --color-brand-300: var(--brand-300);
-  --color-brand-400: var(--brand-400);
-  --color-brand-500: var(--brand-500);
-  --color-brand-600: var(--brand-600);
-  --color-brand-700: var(--brand-700);
-  --color-brand-800: var(--brand-800);
-  --color-brand-900: var(--brand-900);
-  --color-brand-950: var(--brand-950);
+  --color-blue: var(--blue);
+  --color-navy: var(--navy);
+  --color-blue-tint: var(--blue-tint);
+  --color-brass: var(--brass);
+  --color-brass-text: var(--brass-text);
+  --color-brass-tint: var(--brass-tint);
+  --color-brass-tint-text: var(--brass-tint-text);
+
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-soft: var(--accent-soft);
+  --color-ring: var(--ring);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-on-primary: var(--on-primary);
+
+  --color-chrome: var(--chrome);
+  --color-on-chrome: var(--on-chrome);
+  --color-on-chrome-muted: var(--on-chrome-muted);
+  --color-on-chrome-eyebrow: var(--on-chrome-eyebrow);
+  --color-chrome-border: var(--chrome-border);
 
   --color-danger: var(--danger);
   --color-danger-soft: var(--danger-soft);
@@ -84,41 +109,23 @@
   --color-warning: var(--warning);
   --color-warning-soft: var(--warning-soft);
 
-  --color-accent: var(--accent);
-  --color-accent-hover: var(--accent-hover);
-  --color-accent-soft: var(--accent-soft);
-  --color-ring: var(--ring);
-
+  /* sans = Public Sans (leipä + UI), display = Source Serif 4 (otsikot) */
   --font-sans: var(--font-sans);
   --font-serif: var(--font-serif);
+  --font-display: var(--font-serif);
 
+  /* Tailwindin pyöristysasteikko tyylioppaan arvoihin: komponenttien
+     rounded-lg/-xl ovat 4 px, rounded-2xl/-3xl isot paneelit 6 px.
+     rounded-full jää ympyröille (avatarit, pisteet, ikoninapit). */
+  --radius-xs: var(--radius-tag);
   --radius-sm: var(--radius-sm);
-  --radius: var(--radius);
-  --radius-lg: var(--radius-lg);
-}
+  --radius-md: var(--radius-sm);
+  --radius-lg: var(--radius-sm);
+  --radius-xl: var(--radius-sm);
+  --radius-2xl: var(--radius-lg);
+  --radius-3xl: var(--radius-lg);
 
-/* Tumma teema — käyttöjärjestelmän mukaan, sama syvä sininen säilyy */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0b1220;
-    --surface: #111a2e;
-    --surface-strong: #16223a;
-    --foreground: #f8fafc;
-    --muted: #94a3b8;
-    --muted-soft: #cbd5e1;
-    --border: #1e293b;
-    --border-strong: #334155;
-    --accent: var(--brand-400);
-    --accent-hover: var(--brand-300);
-    --accent-soft: #172554;
-    --danger: #f87171;
-    --danger-soft: #2a1113;
-    --danger-border: #7f1d1d;
-    --success: #4ade80;
-    --success-soft: #0c2417;
-    --warning: #facc15;
-    --warning-soft: #2a2410;
-  }
+  --shadow-panel: var(--shadow-panel);
 }
 
 body {
@@ -126,16 +133,30 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans), system-ui, -apple-system, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;
-  font-feature-settings: "ss01", "cv11";
+  font-size: 1.125rem;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
-/* Otsikoissa serif-fontti — klassinen, arvokas, mutta moderni */
-h1, h2, h3, .font-serif {
-  font-family: var(--font-serif), Georgia, "Times New Roman", serif;
-  font-feature-settings: "ss01";
-  letter-spacing: -0.01em;
+/* Otsikot: Source Serif 4 Semibold, yönsininen. Base-kerroksessa, jotta
+   komponenttien luokat (esim. text-on-chrome tummalla pohjalla) voittavat. */
+@layer base {
+  h1, h2, h3, .font-display {
+    font-family: var(--font-serif), Georgia, "Times New Roman", serif;
+    font-weight: 600;
+  }
+  h1, h2, h3 {
+    color: var(--heading);
+    text-wrap: balance;
+  }
+
+  /* Tekstilinkki: sininen, 600, alleviivaus 4 px:n etäisyydellä */
+  a {
+    color: var(--accent);
+    text-underline-offset: 4px;
+  }
+  a:hover { color: var(--accent-hover); }
 }
 
 /* Saavutettavuus: näppäimistöfokus näkyvä */
@@ -145,12 +166,14 @@ h1, h2, h3, .font-serif {
   border-radius: var(--radius-sm);
 }
 
-/* Linkit oletusarvoisesti aksenttiväriset */
-a {
-  color: var(--accent);
-  text-underline-offset: 3px;
+/* Lomakekenttä: fokuksessa sininen reuna + 3 px vaalea sininen kehys */
+input:not([type="checkbox"], [type="radio"]):focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px var(--blue-tint);
 }
-a:hover { color: var(--accent-hover); }
 
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
@@ -161,8 +184,7 @@ a:hover { color: var(--accent-hover); }
   }
 }
 
-/* Valinta-väri brändiin */
 ::selection {
-  background: var(--brand-200);
-  color: var(--brand-950);
+  background: var(--blue-tint);
+  color: var(--navy);
 }

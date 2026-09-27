@@ -25,7 +25,7 @@ export function ArkistoEmpty({
 }) {
   return (
     <div className="rounded-2xl border border-dashed border-border bg-surface p-10 text-center">
-      <p className="font-serif text-2xl text-foreground">{title}</p>
+      <p className="font-display text-2xl text-foreground">{title}</p>
       <p className="mx-auto mt-2 max-w-md text-muted">{message}</p>
     </div>
   );
@@ -45,7 +45,7 @@ function Sources({ sources }: { sources: string[] | null }) {
               href={source}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex min-h-11 items-center break-all text-accent underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+              className="inline-flex min-h-11 items-center break-all text-accent underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
             >
               {source}
             </a>
@@ -175,8 +175,8 @@ export function StatSections({
   const Heading = headingLevel;
   const headingClass =
     headingLevel === "h2"
-      ? "font-serif text-2xl leading-tight text-foreground sm:text-3xl"
-      : "font-serif text-xl leading-tight text-foreground sm:text-2xl";
+      ? "font-display text-2xl leading-tight text-foreground sm:text-3xl"
+      : "font-display text-xl leading-tight text-foreground sm:text-2xl";
 
   return (
     <div className={cn("flex flex-col gap-14", className)}>

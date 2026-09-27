@@ -195,7 +195,7 @@ export default async function ArvokisaPage({
         <section aria-labelledby="tilastot" className="mt-16">
           <h2
             id="tilastot"
-            className="font-serif text-2xl text-foreground sm:text-3xl"
+            className="font-display text-2xl text-foreground sm:text-3xl"
           >
             Tilastot
           </h2>
@@ -207,7 +207,7 @@ export default async function ArvokisaPage({
         <section aria-labelledby="kuvat" className="mt-16">
           <h2
             id="kuvat"
-            className="font-serif text-2xl text-foreground sm:text-3xl"
+            className="font-display text-2xl text-foreground sm:text-3xl"
           >
             Kuvat
           </h2>
@@ -238,7 +238,7 @@ export default async function ArvokisaPage({
         <section aria-labelledby="muut-kisat" className="mt-16">
           <h2
             id="muut-kisat"
-            className="font-serif text-2xl text-foreground sm:text-3xl"
+            className="font-display text-2xl text-foreground sm:text-3xl"
           >
             Muita saman sarjan kisoja
           </h2>
@@ -261,7 +261,7 @@ export default async function ArvokisaPage({
 function Fact({ label, value }: { label: string; value?: string | null }) {
   return (
     <div className="bg-surface px-5 py-4">
-      <dt className="text-xs font-medium uppercase tracking-[0.18em] text-muted">
+      <dt className="font-sans text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-soft">
         {label}
       </dt>
       <dd className="mt-1 text-base text-foreground">

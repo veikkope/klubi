@@ -20,7 +20,7 @@ export function IcsLink({
       href={`/tapahtumat/${slug}/ics`}
       download={`${slug}.ics`}
       className={cn(
-        "inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-border bg-background px-5 text-sm font-medium text-foreground transition hover:border-accent hover:text-accent",
+        "inline-flex min-h-11 items-center justify-center gap-2 rounded-sm border border-border bg-background px-5 text-sm font-medium text-foreground transition hover:border-accent hover:text-accent",
         className,
       )}
     >

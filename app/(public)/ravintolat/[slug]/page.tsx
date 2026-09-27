@@ -1,23 +1,23 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { Calendar, ExternalLink, MapPin, Phone } from "lucide-react";
+import { Calendar } from "lucide-react";
 
 import { Container } from "@/components/layout/container";
-import { PageHeader } from "@/components/layout/page-header";
+import { Breadcrumbs } from "@/components/layout/breadcrumbs";
+import { Eyebrow } from "@/components/blocks/block-heading";
+import { LinkButton } from "@/components/ui/button";
+import { RatingDots } from "@/components/ui/rating-dots";
 import { JsonLd } from "@/components/seo/json-ld";
-import { Badge } from "@/components/ui/badge";
-import { Stars } from "@/components/ui/stars";
 import { SanityImage } from "@/components/sanity-image";
 import { PortableText } from "@/components/portable-text";
 import { AlbumGrid } from "@/components/gallery/album-grid";
 import {
-  RatingBadge,
-  RestaurantCard,
   formatRating,
   overallRating,
   subRatings,
 } from "@/components/restaurant-card";
+import { cn } from "@/lib/cn";
 import { cuisineLabel } from "@/lib/ravintola-cuisines";
 import { formatDate } from "@/lib/format";
 import { rootCrumb } from "@/lib/nav-sections";
@@ -99,26 +99,29 @@ export default async function RavintolaPage({ params }: PageProps) {
 
   const trail = [
     rootCrumb,
-    { label: "Ravintolat", href: "/ravintolat" },
+    { label: "Ravintola-arviot", href: "/ravintolat" },
     { label: r.name },
   ];
 
   const rating = overallRating(r);
   const parts = subRatings(r);
   const isClosed = r.closed === true;
-  const hero = r.images?.[0];
+  const [hero, ...moreImages] = (r.images ?? []).filter(
+    (image): image is NonNullable<typeof image> => Boolean(image?.asset),
+  );
   const heroUrl = hero ? urlForImage(hero)?.width(1200).height(630).url() : null;
 
-  const galleryImages: AlbumImage[] = (r.images ?? [])
-    .slice(1)
-    .filter((image): image is NonNullable<typeof image> => Boolean(image?.asset))
-    .map((image) => ({
-      asset: image.asset,
-      alt: image.alt,
-      caption: image.caption,
-    }));
+  // Tyyliopas: kaksi kuvaa rinnakkain tekstin lomassa, loput galleriana.
+  const pairImages = moreImages.slice(0, 2);
+  const galleryImages: AlbumImage[] = moreImages.slice(2).map((image) => ({
+    asset: image.asset,
+    alt: image.alt,
+    caption: image.caption,
+  }));
 
   const visits = (r.visits ?? []).filter(Boolean);
+  const lastVisit = visits.at(-1) ?? r.visitedAt ?? null;
+  const hasReview = Boolean(r.review && r.review.length > 0);
 
   return (
     <>
@@ -142,256 +145,327 @@ export default async function RavintolaPage({ params }: PageProps) {
         ]}
       />
 
-      <Container size="wide" className="py-12 sm:py-16">
-        <PageHeader
-          title={r.name}
-          lead={r.tiivistelma}
-          eyebrow={r.city?.name}
-          breadcrumbs={trail}
-          meta={
-            <>
-              {rating !== null && (
-                <span className="inline-flex items-center gap-2 rounded-full bg-brand-50 px-4 py-1.5 font-medium text-brand-800">
-                  <span className="tabular-nums">{formatRating(rating)}</span>
-                  <span className="text-sm font-normal">/ 5</span>
-                </span>
+      {/* Otsikkoalue (tyyliopas Sivut v3, 2a/2b) */}
+      <Container size="wide" className="pt-5 sm:pt-12">
+        <Link
+          href="/ravintolat"
+          className="text-sm font-medium text-accent no-underline sm:hidden"
+        >
+          ← Ravintola-arviot
+        </Link>
+        <Breadcrumbs items={trail.slice(1)} className="hidden sm:block" />
+
+        <header className="flex max-w-[1000px] flex-col gap-3.5 pb-6 pt-3.5 sm:gap-[18px] sm:pb-12 sm:pt-7">
+          <Eyebrow topic="food">
+            Ravintola-arvio{r.city?.name ? ` · ${r.city.name}` : ""}
+          </Eyebrow>
+          <h1 className="text-pretty text-[2rem] leading-[1.12] sm:text-5xl lg:text-[3.75rem] lg:leading-[1.05]">
+            {r.name}
+          </h1>
+          {(r.tuomio || lastVisit) && (
+            <p className="text-sm text-muted sm:text-[15px]">
+              {r.tuomio && <span className="text-foreground">{r.tuomio}</span>}
+              {r.tuomio && lastVisit && " · "}
+              {lastVisit && (
+                <>
+                  Klubi vieraili <time dateTime={lastVisit}>{formatDate(lastVisit)}</time>
+                  {visits.length > 1 && ` (${visits.length} käyntiä)`}
+                </>
               )}
-              {typeof r.stars === "number" && <Stars value={r.stars} />}
-              {r.priceLevel && <Badge tone="muted">{r.priceLevel}</Badge>}
-              {isClosed && <Badge tone="neutral">Toiminta loppunut</Badge>}
-            </>
-          }
-        />
+            </p>
+          )}
+        </header>
 
         {isClosed && (
           <p
             role="note"
-            className="mt-6 rounded-2xl border border-warning/40 bg-warning-soft p-5 text-sm leading-relaxed text-foreground"
+            className="mb-8 max-w-[1000px] rounded-sm border-t-[3px] border-t-warning bg-warning-soft p-5 text-[15px] leading-relaxed text-foreground"
           >
-            <strong className="font-semibold">
-              Tämä ravintola ei ole enää toiminnassa.
-            </strong>{" "}
+            <strong className="font-semibold">Tämä ravintola ei ole enää toiminnassa.</strong>{" "}
             {r.closedNote ??
               "Arvostelu on säilytetty klubin historian vuoksi, mutta tiedot eivät ole ajan tasalla."}
           </p>
         )}
+      </Container>
 
-        {hero?.asset && (
-          <div className="mt-8 overflow-hidden rounded-2xl">
-            <SanityImage
-              image={hero}
-              width={1600}
-              height={900}
-              sizes="(min-width: 1280px) 1152px, 100vw"
-              className="h-auto w-full object-cover"
-              priority
-            />
-          </div>
-        )}
+      {hero && (
+        <Container size="wide" className="max-sm:px-0">
+          <SanityImage
+            image={hero}
+            width={1920}
+            height={823}
+            sizes="(min-width: 1440px) 1280px, 100vw"
+            className="aspect-[4/3] w-full object-cover sm:aspect-[21/9] sm:rounded-sm"
+            priority
+          />
+        </Container>
+      )}
 
-        <div className="mt-12 grid gap-12 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] lg:items-start">
-          <div className="min-w-0 space-y-12">
-            <RatingSection rating={rating} parts={parts} />
+      <Container
+        size="wide"
+        className="grid items-start gap-5 pt-5 sm:gap-12 sm:pt-16 lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-[88px]"
+      >
+        {/* Mobiilissa arvosanakortti ennen tekstiä, tietokoneella oikealla. */}
+        <aside className="flex flex-col gap-6 lg:sticky lg:top-6 lg:order-2">
+          <ScoreCard restaurant={r} rating={rating} parts={parts} />
+          <VisitsAndInvite restaurant={r} visits={visits} className="max-lg:hidden" />
+        </aside>
 
-            {Boolean(r.pros?.length || r.cons?.length) && (
-              <ProsConsSection pros={r.pros} cons={r.cons} />
-            )}
+        <article className="flex min-w-0 max-w-[700px] flex-col gap-6 text-[17px] leading-[1.7] sm:gap-[26px] sm:text-[19px] sm:leading-[1.75] lg:order-1">
+          {hasReview ? (
+            // Ensimmäinen kappale ingressinä (serif 24 px), lainaukset nostoina
+            // messinkiviivalla (tyyliopas).
+            <div className="[&>*:first-child]:!mt-0 [&>p:first-child]:font-display [&>p:first-child]:!text-xl [&>p:first-child]:!leading-[1.5] [&>p:first-child]:text-heading sm:[&>p:first-child]:!text-2xl [&_blockquote]:!my-8 [&_blockquote]:!border-l-[3px] [&_blockquote]:!border-brass [&_blockquote]:!bg-transparent [&_blockquote]:!py-0 [&_blockquote]:!pl-[18px] [&_blockquote]:font-display [&_blockquote]:!text-[22px] [&_blockquote]:!leading-[1.4] [&_blockquote]:text-heading sm:[&_blockquote]:!pl-7 sm:[&_blockquote]:!text-[28px] [&_p]:!text-[17px] [&_p]:!leading-[1.7] sm:[&_p]:!text-[19px] sm:[&_p]:!leading-[1.75]">
+              <PortableText value={r.review!} />
+            </div>
+          ) : (
+            r.tiivistelma && (
+              <p className="font-display text-xl leading-[1.5] text-heading sm:text-2xl sm:leading-[1.55]">
+                {r.tiivistelma}
+              </p>
+            )
+          )}
 
-            {r.review && r.review.length > 0 && (
-              <section aria-labelledby="arvostelu-otsikko">
-                <h2
-                  id="arvostelu-otsikko"
-                  className="font-serif text-2xl sm:text-3xl"
-                >
-                  Klubin arvostelu
-                </h2>
-                <div className="mt-4">
-                  <PortableText value={r.review} />
-                </div>
-              </section>
-            )}
+          {pairImages.length > 0 && (
+            <div className="my-3 grid grid-cols-2 gap-4">
+              {pairImages.map((image, i) => (
+                <SanityImage
+                  key={i}
+                  image={image}
+                  width={600}
+                  height={600}
+                  sizes="(min-width: 1024px) 340px, 50vw"
+                  className="aspect-square w-full rounded-sm object-cover"
+                />
+              ))}
+            </div>
+          )}
 
-            {galleryImages.length > 0 && (
-              <section aria-labelledby="kuvat-otsikko">
-                <h2 id="kuvat-otsikko" className="font-serif text-2xl sm:text-3xl">
-                  Kuvia käynneiltä
-                </h2>
-                <div className="mt-6">
-                  <AlbumGrid images={galleryImages} />
-                </div>
-              </section>
-            )}
+          {Boolean(r.pros?.length || r.cons?.length) && (
+            <ProsConsSection pros={r.pros} cons={r.cons} />
+          )}
 
-            {r.userReviews.length > 0 && (
-              <section aria-labelledby="kavijat-otsikko">
-                <h2
-                  id="kavijat-otsikko"
-                  className="font-serif text-2xl sm:text-3xl"
-                >
-                  Kävijöiden arvostelut
-                </h2>
-                <ul className="mt-6 space-y-5">
-                  {r.userReviews.map((review) => (
-                    <li
-                      key={review._id}
-                      className="rounded-2xl border border-border bg-surface p-6"
-                    >
-                      <div className="flex flex-wrap items-start justify-between gap-3">
-                        <div>
-                          <p className="font-medium text-foreground">
-                            {review.reviewerName ?? "Nimetön"}
-                          </p>
-                          {review.submittedAt && (
-                            <p className="text-xs text-muted">
-                              {formatDate(review.submittedAt)}
-                            </p>
-                          )}
-                        </div>
-                        {typeof review.stars === "number" && (
-                          <Stars value={review.stars} />
+          {r.ottelupaivana && (
+            <aside className="flex flex-col gap-2 rounded-sm border-t-[3px] border-t-blue bg-surface p-[18px] sm:gap-2.5 sm:p-7">
+              <Eyebrow className="!text-xs sm:!text-[13px]">Ottelupäivänä</Eyebrow>
+              <p className="whitespace-pre-line text-[15px] leading-[1.6] text-foreground sm:text-[17px]">
+                {r.ottelupaivana}
+              </p>
+            </aside>
+          )}
+
+          {galleryImages.length > 0 && (
+            <section aria-labelledby="kuvat-otsikko" className="mt-4">
+              <h2 id="kuvat-otsikko" className="text-2xl">
+                Kuvia käynneiltä
+              </h2>
+              <div className="mt-5">
+                <AlbumGrid images={galleryImages} />
+              </div>
+            </section>
+          )}
+
+          {r.userReviews.length > 0 && (
+            <section aria-labelledby="kavijat-otsikko" className="mt-4">
+              <h2 id="kavijat-otsikko" className="text-2xl">
+                Kävijöiden arviot
+              </h2>
+              <ul className="mt-5 flex flex-col gap-4">
+                {r.userReviews.map((review) => (
+                  <li key={review._id} className="rounded-sm bg-surface p-6">
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <div>
+                        <p className="font-semibold text-foreground">
+                          {review.reviewerName ?? "Nimetön"}
+                        </p>
+                        {review.submittedAt && (
+                          <p className="text-sm text-muted-soft">{formatDate(review.submittedAt)}</p>
                         )}
                       </div>
-                      {review.comment && (
-                        <p className="mt-3 whitespace-pre-line leading-relaxed text-foreground">
-                          {review.comment}
-                        </p>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            )}
-          </div>
+                      {typeof review.stars === "number" && <RatingDots value={review.stars} />}
+                    </div>
+                    {review.comment && (
+                      <p className="mt-3 whitespace-pre-line text-base leading-relaxed text-foreground">
+                        {review.comment}
+                      </p>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
 
-          <aside className="space-y-8 lg:sticky lg:top-24">
-            <ContactSection restaurant={r} />
-            {visits.length > 0 || r.visitedAt || r.visitContext ? (
-              <VisitSection
-                visits={visits}
-                visitedAt={r.visitedAt}
-                visitContext={r.visitContext}
-              />
-            ) : null}
-            {r.cuisine && r.cuisine.length > 0 && (
-              <section aria-labelledby="ruokatyypit-otsikko">
-                <h2
-                  id="ruokatyypit-otsikko"
-                  className="text-xs font-medium uppercase tracking-[0.18em] text-muted"
-                >
-                  Ruokatyypit
-                </h2>
-                <div className="mt-3 flex flex-wrap gap-1.5">
-                  {r.cuisine.map((c) => (
-                    <Badge key={c} tone="brand">
-                      {cuisineLabel(c)}
-                    </Badge>
-                  ))}
-                </div>
-              </section>
-            )}
-            <div className="rounded-2xl border border-border bg-surface p-6">
-              <h2 className="font-serif text-xl">Kävitkö täällä?</h2>
-              <p className="mt-2 text-sm leading-relaxed text-muted">
-                Lähetä oma arviosi. Käymme jokaisen lähetyksen läpi ennen
-                julkaisua.
-              </p>
-              <Link
-                href={`/ravintolat/arvostele?ravintola=${r.slug}`}
-                className="mt-4 inline-flex min-h-11 items-center justify-center rounded-full bg-accent px-6 text-sm font-medium text-white transition hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-              >
-                Arvostele ravintola
-              </Link>
-            </div>
-          </aside>
-        </div>
-
-        {r.related.length > 0 && (
-          <section aria-labelledby="muut-otsikko" className="mt-16">
-            <h2 id="muut-otsikko" className="font-serif text-2xl sm:text-3xl">
-              Muita ravintoloita{r.city?.name ? ` — ${r.city.name}` : ""}
-            </h2>
-            <ul className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {r.related.map((item) => (
-                <li key={item._id} className="flex">
-                  <RestaurantCard restaurant={item} />
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
-
-        <p className="mt-12">
-          <Link
-            href="/ravintolat"
-            className="inline-flex min-h-11 items-center text-sm font-medium text-accent hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-          >
-            ← Kaikki ravintola-arvostelut
-          </Link>
-        </p>
+          {/* Mobiilissa käynnit tekstin jälkeen, tietokoneella sivupalkissa. */}
+          <VisitsAndInvite restaurant={r} visits={visits} className="mt-4 lg:hidden" />
+        </article>
       </Container>
+
+      {r.related.length > 0 && (
+        <section aria-labelledby="muut-otsikko" className="mt-16 bg-surface py-11 sm:mt-24 sm:py-20">
+          <Container size="wide" className="flex flex-col gap-6 sm:gap-8">
+            <h2 id="muut-otsikko" className="text-[1.75rem] sm:text-[2rem]">
+              Lisää arvioita{r.city?.name ? ` — ${r.city.name}` : ""}
+            </h2>
+            <ul className="grid gap-7 sm:grid-cols-3">
+              {r.related.map((item) => {
+                const itemRating = overallRating(item);
+                return (
+                  <li key={item._id}>
+                    <Link href={`/ravintolat/${item.slug}`} className="group flex flex-col gap-3 no-underline">
+                      {item.image?.asset ? (
+                        <SanityImage
+                          image={item.image}
+                          width={600}
+                          height={400}
+                          sizes="(min-width: 640px) 30vw, 100vw"
+                          className="aspect-[3/2] w-full rounded-sm object-cover"
+                        />
+                      ) : (
+                        <span aria-hidden className="aspect-[3/2] w-full rounded-sm bg-brass-tint" />
+                      )}
+                      {itemRating !== null && <RatingDots value={itemRating} size="sm" />}
+                      <span className="font-display text-[1.375rem] font-semibold text-heading group-hover:text-accent">
+                        {item.name}
+                      </span>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </Container>
+        </section>
+      )}
+      {/* "Lisää arvioita" liittyy suoraan footeriin (tyyliopas). */}
+      {r.related.length > 0 && <span data-flush-footer hidden />}
     </>
   );
 }
 
-function RatingSection({
+/**
+ * Arvosanakortti (tyyliopas): 4 px messinkinen yläreuna, varjo. Kokonaisarvosana
+ * isona, ala-arvosanat pisteinä (Ruoka / Hinta / Viihtyvyys), yhteystiedot,
+ * ruokatyypit ja ravintolan verkkosivut.
+ */
+function ScoreCard({
+  restaurant: r,
   rating,
   parts,
 }: {
+  restaurant: RavintolaDetail;
   rating: number | null;
   parts: ReturnType<typeof subRatings>;
 }) {
+  const address = [r.address, [r.postalCode, r.city?.name].filter(Boolean).join(" ")]
+    .filter(Boolean)
+    .join(", ");
+  const tags = [
+    ...(r.cuisine ?? []).map((c) => ({ label: cuisineLabel(c), food: true })),
+    ...(r.stadionHuomio ? [{ label: r.stadionHuomio, food: false }] : []),
+  ];
+
   return (
-    <section aria-labelledby="arvosanat-otsikko">
-      <h2 id="arvosanat-otsikko" className="font-serif text-2xl sm:text-3xl">
-        Arvosanat
-      </h2>
+    <div className="flex flex-col gap-5 rounded-sm border-t-[3px] border-t-brass bg-surface p-5 sm:gap-6 sm:rounded-2xl sm:border-t-4 sm:p-8 sm:shadow-panel">
+      <div className="flex flex-col gap-1.5">
+        <span className="text-[13px] font-semibold uppercase tracking-[0.1em] text-muted-soft">Arvosana</span>
+        {rating !== null ? (
+          <p className="flex items-baseline gap-2.5">
+            <span className="font-display text-[2.75rem] font-semibold leading-none text-heading tabular-nums sm:text-[3.5rem]">
+              {formatRating(rating)}
+            </span>
+            <span className="text-lg text-muted-soft">/ 5</span>
+          </p>
+        ) : (
+          <p className="text-[15px] text-muted">Ei numeerista arviota.</p>
+        )}
+      </div>
 
-      {rating === null && parts.length === 0 ? (
-        <p className="mt-4 text-muted">
-          Tätä ravintolaa ei ole vielä arvioitu numeerisesti.
-        </p>
-      ) : (
-        <div className="mt-6 flex flex-col gap-8 rounded-2xl border border-border bg-surface p-6 sm:flex-row sm:items-center">
-          {rating !== null && (
-            <div className="flex shrink-0 flex-col items-center gap-2">
-              <RatingBadge value={rating} size="lg" />
-              <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted">
-                Kokonaisarvosana
-              </p>
+      {parts.length > 0 && (
+        <dl className="flex flex-col gap-3 text-[15px]">
+          {parts.map((part) => (
+            <div key={part.key} className="grid grid-cols-[1fr_auto] items-center gap-3">
+              <dt>{part.label}</dt>
+              <dd>
+                <RatingDots value={part.value} label={`${part.label} ${formatRating(part.value)} / 5`} />
+              </dd>
             </div>
-          )}
-
-          {parts.length > 0 && (
-            <dl className="w-full space-y-4">
-              {parts.map((part) => (
-                <div key={part.key}>
-                  <div className="flex items-baseline justify-between gap-3">
-                    <dt className="text-sm font-medium text-foreground">
-                      {part.label}
-                    </dt>
-                    <dd className="text-sm font-semibold tabular-nums text-foreground">
-                      {formatRating(part.value)}
-                      <span className="font-normal text-muted"> / 5</span>
-                    </dd>
-                  </div>
-                  <div
-                    aria-hidden
-                    className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-surface-strong"
-                  >
-                    <div
-                      className="h-full rounded-full bg-brand-500"
-                      style={{
-                        width: `${Math.min(100, Math.max(0, (part.value / 5) * 100))}%`,
-                      }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </dl>
-          )}
-        </div>
+          ))}
+        </dl>
       )}
-    </section>
+
+      {(address || r.priceLevel || r.phone || tags.length > 0) && (
+        <dl className="flex flex-col gap-3.5 border-t border-border pt-5 text-[15px] sm:pt-[22px]">
+          {address && <Fact label="Osoite">{address}</Fact>}
+          {r.priceLevel && <Fact label="Hintataso">{r.priceLevel}</Fact>}
+          {r.phone && (
+            <Fact label="Puhelin">
+              <a href={`tel:${r.phone.replace(/[^\d+]/g, "")}`} className="text-accent hover:underline">
+                {r.phone}
+              </a>
+            </Fact>
+          )}
+          {tags.length > 0 && (
+            <Fact label="Sopii">
+              <span className="mt-1 flex flex-wrap gap-1.5">
+                {tags.map((t) => (
+                  <span
+                    key={t.label}
+                    className={
+                      t.food
+                        ? "rounded-xs bg-brass-tint px-[9px] py-1 text-[13px] font-semibold text-brass-tint-text"
+                        : "rounded-xs bg-blue-tint px-[9px] py-1 text-[13px] font-semibold text-navy"
+                    }
+                  >
+                    {t.label}
+                  </span>
+                ))}
+              </span>
+            </Fact>
+          )}
+        </dl>
+      )}
+
+      {r.website && (
+        <LinkButton href={r.website} external variant="outline" size="lg">
+          Ravintolan verkkosivut <span aria-hidden>↗</span>
+        </LinkButton>
+      )}
+    </div>
+  );
+}
+
+function VisitsAndInvite({
+  restaurant: r,
+  visits,
+  className,
+}: {
+  restaurant: RavintolaDetail;
+  visits: string[];
+  className?: string;
+}) {
+  return (
+    <div className={cn("flex flex-col gap-6", className)}>
+      {(visits.length > 0 || r.visitedAt || r.visitContext) && (
+        <VisitSection visits={visits} visitedAt={r.visitedAt} visitContext={r.visitContext} />
+      )}
+      <p className="text-[15px] text-muted">
+        Kävitkö täällä?{" "}
+        <Link
+          href={`/ravintolat/arvostele?ravintola=${r.slug}`}
+          className="font-semibold text-accent underline underline-offset-4 hover:text-accent-hover"
+        >
+          Lähetä oma arviosi
+        </Link>
+      </p>
+    </div>
+  );
+}
+
+function Fact({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="flex flex-col gap-0.5">
+      <dt className="text-[13px] font-semibold uppercase tracking-[0.1em] text-muted-soft">{label}</dt>
+      <dd>{children}</dd>
+    </div>
   );
 }
 
@@ -404,19 +478,19 @@ function ProsConsSection({
 }) {
   return (
     <section aria-labelledby="plussat-otsikko">
-      <h2 id="plussat-otsikko" className="font-serif text-2xl sm:text-3xl">
+      <h2 id="plussat-otsikko" className="font-display text-2xl sm:text-3xl">
         Plussat ja miinukset
       </h2>
       <div className="mt-6 grid gap-6 sm:grid-cols-2">
         {pros && pros.length > 0 && (
           <div className="rounded-2xl border border-border bg-surface p-6">
-            <h3 className="text-xs font-medium uppercase tracking-[0.18em] text-muted">
+            <h3 className="font-sans text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-soft">
               Plussat
             </h3>
             <ul className="mt-3 space-y-2">
               {pros.map((item, i) => (
                 <li key={`${item}-${i}`} className="flex gap-2 text-foreground">
-                  <span aria-hidden className="text-brand-600">
+                  <span aria-hidden className="text-navy">
                     +
                   </span>
                   <span>{item}</span>
@@ -427,7 +501,7 @@ function ProsConsSection({
         )}
         {cons && cons.length > 0 && (
           <div className="rounded-2xl border border-border bg-surface p-6">
-            <h3 className="text-xs font-medium uppercase tracking-[0.18em] text-muted">
+            <h3 className="font-sans text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-soft">
               Miinukset
             </h3>
             <ul className="mt-3 space-y-2">
@@ -447,68 +521,6 @@ function ProsConsSection({
   );
 }
 
-function ContactSection({ restaurant: r }: { restaurant: RavintolaDetail }) {
-  const hasAddress = Boolean(r.address || r.postalCode || r.city?.name);
-  if (!hasAddress && !r.phone && !r.website) {
-    return (
-      <section aria-labelledby="yhteystiedot-otsikko">
-        <h2
-          id="yhteystiedot-otsikko"
-          className="text-xs font-medium uppercase tracking-[0.18em] text-muted"
-        >
-          Yhteystiedot
-        </h2>
-        <p className="mt-3 text-sm text-muted">Yhteystietoja ei ole kirjattu.</p>
-      </section>
-    );
-  }
-
-  return (
-    <section aria-labelledby="yhteystiedot-otsikko">
-      <h2
-        id="yhteystiedot-otsikko"
-        className="text-xs font-medium uppercase tracking-[0.18em] text-muted"
-      >
-        Yhteystiedot
-      </h2>
-      <dl className="mt-3 space-y-4 text-sm">
-        {hasAddress && (
-          <InfoRow icon={<MapPin size={16} aria-hidden />} label="Osoite">
-            {[r.address, [r.postalCode, r.city?.name].filter(Boolean).join(" ")]
-              .filter(Boolean)
-              .join(", ")}
-          </InfoRow>
-        )}
-        {r.phone && (
-          <InfoRow icon={<Phone size={16} aria-hidden />} label="Puhelin">
-            <a
-              href={`tel:${r.phone.replace(/[^\d+]/g, "")}`}
-              className="text-accent hover:underline"
-            >
-              {r.phone}
-            </a>
-          </InfoRow>
-        )}
-        {r.website && (
-          <InfoRow
-            icon={<ExternalLink size={16} aria-hidden />}
-            label="Verkkosivut"
-          >
-            <a
-              href={r.website}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="break-words text-accent hover:underline"
-            >
-              {r.website.replace(/^https?:\/\//, "").replace(/\/$/, "")}
-            </a>
-          </InfoRow>
-        )}
-      </dl>
-    </section>
-  );
-}
-
 function VisitSection({
   visits,
   visitedAt,
@@ -524,7 +536,7 @@ function VisitSection({
     <section aria-labelledby="kaynnit-otsikko">
       <h2
         id="kaynnit-otsikko"
-        className="text-xs font-medium uppercase tracking-[0.18em] text-muted"
+        className="font-sans text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-soft"
       >
         Klubin käynnit
       </h2>
@@ -547,24 +559,3 @@ function VisitSection({
   );
 }
 
-function InfoRow({
-  icon,
-  label,
-  children,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="flex gap-3">
-      <span className="mt-0.5 shrink-0 text-accent">{icon}</span>
-      <div className="min-w-0">
-        <dt className="text-xs font-medium uppercase tracking-[0.18em] text-muted">
-          {label}
-        </dt>
-        <dd className="mt-0.5 text-base text-foreground">{children}</dd>
-      </div>
-    </div>
-  );
-}

@@ -227,7 +227,7 @@ export default async function StadionPage({
         <section aria-labelledby="stadionin-kuvat" className="mt-16">
           <h2
             id="stadionin-kuvat"
-            className="font-serif text-2xl text-foreground sm:text-3xl"
+            className="font-display text-2xl text-foreground sm:text-3xl"
           >
             Kuvat
           </h2>
@@ -258,7 +258,7 @@ export default async function StadionPage({
         <section aria-labelledby="muut-stadionit" className="mt-16">
           <h2
             id="muut-stadionit"
-            className="font-serif text-2xl text-foreground sm:text-3xl"
+            className="font-display text-2xl text-foreground sm:text-3xl"
           >
             Muita stadioneja arkistossa
           </h2>
@@ -289,7 +289,7 @@ function Fact({
 }) {
   return (
     <div className="bg-surface px-5 py-4">
-      <dt className="text-xs font-medium uppercase tracking-[0.18em] text-muted">
+      <dt className="font-sans text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-soft">
         {label}
       </dt>
       <dd

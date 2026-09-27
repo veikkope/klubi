@@ -57,13 +57,13 @@ export function ReviewForm({
         role="status"
         className="rounded-2xl border border-border bg-surface p-8"
       >
-        <h2 className="font-serif text-2xl text-foreground">
+        <h2 className="font-display text-2xl text-foreground">
           Kiitos arvostelusta
         </h2>
         <p className="mt-3 leading-relaxed text-muted">{state.message}</p>
         <Link
           href="/ravintolat"
-          className="mt-6 inline-flex min-h-11 items-center justify-center rounded-full bg-accent px-6 text-sm font-medium text-white transition hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          className="mt-6 inline-flex min-h-11 items-center justify-center rounded-sm bg-primary px-6 text-sm font-medium text-on-primary transition hover:bg-primary-hover hover:text-on-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         >
           Takaisin hakemistoon
         </Link>
@@ -298,10 +298,10 @@ function StarField({
               <label
                 htmlFor={id}
                 className={cn(
-                  "inline-flex min-h-11 cursor-pointer items-center justify-center rounded-full border border-border",
+                  "inline-flex min-h-11 cursor-pointer items-center justify-center rounded-sm border border-border",
                   "bg-background px-5 text-sm font-medium text-foreground transition",
                   "hover:border-accent hover:text-accent",
-                  "peer-checked:border-accent peer-checked:bg-accent peer-checked:text-white",
+                  "peer-checked:border-accent peer-checked:bg-primary peer-checked:text-on-primary",
                   "peer-focus-visible:ring-2 peer-focus-visible:ring-ring peer-focus-visible:ring-offset-2",
                 )}
               >
@@ -330,7 +330,7 @@ function SubmitButton() {
     <button
       type="submit"
       disabled={pending}
-      className="inline-flex min-h-11 items-center justify-center rounded-full bg-accent px-8 text-sm font-medium text-white shadow-sm transition hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      className="inline-flex min-h-11 items-center justify-center rounded-sm bg-primary px-8 text-sm font-medium text-on-primary shadow-sm transition hover:bg-primary-hover hover:text-on-primary disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
     >
       {pending ? "Lähetetään…" : "Lähetä arvostelu"}
     </button>

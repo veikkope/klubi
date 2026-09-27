@@ -109,3 +109,5 @@ Täydellinen työnkulku: `docs/10-agent-workflow.md`.
 | Agenttityönkulku | `docs/10-agent-workflow.md` |
 | Maalimäärittely ja rinnakkaistoteutus | `docs/11-maali-ja-rinnakkaistoteutus.md` |
 | Sisältömigraatio (maali, tila) | `docs/12-sisaltomigraatio.md` |
+| Otteluohjelma (lähteet, avaimet) | `docs/13-otteluohjelma.md` |
+| Tyyliopas (lopullinen, HTML) | `docs/design-handoff/` |

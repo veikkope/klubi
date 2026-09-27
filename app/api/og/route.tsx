@@ -1,3 +1,6 @@
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
+
 import { ImageResponse } from "next/og";
 
 import { siteName } from "@/lib/site";
@@ -14,11 +17,25 @@ import { siteName } from "@/lib/site";
  * koska suomen ääkköset ovat Latin-1-alueella.
  */
 
-const BRAND = "#1e3a8a";
-const BRAND_DEEP = "#172554";
-const ACCENT = "#93c5fd";
+// Samat arvot kuin app/globals.css (tyyliopas): yönsininen pohja, vaalea
+// teksti ja yläotsakkeen sävy tummalla pohjalla.
+const NAVY = "#141f4d";
+const MUTED = "#d4d8f0";
+const EYEBROW = "#aeb6f2";
 
-export function GET(request: Request): Response {
+// Valkoinen logomerkki data-URI:na. Luetaan tiedostosta prosessin juuresta
+// suhteutettuna, jolloin Next jäljittää sen mukaan serverless-funktioon.
+let markDataUri: string | null = null;
+async function whiteMark(): Promise<string> {
+  if (!markDataUri) {
+    const buf = await readFile(join(process.cwd(), "public/brand/mark-white.png"));
+    markDataUri = `data:image/png;base64,${buf.toString("base64")}`;
+  }
+  return markDataUri;
+}
+
+export async function GET(request: Request): Promise<Response> {
+  const mark = await whiteMark();
   const { searchParams } = new URL(request.url);
   const rawTitle = searchParams.get("title")?.trim();
   const eyebrow = searchParams.get("eyebrow")?.trim();
@@ -41,7 +58,7 @@ export function GET(request: Request): Response {
           flexDirection: "column",
           justifyContent: "space-between",
           padding: "72px 80px",
-          backgroundImage: `linear-gradient(135deg, ${BRAND} 0%, ${BRAND_DEEP} 100%)`,
+          backgroundColor: NAVY,
           color: "#ffffff",
         }}
       >
@@ -52,7 +69,7 @@ export function GET(request: Request): Response {
               fontSize: 26,
               letterSpacing: 4,
               textTransform: "uppercase",
-              color: ACCENT,
+              color: EYEBROW,
             }}
           >
             {eyebrow}
@@ -79,17 +96,11 @@ export function GET(request: Request): Response {
             alignItems: "center",
             gap: 20,
             fontSize: 28,
-            color: ACCENT,
+            color: MUTED,
           }}
         >
-          <div
-            style={{
-              display: "flex",
-              width: 56,
-              height: 5,
-              backgroundColor: ACCENT,
-            }}
-          />
+          {/* eslint-disable-next-line @next/next/no-img-element -- ImageResponse ei tue next/imagea */}
+          <img src={mark} width={45} height={50} alt="" />
           {siteName}
         </div>
       </div>

@@ -80,7 +80,7 @@ export default async function LiityPage() {
         )}
 
         <section aria-labelledby="hakemuslomake" className="mt-12">
-          <h2 id="hakemuslomake" className="font-serif text-3xl leading-tight">
+          <h2 id="hakemuslomake" className="font-display text-3xl leading-tight">
             Sähköinen jäsenhakemus
           </h2>
           <JasenhakemusForm />
@@ -90,7 +90,7 @@ export default async function LiityPage() {
           aria-labelledby="muut-tavat"
           className="mt-16 border-t border-border pt-8"
         >
-          <h2 id="muut-tavat" className="font-serif text-2xl leading-tight">
+          <h2 id="muut-tavat" className="font-display text-2xl leading-tight">
             Muut tavat ottaa yhteyttä
           </h2>
           <p className="mt-3 max-w-2xl text-muted">

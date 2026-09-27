@@ -40,6 +40,7 @@ const STATIC_ROUTES: { path: string; priority: number; changeFrequency: Entry["c
   { path: "/klubi/yhteystiedot", priority: 0.8, changeFrequency: "yearly" },
 
   { path: "/tapahtumat", priority: 0.9, changeFrequency: "daily" },
+  { path: "/ottelut", priority: 0.8, changeFrequency: "daily" },
   { path: "/uutiset", priority: 0.9, changeFrequency: "daily" },
   { path: "/uutiset/arkisto", priority: 0.5, changeFrequency: "monthly" },
 

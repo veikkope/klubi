@@ -109,7 +109,7 @@ export default async function EurocupPage({
         <nav aria-labelledby="muut-kilpailut" className="mt-16">
           <h2
             id="muut-kilpailut"
-            className="font-serif text-2xl leading-tight text-foreground sm:text-3xl"
+            className="font-display text-2xl leading-tight text-foreground sm:text-3xl"
           >
             Muut eurocupit
           </h2>
@@ -118,7 +118,7 @@ export default async function EurocupPage({
               <li key={item.slug}>
                 <Link
                   href={`${basePath}/${item.slug}`}
-                  className="inline-flex min-h-11 items-center rounded-full border border-border bg-surface px-4 text-sm text-muted transition hover:border-brand-300 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+                  className="inline-flex min-h-11 items-center rounded-sm border border-border bg-surface px-4 text-sm text-muted transition hover:border-accent hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
                 >
                   {item.shortTitle}
                 </Link>

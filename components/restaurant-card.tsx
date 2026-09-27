@@ -1,18 +1,9 @@
-import { Card, CardArrow, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Stars } from "@/components/ui/stars";
+import Link from "next/link";
+
+import { RatingDots } from "@/components/ui/rating-dots";
 import { SanityImage } from "@/components/sanity-image";
 import { cn } from "@/lib/cn";
-import { cuisineLabel } from "@/lib/ravintola-cuisines";
 import type { RavintolaCardData } from "@/sanity/lib/queries/ravintolat";
-
-/**
- * Ravintolakortti hakemistoon ja etusivun nostoon.
- *
- * Kortti näyttää sekä kokonaisarvosanan että kolme osa-arviota. Osa-arviot
- * (Ruoka / Hinta / Viihtyvyys) ovat vanhan sivuston arvokkainta dataa — 476
- * ravintolalla on ne — joten ne eivät jää pelkälle yksittäissivulle.
- */
 
 /** Suomalainen desimaalipilkku: 4.2 → "4,2". */
 export function formatRating(value: number): string {
@@ -52,55 +43,14 @@ export function subRatings(r: {
   return result;
 }
 
-/** Pyöreä arvosanamerkki. Sama visuaali kortilla ja yksittäissivulla. */
-export function RatingBadge({
-  value,
-  size = "md",
-  className,
-}: {
-  value: number;
-  size?: "md" | "lg";
-  className?: string;
-}) {
-  return (
-    <span
-      className={cn(
-        "inline-flex shrink-0 items-center justify-center rounded-full bg-brand-50 font-serif text-brand-800 tabular-nums",
-        size === "lg" ? "size-20 text-3xl" : "size-12 text-lg",
-        className,
-      )}
-    >
-      <span className="sr-only">Kokonaisarvosana </span>
-      {formatRating(value)}
-      <span className="sr-only"> / 5</span>
-    </span>
-  );
-}
-
-/** Osa-arviot tekstirivinä. Kompakti muoto korttiin. */
-export function SubRatingList({
-  restaurant,
-  className,
-}: {
-  restaurant: Parameters<typeof subRatings>[0];
-  className?: string;
-}) {
-  const items = subRatings(restaurant);
-  if (items.length === 0) return null;
-  return (
-    <dl className={cn("flex flex-wrap gap-x-4 gap-y-1 text-sm", className)}>
-      {items.map((item) => (
-        <div key={item.key} className="flex items-baseline gap-1.5">
-          <dt className="text-muted">{item.label}</dt>
-          <dd className="font-medium text-foreground tabular-nums">
-            {formatRating(item.value)}
-          </dd>
-        </div>
-      ))}
-    </dl>
-  );
-}
-
+/**
+ * Arviokortti (tyyliopas Sivut v3: "Ravintola-arviot").
+ *
+ * Tietokoneella pystykortti: 4:3 kuva, 3 px messinkinen yläreuna, arvosana-
+ * pisteet + kaupunki · hintataso, nimi (serif 24 px), yhden rivin tuomio ja
+ * valinnainen tagi. Mobiilissa vaakakortti 80 px pikkukuvalla. Messinki on
+ * ruoan ja ravintoloiden kategoriaväri.
+ */
 export function RestaurantCard({
   restaurant: r,
 }: {
@@ -108,64 +58,59 @@ export function RestaurantCard({
 }) {
   const rating = overallRating(r);
   const isClosed = r.closed === true;
+  const meta = [r.city?.name, r.priceLevel].filter(Boolean).join(" · ");
 
   return (
-    <Card
+    <Link
       href={`/ravintolat/${r.slug}`}
-      className={cn("flex h-full flex-col", isClosed && "opacity-90")}
+      className={cn(
+        "group grid w-full grid-cols-[80px_1fr] items-center gap-3.5 overflow-hidden rounded-sm border-t-[3px] border-t-brass bg-surface p-[18px] no-underline transition hover:shadow-panel",
+        "sm:flex sm:flex-col sm:items-stretch sm:gap-0 sm:border-t-0 sm:p-0",
+        isClosed && "opacity-85",
+      )}
     >
-      {r.image?.asset && (
-        <div className="-m-6 mb-4 overflow-hidden rounded-t-2xl">
-          <SanityImage
-            image={r.image}
-            width={600}
-            height={360}
-            sizes="(min-width: 1024px) 380px, (min-width: 640px) 45vw, 92vw"
-            className="h-44 w-full object-cover"
-          />
-        </div>
+      {r.image?.asset ? (
+        <SanityImage
+          image={r.image}
+          width={640}
+          height={480}
+          sizes="(min-width: 1024px) 420px, (min-width: 640px) 45vw, 80px"
+          className="aspect-square w-full rounded-sm object-cover sm:aspect-[4/3] sm:rounded-none"
+        />
+      ) : (
+        <span aria-hidden className="aspect-square w-full rounded-sm bg-brass-tint sm:hidden" />
       )}
 
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <CardTitle className="leading-snug">{r.name}</CardTitle>
-          <p className="mt-1 text-sm text-muted">
-            {r.city?.name ?? "Sijainti ei tiedossa"}
-          </p>
-        </div>
-        {rating !== null && <RatingBadge value={rating} />}
-      </div>
-
-      <div className="mt-3 flex flex-wrap items-center gap-2">
-        {typeof r.stars === "number" && <Stars value={r.stars} />}
-        {r.priceLevel && <Badge tone="muted">{r.priceLevel}</Badge>}
-        {isClosed && <Badge tone="neutral">Toiminta loppunut</Badge>}
-      </div>
-
-      {r.tiivistelma && (
-        <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-muted">
-          {r.tiivistelma}
-        </p>
-      )}
-
-      <SubRatingList restaurant={r} className="mt-3" />
-
-      {r.cuisine && r.cuisine.length > 0 && (
-        <div className="mt-3 flex flex-wrap gap-1.5">
-          {r.cuisine.slice(0, 3).map((c) => (
-            <Badge key={c} tone="brand">
-              {cuisineLabel(c)}
-            </Badge>
-          ))}
-          {r.cuisine.length > 3 && (
-            <Badge tone="muted">+{r.cuisine.length - 3}</Badge>
+      <div className="flex min-w-0 flex-col gap-1.5 sm:flex-1 sm:gap-2.5 sm:border-t-[3px] sm:border-t-brass sm:p-6">
+        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+          {rating !== null && (
+            <>
+              <RatingDots value={rating} size="sm" className="sm:hidden" />
+              <RatingDots value={rating} size="lg" className="max-sm:hidden" />
+            </>
           )}
+          {meta && <span className="hidden text-sm text-muted-soft sm:inline">{meta}</span>}
         </div>
-      )}
-
-      <div className="mt-auto">
-        <CardArrow label="Lue arvostelu" />
+        <h3 className="font-display text-[1.1875rem] leading-[1.25] text-heading group-hover:text-accent sm:text-2xl">
+          {r.name}
+        </h3>
+        <p className="text-[13px] text-muted-soft sm:hidden">
+          {[r.city?.name, r.stadionHuomio ?? r.priceLevel].filter(Boolean).join(" · ")}
+        </p>
+        {r.tuomio && (
+          <p className="hidden text-base leading-[1.55] text-muted sm:block">{r.tuomio}</p>
+        )}
+        {(r.stadionHuomio || isClosed) && (
+          <span
+            className={cn(
+              "hidden self-start rounded-xs px-2 py-1 text-xs font-semibold sm:inline-block",
+              isClosed ? "bg-surface-strong text-muted" : "bg-blue-tint text-navy",
+            )}
+          >
+            {isClosed ? "Toiminta loppunut" : r.stadionHuomio}
+          </span>
+        )}
       </div>
-    </Card>
+    </Link>
   );
 }

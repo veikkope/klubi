@@ -231,7 +231,7 @@ export default async function PelaajaPage({
         <section aria-labelledby="seurahistoria" className="mt-16">
           <h2
             id="seurahistoria"
-            className="font-serif text-2xl text-foreground sm:text-3xl"
+            className="font-display text-2xl text-foreground sm:text-3xl"
           >
             Seurahistoria
           </h2>
@@ -262,7 +262,7 @@ export default async function PelaajaPage({
         <section aria-labelledby="pelaajan-tilastot" className="mt-16">
           <h2
             id="pelaajan-tilastot"
-            className="font-serif text-2xl text-foreground sm:text-3xl"
+            className="font-display text-2xl text-foreground sm:text-3xl"
           >
             Tilastot
           </h2>
@@ -278,7 +278,7 @@ export default async function PelaajaPage({
         <section aria-labelledby="pelaajan-kuvat" className="mt-16">
           <h2
             id="pelaajan-kuvat"
-            className="font-serif text-2xl text-foreground sm:text-3xl"
+            className="font-display text-2xl text-foreground sm:text-3xl"
           >
             Kuvat
           </h2>
@@ -309,7 +309,7 @@ export default async function PelaajaPage({
         <section aria-labelledby="muut-pelaajat" className="mt-16">
           <h2
             id="muut-pelaajat"
-            className="font-serif text-2xl text-foreground sm:text-3xl"
+            className="font-display text-2xl text-foreground sm:text-3xl"
           >
             Muita pelaajia arkistossa
           </h2>
@@ -342,7 +342,7 @@ function Fact({
 }) {
   return (
     <div className="bg-surface px-5 py-4">
-      <dt className="text-xs font-medium uppercase tracking-[0.18em] text-muted">
+      <dt className="font-sans text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-soft">
         {label}
       </dt>
       <dd

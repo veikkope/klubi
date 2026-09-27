@@ -35,6 +35,7 @@ export const structure: StructureResolver = (S) =>
       S.divider(),
 
       S.listItem().title("Tapahtumat").schemaType("tapahtuma").child(S.documentTypeList("tapahtuma").title("Tapahtumat")),
+      S.listItem().title("Ottelut").schemaType("ottelu").child(S.documentTypeList("ottelu").title("Ottelut").defaultOrdering([{ field: "aika", direction: "asc" }])),
       S.listItem().title("Uutiset").schemaType("uutinen").child(S.documentTypeList("uutinen").title("Uutiset")),
       S.listItem().title("Galleria-albumit").schemaType("galleriaAlbumi").child(S.documentTypeList("galleriaAlbumi").title("Galleria-albumit")),
       S.listItem().title("Sivut").schemaType("sivu").child(S.documentTypeList("sivu").title("Sivut")),

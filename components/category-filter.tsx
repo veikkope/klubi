@@ -26,9 +26,9 @@ type Props = {
 };
 
 const chipBase =
-  "inline-flex min-h-11 items-center rounded-full border px-4 text-sm font-medium transition";
+  "inline-flex min-h-11 items-center rounded-sm border px-4 text-sm font-medium transition";
 
-const chipActive = "border-accent bg-accent text-white";
+const chipActive = "border-primary bg-primary text-on-primary";
 
 const chipIdle =
   "border-border bg-background text-foreground hover:border-accent hover:text-accent";

@@ -149,7 +149,7 @@ export default async function UutisetPage({
       </Container>
 
       <Container className="py-16">
-        <h2 className="font-serif text-2xl sm:text-3xl">
+        <h2 className="font-display text-2xl sm:text-3xl">
           {category ? categoryLabel(category) : "Kaikki uutiset"}
         </h2>
         <p className="mt-2 text-sm text-muted">
@@ -188,7 +188,7 @@ export default async function UutisetPage({
 function EmptyState({ category }: { category: UutinenCategory | null }) {
   return (
     <div className="mt-8 rounded-2xl border border-dashed border-border bg-surface p-10 text-center">
-      <p className="font-serif text-2xl">
+      <p className="font-display text-2xl">
         {category ? "Ei uutisia tästä kategoriasta" : "Ei vielä uutisia"}
       </p>
       <p className="mx-auto mt-2 max-w-md text-muted">

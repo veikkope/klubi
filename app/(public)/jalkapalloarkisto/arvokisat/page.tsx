@@ -130,7 +130,7 @@ export default async function ArvokisatPage() {
             <section key={group.kisatyyppi} aria-labelledby={`kisat-${group.kisatyyppi}`}>
               <h2
                 id={`kisat-${group.kisatyyppi}`}
-                className="font-serif text-2xl text-foreground sm:text-3xl"
+                className="font-display text-2xl text-foreground sm:text-3xl"
               >
                 {group.label}
               </h2>
@@ -150,7 +150,7 @@ export default async function ArvokisatPage() {
         <section aria-labelledby="mitalistit" className="mt-16">
           <h2
             id="mitalistit"
-            className="font-serif text-2xl text-foreground sm:text-3xl"
+            className="font-display text-2xl text-foreground sm:text-3xl"
           >
             Mitalistit
           </h2>

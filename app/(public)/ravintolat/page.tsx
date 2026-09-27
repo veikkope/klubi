@@ -31,7 +31,7 @@ import {
 
 export const revalidate = 3600;
 
-const TITLE = "Ravintolat";
+const TITLE = "Ravintola-arviot";
 
 /**
  * Ingressi johdetaan datasta, ei kovakoodata.
@@ -148,11 +148,12 @@ export default async function RavintolatPage({ searchParams }: PageProps) {
           title={TITLE}
           lead={lead}
           eyebrow="Klubin arvostelut"
+          topic="food"
           breadcrumbs={trail}
           actions={
             <Link
               href="/ravintolat/arvostele"
-              className="inline-flex min-h-11 items-center justify-center rounded-full bg-accent px-6 text-sm font-medium text-white shadow-sm transition hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              className="inline-flex min-h-11 items-center justify-center rounded-sm bg-primary px-6 text-sm font-medium text-on-primary shadow-sm transition hover:bg-primary-hover hover:text-on-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
               Lähetä oma arvostelu
             </Link>
@@ -197,7 +198,7 @@ function EmptyState({
 }) {
   return (
     <div className="rounded-2xl border border-dashed border-border bg-surface p-10 text-center">
-      <h3 className="font-serif text-2xl text-foreground">
+      <h3 className="font-display text-2xl text-foreground">
         {isFiltered ? "Ei osumia näillä rajauksilla" : "Hakemisto on vielä tyhjä"}
       </h3>
       <p className="mx-auto mt-3 max-w-md text-muted">
@@ -210,7 +211,7 @@ function EmptyState({
       {isFiltered && (
         <Link
           href="/ravintolat"
-          className="mt-6 inline-flex min-h-11 items-center justify-center rounded-full border border-border px-6 text-sm font-medium text-foreground transition hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          className="mt-6 inline-flex min-h-11 items-center justify-center rounded-sm border border-border px-6 text-sm font-medium text-foreground transition hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         >
           Tyhjennä rajaukset
         </Link>
@@ -231,7 +232,7 @@ function Pagination({
   const hasNext = filters.sivu < pageCount;
 
   const linkClass =
-    "inline-flex min-h-11 items-center justify-center rounded-full border border-border px-5 text-sm font-medium text-foreground transition hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
+    "inline-flex min-h-11 items-center justify-center rounded-sm border border-border px-5 text-sm font-medium text-foreground transition hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
 
   return (
     <nav

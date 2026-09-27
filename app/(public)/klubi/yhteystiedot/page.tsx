@@ -90,7 +90,7 @@ export default async function YhteystiedotPage() {
             <div className="flex gap-4">
               <MapPin aria-hidden className="mt-1 shrink-0 text-accent" size={20} />
               <div>
-                <dt className="text-xs font-medium uppercase tracking-[0.18em] text-muted">
+                <dt className="font-sans text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-soft">
                   Osoite
                 </dt>
                 <dd className="mt-1 text-base text-foreground">
@@ -106,7 +106,7 @@ export default async function YhteystiedotPage() {
             <div className="flex gap-4">
               <Mail aria-hidden className="mt-1 shrink-0 text-accent" size={20} />
               <div>
-                <dt className="text-xs font-medium uppercase tracking-[0.18em] text-muted">
+                <dt className="font-sans text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-soft">
                   Sähköposti
                 </dt>
                 <dd className="mt-1">
@@ -125,7 +125,7 @@ export default async function YhteystiedotPage() {
             <div className="flex gap-4">
               <Phone aria-hidden className="mt-1 shrink-0 text-accent" size={20} />
               <div>
-                <dt className="text-xs font-medium uppercase tracking-[0.18em] text-muted">
+                <dt className="font-sans text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-soft">
                   Puhelin
                 </dt>
                 <dd className="mt-1">
@@ -145,7 +145,7 @@ export default async function YhteystiedotPage() {
           <section aria-labelledby="laskutustiedot" className="mt-12 border-t border-border pt-8">
             <h2
               id="laskutustiedot"
-              className="text-xs font-medium uppercase tracking-[0.18em] text-muted"
+              className="font-sans text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-soft"
             >
               Laskutustiedot
             </h2>
@@ -170,7 +170,7 @@ export default async function YhteystiedotPage() {
           <section aria-labelledby="seuraa" className="mt-12 border-t border-border pt-8">
             <h2
               id="seuraa"
-              className="text-xs font-medium uppercase tracking-[0.18em] text-muted"
+              className="font-sans text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-soft"
             >
               Seuraa klubia
             </h2>
@@ -181,7 +181,7 @@ export default async function YhteystiedotPage() {
                     href={social.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex min-h-11 items-center gap-2 rounded-full border border-border px-4 text-sm text-foreground transition hover:border-accent hover:text-accent"
+                    className="inline-flex min-h-11 items-center gap-2 rounded-sm border border-border px-4 text-sm text-foreground transition hover:border-accent hover:text-accent"
                   >
                     <SocialIcon platform={social.platform} />
                     {socialLabels[social.platform]}

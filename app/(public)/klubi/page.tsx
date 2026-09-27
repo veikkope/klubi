@@ -131,7 +131,7 @@ export default async function KlubiPage() {
           <div className="flex flex-wrap items-baseline justify-between gap-3">
             <h2
               id="toimintamuodot"
-              className="font-serif text-3xl leading-tight"
+              className="font-display text-3xl leading-tight"
             >
               Toimintamuodot
             </h2>
@@ -175,7 +175,7 @@ export default async function KlubiPage() {
         </section>
 
         <section aria-labelledby="klubin-sivut" className="mt-16">
-          <h2 id="klubin-sivut" className="font-serif text-3xl leading-tight">
+          <h2 id="klubin-sivut" className="font-display text-3xl leading-tight">
             Lisää klubista
           </h2>
           <ul className="mt-6 grid gap-3 sm:grid-cols-2">
@@ -189,7 +189,7 @@ export default async function KlubiPage() {
                       "flex min-h-11 items-center justify-between gap-3 rounded-xl border px-5 py-3 transition",
                       isCta
                         ? "border-accent bg-accent-soft font-medium text-accent hover:border-accent-hover"
-                        : "border-border bg-surface text-foreground hover:border-brand-300",
+                        : "border-border bg-surface text-foreground hover:border-accent",
                     )}
                   >
                     <span>{item.label}</span>

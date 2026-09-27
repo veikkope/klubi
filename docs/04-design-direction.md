@@ -1,120 +1,144 @@
 # 04 — Design-suunta
 
+> **Lähde:** verkkosivujen tyyliopas (design handoff, syyskuu 2026) kansiossa `docs/design-handoff/`. **Sivujen lähde on `Sivut v3.dc.html`** (etusivu ja ravintola-arvio, tietokone + mobiili). `Tyyliopas.dc.html` määrittää tokenit; sen esimerkkisivu on vanhentunut. Avaa tiedostot selaimessa. Tyyliopas on **lopullinen**: värit, fontit, koot ja välit noudatetaan sellaisenaan. Tämä dokumentti kertoo, miten tyyliopas on toteutettu koodissa. Ristiriitatilanteessa tyyliopas voittaa.
+
 ## Brändin ydin
 
-**Klassinen, arvokas, elegantti — modernilla otteella.** Sininen+valkoinen viittaa suomalaisuuteen ja klubin perinteeseen, mutta toteutus on raikas ja moderni. Ei vanhanaikaisuutta, ei kliseitä.
+Värit ja tyyli tulevat logosta: kirkas sininen aaltomerkki ja klassinen antiikvateksti. Ilme on asiallinen ja rauhallinen, ja siinä on paljon tyhjää tilaa.
 
-## Värimaailma
+**Sisältö:** pääaihe on suomalainen jalkapallokulttuuri (otteluraportit, otteluohjelma, kannattajakulttuuri, klubin matkat), toinen aihe ravintola-arviot (etenkin pelipäivien ruokapaikat). Uutta sisältöä tulee noin kerran kuussa, joten etusivu esittelee ensin klubin. **Ei liittymis- eikä uutiskirjekehotteita.**
 
-Lähde: `app/globals.css` (CSS-muuttujat + Tailwind v4 `@theme inline`).
+### Periaatteet (tyylioppaasta)
+1. **Sininen on toimintaa.** Klubinsinistä käytetään vain klikattaviin asioihin (painikkeet, linkit, aktiivinen valikko) ja logoon.
+2. **Serif otsikoihin.** Antiikva otsikoissa jatkaa logon tyyliä. Leipäteksti on aina groteskia.
+3. **Logolle tilaa.** Logon ympärille jätetään vähintään merkin puolikkaan levyinen tyhjä tila. Tummalla pohjalla käytetään valkoista versiota.
+4. **Kategoriavärit.** Sininen = jalkapallo, messinki = ruoka ja ravintolat (sekä juhlatapahtumat). Väri näkyy yläotsakkeissa, korttien yläreunoissa ja tageissa.
 
-### Brändisinisen palette
-| Token | HEX | Käyttö |
-|---|---|---|
-| `--brand-50` | #eff6ff | Soft background, alustat |
-| `--brand-100` | #dbeafe | Hover-tilat, badge-taustat |
-| `--brand-200` | #bfdbfe | Aksenttitekstit tummalla taustalla |
-| `--brand-500` | #3b82f6 | Linkkien fokus-rengas, korostukset |
-| `--brand-600` | #2563eb | Sekundääriset napit |
-| `--brand-700` | #1d4ed8 | **Primääri aksentti** (CTA, linkit) |
-| `--brand-800` | #1e40af | Hover-tila CTA:lle |
-| `--brand-900` | #1e3a8a | Hero-tausta, headerin korkein kontrasti |
-| `--brand-950` | #172554 | Tumman teeman tausta, footer |
+Pintojen suhde: 60 % vaalea pohja, 20 % yönsininen, 12 % klubinsininen, loput korosteina.
 
-### Neutraalit (slate-skaala)
-| Token | HEX | Käyttö |
-|---|---|---|
-| `--background` | #ffffff | Sivun perustausta |
-| `--surface` | #f8fafc | Korttien, lohkojen tausta |
-| `--surface-strong` | #f1f5f9 | Korostetut alustat |
-| `--foreground` | #0f172a | Päätekstin väri |
-| `--muted` | #475569 | Sekundääri teksti |
-| `--border` | #e2e8f0 | Erottimet, korttien reunat |
+## Värit
 
-### Tumma teema
-Aktivoituu `prefers-color-scheme: dark`. Brändisinisestä säilyy syvyys, taustat muuttuvat tummansiniseksi (`#0b1220`), tekstit `slate-50`.
+Lähde: `app/globals.css` (CSS-muuttujat ja Tailwind v4 `@theme inline`). Komponentit käyttävät vain tokeneita. Ainoa poikkeus on OG-kuva (`app/api/og/route.tsx`), jossa arvot on toistettu, koska `ImageResponse` ei lue CSS:ää.
+
+| Token (Tailwind) | HEX | Käyttö | Kontrasti |
+|---|---|---|---|
+| `blue` = `accent`, `primary` | #1A2CD8 | Klubinsininen: painikkeet, linkit, yläotsakkeet, logo | 8,1:1 paperilla |
+| `navy` = `heading`, `chrome` | #141F4D | Yönsininen: otsikot, hero, footer, tummat paneelit, pääpainikkeen hover | 14,6:1 paperilla |
+| `blue-tint` = `accent-soft` | #E6E9FB | Tagit, korostuspohjat, kentän fokuskehys, toissijaisen painikkeen hover | — |
+| `background` | #F7F6F2 | Paperi: sivun tausta | — |
+| `surface` | #FFFFFF | Kortit, header, valkoiset osiot | — |
+| `surface-strong` | #EFEEE8 | Neutraali hover-pinta (johdettu, ei tyylioppaassa) | — |
+| `foreground` | #1B1D26 | Muste: leipäteksti | 15,5:1 |
+| `muted` | #4A4D5C | Toissijainen teksti | 7,7:1 |
+| `muted-soft` | #6B6E7C | Kuvatekstit, meta, pienet osiolabelit | 4,7:1 |
+| `border` | #ECEBE5 | Erottimet, korttien reunat | — |
+| `border-strong` | #C9C8C0 | Lomakekenttien reunat | — |
+| `brass` / `brass-text` | #B8862E / #8A6420 | Messinki = ruoan kategoriaväri: arvosanapisteet, arviokorttien yläreuna, ruoka-aiheiset yläotsakkeet, juhlatapahtuman kortti | teksti 5,4:1 |
+| `brass-tint` / `brass-tint-text` | #F3EAD8 / #5C4315 | Ruokatagi (esim. keittiötyyppi arviosivulla) | 7,7:1 |
+| `on-chrome-muted` | #D4D8F0 | Leipäteksti yönsinisellä | 11,2:1 |
+| `on-chrome-eyebrow` | #AEB6F2 | Yläotsake yönsinisellä | 8,1:1 |
+
+**Tumma teema:** tyylioppaassa ei ole tummaa teemaa, joten sitä ei toteuteta. Sivusto näyttää samalta käyttöjärjestelmän asetuksesta riippumatta. Jos tumma teema halutaan myöhemmin, se johdetaan yönsinisestä ja lisätään tyylioppaaseen ensin.
 
 ## Typografia
 
-| Fontti | Käyttö | Lähde |
+Fontit ladataan `next/font/google`-toiminnolla (`app/layout.tsx`). Next hakee ne buildissa ja tarjoilee omalta palvelimelta.
+
+| Fontti | Käyttö | Tailwind |
 |---|---|---|
-| **Inter** | Body, navigaatio, lomakkeet, taulukot | next/font/google |
-| **Fraunces** | Otsikot (h1–h3), hero, "klassinen" tunnelma | next/font/google |
+| **Source Serif 4** 600 | Otsikot h1–h3, isot numerot | `font-display` (h1–h3 automaattisesti, väri `heading`) |
+| **Public Sans** 400/500/600 | Leipäteksti, valikot, painikkeet, lomakkeet | `font-sans` (oletus) |
 
-Fraunces on moderni serif jossa "SOFT"-akseli — yhdistää klassisen vakauden modernin lämpöön. Hyvä yhdistyksen perinteen ja modernin otteen ilmentäjäksi.
+IBM Plex Mono on tyylioppaassa valinnainen, eikä sitä ole otettu käyttöön.
 
-### Hierarchia
-- **Display (hero):** Fraunces, 5xl/7xl, weight 500, leading-tight, tracking-tight
-- **H1 (sivu):** Fraunces, 4xl, weight 500
-- **H2 (osio):** Fraunces, 3xl, weight 500
-- **H3 (kortti):** Fraunces, xl, weight 500
-- **Body:** Inter, base/lg, weight 400, leading-relaxed
-- **Caption:** Inter, sm, weight 400, color muted
-- **Eyebrow (yläteksti):** Inter, sm, uppercase, tracking-wider, weight 500
-
-## Spacing & rytmi
-
-Tailwind v4 oletusarvot. Tärkeät:
-- Section padding: `py-20` (mobiilissa) → `py-32` (työpöydällä)
-- Max content width: `max-w-5xl` (yleinen) tai `max-w-3xl` (artikkelit)
-- Card padding: `p-6`
-- Gap between sections: `gap-12` desktopissa, `gap-8` mobiilissa
-
-## Komponentit (perusjoukko)
-
-| Komponentti | Tila | Sijainti |
+| Tyyli | Määrittely | Toteutus |
 |---|---|---|
-| `Header` (sticky, hampurilainen mobiilissa) | TODO | `components/layout/header.tsx` |
-| `Footer` | TODO | `components/layout/footer.tsx` |
-| `Hero` (sininen tausta, gradientti) | Inline etusivulla | siirretään `components/blocks/hero.tsx`:ksi |
-| `Card` (uutinen, tapahtuma, ravintola) | TODO | `components/ui/card.tsx` |
-| `Button` (primary/secondary/ghost) | TODO | `components/ui/button.tsx` |
-| `Badge` (tagit, kaupungit, tähdet) | TODO | `components/ui/badge.tsx` |
-| `Stars` (1–5 ravintolatähteä) | TODO | `components/ui/stars.tsx` |
-| `Container` | TODO | `components/layout/container.tsx` |
-| `Breadcrumbs` | TODO | `components/layout/breadcrumbs.tsx` |
-| `PortableText` (Sanity-render) | TODO | `components/portable-text.tsx` |
-| `Lightbox` (galleria) | TODO | `components/gallery/lightbox.tsx` |
+| Hero H1 | Source Serif 4 600, 66/1.04 (mobiili 38/1.08) | `Hero` |
+| Arvion H1 | 60/1.05 (mobiili 32/1.12) | `ravintolat/[slug]` |
+| H1 | 48/1.1, navy | `PageHeader`: `text-4xl sm:text-5xl leading-[1.1]` |
+| Osion H2 | 40 (mobiili 28) | `BlockHeading`, esittely |
+| H3 | 22/1.3 | `CardTitle`: `text-[1.375rem] leading-[1.3]` |
+| Leipä | Public Sans 400, 18/1.6 | `body` (globals.css), PortableText `text-lg` |
+| Pieni | 14/1.5, muted | `text-sm text-muted` |
+| Yläotsake | Public Sans 600, 14 px (mobiili 12), uppercase, .12em, sininen tai messinki aiheen mukaan (`Eyebrow`, `topic="food"`) | `text-[13px] font-semibold uppercase tracking-[0.12em] text-accent` (yönsinisellä `text-on-chrome-eyebrow`) |
+
+Pienet h2/h3-osiolabelit (esim. "Yhteystiedot", "Plussat") käyttävät yläotsakkeen tyyliä `font-sans`-luokalla ja `muted-soft`-värillä, jotta ne eivät peri serif-otsikkotyyliä. Sinistä ei käytetä, koska ne eivät ole klikattavia.
+
+## Taitto, välit, pyöristys, varjo
+
+- **Taitto** (Sivut v3): leveys 1440 px, sisällön sivumarginaali 80 px tietokoneella ja 20 px mobiilissa (`Container size="wide"`).
+- **Osiot:** pystypehmuste 96 px tietokoneella ja 44 px mobiilissa (`py-11 sm:py-24`). Osiot vuorottelevat paperin ja valkoisen välillä. Hero ja footer ovat yönsinisiä.
+- **Footerin väli:** `main`-elementillä on alapehmuste. Sivu, jonka viimeinen osio on täysleveä, poistaa pehmusteen elementillä `<span data-flush-footer hidden />`.
+- **Välit** 8 px:n askelin: 8 / 16 / 24 / 40 / 72.
+- **Pyöristys:**
+  - 4 px painikkeissa, kentissä ja korteissa (`rounded-sm`, samoin `rounded-lg` ja `rounded-xl`)
+  - 6 px isoissa paneeleissa (`rounded-2xl`)
+  - 3 px tageissa (`rounded-xs`)
+
+  Tailwindin pyöristysasteikko on uudelleenmääritelty tiedostossa `globals.css`, joten vanhat luokat noudattavat tyyliopasta. `rounded-full` on vain ympyröille (avatarit, pisteet, ikoninapit, numerot).
+- **Varjo** vain isoille paneeleille: `shadow-panel`. Korttien hoverissa käytetään samaa.
+
+## Logo
+
+Tiedostot ovat kansiossa `public/brand/`. Ne ovat läpinäkyviä PNG-kuvia, jotka on rajattu alkuperäisestä logosta. Ne ovat brändin tiedostoja eivätkä Sanityn sisältöä.
+
+| Tiedosto | Käyttö |
+|---|---|
+| `mark-blue.png` + `wordmark-blue.png` | Header: merkki 44 px + teksti 22 px, väli 12 px (mobiilissa 36 + 18) |
+| `mark-white.png` + `wordmark-white.png` | Footer: merkki 36 px + teksti 18 px; OG-kuva |
+| `*-navy`, `*-black` | Varalla (tulosteet, kumppanisivut) |
+
+`next/image`-kuville annetaan leveys ja korkeus niiden näyttökoossa, jotta srcset tuottaa 1x- ja 2x-versiot oikean kokoisina. Merkki kannattaa myöhemmin vektoroida SVG:ksi.
+
+**Favicon:** sininen merkki valkoisella pyöristetyllä neliöllä, merkin korkeus noin 75 % neliön korkeudesta.
+- `app/favicon.ico` (16 ja 32 px)
+- `app/icon.png` (512 px)
+- `app/apple-icon.png` (180 px)
+
+Kuvat on generoitu tiedostosta `mark-blue.png` sharp-kirjastolla.
+
+## Komponentit
+
+| Komponentti | Tyyliopas (Sivut v3) | Sijainti |
+|---|---|---|
+| `Header` | Valkoinen, alaviiva, logo: merkki 50 px + teksti 25 px (mobiili 38 + 17). Valikko 16 px / 500, väli 40 px, aktiivinen sininen + 2 px alleviivaus. **Ei CTA-painiketta.** | `components/layout/header.tsx`, `header-client.tsx` |
+| `Hero` | Yönsininen, 1,15fr / 1fr, väli 80 px, yläotsake, H1 66 px, ingressi 20 px, kaksi alleviivattua tekstilinkkiä, 4:5 kuva. | `components/blocks/hero.tsx` |
+| `BlockHeading`, `Eyebrow`, `ArrowLink` | Osion otsikkorivi: yläotsake + H2 + "Kaikki … →" -linkki (mobiilissa listan alla) | `components/blocks/block-heading.tsx` |
+| `OtteluohjelmaBlock` + `FixtureList` | Ottelulista 110 px / 1fr / 170 px, merkit "Klubi paikalla" (sininen) ja "Vierasmatka" (sininen reuna); tapahtumat rinnalla | `components/blocks/otteluohjelma-block.tsx`, `components/fixture-list.tsx` |
+| `EventCard` | 60 px päivämääräsarake (päivä serif 34 px + kuukausi), otsikko 21 px, yhden rivin kuvaus. 3 px yläreuna: sininen, juhlatapahtumalla messinki. | `components/event-card.tsx` |
+| `UutisetBlock` | Uusin juttu isona (16:10 kuva, serif 40 px), 3 listana (serif 25 px) | `components/blocks/uutiset-block.tsx` |
+| `RestaurantCard` | 4:3 kuva, 3 px messinkireuna, pisteet + kaupunki · hintataso, nimi 24 px, tuomio, tagi. Mobiilissa vaakakortti 80 px pikkukuvalla. | `components/restaurant-card.tsx` |
+| `RatingDots` | 5 ympyrää 9–12 px: täysi messinki, tyhjä 1,5 px messinkireuna | `components/ui/rating-dots.tsx` |
+| Arviosivu | Messinkiyläotsake, H1 60 px, 21:9 kuva, teksti 19/1.75 (ensimmäinen kappale serif 24 px, lainaus serif kursiivi 28 px messinkiviivalla), "Ottelupäivänä"-laatikko, sticky arvosanakortti (4 px messinki, varjo), "Lisää arvioita" | `app/(public)/ravintolat/[slug]/page.tsx` |
+| `EsittelyBlock` | "Klubista": kuva vasemmalla 4:3, yläotsake, H2 40 px, teksti, tekstilinkki | `components/blocks/esittely-block.tsx` |
+| `Button` | `primary` sininen → hover yönsininen, `outline` yönsininen reuna, `onDarkPrimary`, `onDark`. 48 px (`lg`), 600, 4 px. | `components/ui/button.tsx` |
+| `Badge` (tag) | Vaalea sininen + navy, 13 px / 600, 3 px | `components/ui/badge.tsx` |
+| `Footer` | Yönsininen, pystylogo (merkki 56 + teksti 24), sarakkeet Jalkapallo / Klubi / Yhteystiedot, alarivi | `components/layout/footer.tsx` |
+| `CtaBlock` | **Ei käytössä** (tyyliopas: ei liittymiskehotteita). Säilyy vanhan datan vuoksi. | `components/blocks/cta-block.tsx` |
 
 ## Ikonit
 
-**Lucide React** (tree-shakable, johdonmukainen, ilmainen). Käytä sparingly — ei ikoneita "kuorrutukseksi".
+**Lucide React** (tree-shakable, johdonmukainen, ilmainen). Ikoneita käytetään säästeliäästi, ei koristeena.
 
 ## Kuvitus
 
-- Suosi aitoja valokuvia (yhdistyksen tapahtumat, hallitus, Lahti)
-- Ei stockkuvia
-- Hero käyttää joko valokuvaa tai brändisinistä gradienttia
-- Kuvat Sanityn Asset CDN:stä, näytetään `next/image`:lla
-- AVIF/WebP automaattisesti
+- Aidot valokuvat (klubi-illat, tapahtumat, hallitus, Lahti), ei stockkuvia
+- Etusivun hero: yönsininen pohja, kuva oikeassa sarakkeessa 4:5 (tyyliopas: "klubilaiset katsomossa")
+- Kuvat Sanityn Asset CDN:stä, näytetään `next/image`:lla, AVIF/WebP automaattisesti
 
 ## Animaatiot
 
-Pidetty hyvin maltillisina. Vain:
+Hyvin maltillisia. Vain:
 - Linkki-hoverin värimuutos (150 ms)
 - Kortin hover-varjo (200 ms)
-- Sivu-fade-in (ei pakollinen)
 
 Kunnioita `prefers-reduced-motion`.
 
 ## Saavutettavuus
 
-- WCAG 2.1 AA -taso
-- Kontrastit: kaikki tekstit ≥ 4.5:1 normaalitekstille
+- WCAG 2.1 AA -taso; kaikki yllä olevat tekstiväriparit ≥ 4,5:1
 - Näppäimistönavigointi toimii kaikissa interaktiivisissa elementeissä
-- Fokus-renkaat näkyvissä (2px `--ring`, 2px offset)
+- Fokus-renkaat näkyvissä (2 px `--ring` = klubinsininen, 2 px offset); lomakekentillä tyylioppaan fokuskehys
 - Aria-labelit ikoninapeissa ja epäselvissä kontrolleissa
 - Lomakekentillä `<label>` aina, ei pelkkä placeholder
-- Kuvilla `alt` (Sanityssa validointi pakottaa)
-
-## Moodboard / inspiraatio
-
-Tyylillinen suunta:
-- **Verkkosivun arkkitehtuuri:** raikas valkoinen + syvä navy, paljon valkoista tilaa
-- **Tunnelma:** modernin perinteinen — kuvittele yliopiston, kirjaston tai musiikkitalon sivut, mutta lämpimämpi
-- **Vältä:** liian "tech startup" -ulkoasu (Vercel-tyyli on liian neutraali), liian "fancy" (kuvituksia kullalla yms.)
-
-Esimerkkejä joista hakea suuntaa:
-- newyorker.com (typografia, hierarchia)
-- yhdistysmaailman parhaita: lahdenkonservatorio.fi, kuvataideakatemia.fi (perinne + moderni)
-- Sanity.io itse (admin-UX malliesimerkki)
+- Kuvilla `alt` (Sanityssa validointi pakottaa); logomerkki on koriste (`alt=""`), tekstilogolla on nimi

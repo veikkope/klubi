@@ -1,5 +1,5 @@
 import { Container } from "@/components/layout/container";
-import { LinkButton } from "@/components/ui/button";
+import { ArrowLink, Eyebrow } from "@/components/blocks/block-heading";
 import { SanityImage } from "@/components/sanity-image";
 import { PortableText } from "@/components/portable-text";
 import type { EtusivuBlock } from "@/lib/types";
@@ -7,11 +7,11 @@ import type { EtusivuBlock } from "@/lib/types";
 type Props = Extract<EtusivuBlock, { _type: "esittely" }>;
 
 /**
- * Klubin lyhyt esittely + polku `/klubi`-osioon.
+ * "Klubista" (tyyliopas Sivut v3, osio 5): valkoinen osio, kuva vasemmalla
+ * (4:3), oikealla yläotsake, serif 40 px otsikko, kappale ja tekstilinkki.
  *
  * Kaikki teksti tulee Sanitysta. Pelkkä otsikko ilman tekstiä tai kuvaa ei
- * ole sisältöä, joten lohko jätetään silloin renderöimättä — etusivulle ei
- * keksitä täytetekstiä koodissa.
+ * ole sisältöä, joten lohko jätetään silloin renderöimättä.
  */
 export function EsittelyBlock(props: Props) {
   const hasImage = Boolean(props.image?.asset);
@@ -22,52 +22,48 @@ export function EsittelyBlock(props: Props) {
 
   return (
     <section
-      className="py-20 sm:py-24"
+      className="bg-surface py-11 sm:py-24"
       aria-labelledby={props.heading ? "etusivu-esittely" : undefined}
     >
-      <Container size="wide">
-        <div
-          className={
-            hasImage
-              ? "grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-16"
-              : "max-w-3xl"
-          }
-        >
-          <div>
-            {props.heading && (
-              <h2
-                id="etusivu-esittely"
-                className="font-serif text-3xl leading-tight sm:text-4xl"
-              >
-                {props.heading}
-              </h2>
-            )}
+      <Container
+        size="wide"
+        className={
+          hasImage
+            ? "grid items-center gap-8 lg:grid-cols-2 lg:gap-20"
+            : undefined
+        }
+      >
+        {hasImage && (
+          <SanityImage
+            image={props.image!}
+            width={1000}
+            height={750}
+            sizes="(min-width: 1024px) 640px, 100vw"
+            className="aspect-[4/3] w-full rounded-sm object-cover"
+          />
+        )}
 
-            {hasBody && (
-              <div className="mt-5 max-w-2xl text-lg">
-                <PortableText value={props.body!} />
-              </div>
-            )}
+        <div className="flex max-w-2xl flex-col gap-4 sm:gap-[22px]">
+          {props.eyebrow && <Eyebrow>{props.eyebrow}</Eyebrow>}
+          {props.heading && (
+            <h2
+              id="etusivu-esittely"
+              className="text-pretty font-display text-[1.75rem] leading-[1.15] text-heading sm:text-[2.5rem]"
+            >
+              {props.heading}
+            </h2>
+          )}
 
-            {hasCta && (
-              <div className="mt-8">
-                <LinkButton href={props.ctaHref!} size="lg" variant="primary">
-                  {props.ctaLabel}
-                </LinkButton>
-              </div>
-            )}
-          </div>
-
-          {hasImage && (
-            <div className="overflow-hidden rounded-2xl border border-border bg-surface">
-              <SanityImage
-                image={props.image!}
-                width={1000}
-                height={750}
-                sizes="(min-width: 1024px) 512px, 100vw"
-                className="h-full w-full object-cover"
-              />
+          {hasBody && (
+            <div className="text-muted [&_p]:leading-[1.7] [&_p]:text-muted">
+              <PortableText value={props.body!} />
             </div>
+          )}
+
+          {hasCta && (
+            <ArrowLink href={props.ctaHref!} className="self-start">
+              {props.ctaLabel}
+            </ArrowLink>
           )}
         </div>
       </Container>
