@@ -8,7 +8,7 @@ Rakentaa Lahden Suomalainen Klubi ry:lle moderni, elegantti ja näyttävä sivus
 
 ## Teknologiapino
 
-- **Next.js 15** (App Router) + **TypeScript** + **Tailwind CSS v4**
+- **Next.js 16** (App Router) + **TypeScript** + **Tailwind CSS v4**
 - **Sanity CMS** (free tier, public dataset) — Studio embedded `/studio`-polussa
 - **Vercel** hosting (Hobby käynnistyksessä, harkitaan Pro:ta liikenteen mukaan)
 - **Node 25** kehitykseen, deploy Vercelin oletukseen
@@ -43,9 +43,14 @@ public/                Staattiset tiedostot (favicon, robots, kuvat joita Sanity
 | Tarkista TypeScript | `npm run type-check` |
 | Lint | `npm run lint` |
 | Build | `npm run build` |
-| Ajaa scrape-skripti | `npx tsx scripts/scrape-old-site.ts` |
-| Importoi Sanityyn | `npx sanity dataset import data/migration.ndjson production` |
-| Generoi redirectit | `npx tsx scripts/generate-redirects.ts` |
+| Generoi Sanity-tyypit | `npm run typegen` |
+| Hae vanha sivusto paikallisesti | `npm run crawl` + `npm run images` → `data/` (gitignoressa) |
+| Koko migraatio → `development` | `npm run migrate:all` (yksittäin `migrate:<tyyppi>`) |
+| Tarkista migraatio | `npm run verify:migration`, `verify:content`, `verify:redirects` |
+| Generoi redirectit | `npm run redirects` |
+| Vie `development` → `production` | `npx sanity dataset export development dev-export.tar.gz` + `npx sanity dataset import dev-export.tar.gz --dataset production --replace` (poista arkisto sen jälkeen, se ei ole gitignoressa) |
+
+**Datasetit:** migraatiot ja kehitys kirjoittavat aina `development`-datasettiin (`.env.local`). `production` päivitetään vain yllä olevalla export/import-parilla, ja Vercel käyttää `production`-datasettia. Jos sisältö näyttää puuttuvan, tarkista ensin `NEXT_PUBLIC_SANITY_PROJECT_ID` ja `NEXT_PUBLIC_SANITY_DATASET`. Migraation sopimus ja tila: `docs/12-sisaltomigraatio.md`.
 
 ## Tärkeät käytännöt
 
@@ -102,3 +107,5 @@ Täydellinen työnkulku: `docs/10-agent-workflow.md`.
 | Rakennussuunnitelma | `docs/08-build-plan.md` |
 | Editorin opas (isälle) | `docs/09-editor-guide.md` |
 | Agenttityönkulku | `docs/10-agent-workflow.md` |
+| Maalimäärittely ja rinnakkaistoteutus | `docs/11-maali-ja-rinnakkaistoteutus.md` |
+| Sisältömigraatio (maali, tila) | `docs/12-sisaltomigraatio.md` |
