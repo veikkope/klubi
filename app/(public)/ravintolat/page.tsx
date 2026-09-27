@@ -19,11 +19,14 @@ import { breadcrumbSchema, collectionPageSchema } from "@/lib/schema-org";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import {
   RAVINTOLAT_PAGE_SIZE,
+  buildRavintolatFacets,
+  countryNamesForSlug,
   ravintolatCountQuery,
   ravintolatDirectoryQuery,
   ravintolatFacetsQuery,
   type RavintolaCardData,
   type RavintolatFacetData,
+  type RavintolatFacetsRaw,
 } from "@/sanity/lib/queries/ravintolat";
 
 export const revalidate = 3600;
@@ -44,15 +47,15 @@ function buildLead(facets: RavintolatFacetData): string {
   return (
     `Lahden Suomalainen Klubi ry on arvioinut ${count} ravintolaa${since}. ` +
     "Jokainen kohde saa kokonaisarvosanan sekä osa-arviot ruoasta, hinnasta " +
-    "ja viihtyvyydestä. Rajaa hakemistoa kaupungin, ruokatyypin tai arvosanan " +
-    "mukaan."
+    "ja viihtyvyydestä. Rajaa hakemistoa maan, maakunnan, kaupungin, " +
+    "ruokatyypin tai arvosanan mukaan."
   );
 }
 
 const trail = [rootCrumb, { label: TITLE }];
 
-const emptyFacets: RavintolatFacetData = {
-  cities: [],
+const emptyFacets: RavintolatFacetsRaw = {
+  places: [],
   cuisines: [],
   total: 0,
   closedCount: 0,
@@ -64,9 +67,11 @@ type PageProps = {
 };
 
 /** GROQ-parametrit suodattimista. `null` tarkoittaa "ei rajausta". */
-function queryParams(filters: RavintolaFilterValues) {
+function queryParams(filters: RavintolaFilterValues, facets: RavintolatFacetData) {
   return {
     citySlug: filters.kaupunki,
+    countryNames: countryNamesForSlug(facets, filters.maa),
+    maakuntaSlugs: filters.maakunta.length ? filters.maakunta : null,
     cuisine: filters.ruoka,
     minRating: filters.arvosana,
     includeClosed: filters.lopettaneet,
@@ -84,7 +89,8 @@ export async function generateMetadata({
     title: filters.sivu > 1 ? `${TITLE} — sivu ${filters.sivu}` : TITLE,
     description:
       "Klubin ravintola-arvostelut: kokonaisarvosana sekä osa-arviot ruoasta, " +
-      "hinnasta ja viihtyvyydestä. Suodata kaupungin, ruokatyypin ja arvosanan mukaan.",
+      "hinnasta ja viihtyvyydestä. Suodata maan, maakunnan, kaupungin, ruokatyypin " +
+      "ja arvosanan mukaan.",
     path,
     // Rajattu näkymä on sama sisältö toisin järjestettynä — ei indeksoitavaksi.
     noIndex: filtered,
@@ -93,25 +99,29 @@ export async function generateMetadata({
 
 export default async function RavintolatPage({ searchParams }: PageProps) {
   const filters = parseRavintolaFilters(await searchParams);
-  const params = queryParams(filters);
 
-  const [items, total, facets] = await Promise.all([
+  // Facetit ensin: `?maa=`-slug muunnetaan niiden avulla maan nimiksi.
+  const facets = buildRavintolatFacets(
+    await sanityFetch<RavintolatFacetsRaw>({
+      query: ravintolatFacetsQuery,
+      tags: ["ravintola", "kaupunki"],
+      fallback: emptyFacets,
+    }),
+  );
+  const params = queryParams(filters, facets);
+
+  const [items, total] = await Promise.all([
     sanityFetch<RavintolaCardData[]>({
       query: ravintolatDirectoryQuery(filters.jarjesta, filters.sivu),
       params,
-      tags: ["ravintola"],
+      tags: ["ravintola", "kaupunki"],
       fallback: [],
     }),
     sanityFetch<number>({
       query: ravintolatCountQuery,
       params,
-      tags: ["ravintola"],
-      fallback: 0,
-    }),
-    sanityFetch<RavintolatFacetData>({
-      query: ravintolatFacetsQuery,
       tags: ["ravintola", "kaupunki"],
-      fallback: emptyFacets,
+      fallback: 0,
     }),
   ]);
 
@@ -192,7 +202,7 @@ function EmptyState({
       </h3>
       <p className="mx-auto mt-3 max-w-md text-muted">
         {isFiltered
-          ? "Kokeile väljempiä rajauksia — esimerkiksi matalampaa vähimmäisarvosanaa tai laajempaa kaupunkivalintaa."
+          ? "Kokeile väljempiä rajauksia — esimerkiksi matalampaa vähimmäisarvosanaa tai laajempaa aluetta (maa, maakunta tai kaupunki)."
           : hasAnyContent
             ? "Arvostelut ovat juuri nyt piilossa. Tarkista rajaukset tai palaa hetken kuluttua."
             : "Ravintola-arvostelut lisätään Sanity Studiossa. Kun ensimmäinen arvostelu on tallennettu, se ilmestyy tähän."}

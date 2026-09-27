@@ -2,6 +2,7 @@ import { defineField, defineType } from "sanity";
 import { seoFields } from "../objects/seoFields";
 import {
   legacyUrlField,
+  muutLegacyUrlitField,
   needsReviewField,
   tiivistelmaField,
 } from "../objects/contentMeta";
@@ -42,10 +43,19 @@ export const uutinen = defineType({
     defineField({
       name: "excerpt",
       title: "Lyhenne",
-      description: "Lyhyt teaser uutislistalle. Max 200 merkkiä.",
+      description:
+        "Lyhyt teaser uutislistalle. Max 200 merkkiä. Ei pakollinen, jos uutinen " +
+        "on pelkkä otsikko, joka linkittää alkuperäiseen kirjoitukseen.",
       type: "text",
       rows: 2,
-      validation: (rule) => rule.required().max(200),
+      validation: (rule) =>
+        rule
+          .max(200)
+          .custom((value, context) =>
+            value || (context.document as { ulkoinenLinkki?: string } | undefined)?.ulkoinenLinkki
+              ? true
+              : "Lyhenne on pakollinen."
+          ),
       group: "sisalto",
     }),
     defineField({
@@ -58,7 +68,53 @@ export const uutinen = defineType({
       name: "body",
       title: "Sisältö",
       type: "portableText",
-      validation: (rule) => rule.required(),
+      description:
+        "Uutisen teksti. Ei pakollinen, jos uutinen linkittää alkuperäiseen " +
+        "kirjoitukseen (kenttä Alkuperäinen kirjoitus).",
+      validation: (rule) =>
+        rule.custom((value, context) =>
+          (Array.isArray(value) && value.length > 0) ||
+          (context.document as { ulkoinenLinkki?: string } | undefined)?.ulkoinenLinkki
+            ? true
+            : "Sisältö on pakollinen."
+        ),
+      group: "sisalto",
+    }),
+    defineField({
+      name: "ulkoinenLinkki",
+      title: "Alkuperäinen kirjoitus (linkki)",
+      description:
+        "Jos uutinen on julkaistu muualla (esim. klubin Blogspot-blogissa), linkki " +
+        "siihen. Vanhan sivuston otsikkoarkisto koostuu tällaisista linkeistä.",
+      type: "url",
+      validation: (rule) =>
+        rule.uri({ scheme: ["http", "https"] }).error("Linkin pitää alkaa https://."),
+      group: "sisalto",
+    }),
+    defineField({
+      name: "lahde",
+      title: "Lähde",
+      description:
+        'Mistä uutinen on lainattu, esim. "palloliitto.fi" tai "ESS". Vanhalla ' +
+        "sivustolla merkintä oli uutisen lopussa: (palloliitto.fi 07.02.2008).",
+      type: "object",
+      options: { collapsible: true, collapsed: false },
+      fields: [
+        defineField({ name: "nimi", title: "Lähteen nimi", type: "string" }),
+        defineField({
+          name: "url",
+          title: "Lähteen osoite",
+          type: "url",
+          validation: (rule) =>
+            rule.uri({ scheme: ["http", "https"] }).error("Linkin pitää alkaa https://."),
+        }),
+        defineField({
+          name: "pvm",
+          title: "Lähteen päiväys",
+          description: "Täytä vain, jos eri kuin julkaisuaika.",
+          type: "date",
+        }),
+      ],
       group: "sisalto",
     }),
     defineField({
@@ -73,6 +129,7 @@ export const uutinen = defineType({
           { title: "Jäsentieto", value: "jasentieto" },
           { title: "Jalkapallo", value: "jalkapallo" },
           { title: "Ravintola", value: "ravintola" },
+          { title: "Blogikirjoitus", value: "blogi" },
         ],
         layout: "tags",
       },
@@ -88,6 +145,7 @@ export const uutinen = defineType({
     needsReviewField("sisalto"),
     ...seoFields,
     legacyUrlField("seo"),
+    muutLegacyUrlitField("seo"),
   ],
   orderings: [
     {

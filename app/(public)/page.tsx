@@ -69,6 +69,17 @@ export async function generateMetadata(): Promise<Metadata> {
   });
 }
 
+/**
+ * GROQ-projektio palauttaa puuttuvan kentän `null`ina, mutta lohkojen
+ * oletusarvot (esim. `ctaHref = "/jalkapalloarkisto"`) toimivat vain
+ * `undefined`illa. Studiossa tyhjäksi jätetty kenttä käyttää siis oletusta.
+ */
+function withoutNulls<T extends object>(block: T): T {
+  return Object.fromEntries(
+    Object.entries(block).filter(([, value]) => value !== null),
+  ) as T;
+}
+
 function renderBlock(block: EtusivuBlock) {
   switch (block._type) {
     case "uutiset":
@@ -142,7 +153,7 @@ export default async function Home() {
       />
 
       <Hero data={data} />
-      {blocks.map(renderBlock)}
+      {blocks.map((block) => renderBlock(withoutNulls(block)))}
     </>
   );
 }

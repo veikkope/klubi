@@ -18,12 +18,16 @@ import { buildMetadata } from "@/lib/seo";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import {
   KISATYYPIT,
+  arvokisaMitalitaulukotQuery,
   arvokisatListQuery,
   kisatyyppiLabel,
   withSlug,
   type ArvokisaCard,
   type Kisatyyppi,
 } from "@/sanity/lib/queries/arkisto-laajennus";
+import type { TilastoDoc } from "@/sanity/lib/queries/arkisto";
+
+import { StatSections } from "../_tilastot/stat-sections";
 
 export const revalidate = 3600;
 
@@ -63,13 +67,21 @@ function resolveKisatyyppi(item: ArvokisaCard): Kisatyyppi {
 }
 
 export default async function ArvokisatPage() {
-  const kisat = withSlug(
-    await sanityFetch<ArvokisaCard[]>({
+  const [kisatRaw, mitalitaulukot] = await Promise.all([
+    sanityFetch<ArvokisaCard[]>({
       query: arvokisatListQuery,
       tags: ["arvokisa"],
       fallback: [],
     }),
-  );
+    // Vanhat mmtilasto-, emtilasto- ja kansojenliiga-sivut ohjautuvat tänne,
+    // joten niiden mitalitaulukot näytetään listauksen yhteydessä.
+    sanityFetch<TilastoDoc[]>({
+      query: arvokisaMitalitaulukotQuery,
+      tags: ["jalkapalloTilasto", "arvokisa"],
+      fallback: [],
+    }),
+  ]);
+  const kisat = withSlug(kisatRaw);
 
   const groups = groupByKisatyyppi(kisat);
 
@@ -132,6 +144,18 @@ export default async function ArvokisatPage() {
             </section>
           ))}
         </div>
+      )}
+
+      {mitalitaulukot.length > 0 && (
+        <section aria-labelledby="mitalistit" className="mt-16">
+          <h2
+            id="mitalistit"
+            className="font-serif text-2xl text-foreground sm:text-3xl"
+          >
+            Mitalistit
+          </h2>
+          <StatSections tilastot={mitalitaulukot} headingLevel="h3" className="mt-6" />
+        </section>
       )}
     </Container>
   );

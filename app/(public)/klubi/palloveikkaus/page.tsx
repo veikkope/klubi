@@ -31,7 +31,7 @@ export default async function PalloveikkausPage() {
       sivu={sivu}
       path={PATH}
       fallbackTitle={FALLBACK_TITLE}
-      emptyDescription="Palloveikkauksen säännöt, kierrokset ja tulokset lisätään Sanity Studiossa sivulle, jonka polku on “klubi/palloveikkaus”."
+      emptyDescription="Palloveikkauksen säännöt, kierrokset ja tulokset julkaistaan tällä sivulla."
     />
   );
 }

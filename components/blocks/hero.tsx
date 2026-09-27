@@ -12,8 +12,28 @@ import type { EtusivuData } from "@/lib/types";
  *  - korkeus tulee sisällöstä eikä kuvasta, joten kuvan latautuminen ei
  *    aiheuta layout shiftiä
  */
+const matchTimeFormatter = new Intl.DateTimeFormat("fi-FI", {
+  weekday: "short",
+  day: "numeric",
+  month: "numeric",
+  year: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+  timeZone: "Europe/Helsinki",
+});
+
+/** Seuraava ottelu, jos se on tiedossa eikä vielä pelattu. */
+function upcomingMatch(data: EtusivuData) {
+  const match = data.seuraavaOttelu;
+  if (!match?.ottelu || !match.aika) return null;
+  const start = new Date(match.aika);
+  if (Number.isNaN(start.getTime()) || start.getTime() < Date.now()) return null;
+  return { ottelu: match.ottelu, kilpailu: match.kilpailu, aika: match.aika, start };
+}
+
 export function Hero({ data }: { data: EtusivuData }) {
   const ctas = data.heroCtas ?? [];
+  const match = upcomingMatch(data);
   const hasImage = Boolean(data.heroImage?.asset);
 
   return (
@@ -58,6 +78,17 @@ export function Hero({ data }: { data: EtusivuData }) {
           <p className="mt-6 max-w-2xl text-pretty text-lg leading-relaxed text-brand-100 sm:text-xl">
             {data.heroDescription}
           </p>
+
+          {match && (
+            <p className="mt-6 inline-flex flex-wrap items-baseline gap-x-2 rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm text-brand-100">
+              <span className="font-medium uppercase tracking-[0.18em] text-brand-200">Seuraavaksi</span>
+              <span className="font-medium text-white">{match.ottelu}</span>
+              {match.kilpailu && <span>· {match.kilpailu}</span>}
+              <span>
+                · <time dateTime={match.aika}>{matchTimeFormatter.format(match.start)}</time>
+              </span>
+            </p>
+          )}
 
           {ctas.length > 0 && (
             <div className="mt-10 flex flex-wrap gap-3 sm:gap-4">

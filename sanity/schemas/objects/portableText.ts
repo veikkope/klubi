@@ -34,8 +34,17 @@ export const portableText = defineType({
                 name: "href",
                 type: "url",
                 title: "URL",
+                description:
+                  "Ulkoinen osoite (https://…) tai sivuston oma polku (/jalkapalloarkisto/…).",
+                // allowRelative: migraatio muuntaa vanhat .htm-linkit sisäisiksi
+                // poluiksi (docs/12 §2.1.3), jotka eivät ole absoluuttisia URL:eja.
                 validation: (rule) =>
-                  rule.uri({ scheme: ["http", "https", "mailto", "tel"] }),
+                  rule
+                    .uri({
+                      scheme: ["http", "https", "mailto", "tel"],
+                      allowRelative: true,
+                    })
+                    .error("Tarkista linkki: https://…, mailto:, tel: tai /polku."),
               },
               {
                 name: "newTab",

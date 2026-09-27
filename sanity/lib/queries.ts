@@ -37,7 +37,9 @@ export const contactQuery = /* groq */ `
     phone,
     yTunnus,
     iban,
-    socials[]{ platform, url },
+    // Singleton luodaan migraatiossa tyhjänä (docs/12 §3 M6): tyhjä lista
+    // eikä null, jotta sivut eivät kaadu ennen kuin sihteeri täyttää kentät.
+    "socials": coalesce(socials[]{ platform, url }, []),
     location
   }
 `;

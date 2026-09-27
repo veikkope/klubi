@@ -1,4 +1,5 @@
 import { defineArrayMember, defineField, defineType } from "sanity";
+import { legacyUrlField } from "../objects/contentMeta";
 
 export const etusivu = defineType({
   name: "etusivu",
@@ -7,6 +8,7 @@ export const etusivu = defineType({
   groups: [
     { name: "hero", title: "Hero-alue", default: true },
     { name: "blocks", title: "Lohkot" },
+    { name: "seo", title: "SEO" },
   ],
   fields: [
     defineField({
@@ -54,6 +56,41 @@ export const etusivu = defineType({
         },
       ],
       validation: (rule) => rule.max(2),
+      group: "hero",
+    }),
+    defineField({
+      name: "seuraavaOttelu",
+      title: "Seuraava ottelu",
+      description:
+        'Vanhan etusivun "Seuraavaksi" -nosto ja laskuri, esim. "Suomi – Valko-Venäjä, Kansojen liiga". ' +
+        "Jätä tyhjäksi, kun ottelua ei ole tiedossa.",
+      type: "object",
+      options: { collapsible: true, collapsed: false },
+      fields: [
+        defineField({
+          name: "ottelu",
+          title: "Ottelu",
+          description: 'Esim. "Suomi – Valko-Venäjä".',
+          type: "string",
+        }),
+        defineField({
+          name: "kilpailu",
+          title: "Kilpailu",
+          description: 'Esim. "Kansojen liiga" tai "MM-karsinta".',
+          type: "string",
+        }),
+        defineField({
+          name: "aika",
+          title: "Alkamisaika",
+          type: "datetime",
+          validation: (rule) =>
+            rule.custom((value, context) =>
+              value || !(context.parent as { ottelu?: string } | undefined)?.ottelu
+                ? true
+                : "Anna ottelun alkamisaika."
+            ),
+        }),
+      ],
       group: "hero",
     }),
     defineField({
@@ -178,6 +215,7 @@ export const etusivu = defineType({
       ],
       group: "blocks",
     }),
+    legacyUrlField("seo"),
   ],
   preview: { prepare: () => ({ title: "Etusivu" }) },
 });

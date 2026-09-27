@@ -2,6 +2,7 @@ import { defineField, defineType } from "sanity";
 import { seoFields } from "../objects/seoFields";
 import {
   legacyUrlField,
+  muutLegacyUrlitField,
   needsReviewField,
   tiivistelmaField,
 } from "../objects/contentMeta";
@@ -37,6 +38,13 @@ export const stadion = defineType({
       type: "reference",
       to: [{ type: "kaupunki" }],
       validation: (rule) => rule.required(),
+      group: "perustiedot",
+    }),
+    defineField({
+      name: "address",
+      title: "Osoite",
+      description: 'Stadionin katuosoite, esim. "Wembley, London, HA9 0WS".',
+      type: "string",
       group: "perustiedot",
     }),
     defineField({
@@ -77,6 +85,7 @@ export const stadion = defineType({
     needsReviewField("perustiedot"),
     ...seoFields,
     legacyUrlField("seo"),
+    muutLegacyUrlitField("seo"),
   ],
   preview: {
     select: { title: "name", city: "city.name", capacity: "capacity", media: "images.0" },

@@ -1,0 +1,22 @@
+legacyUrl	tila	kohde	huomio
+/historia.htm	merged	/jalkapalloarkisto	Linkkihubi ilman omaa dataa; uusi /jalkapalloarkisto-hubi korvaa sen. Hubin kuvat: kuvat-dropped (tilastot-kuvat-dropped.json).
+/suomi.htm	migrated	jalkapalloTilasto-suomen-mestarit	1 dok (suomen-mestarit: 119 riviä); kategoria champions
+/maailmanparhaat.htm	migrated	jalkapalloTilasto-maailman-parhaat-pelaajat	1 dok (maailman-parhaat-pelaajat: 20 riviä); kategoria ballon-dor
+/eurocuptilasto.htm	migrated	jalkapalloTilasto-mestareiden-liiga	2 dok (mestareiden-liiga: 34 riviä, euroopan-cup: 37 riviä); kategoria eurocup; muut: jalkapalloTilasto-euroopan-cup
+/uefacup.htm	migrated	jalkapalloTilasto-uefa-cup-eurooppa-liiga	1 dok (uefa-cup-eurooppa-liiga: 68 riviä); kategoria uefa-cup
+/suomenvalmentajat.htm	migrated	jalkapalloTilasto-huuhkajien-paavalmentajat	1 dok (huuhkajien-paavalmentajat: 28 riviä); kategoria valmentajat
+/cupvoittajiencup.htm	migrated	jalkapalloTilasto-cupvoittajien-cup-konferenssiliiga	1 dok (cupvoittajien-cup-konferenssiliiga: 48 riviä); kategoria conference-league
+/fifaranking.htm	migrated	jalkapalloTilasto-fifa-ranking	1 dok (fifa-ranking: 0 riviä); kategoria fifa-ranking; needsReview: Rankinghistoria on lähteessä vain kuvana (FIFAranking202604.png); sivulla ei ole tekstitaulukkoa (docs/11 §7.3 'data tekstinä' ei täyty).
+/supercup.htm	migrated	jalkapalloTilasto-uefa-supercup	1 dok (uefa-supercup: 55 riviä); kategoria super-cup
+/intercontinental.htm	migrated	jalkapalloTilasto-seurajoukkueiden-mm	1 dok (seurajoukkueiden-mm: 32 riviä); kategoria intercontinental
+/puheenjohtajat.htm	migrated	jalkapalloTilasto-palloliiton-puheenjohtajat	1 dok (palloliiton-puheenjohtajat: 16 riviä); kategoria palloliitto
+/euroopan_paras_pelaaja.htm	migrated	jalkapalloTilasto-euroopan-paras-pelaaja	1 dok (euroopan-paras-pelaaja: 54 riviä); kategoria ballon-dor
+/vuodenpelaaja.htm	migrated	jalkapalloTilasto-suomen-vuoden-pelaaja	1 dok (suomen-vuoden-pelaaja: 79 riviä); kategoria vuoden-pelaaja
+/FIFAvuodenpelaaja.htm	migrated	jalkapalloTilasto-fifan-vuoden-pelaaja	1 dok (fifan-vuoden-pelaaja: 32 riviä); kategoria vuoden-pelaaja
+/englanti.htm	migrated	jalkapalloTilasto-englannin-seurojen-mestaruudet	2 dok (englannin-seurojen-mestaruudet: 54 riviä, englannin-mestarit: 155 riviä); kategoria ulkomaiset-mestarit; muut: jalkapalloTilasto-englannin-mestarit
+/lupaavia.htm	migrated	jalkapalloTilasto-lupaavat-1980-1986	2 dok (lupaavat-1980-1986: 57 riviä, lupaavat-1987-1991: 62 riviä); kategoria lupaavat; muut: jalkapalloTilasto-lupaavat-1987-1991
+/venaja.htm	migrated	jalkapalloTilasto-venajan-mestarit	1 dok (venajan-mestarit: 93 riviä); kategoria ulkomaiset-mestarit
+/maanosaliittojencup.htm	migrated	jalkapalloTilasto-maanosaliittojen-cup	1 dok (maanosaliittojen-cup: 11 riviä); kategoria intercontinental
+/top10jalkapallojarkytykset.htm	migrated	jalkapalloTilasto-top10-jarkytykset	1 dok (top10-jarkytykset: 10 riviä); kategoria saavutukset
+/top10jalkapallosaavutukset.htm	migrated	jalkapalloTilasto-top10-saavutukset	1 dok (top10-saavutukset: 10 riviä); kategoria saavutukset
+/suomenvalmentajientulot.htm	migrated	jalkapalloTilasto-valmentajien-palkat	1 dok (valmentajien-palkat: 0 riviä); kategoria valmentajien-palkat

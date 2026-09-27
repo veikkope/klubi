@@ -2,6 +2,7 @@ import { defineField, defineType } from "sanity";
 import { seoFields } from "../objects/seoFields";
 import {
   legacyUrlField,
+  muutLegacyUrlitField,
   needsReviewField,
   tiivistelmaField,
 } from "../objects/contentMeta";
@@ -50,6 +51,7 @@ export const arvokisa = defineType({
           { title: "EM-kisat", value: "em" },
           { title: "Kansojen liiga", value: "kansojen-liiga" },
           { title: "Olympialaiset", value: "olympialaiset" },
+          { title: "Alle 21-vuotiaiden EM", value: "u21-em" },
           { title: "Muu", value: "muu" },
         ],
         layout: "dropdown",
@@ -73,8 +75,42 @@ export const arvokisa = defineType({
       group: "perustiedot",
     }),
     defineField({
+      name: "alkuPvm",
+      title: "Alkupäivä",
+      description: 'Vanhalla sivustolla esim. "11.06.-11.07.2010".',
+      type: "date",
+      group: "perustiedot",
+    }),
+    defineField({
+      name: "loppuPvm",
+      title: "Loppupäivä",
+      type: "date",
+      validation: (rule) =>
+        rule.custom((value, context) => {
+          const alku = (context.document as { alkuPvm?: string } | undefined)?.alkuPvm;
+          return !value || !alku || value >= alku
+            ? true
+            : "Loppupäivä ei voi olla ennen alkupäivää.";
+        }),
+      group: "perustiedot",
+    }),
+    defineField({
       name: "voittaja",
       title: "Voittaja",
+      type: "string",
+      group: "tulokset",
+    }),
+    defineField({
+      name: "hopea",
+      title: "Hopea",
+      description: "Loppuottelun hävinnyt joukkue.",
+      type: "string",
+      group: "tulokset",
+    }),
+    defineField({
+      name: "pronssi",
+      title: "Pronssi",
+      description: 'Pronssiottelun voittaja. Kirjoita "ei jaettu", jos pronssia ei ratkaistu.',
       type: "string",
       group: "tulokset",
     }),
@@ -109,6 +145,7 @@ export const arvokisa = defineType({
     needsReviewField("perustiedot"),
     ...seoFields,
     legacyUrlField("seo"),
+    muutLegacyUrlitField("seo"),
   ],
   orderings: [
     { title: "Uusin ensin", name: "vuosiDesc", by: [{ field: "vuosi", direction: "desc" }] },

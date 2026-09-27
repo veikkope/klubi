@@ -16,6 +16,7 @@ import { breadcrumbSchema, webPageSchema, type Crumb } from "@/lib/schema-org";
 import { buildMetadata, resolveDescription } from "@/lib/seo";
 import { hasSanity } from "@/sanity/env";
 import { sanityFetch } from "@/sanity/lib/fetch";
+import { StatSections } from "@/app/(public)/jalkapalloarkisto/_tilastot/stat-sections";
 import {
   klubiToimintaBySlugQuery,
   klubiToimintaSiblingsQuery,
@@ -95,6 +96,11 @@ export default async function ToimintaDetailPage({
   const vuodet = toiminta.vuodet ?? [];
   const kuvat = (toiminta.kuvat ?? []).filter((kuva) => kuva?.asset);
   const hasKuvaus = Boolean(toiminta.kuvaus && toiminta.kuvaus.length > 0);
+  const tilastot = (toiminta.tilastot ?? []).filter(Boolean);
+  // Tyhjätila näytetään vain osiolle, jonka puuttuminen jättäisi sivun
+  // tyhjäksi. Vanhoilla toimintasivuilla sisältö on usein pelkkinä
+  // vuosimerkintöinä — silloin puuttuva yleiskuvaus ei ole virhe.
+  const hasOtherContent = vuodet.length > 0 || kuvat.length > 0 || tilastot.length > 0;
 
   return (
     <>
@@ -127,16 +133,18 @@ export default async function ToimintaDetailPage({
         />
         <SectionNav items={klubiNav} label="Klubin osiot" className="mt-8" />
 
-        <div className="mt-10 max-w-3xl">
-          {hasKuvaus ? (
-            <PortableText value={toiminta.kuvaus} />
-          ) : (
-            <EmptyState
-              title="Kuvausta ei ole vielä lisätty"
-              description="Sisältöä ei ole vielä lisätty Studiossa."
-            />
-          )}
-        </div>
+        {(hasKuvaus || !hasOtherContent) && (
+          <div className="mt-10 max-w-3xl">
+            {hasKuvaus ? (
+              <PortableText value={toiminta.kuvaus} />
+            ) : (
+              <EmptyState
+                title="Kuvausta ei ole vielä lisätty"
+                description="Sisältöä ei ole vielä lisätty Studiossa."
+              />
+            )}
+          </div>
+        )}
 
         {kuvat.length > 0 && (
           <section aria-labelledby="kuvat" className="mt-16">
@@ -166,76 +174,115 @@ export default async function ToimintaDetailPage({
           </section>
         )}
 
-        <section aria-labelledby="vuosittain" className="mt-16">
-          <h2 id="vuosittain" className="font-serif text-3xl leading-tight">
-            Vuosittain
-          </h2>
+        {(vuodet.length > 0 || !(hasKuvaus || kuvat.length > 0 || tilastot.length > 0)) && (
+          <section aria-labelledby="vuosittain" className="mt-16">
+            <h2 id="vuosittain" className="font-serif text-3xl leading-tight">
+              Vuosittain
+            </h2>
 
-          {vuodet.length === 0 ? (
-            <div className="mt-6">
-              <EmptyState
-                title="Vuosimerkintöjä ei ole vielä lisätty"
-                description="Sisältöä ei ole vielä lisätty Studiossa. Merkinnät lisätään toimintamuodon kohtaan “Vuosittain”."
-              />
-            </div>
-          ) : (
-            <ol className="mt-6 space-y-8 border-l border-border pl-6">
-              {vuodet.map((vuosi, index) => {
-                const vuosiKuvat = (vuosi.kuvat ?? []).filter(
-                  (kuva) => kuva?.asset,
-                );
-                return (
-                  <li
-                    key={vuosi._key ?? `vuosi-${index}`}
-                    className="relative"
-                  >
-                    <span
-                      aria-hidden
-                      className="absolute -left-[30px] top-2 size-3 rounded-full border-2 border-background bg-accent"
-                    />
-                    <h3 className="font-serif text-2xl leading-tight">
-                      {vuosi.vuosi ?? "Ajankohta ei tiedossa"}
-                    </h3>
-                    {(vuosi.paivamaara || vuosi.paikka) && (
-                      <p className="mt-1 text-sm text-muted">
-                        {[formatDate(vuosi.paivamaara), vuosi.paikka]
-                          .filter(Boolean)
-                          .join(" · ")}
-                      </p>
-                    )}
-                    {vuosi.kuvaus && (
-                      <p className="mt-3 max-w-3xl leading-relaxed text-foreground">
-                        {vuosi.kuvaus}
-                      </p>
-                    )}
-                    {vuosiKuvat.length > 0 && (
-                      <ul className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                        {vuosiKuvat.map((kuva, kuvaIndex) => (
-                          <li key={`${kuva?.asset?._ref ?? "kuva"}-${kuvaIndex}`}>
-                            <figure>
-                              <SanityImage
-                                image={kuva}
-                                width={800}
-                                height={533}
-                                sizes="(min-width: 1024px) 300px, (min-width: 640px) 45vw, 90vw"
-                                className="h-44 w-full rounded-xl object-cover"
-                              />
-                              {kuva?.caption && (
-                                <figcaption className="mt-2 text-sm text-muted">
-                                  {kuva.caption}
-                                </figcaption>
-                              )}
-                            </figure>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </li>
-                );
-              })}
-            </ol>
-          )}
-        </section>
+            {vuodet.length === 0 ? (
+              <div className="mt-6">
+                <EmptyState
+                  title="Vuosimerkintöjä ei ole vielä lisätty"
+                  description="Sisältöä ei ole vielä lisätty Studiossa. Merkinnät lisätään toimintamuodon kohtaan “Vuosittain”."
+                />
+              </div>
+            ) : (
+              <ol className="mt-6 space-y-8 border-l border-border pl-6">
+                {vuodet.map((vuosi, index) => {
+                  const vuosiKuvat = (vuosi.kuvat ?? []).filter(
+                    (kuva) => kuva?.asset,
+                  );
+                  return (
+                    <li
+                      key={vuosi._key ?? `vuosi-${index}`}
+                      className="relative"
+                    >
+                      <span
+                        aria-hidden
+                        className="absolute -left-[30px] top-2 size-3 rounded-full border-2 border-background bg-accent"
+                      />
+                      <h3 className="font-serif text-2xl leading-tight">
+                        {vuosi.vuosi ?? "Ajankohta ei tiedossa"}
+                        {vuosi.otsikko && <> — {vuosi.otsikko}</>}
+                        {vuosi.jarjestysnumero != null && (
+                          <span className="ml-2 text-base text-muted">
+                            ({vuosi.jarjestysnumero}.)
+                          </span>
+                        )}
+                      </h3>
+                      {(vuosi.paivamaara || vuosi.paikka) && (
+                        <p className="mt-1 text-sm text-muted">
+                          {[formatDate(vuosi.paivamaara), vuosi.paikka]
+                            .filter(Boolean)
+                            .join(" · ")}
+                        </p>
+                      )}
+                      {vuosi.kuvaus && (
+                        <p className="mt-3 max-w-3xl whitespace-pre-line leading-relaxed text-foreground">
+                          {vuosi.kuvaus}
+                        </p>
+                      )}
+                      {vuosi.linkki?.url && (
+                        <p className="mt-2 text-sm">
+                          <a
+                            href={vuosi.linkki.url}
+                            className="font-medium text-accent underline underline-offset-4 hover:no-underline"
+                          >
+                            {vuosi.linkki.teksti || vuosi.linkki.url}
+                          </a>
+                        </p>
+                      )}
+                      {vuosi.osallistujat && vuosi.osallistujat.length > 0 && (
+                        <p className="mt-2 max-w-3xl text-sm text-muted">
+                          <span className="font-medium text-foreground">
+                            Osallistujat ({vuosi.osallistujat.length}):
+                          </span>{" "}
+                          {vuosi.osallistujat.join(", ")}
+                        </p>
+                      )}
+                      {vuosiKuvat.length > 0 && (
+                        <ul className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                          {vuosiKuvat.map((kuva, kuvaIndex) => (
+                            <li key={`${kuva?.asset?._ref ?? "kuva"}-${kuvaIndex}`}>
+                              <figure>
+                                <SanityImage
+                                  image={kuva}
+                                  width={800}
+                                  height={533}
+                                  sizes="(min-width: 1024px) 300px, (min-width: 640px) 45vw, 90vw"
+                                  className="h-44 w-full rounded-xl object-cover"
+                                />
+                                {kuva?.caption && (
+                                  <figcaption className="mt-2 text-sm text-muted">
+                                    {kuva.caption}
+                                  </figcaption>
+                                )}
+                              </figure>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </li>
+                  );
+                })}
+              </ol>
+            )}
+          </section>
+        )}
+
+        {tilastot.length > 0 && (
+          <section aria-labelledby="toiminnan-tilastot" className="mt-16">
+            <h2 id="toiminnan-tilastot" className="font-serif text-3xl leading-tight">
+              Tilastot
+            </h2>
+            <StatSections
+              tilastot={tilastot}
+              headingLevel="h3"
+              className="mt-6"
+            />
+          </section>
+        )}
 
         {siblings.length > 0 && (
           <section aria-labelledby="muu-toiminta" className="mt-16">

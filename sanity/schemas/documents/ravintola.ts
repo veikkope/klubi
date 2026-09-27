@@ -2,6 +2,7 @@ import { defineField, defineType } from "sanity";
 import { seoFields } from "../objects/seoFields";
 import {
   legacyUrlField,
+  muutLegacyUrlitField,
   needsReviewField,
   tiivistelmaField,
 } from "../objects/contentMeta";
@@ -60,7 +61,10 @@ export const ravintola = defineType({
       title: "Postinumero",
       type: "string",
       validation: (rule) =>
-        rule.regex(/^\d{4,6}$/, { name: "postinumero" }).warning("Tarkista postinumero."),
+        // Hyväksyy suomalaiset (15110) ja ulkomaiset muodot (141 21, 00-271, SW1A 1AA).
+        rule
+          .regex(/^(?=.*\d)[A-Za-z0-9][A-Za-z0-9 -]{1,9}$/, { name: "postinumero" })
+          .warning("Tarkista postinumero."),
       group: "sijainti",
     }),
     defineField({
@@ -230,6 +234,7 @@ export const ravintola = defineType({
     needsReviewField("perustiedot"),
     ...seoFields,
     legacyUrlField("seo"),
+    muutLegacyUrlitField("seo"),
   ],
   orderings: [
     {

@@ -9,13 +9,15 @@ export const yhteystiedot = defineType({
       name: "address",
       title: "Katuosoite",
       type: "string",
-      validation: (rule) => rule.required(),
+      // Varoitus eikä virhe: migraatio luo singletonin ilman osoitetta
+      // (docs/12 §3 M6), ja sihteeri täyttää sen itse.
+      validation: (rule) => rule.required().warning("Täytä katuosoite — näkyy yhteystietosivulla."),
     }),
     defineField({
       name: "postalCode",
       title: "Postinumero",
       type: "string",
-      validation: (rule) => rule.required(),
+      validation: (rule) => rule.required().warning("Täytä postinumero — näkyy yhteystietosivulla."),
     }),
     defineField({
       name: "city",
@@ -28,7 +30,7 @@ export const yhteystiedot = defineType({
       name: "email",
       title: "Yleinen sähköposti",
       type: "email",
-      validation: (rule) => rule.required(),
+      validation: (rule) => rule.required().warning("Täytä sähköposti — näkyy yhteystietosivulla."),
     }),
     defineField({
       name: "phone",

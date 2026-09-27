@@ -128,10 +128,31 @@ const sections: ArkistoSection[] = [
     categories: ["saavutukset"],
   },
   {
+    href: "/jalkapalloarkisto/ulkomaiset-mestarit",
+    title: "Ulkomaiset mestarit",
+    eyebrow: "Sarjat",
+    body: "Englannin ja Venäjän mestarit sekä Englannin seurojen mestaruudet ja cupvoitot.",
+    categories: ["ulkomaiset-mestarit"],
+  },
+  {
+    href: "/jalkapalloarkisto/palloliitto",
+    title: "Palloliiton puheenjohtajat",
+    eyebrow: "Historia",
+    body: "Suomen Palloliiton puheenjohtajat kausittain.",
+    categories: ["palloliitto"],
+  },
+  {
     href: "/jalkapalloarkisto/stadionit",
     title: "Stadionit",
     eyebrow: "Paikat",
     body: "Jalkapallostadionit, joilla klubi on vieraillut tai joita arkisto käsittelee.",
+  },
+  {
+    href: "/jalkapalloarkisto/tilastot",
+    title: "Muut tilastot",
+    eyebrow: "Koosteet",
+    body: "Unohtumattomat ottelut ja puutteelliset järjestelyt omina koosteinaan.",
+    categories: ["muu"],
   },
 ];
 

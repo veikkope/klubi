@@ -21,10 +21,11 @@ Sprintti-tason tehtävälista. Jokainen sprintti tuottaa demottavan inkrementin.
 
 ## Sprint 1 — Sisällön audit + migraatio (3–5 päivää)
 - [x] `scripts/scrape-old-site.ts` — kerää raakadatan
-- [ ] `scripts/normalize.ts` — muuntaa NDJSON:iksi
-- [ ] Aja scrape, normalisointi, import production-datasetille
-- [ ] Tarkista Studiossa: jalkapallotilastot, ravintolat, stadionit, vanhat uutiset
-- [ ] Päivitä `docs/01-content-audit.md` toteutuneilla luvuilla
+- [x] Normalisointi ja import: `scripts/parse-<tyyppi>.ts` + `import-<tyyppi>.ts`, `npm run migrate:all` (valmis 2026-09-27, docs/12)
+- [x] Import **development**-datasetiin (production kopioidaan julkaisussa, docs/12 §0) — 1 048 dokumenttia
+- [x] QA-kierros 1: löydökset korjattu putkeen ja tuotu uudelleen (2026-09-27, docs/12 "Korjauskierros")
+- [ ] Tarkista Studiossa: `needsReview`-dokumentit (57 kpl, docs/09 "Täytä itse") — QA-vaihe 3, toinen kierros kesken
+- [x] Päivitä `docs/01-content-audit.md` toteutuneilla luvuilla
 
 **Demo:** Studio näyttää ≥ 90 % vanhasta sisällöstä järkevästi rakennettuna.
 
@@ -59,6 +60,7 @@ Sprintti-tason tehtävälista. Jokainen sprintti tuottaa demottavan inkrementin.
   - [ ] Suodatus vuosien mukaan, jos kategoria sallii
 - [ ] Ravintolahakemisto `/ravintolat`:
   - [ ] Suodatus kaupungin/tähtien/ruokatyyppin mukaan (URL-tila)
+  - [x] Maa- ja maakuntasuodatin (`?maa=`, `?maakunta=`), `kaupunki.maakunta`-skeema, vanhojen `ruokailu*.htm`-sivujen ohjaukset 100 %:n kattavuudella (valmis 2026-09-27, ks. docs/12 "Maa- ja maakuntasuodatin")
   - [ ] Kartta (Mapbox tai MapLibre — päätös sprintin alussa)
   - [ ] `/ravintolat/[slug]` — yksittäinen ravintola
   - [ ] `/ravintolat/arvostele` — käyttäjäarvostelulomake (Server Action → Sanity moderointijonoon)
@@ -71,8 +73,8 @@ Sprintti-tason tehtävälista. Jokainen sprintti tuottaa demottavan inkrementin.
 - [ ] `/sitemap.xml`, `/robots.txt`
 - [ ] JSON-LD per sivutyyppi (Organization, Event, Article, Restaurant)
 - [ ] OG-kuvageneraattori `/api/og`
-- [ ] `lib/redirects.ts` kaikki vanhat URL:t kartoitettu (manuaalisen audit)
-- [ ] `scripts/verify-redirects.ts` ajettava → kaikki 308/301
+- [x] `lib/redirects.ts` kaikki vanhat URL:t kartoitettu — generoitu Sanityn `legacyUrl`-kentistä (199/199)
+- [x] `scripts/verify-redirects.ts` ajettava → kaikki 308/301 (199/199, 0 → 404; 1 tyhjätila: /klubi/yhteystiedot odottaa isän tietoja)
 - [ ] Lighthouse-kierros, korjauksia
 - [ ] axe-saavutettavuusskannaus
 - [ ] Selaintesti: Chrome, Firefox, Safari, Edge mobiilissa ja desktopissa

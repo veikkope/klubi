@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { SanityImage } from "@/components/sanity-image";
 import { Container } from "@/components/layout/container";
@@ -155,6 +156,19 @@ export default async function StadionitPage() {
           ))}
         </div>
       )}
+
+      {/* Vanha stadionit-hubi linkitti puutteellisiin järjestelyihin; kooste
+          on nyt oma sivunsa Muut tilastot -osiossa. */}
+      <p className="mt-16 max-w-3xl text-muted">
+        Klubin havainnot otteluiden järjestelyistä on koottu sivulle{" "}
+        <Link
+          href="/jalkapalloarkisto/tilastot/puutteelliset-jarjestelyt"
+          className="text-accent underline-offset-4 hover:underline"
+        >
+          Puutteelliset järjestelyt
+        </Link>
+        .
+      </p>
     </Container>
   );
 }

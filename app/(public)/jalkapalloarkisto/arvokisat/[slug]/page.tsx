@@ -9,7 +9,6 @@ import { SectionNav } from "@/components/layout/section-nav";
 import { JsonLd } from "@/components/seo/json-ld";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardEyebrow, CardTitle } from "@/components/ui/card";
-import { StatTable, type StatColumn } from "@/components/ui/stat-table";
 import { arkistoNav, rootCrumb } from "@/lib/nav-sections";
 import {
   breadcrumbSchema,
@@ -27,8 +26,22 @@ import {
   withSlug,
   type ArvokisaCard,
   type ArvokisaFull,
-  type TilastoTable,
 } from "@/sanity/lib/queries/arkisto-laajennus";
+
+import { StatSections } from "../../_tilastot/stat-sections";
+
+/** 11.06.2010 — sama näyttömuoto kuin vanhalla sivustolla ja arkiston taulukoissa. */
+function formatPvm(iso?: string | null): string | null {
+  const match = iso ? /^(\d{4})-(\d{2})-(\d{2})/.exec(iso) : null;
+  return match ? `${match[3]}.${match[2]}.${match[1]}` : null;
+}
+
+function ajankohta(kisa: ArvokisaFull): string | null {
+  const alku = formatPvm(kisa.alkuPvm);
+  const loppu = formatPvm(kisa.loppuPvm);
+  if (alku && loppu) return `${alku}–${loppu}`;
+  return alku ?? loppu;
+}
 
 export const revalidate = 3600;
 
@@ -114,12 +127,17 @@ export default async function ArvokisaPage({
   const tilastot = (kisa.tilastot ?? []).filter(Boolean);
   const kuvat = (kisa.kuvat ?? []).filter(Boolean);
   const description = resolveDescription(kisa.seoDescription, kisa.tiivistelma);
-  const hasFacts = Boolean(
-    kisa.vuosi != null ||
-      isannat.length > 0 ||
-      kisa.voittaja ||
-      kisa.suomenSijoitus,
-  );
+  const aika = ajankohta(kisa);
+  const facts: { label: string; value: string | null | undefined }[] = [
+    { label: "Vuosi", value: kisa.vuosi?.toString() },
+    { label: "Ajankohta", value: aika },
+    { label: isannat.length > 1 ? "Isäntämaat" : "Isäntämaa", value: isannat.join(", ") },
+    { label: "Voittaja", value: kisa.voittaja },
+    { label: "Hopea", value: kisa.hopea },
+    { label: "Pronssi", value: kisa.pronssi },
+    { label: "Suomen sijoitus", value: kisa.suomenSijoitus },
+  ].filter((fact) => fact.value?.trim());
+  const hasFacts = facts.length > 0;
 
   return (
     <Container className="py-12 sm:py-16">
@@ -161,13 +179,9 @@ export default async function ArvokisaPage({
 
       {hasFacts && (
         <dl className="mt-10 grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-4">
-          <Fact label="Vuosi" value={kisa.vuosi?.toString()} />
-          <Fact
-            label={isannat.length > 1 ? "Isäntämaat" : "Isäntämaa"}
-            value={isannat.join(", ")}
-          />
-          <Fact label="Voittaja" value={kisa.voittaja} />
-          <Fact label="Suomen sijoitus" value={kisa.suomenSijoitus} />
+          {facts.map((fact) => (
+            <Fact key={fact.label} label={fact.label} value={fact.value} />
+          ))}
         </dl>
       )}
 
@@ -185,11 +199,7 @@ export default async function ArvokisaPage({
           >
             Tilastot
           </h2>
-          <div className="mt-6 space-y-10">
-            {tilastot.map((tilasto) => (
-              <TilastoSection key={tilasto._id} tilasto={tilasto} />
-            ))}
-          </div>
+          <StatSections tilastot={tilastot} headingLevel="h3" className="mt-6" />
         </section>
       )}
 
@@ -245,31 +255,6 @@ export default async function ArvokisaPage({
         </section>
       )}
     </Container>
-  );
-}
-
-function TilastoSection({ tilasto }: { tilasto: TilastoTable }) {
-  const columns: StatColumn[] = (tilasto.columns ?? []).map((column) => ({
-    key: column.key,
-    label: column.label,
-    type: column.type ?? "text",
-  }));
-  const rows = (tilasto.rows ?? []).map((row) => ({ cells: row.cells ?? [] }));
-
-  return (
-    <div>
-      <h3 className="font-serif text-xl text-foreground">{tilasto.title}</h3>
-      {tilasto.tiivistelma && (
-        <p className="mt-2 max-w-3xl text-muted">{tilasto.tiivistelma}</p>
-      )}
-      <StatTable
-        caption={tilasto.title}
-        columns={columns}
-        rows={rows}
-        className="mt-4"
-        emptyLabel="Taulukkoon ei ole vielä lisätty rivejä."
-      />
-    </div>
   );
 }
 

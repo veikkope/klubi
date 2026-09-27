@@ -9,6 +9,7 @@ import { klubiNav, rootCrumb } from "@/lib/nav-sections";
 import { breadcrumbSchema, webPageSchema, type Crumb } from "@/lib/schema-org";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import { klubiSivuQuery, type KlubiSivu } from "@/sanity/lib/queries/klubi";
+import { StatSections } from "@/app/(public)/jalkapalloarkisto/_tilastot/stat-sections";
 
 /**
  * Klubi-osion `sivu`-pohjaiset sivut (säännöt, palloveikkaus) renderöityvät
@@ -97,6 +98,19 @@ export function KlubiSivuPage({
             <EmptyState description={emptyDescription} />
           )}
         </div>
+
+        {(sivu?.tilastot ?? []).filter(Boolean).length > 0 && (
+          <section aria-labelledby="sivun-taulukot" className="mt-16">
+            <h2 id="sivun-taulukot" className="font-serif text-3xl leading-tight">
+              Taulukot
+            </h2>
+            <StatSections
+              tilastot={(sivu?.tilastot ?? []).filter(Boolean)}
+              headingLevel="h3"
+              className="mt-6"
+            />
+          </section>
+        )}
 
         {children}
       </Container>

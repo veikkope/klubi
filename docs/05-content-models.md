@@ -116,7 +116,14 @@ Vain `status: "approved"` näytetään julkisesti.
 |---|---|---|---|
 | name | string | kyllä | Esim. "Lahti" |
 | slug | slug | kyllä | Esim. "lahti" |
-| country | string | ei | Oletus "Suomi" |
+| country | string | kyllä | Virallinen suomenkielinen maannimi ("Suomi", "Saksa", "Venäjä", "Alankomaat", "Iso-Britannia", "Tšekki"). Oletus "Suomi". Validointi: iso alkukirjain, ei reunavälilyöntejä. Hakemiston `?maa=` on tämän slug (`lib/slugify.ts`). |
+| maakunta | string (valintalista) | ei (varoitus, jos maa = Suomi ja tyhjä) | Yksi Suomen 19 maakunnasta (`lib/maakunnat.ts`). Tallennettu arvo on slug (`uusimaa`, `paijat-hame`), Studio näyttää nimen. Näkyy vain, kun `country == "Suomi"` (hidden-funktio). Hakemiston `?maakunta=`. |
+
+**Esikatselu:** nimi + "maakunta, maa" (esim. "Lahti — Päijät-Häme, Suomi").
+
+**Maa-tason viite:** dokumentti, jonka nimi on sama kuin maa ("Portugali", "Ruotsi", "Venäjä"), on ravintolaputken viite silloin, kun ravintolan kaupunki ei selviä lähteestä. Se ei näy hakemiston kaupunkisuodattimessa (`lib/places.ts` → `isCountryLevelPlace`), mutta sen ravintolat löytyvät maasuodattimella. Erillistä lippukenttää ei ole, jotta isän ei tarvitse ylläpitää sitä.
+
+**Data:** ravintolaputki (`scripts/import-ravintolat.ts`) ja stadionputki (`scripts/import-stadionit.ts`) täyttävät maakunnan taulukosta `scripts/lib/maakunnat.ts` (Tilastokeskuksen kunta–maakuntaluokitus 2025, 309 kuntaa + nimetyt taajamat → kunta). Tuntematon paikkakunta kaataa ajon.
 
 ### 8. `stadion`
 **Tarkoitus:** Jalkapallostadion-esittelyt.
@@ -217,3 +224,37 @@ Singleton-dokumentit (`yhteystiedot`, `navigaatio`, `asetukset`, `etusivu`) eiv�
 - Comment: max 1000 merkkiä
 
 Validointivirheet näytetään suomeksi (`error: "Tämä kenttä on pakollinen."`).
+
+## Sisältömigraation lisäykset (vaihe 0b, 2026-09-27)
+
+Lisätty `docs/12-sisaltomigraatio.md` §3 vaiheessa 0b, jotta jokaiselle vanhan
+sivuston tiedolle on kenttä. Olemassa olevia kenttiä ei poistettu eikä nimetty
+uudelleen. Skeemat ovat jäädytettyjä vaiheen 1 ajan.
+
+**Yhteiset (`objects/contentMeta.ts`)**
+- `muutLegacyUrlit` (string[], vain luku) — muut vanhat osoitteet, jotka on
+  yhdistetty dokumenttiin (esim. kolme Litmanen-sivua → yksi `pelaaja`). Mukana
+  tyypeissä `sivu`, `jalkapalloTilasto`, `arvokisa`, `pelaaja`, `stadion`,
+  `klubiToiminta`, `ravintola`. Redirect-generaattorin pitää lukea myös tämä.
+- `legacyUrl`, `tiivistelma`, `needsReview` olivat jo kaikissa migroitavissa tyypeissä.
+
+**`portableText`** — linkin `href` hyväksyy nyt suhteelliset polut
+(`/jalkapalloarkisto/…`), koska migraatio muuntaa `.htm`-linkit sisäisiksi poluiksi.
+
+| Tyyppi | Uudet kentät | Miksi |
+|---|---|---|
+| `uutinen` | `ulkoinenLinkki` (url), `lahde { nimi, url, pvm }`; kategoria `blogi` | Otsikkoarkisto linkittää Blogspot-kirjoituksiin; vanhat merkinnät päättyvät lähderiviin "(palloliitto.fi 07.02.2008)". `excerpt` ja `body` ovat pakollisia **paitsi** jos `ulkoinenLinkki` on annettu. |
+| `jalkapalloTilasto` | `lisatiedot` (portableText), `paivitetty` (date), `jarjestys` (number), `kuvat` (imageWithAlt[]); kategoriat `arvokisa`, `pelaaja`, `ulkomaiset-mestarit`, `palloliitto`, `klubi`, `muu` | Ottelusivuilla taulukon jälkeen otteluraportit; useita taulukoita per sivu (lohkot A–H) tarvitsevat järjestyksen; mölkky-, veikkaus- ja jouluruokailutaulukot sekä Englannin/Venäjän mestarit ja Palloliiton puheenjohtajat eivät sopineet olemassa oleviin kategorioihin. |
+| `arvokisa` | `alkuPvm`, `loppuPvm` (date), `hopea`, `pronssi` (string); kisatyyppi `u21-em` | Kisasivut alkavat "11.06.-11.07.2010"; mitalistitaulukko Mestari/Hopea/Pronssi; Pikkuhuuhkajat = U21-EM 2009. |
+| `pelaaja` | `tilastot` (ref → jalkapalloTilasto[]) | litmanen.htm:n loukkaantumistaulukko. |
+| `stadion` | `address` (string) | Stadionsivuilla katuosoite ("Tamme puiestee 1, Tartu"). |
+| `klubiToiminta` | `vuodet[].otsikko`, `vuodet[].jarjestysnumero`, `vuodet[].osallistujat` (string[]); `tilastot` (ref[]) | Vuosikokous "(11) … (6): Ilpo, Olli…", mölkky kahdesti vuodessa, mölkyn ja jouluruokailun taulukot. |
+| `sivu` | `tilastot` (ref → jalkapalloTilasto[]) | Palloveikkaussivujen 38 taulukkoa. |
+| `etusivu` | `seuraavaOttelu { ottelu, kilpailu, aika }` | Vanhan etusivun "Seuraavaksi" -laskuri. |
+| `yhteystiedot` | `address`, `postalCode`, `email`: `required` → **varoitus** | Migraatio luo singletonin ilman näitä (docs/12 M6), eikä se saa rikkoa "0 tyhjää pakollista kenttää" -maalia. |
+
+**Renderöimättä (integraatiovaihe):** `uutinen.ulkoinenLinkki/lahde`,
+`jalkapalloTilasto.lisatiedot/paivitetty/kuvat/jarjestys` (kyselyt järjestävät
+yhä `title asc`), `arvokisa.alkuPvm/loppuPvm/hopea/pronssi`, `pelaaja.tilastot`,
+`stadion.address`, `klubiToiminta.vuodet[].otsikko/jarjestysnumero/osallistujat` ja
+`tilastot`, `sivu.tilastot`, `etusivu.seuraavaOttelu`, `muutLegacyUrlit`.

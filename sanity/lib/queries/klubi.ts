@@ -17,6 +17,7 @@ import { defineQuery } from "next-sanity";
 
 import type { PortableTextBlock } from "@portabletext/react";
 import type { SanityImage } from "@/lib/types";
+import type { TilastoDoc } from "@/sanity/lib/queries/arkisto";
 
 /* ── Sivu-dokumentit (esittely, säännöt, palloveikkaus) ──────────────────── */
 
@@ -29,6 +30,8 @@ export type KlubiSivu = {
   ingress: string | null;
   hero: SanityImage;
   body: PortableTextBlock[] | null;
+  /** Sivulla näytettävät taulukot (esim. palloveikkauksen tulokset). */
+  tilastot: TilastoDoc[] | null;
   seoTitle: string | null;
   seoDescription: string | null;
 };
@@ -47,6 +50,22 @@ export const klubiSivuQuery = defineQuery(`
     ingress,
     hero,
     body,
+    tilastot[]->{
+      _id,
+      _updatedAt,
+      title,
+      "slug": slug.current,
+      tiivistelma,
+      category,
+      intro,
+      columns[]{ key, label, type },
+      rows[]{ cells[]{ key, value } },
+      lisatiedot,
+      kuvat[]{ _key, alt, caption, asset },
+      paivitetty,
+      jarjestys,
+      "sources": coalesce(sources, [])
+    },
     seoTitle,
     seoDescription
   }
@@ -68,8 +87,15 @@ export type KlubiToimintaVuosi = {
   _key: string;
   vuosi: number | null;
   paivamaara: string | null;
+  /** Kun samana vuonna on useita kertoja, esim. "Pääsiäisen mölkky". */
+  otsikko: string | null;
+  /** Monesko kerta, esim. vuosikokous (11). */
+  jarjestysnumero: number | null;
+  osallistujat: string[] | null;
   paikka: string | null;
   kuvaus: string | null;
+  /** Linkki lisätietoon, esim. matkakuvaus blogissa tai video. */
+  linkki: { url: string | null; teksti: string | null } | null;
   kuvat: SanityImage[] | null;
 };
 
@@ -82,6 +108,8 @@ export type KlubiToiminta = {
   kuvaus: PortableTextBlock[] | null;
   kuvat: SanityImage[] | null;
   vuodet: KlubiToimintaVuosi[] | null;
+  /** Toimintaan liittyvät taulukot (mölkyn pistetaulukot, jouluruokailutilasto). */
+  tilastot: TilastoDoc[] | null;
   seoTitle: string | null;
   seoDescription: string | null;
 };
@@ -112,13 +140,33 @@ export const klubiToimintaBySlugQuery = defineQuery(`
     kuvat,
     seoTitle,
     seoDescription,
-    "vuodet": vuodet[] | order(vuosi desc){
+    "vuodet": vuodet[] | order(vuosi desc, paivamaara desc){
       _key,
       vuosi,
       paivamaara,
+      otsikko,
+      jarjestysnumero,
+      osallistujat,
       paikka,
       kuvaus,
+      linkki{ url, teksti },
       kuvat
+    },
+    tilastot[]->{
+      _id,
+      _updatedAt,
+      title,
+      "slug": slug.current,
+      tiivistelma,
+      category,
+      intro,
+      columns[]{ key, label, type },
+      rows[]{ cells[]{ key, value } },
+      lisatiedot,
+      kuvat[]{ _key, alt, caption, asset },
+      paivitetty,
+      jarjestys,
+      "sources": coalesce(sources, [])
     }
   }
 `);

@@ -2,6 +2,7 @@ import { defineField, defineType } from "sanity";
 import { seoFields } from "../objects/seoFields";
 import {
   legacyUrlField,
+  muutLegacyUrlitField,
   needsReviewField,
   tiivistelmaField,
 } from "../objects/contentMeta";
@@ -79,8 +80,55 @@ export const klubiToiminta = defineType({
               validation: (rule) => rule.required().integer().min(1900).max(2100),
             },
             { name: "paivamaara", title: "Päivämäärä", type: "date" },
+            {
+              name: "otsikko",
+              title: "Otsikko",
+              description:
+                'Käytä, jos samana vuonna on useita kertoja, esim. "Pääsiäisen mölkky" tai "Koivun kaato".',
+              type: "string",
+            },
+            {
+              name: "jarjestysnumero",
+              title: "Järjestysnumero",
+              description: 'Monesko kerta, esim. vuosikokous "(11)" tai mölkky "XXXVII".',
+              type: "number",
+              validation: (rule) => rule.integer().min(1),
+            },
             { name: "paikka", title: "Paikka", type: "string" },
+            {
+              name: "osallistujat",
+              title: "Osallistujat",
+              description: "Osallistujien etunimet, yksi per rivi.",
+              type: "array",
+              of: [{ type: "string" }],
+              options: { layout: "tags" },
+            },
             { name: "kuvaus", title: "Kuvaus", type: "text", rows: 3 },
+            {
+              name: "linkki",
+              title: "Linkki",
+              description:
+                'Linkki lisätietoon, esim. matkakuvaus blogissa tai video. Kirjoita linkin teksti, esim. "Matkakuvaus".',
+              type: "object",
+              options: { collapsible: true, collapsed: true },
+              fields: [
+                {
+                  name: "url",
+                  title: "Osoite",
+                  type: "url",
+                  validation: (rule) =>
+                    rule
+                      .uri({ scheme: ["http", "https"] })
+                      .error("Linkin pitää alkaa https://."),
+                },
+                {
+                  name: "teksti",
+                  title: "Linkin teksti",
+                  description: 'Esim. "Matkakuvaus" tai "Video".',
+                  type: "string",
+                },
+              ],
+            },
             {
               name: "kuvat",
               title: "Kuvat",
@@ -89,18 +137,31 @@ export const klubiToiminta = defineType({
             },
           ],
           preview: {
-            select: { title: "vuosi", subtitle: "paikka" },
-            prepare({ title, subtitle }) {
-              return { title: String(title ?? "—"), subtitle };
+            select: { title: "vuosi", otsikko: "otsikko", subtitle: "paikka" },
+            prepare({ title, otsikko, subtitle }) {
+              return {
+                title: [title ?? "—", otsikko].filter(Boolean).join(" — "),
+                subtitle,
+              };
             },
           },
         },
       ],
       group: "vuodet",
     }),
+    defineField({
+      name: "tilastot",
+      title: "Tilastotaulukot",
+      description:
+        "Toimintaan liittyvät taulukot, esim. mölkyn pistetaulukot tai jouluruokailujen osallistumistilasto.",
+      type: "array",
+      of: [{ type: "reference", to: [{ type: "jalkapalloTilasto" }] }],
+      group: "vuodet",
+    }),
     needsReviewField("perustiedot"),
     ...seoFields,
     legacyUrlField("seo"),
+    muutLegacyUrlitField("seo"),
   ],
   orderings: [
     {

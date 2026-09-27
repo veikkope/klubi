@@ -107,7 +107,7 @@ export default async function HallitusPage() {
           <div className="mt-10">
             <EmptyState
               title="Hallituksen kokoonpanoa ei ole vielä lisätty"
-              description="Sisältöä ei ole vielä lisätty Studiossa. Jäsenet lisätään Sanity Studiossa kohtaan “Hallituksen jäsen”."
+              description="Hallituksen jäsenet esitellään tällä sivulla pian."
             />
           </div>
         ) : (

@@ -128,6 +128,7 @@ export default async function StadionPage({
 
   const hasFacts = Boolean(
     sijainti ||
+      stadion.address ||
       stadion.capacity != null ||
       stadion.openedYear != null ||
       koordinaatit,
@@ -195,6 +196,7 @@ export default async function StadionPage({
       {hasFacts && (
         <dl className="mt-10 grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-3">
           <Fact label="Sijainti" value={sijainti} />
+          {stadion.address && <Fact label="Osoite" value={stadion.address} />}
           <Fact
             label="Kapasiteetti"
             value={

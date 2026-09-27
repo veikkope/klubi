@@ -39,6 +39,24 @@ export const legacyUrlField = (group?: string) =>
     ...(group ? { group } : {}),
   });
 
+/**
+ * Muut vanhat osoitteet, jotka on yhdistetty tähän dokumenttiin (esim.
+ * litmanen.htm + litmanenjari.htm + litmanenjaripatsas.htm → yksi pelaaja).
+ * `legacyUrl` on pääosoite; nämä ohjataan samaan kohteeseen.
+ */
+export const muutLegacyUrlitField = (group?: string) =>
+  defineField({
+    name: "muutLegacyUrlit",
+    title: "Muut vanhat osoitteet",
+    description:
+      "Vanhan sivuston muut polut, joiden sisältö on yhdistetty tähän. Täytetään " +
+      "migraatiossa automaattisesti. Älä muuta käsin — vanhat linkit ohjautuvat näiden varassa.",
+    type: "array",
+    of: [{ type: "string" }],
+    readOnly: true,
+    ...(group ? { group } : {}),
+  });
+
 /** Migraation merkitsemä lippu: tieto vaatii ihmisen tarkistuksen. */
 export const needsReviewField = (group?: string) =>
   defineField({

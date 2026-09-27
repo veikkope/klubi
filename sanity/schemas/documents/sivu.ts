@@ -2,6 +2,7 @@ import { defineField, defineType } from "sanity";
 import { seoFields } from "../objects/seoFields";
 import {
   legacyUrlField,
+  muutLegacyUrlitField,
   needsReviewField,
   tiivistelmaField,
 } from "../objects/contentMeta";
@@ -117,9 +118,20 @@ export const sivu = defineType({
       type: "portableText",
       group: "sisalto",
     }),
+    defineField({
+      name: "tilastot",
+      title: "Taulukot",
+      description:
+        "Sivulla näytettävät taulukot (esim. palloveikkauksen tulokset). Taulukot " +
+        "ylläpidetään Jalkapallotilasto-dokumentteina kategorialla \"Klubin omat tilastot\".",
+      type: "array",
+      of: [{ type: "reference", to: [{ type: "jalkapalloTilasto" }] }],
+      group: "sisalto",
+    }),
     needsReviewField("sisalto"),
     ...seoFields,
     legacyUrlField("seo"),
+    muutLegacyUrlitField("seo"),
   ],
   preview: {
     select: { title: "title", subtitle: "slug.current", media: "hero" },

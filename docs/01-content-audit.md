@@ -13,7 +13,7 @@
 | HTML-sivuja | **198** (kaikki HTTP 200) |
 | HTML yhteensä | 7,8 MB |
 | Uniikkeja kuvia | **1 112** |
-| Ravintola-arvioita | **497** (jäsennetty, 1 vaatii tarkistuksen) |
+| Ravintola-arvioita | **498** (jäsennetty; tarkistettavat ks. docs/12 "Toteutunut tilanne") |
 | Linkkejä Blogspotiin | ~450 |
 | PDF- tai muita liitteitä | 0 |
 
@@ -78,7 +78,7 @@ Jäsennystulos (`npm run parse:ravintolat` → `data/normalized/ravintolat.json`
 
 | Kenttä | Osumia |
 |---|---:|
-| Kokonaisarvosana | 488 / 497 |
+| Kokonaisarvosana | 489 / 498 |
 | Osa-arviot (Ruoka / Hinta / Viihtyvyys) | 476 |
 | Osoite | 493 |
 | Puhelin | 336 |
@@ -145,7 +145,7 @@ Siirretään jalkapalloarkiston alle.
 Stadionsivuja on yhteensä 15; täysi lista `data/crawl-status.tsv`:ssä (`stadion*.htm`).
 
 ### E. Ravintolat
-Kaupungeittain järjestetty, yhteensä 497 arviota 46 sivulla (ks. mitattu taulukko yllä). Arvioinnit 0–5 yhden desimaalin tarkkuudella, lisäksi kolme osa-arviota.
+Kaupungeittain järjestetty, yhteensä 498 arviota 46 sivulla (ks. mitattu taulukko yllä). Arvioinnit 0–5 yhden desimaalin tarkkuudella, lisäksi kolme osa-arviota.
 
 | Vanha URL | Uusi sijainti |
 |---|---|
@@ -158,6 +158,28 @@ Kaupungeittain järjestetty, yhteensä 497 arviota 46 sivulla (ks. mitattu taulu
 | `/ruokailuuusimaa.htm` | `/ravintolat?kaupunki=uusimaa` |
 | `/ruokailukreikka.htm` | `/ravintolat?maa=kreikka` |
 
+## Migraation tila (2026-09-27)
+
+Koko vanha sivusto on migroitu Sanityn development-datasetiin (docs/12). Jokaisella
+198 vanhalla URL:lla on tila tiedostossa `data/coverage.tsv`: **176 migrated,
+19 merged, 3 dropped, 0 unknown**. Pudotetut ovat kehyssivut (`index.html`,
+`yla.htm`, `links.htm`), joilla ei ole sisältöä. Yhdistetyt ovat hubeja ja
+linkkilistoja, joiden sisältö syntyy nyt datasta (`stadionit.htm`,
+`historia.htm`, `ruokailu.htm`, `otsikkoarkisto.htm` …).
+
+| Sisältöryhmä | Dokumentteja |
+|---|---:|
+| Uutisarkisto (kommentit + blogi) | 222 uutista |
+| Jalkapalloarkiston taulukot | 187 tilastoa (114 jalkapallo + 73 klubin omaa) |
+| Arvokisat ja pelaajat | 15 kisaa, 1 pelaaja |
+| Stadionit | 17 stadionia |
+| Klubi | 4 sivua, 9 toimintamuotoa, 4 singletonia |
+| Ravintolat | 498 ravintolaa, 49 kaupunkia |
+| Kuvat | 1 037 assettia, 1 087 kuvaliitosta, 0 orpoa |
+
+Jäljellä olevat tarkistettavat kohdat (`needsReview`) ovat oppaassa
+(docs/09 → "Täytä itse").
+
 ## Jäljellä olevat selvitykset
 
 Nämä eivät ole vanhalla sivustolla eikä niitä voi scrapeta — kysyttävä isältä:
@@ -167,4 +189,8 @@ Nämä eivät ole vanhalla sivustolla eikä niitä voi scrapeta — kysyttävä 
 - [ ] Säännöt (PDF tai teksti)
 - [ ] Jäsenmaksut ja hakuprosessi
 - [ ] Päätös: päästetäänkö tekoälycrawlerit sisään (`app/robots.ts`, ks. docs/11 §7)
-- [ ] Selvitettävä: Sanityn asset-raja 1 112 kuvalle
+- [x] Selvitetty: Sanityn asset-raja. Assetteja on 1 037, koska pudotetut koristekuvat
+      ja deduplikointi pienentävät määrää. Free-tierin raja ei tule vastaan.
+- [ ] Päätös: tuodaanko otsikkoarkiston 300 Blogspot-linkkiä uutisiksi (docs/06 → Blogspot)
+- [ ] Tarkistettavat (`needsReview`): 28 uutista, 10 tilastoa, 2 toimintamuotoa,
+      1 pelaaja, 1 stadion, 1 ravintola

@@ -62,7 +62,7 @@ Logo viittaa etusivulle `/`.
 │   ├── /jalkapalloarkisto/lupaavat               lupaavia.htm
 │   └── /jalkapalloarkisto/stadionit              hub
 │       └── /jalkapalloarkisto/stadionit/[slug]
-├── /ravintolat                  Hakemisto suodattimineen (kaupunki/tähdet)
+├── /ravintolat                  Hakemisto suodattimineen (maa/maakunta/kaupunki/ruoka/arvosana)
 │   ├── /ravintolat/[slug]
 │   └── /ravintolat/arvostele
 └── /galleria
@@ -89,6 +89,23 @@ Logo viittaa etusivulle `/`.
 | `/ruokailu.htm` | `/ravintolat` | "Ruokailu" → "Ravintolat" |
 
 Lisäksi kaikki yksittäiset alasivut (ks. `lib/redirects.ts`).
+
+## Ravintolahakemiston URL-parametrit
+
+Tila on URL:ssa (GET-lomake, toimii ilman JavaScriptiä). Kaikki parametrit ovat valinnaisia ja yhdistyvät JA-ehdolla. Oletusarvot jätetään pois osoitteesta. Rajatut näkymät ovat `noindex, follow`.
+
+| Parametri | Arvo | Esimerkki | Huomio |
+|---|---|---|---|
+| `maa` | maan slug (`lib/slugify.ts` maan nimestä) | `?maa=saksa`, `?maa=venaja`, `?maa=iso-britannia` | Tuntematon slug → tyhjätila "Ei osumia". |
+| `maakunta` | maakunnan arvo (`lib/maakunnat.ts`), useampi pilkulla | `?maakunta=uusimaa`, `?maakunta=etela-savo,pohjois-savo` | Vain Suomi. Jos `maa` on muu kuin `suomi`, maakunta ohitetaan. Useampi arvo = mikä tahansa niistä (vanhat aluesivut, jotka ylittävät maakuntarajan). Myös `?maakunta=a&maakunta=b` hyväksytään. |
+| `kaupunki` | kaupungin slug | `?kaupunki=lahti` | Maa-tason viitteet (Portugali, Ruotsi, Venäjä) eivät ole valikossa. |
+| `ruoka` | ruokatyyppi | `?ruoka=pizza` | |
+| `arvosana` | vähimmäisarvosana | `?arvosana=4` | |
+| `lopettaneet` | `1` | `?lopettaneet=1` | Näyttää myös toimintansa lopettaneet. |
+| `jarjesta` | `nimi` | `?jarjesta=nimi` | Oletus: arvosana. |
+| `sivu` | ≥ 2 | `?sivu=2` | 24 ravintolaa sivulla. |
+
+Järjestys osoitteessa: kaupunki, maa, maakunta, ruoka, arvosana, lopettaneet, jarjesta, sivu (`buildRavintolaHref`). Maakuntavalikko näkyy, kun maata ei ole valittu tai se on Suomi. Kaupunkivalikko rajautuu valittuun maahan ja maakuntaan (valittu kaupunki pysyy listassa).
 
 ## Footer
 
