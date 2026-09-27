@@ -4,8 +4,11 @@ import { sanityFetch } from "@/sanity/lib/fetch";
 import {
   sitemapArchiveYearsQuery,
   sitemapByTypeQuery,
+  sitemapTilastotQuery,
   type SitemapRow,
+  type SitemapTilastoRow,
 } from "@/sanity/lib/queries/sitemap";
+import { documentRoute } from "@/lib/path";
 import { absoluteUrl } from "@/lib/site";
 
 /**
@@ -58,6 +61,9 @@ const STATIC_ROUTES: { path: string; priority: number; changeFrequency: Entry["c
   { path: "/jalkapalloarkisto/eurocupit", priority: 0.5, changeFrequency: "yearly" },
   { path: "/jalkapalloarkisto/pelaajat", priority: 0.5, changeFrequency: "monthly" },
   { path: "/jalkapalloarkisto/stadionit", priority: 0.5, changeFrequency: "yearly" },
+  { path: "/jalkapalloarkisto/ulkomaiset-mestarit", priority: 0.4, changeFrequency: "yearly" },
+  { path: "/jalkapalloarkisto/palloliitto", priority: 0.3, changeFrequency: "yearly" },
+  { path: "/jalkapalloarkisto/tilastot", priority: 0.3, changeFrequency: "yearly" },
 ];
 
 /** Eurocup-kilpailut ovat koodissa, eivät Sanityssa. */
@@ -112,7 +118,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     rowsFor("tapahtuma"),
     rowsFor("ravintola"),
     rowsFor("stadion"),
-    rowsFor("jalkapalloTilasto"),
+    sanityFetch<SitemapTilastoRow[]>({
+      query: sitemapTilastotQuery,
+      tags: ["jalkapalloTilasto"],
+      fallback: [],
+    }),
     rowsFor("arvokisa"),
     rowsFor("pelaaja"),
     rowsFor("klubiToiminta"),
@@ -155,6 +165,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: "yearly",
   }));
 
+  // Vain tilastot, joilla on oma sivu (karsinnat, muut koosteet). Listaussivun
+  // osiot ja viittaajan sivulla näkyvät taulukot eivät ole omia URL:ejaan.
+  const tilastoEntries: Entry[] = tilastot.flatMap((row) => {
+    const route = documentRoute(row);
+    if (!route || route.anchor) return [];
+    return [
+      {
+        url: absoluteUrl(route.path),
+        lastModified: row.updatedAt ? new Date(row.updatedAt) : undefined,
+        priority: 0.3,
+        changeFrequency: "yearly" as const,
+      },
+    ];
+  });
+
+  // Klubi-osion sivu-dokumenteilla (klubi, klubi/palloveikkaus) on oma
+  // kiinteä reittinsä; sama URL ei saa esiintyä sitemapissa kahdesti.
+  const staticPaths = new Set(STATIC_ROUTES.map((route) => route.path));
+  const sivuRows = sivut.filter((row) => row.slug && !staticPaths.has(`/${row.slug}`));
+
   return [
     ...staticEntries,
     ...eurocupEntries,
@@ -167,7 +197,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...toEntries(pelaajat, (s) => `/jalkapalloarkisto/pelaajat/${s}`, 0.5, "yearly"),
     ...toEntries(toiminta, (s) => `/klubi/toiminta/${s}`, 0.6, "yearly"),
     ...toEntries(albumit, (s) => `/galleria/${s}`, 0.4, "yearly"),
-    ...toEntries(tilastot, (s) => `/jalkapalloarkisto/karsinnat/${s}`, 0.3, "yearly"),
-    ...toEntries(sivut, (s) => `/${s}`, 0.5, "monthly"),
+    ...tilastoEntries,
+    ...toEntries(sivuRows, (s) => `/${s}`, 0.5, "monthly"),
   ];
 }

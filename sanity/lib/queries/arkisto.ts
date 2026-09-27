@@ -18,6 +18,7 @@ import { defineQuery } from "next-sanity";
 import type { PortableTextBlock } from "@portabletext/react";
 
 import type { StatColumn, StatRow } from "@/components/ui/stat-table";
+import type { SanityImage } from "@/lib/types";
 
 /** Cache-tagit revalidointia varten — sama tyyppinimi kuin skeemassa. */
 export const arkistoTags = ["jalkapalloTilasto"];
@@ -33,6 +34,12 @@ export interface TilastoDoc {
   intro: PortableTextBlock[] | null;
   columns: StatColumn[] | null;
   rows: StatRow[] | null;
+  /** Taulukon alla näytettävä teksti: otteluraportit, kokoonpanot, selitteet. */
+  lisatiedot: PortableTextBlock[] | null;
+  kuvat: SanityImage[] | null;
+  /** Päivä, jolloin taulukon tiedot on viimeksi tarkistettu (ISO-päivä). */
+  paivitetty: string | null;
+  jarjestys: number | null;
   sources: string[] | null;
 }
 
@@ -52,19 +59,25 @@ const tilastoProjection = /* groq */ `
   intro,
   columns[]{ key, label, type },
   rows[]{ cells[]{ key, value } },
+  lisatiedot,
+  kuvat[]{ _key, alt, caption, asset },
+  paivitetty,
+  jarjestys,
   "sources": coalesce(sources, [])
 `;
 
 /** Yhden kategorian kaikki tilastot. */
 export const tilastotByCategoryQuery = defineQuery(/* groq */ `
-  *[_type == "jalkapalloTilasto" && category == $category] | order(title asc){
+  *[_type == "jalkapalloTilasto" && category == $category]
+    | order(coalesce(jarjestys, 1000) asc, title asc){
     ${tilastoProjection}
   }
 `);
 
 /** Usean kategorian tilastot yhdellä haulla (eurocup-hubin esikatselut). */
 export const tilastotByCategoriesQuery = defineQuery(/* groq */ `
-  *[_type == "jalkapalloTilasto" && category in $categories] | order(title asc){
+  *[_type == "jalkapalloTilasto" && category in $categories]
+    | order(coalesce(jarjestys, 1000) asc, title asc){
     ${tilastoProjection}
   }
 `);

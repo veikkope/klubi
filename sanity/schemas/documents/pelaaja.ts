@@ -2,6 +2,7 @@ import { defineField, defineType } from "sanity";
 import { seoFields } from "../objects/seoFields";
 import {
   legacyUrlField,
+  muutLegacyUrlitField,
   needsReviewField,
   tiivistelmaField,
 } from "../objects/contentMeta";
@@ -106,6 +107,14 @@ export const pelaaja = defineType({
       group: "perustiedot",
     }),
     defineField({
+      name: "tilastot",
+      title: "Tilastotaulukot",
+      description: "Pelaajaan liittyvät taulukot, esim. loukkaantumiset tai maaottelut.",
+      type: "array",
+      of: [{ type: "reference", to: [{ type: "jalkapalloTilasto" }] }],
+      group: "ura",
+    }),
+    defineField({
       name: "kuvat",
       title: "Kuvat",
       type: "array",
@@ -115,6 +124,7 @@ export const pelaaja = defineType({
     needsReviewField("perustiedot"),
     ...seoFields,
     legacyUrlField("seo"),
+    muutLegacyUrlitField("seo"),
   ],
   orderings: [{ title: "Nimi A–Ö", name: "nameAsc", by: [{ field: "name", direction: "asc" }] }],
   preview: {

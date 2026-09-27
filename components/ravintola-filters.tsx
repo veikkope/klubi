@@ -3,6 +3,7 @@ import Link from "next/link";
 import { cn } from "@/lib/cn";
 import { formatRating } from "@/components/restaurant-card";
 import { cuisineLabel, isValidCuisine } from "@/lib/ravintola-cuisines";
+import { MAAKUNNAT, SUOMI_SLUG, isMaakunta, maakuntaTitle } from "@/lib/maakunnat";
 import type { RavintolatFacetData } from "@/sanity/lib/queries/ravintolat";
 
 /**
@@ -30,6 +31,14 @@ export const MIN_RATING_OPTIONS = [4.5, 4, 3.5, 3, 2.5, 2] as const;
 
 export type RavintolaFilterValues = {
   kaupunki: string | null;
+  /** Maan slug (`lib/slugify.ts` maan nimestä), esim. "saksa". */
+  maa: string | null;
+  /**
+   * Maakuntien arvot, esim. ["uusimaa"]. Tyhjä = ei rajausta. Useampi arvo
+   * (`?maakunta=uusimaa,kanta-hame`) = mikä tahansa niistä; niitä käyttävät
+   * vanhojen aluesivujen ohjaukset, joiden ravintolat ylittävät maakunnan rajan.
+   */
+  maakunta: string[];
   ruoka: string | null;
   arvosana: number | null;
   lopettaneet: boolean;
@@ -39,6 +48,8 @@ export type RavintolaFilterValues = {
 
 export const RAVINTOLA_DEFAULT_FILTERS: RavintolaFilterValues = {
   kaupunki: null,
+  maa: null,
+  maakunta: [],
   ruoka: null,
   arvosana: null,
   lopettaneet: false,
@@ -57,6 +68,21 @@ export function parseRavintolaFilters(
   sp: RavintolaSearchParams,
 ): RavintolaFilterValues {
   const kaupunki = first(sp.kaupunki)?.trim();
+  const maa = first(sp.maa)?.trim().toLowerCase();
+  const validMaa = maa && /^[a-z0-9-]{1,60}$/.test(maa) ? maa : null;
+  // Sekä "?maakunta=a,b" että "?maakunta=a&maakunta=b"; kanoninen järjestys.
+  const requested = new Set<string>(
+    [sp.maakunta ?? []]
+      .flat()
+      .flatMap((v) => v.split(","))
+      .map((v) => v.trim().toLowerCase())
+      .filter(isMaakunta),
+  );
+  // Maakunta on vain Suomessa: toinen maa ohittaa maakuntarajauksen.
+  const maakunta =
+    validMaa && validMaa !== SUOMI_SLUG
+      ? []
+      : MAAKUNNAT.map((m) => m.value as string).filter((v) => requested.has(v));
   const ruoka = first(sp.ruoka)?.trim();
   const arvosana = Number.parseFloat(first(sp.arvosana) ?? "");
   const jarjesta = first(sp.jarjesta);
@@ -64,6 +90,8 @@ export function parseRavintolaFilters(
 
   return {
     kaupunki: kaupunki && /^[a-z0-9_-]{1,60}$/i.test(kaupunki) ? kaupunki : null,
+    maa: validMaa,
+    maakunta,
     ruoka: isValidCuisine(ruoka) ? (ruoka as string) : null,
     arvosana:
       Number.isFinite(arvosana) && arvosana > 0 && arvosana <= 5
@@ -83,18 +111,23 @@ export function buildRavintolaHref(
   const merged = { ...current, ...override };
   const params = new URLSearchParams();
   if (merged.kaupunki) params.set("kaupunki", merged.kaupunki);
+  if (merged.maa) params.set("maa", merged.maa);
+  if (merged.maakunta.length) params.set("maakunta", merged.maakunta.join(","));
   if (merged.ruoka) params.set("ruoka", merged.ruoka);
   if (merged.arvosana) params.set("arvosana", String(merged.arvosana));
   if (merged.lopettaneet) params.set("lopettaneet", "1");
   if (merged.jarjesta !== "arvosana") params.set("jarjesta", merged.jarjesta);
   if (merged.sivu > 1) params.set("sivu", String(merged.sivu));
-  const qs = params.toString();
+  // Pilkku on sallittu kyselymerkkijonossa (RFC 3986); arvot ovat muuten slugeja.
+  const qs = params.toString().replace(/%2C/g, ",");
   return qs ? `/ravintolat?${qs}` : "/ravintolat";
 }
 
 /** Onko jokin muu kuin oletusrajaus voimassa. */
 export function hasActiveRavintolaFilters(f: RavintolaFilterValues): boolean {
-  return Boolean(f.kaupunki || f.ruoka || f.arvosana || f.lopettaneet);
+  return Boolean(
+    f.kaupunki || f.maa || f.maakunta.length || f.ruoka || f.arvosana || f.lopettaneet,
+  );
 }
 
 const fieldClass =
@@ -113,7 +146,19 @@ type Props = {
 };
 
 export function RavintolaFilterBar({ active, facets, resultCount }: Props) {
-  const cities = facets.cities.filter((c) => c.slug && c.name);
+  const country = facets.countries.find((c) => c.slug === active.maa);
+  // Kaupunkivalikko rajautuu valittuun maahan ja maakuntaan; valittu kaupunki
+  // pysyy listassa, jotta lomake ei hiljaa pudota sitä.
+  const cities = facets.cities.filter(
+    (c) =>
+      c.slug === active.kaupunki ||
+      ((!country || (c.country !== null && country.names.includes(c.country))) &&
+        (active.maakunta.length === 0 || (c.maakunta !== null && active.maakunta.includes(c.maakunta)))),
+  );
+  // Maakunta vain Suomelle: näkyy, kun maata ei ole valittu tai se on Suomi.
+  const showMaakunta =
+    facets.maakunnat.length > 0 && (!active.maa || active.maa === SUOMI_SLUG);
+  const maakuntaValue = active.maakunta.join(",");
   // GROQ:n `array::unique` palauttaa arvot löytymisjärjestyksessä — järjestetään
   // suomalaisittain aakkosiin vasta täällä, jotta kysely pysyy yksinkertaisena.
   const cuisines = facets.cuisines
@@ -132,7 +177,61 @@ export function RavintolaFilterBar({ active, facets, resultCount }: Props) {
         action="/ravintolat"
         className="rounded-2xl border border-border bg-surface p-5 sm:p-6"
       >
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="suodatin-maa" className={labelClass}>
+              Maa
+            </label>
+            <select
+              id="suodatin-maa"
+              name="maa"
+              defaultValue={active.maa ?? ""}
+              className={fieldClass}
+            >
+              <option value="">Kaikki maat</option>
+              {active.maa && !country && (
+                <option value={active.maa}>{active.maa} (ei ravintoloita)</option>
+              )}
+              {facets.countries.map((c) => (
+                <option key={c.slug} value={c.slug}>
+                  {c.name}
+                  {c.count > 0 ? ` (${c.count})` : ""}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {showMaakunta && (
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="suodatin-maakunta" className={labelClass}>
+                Maakunta
+              </label>
+              <select
+                id="suodatin-maakunta"
+                name="maakunta"
+                defaultValue={maakuntaValue}
+                aria-describedby="suodatin-maakunta-ohje"
+                className={fieldClass}
+              >
+                <option value="">Kaikki maakunnat</option>
+                {active.maakunta.length > 1 && (
+                  <option value={maakuntaValue}>
+                    {active.maakunta.map((m) => maakuntaTitle(m) ?? m).join(" + ")}
+                  </option>
+                )}
+                {facets.maakunnat.map((m) => (
+                  <option key={m.value} value={m.value}>
+                    {m.title}
+                    {m.count > 0 ? ` (${m.count})` : ""}
+                  </option>
+                ))}
+              </select>
+              <p id="suodatin-maakunta-ohje" className="sr-only">
+                Maakunta rajaa suomalaisia ravintoloita.
+              </p>
+            </div>
+          )}
+
           <div className="flex flex-col gap-1.5">
             <label htmlFor="suodatin-kaupunki" className={labelClass}>
               Kaupunki
@@ -273,6 +372,8 @@ function ActiveFilterChips({
   const cityName =
     facets.cities.find((c) => c.slug === active.kaupunki)?.name ??
     active.kaupunki;
+  const countryName =
+    facets.countries.find((c) => c.slug === active.maa)?.name ?? active.maa;
 
   const chips: { key: string; label: string; href: string }[] = [];
   if (active.kaupunki) {
@@ -280,6 +381,23 @@ function ActiveFilterChips({
       key: "kaupunki",
       label: `Kaupunki: ${cityName}`,
       href: buildRavintolaHref(active, { kaupunki: null, sivu: 1 }),
+    });
+  }
+  if (active.maa) {
+    chips.push({
+      key: "maa",
+      label: `Maa: ${countryName}`,
+      href: buildRavintolaHref(active, { maa: null, sivu: 1 }),
+    });
+  }
+  for (const value of active.maakunta) {
+    chips.push({
+      key: `maakunta-${value}`,
+      label: `Maakunta: ${maakuntaTitle(value) ?? value}`,
+      href: buildRavintolaHref(active, {
+        maakunta: active.maakunta.filter((m) => m !== value),
+        sivu: 1,
+      }),
     });
   }
   if (active.ruoka) {

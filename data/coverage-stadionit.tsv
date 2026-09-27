@@ -1,0 +1,20 @@
+legacyUrl	tila	kohde	huomio
+/stadionit.htm	merged	/jalkapalloarkisto/stadionit	Stadionhubi (maa → kaupunki → stadion). Rakenne säilyy stadionien kaupunkiviittauksissa ja kaupunkien maissa; 17 stadionia listaussivulla.
+/ateenanolympiastadion.htm	migrated	stadion-ateenanolympiastadion	kaupunki-ateena (uusi); 4 kuvaa
+/pietarikrestovskystadium.htm	migrated	stadion-pietarikrestovskystadium	kaupunki-pietari (uusi); 2 kuvaa
+/stadionhelsinkifinnairstadium.htm	migrated	stadion-helsinkifinnairstadium	kaupunki-helsinki; 2 kuvaa
+/stadionhelsinkiolympiastadion.htm	migrated	stadion-helsinkiolympiastadion	kaupunki-helsinki; 2 kuvaa; needsReview: Kapasiteetti ei ole lähteessä yksiselitteinen: sivun tekstissä 37 725, sivun otsikkotiedossa (<title>) 40 000. Käytetty tekstin arvoa — tarkista ajantasainen luku.
+/stadionkoopenhaminaparken.htm	migrated	stadion-koopenhaminaparken	kaupunki-koopenhamina; 2 kuvaa
+/stadionlahtikisapuisto.htm	migrated	stadion-lahtikisapuisto	kaupunki-lahti; 1 kuva; nimi normalisoitu: "Kisapuisto Lahti" → "Kisapuisto"
+/stadionlahtisuurhalli.htm	migrated	stadion-lahtisuurhalli	kaupunki-lahti; 1 kuva; nimi normalisoitu: "Suurhalli Lahti" → "Suurhalli"
+/stadionlahtiurheilukeskus.htm	migrated	stadion-lahtiurheilukeskus	kaupunki-lahti; 1 kuva
+/stadionmoskovalokomotiv.htm	migrated	stadion-moskovalokomotiv	kaupunki-moskova (uusi); 2 kuvaa; nimi normalisoitu: "Lokomotiv Stadion Moskova" → "Lokomotiv Stadion"
+/stadiontallinnaAlecoq.htm	migrated	stadion-tallinnaalecoq	kaupunki-tallinna; 2 kuvaa
+/stadiontampereratina.htm	migrated	stadion-tampereratina	kaupunki-tampere; 2 kuvaa; needsReview: Kapasiteetti ei ole lähteessä yksiselitteinen: sivun tekstissä 16 800, sivun otsikkotiedossa (<title>) 17 000. Käytetty tekstin arvoa — tarkista ajantasainen luku.
+/stadiontartotammestadium.htm	migrated	stadion-tartotammestadium	kaupunki-tarto; 3 kuvaa; nimi normalisoitu: "Tarto Tamme Stadium" → "Tamme Stadium"
+/stadiontshekkinastinadlech.htm	migrated	stadion-tshekkinastinadlech	kaupunki-teplice (uusi); 1 kuva
+/stadionturkuveritas.htm	migrated	stadion-turkuveritas	kaupunki-turku; 2 kuvaa
+/stadionventspilslimpiskaissportacenters.htm	migrated	stadion-ventspilslimpiskaissportacenters	kaupunki-ventspils; 3 kuvaa; nimi normalisoitu: "Ventspils Olimpiskais Sporta Centers" → "Olimpiskais Sporta Centers"
+/stadionvorustadium.htm	migrated	stadion-vorustadium	kaupunki-voru (uusi); 2 kuvaa; nimi normalisoitu: "VöruStadium" → "Võru Stadium"
+/wembleylontoo.htm	migrated	stadion-wembleylontoo	kaupunki-lontoo; 2 kuvaa; needsReview: Lähteen 'Otettu käyttöön: 1923' koskee vanhaa Wembleytä; nykyinen stadion (kuvat 2013) avattiin 2007. Tarkista rakennusvuosi.; nimi normalisoitu: "Lontoo Wembley" → "Wembley"
+/puutteellisetjarjestelyt.htm	migrated	jalkapalloTilasto-puutteelliset-jarjestelyt	kategoria muu; 67 riviä, 30 kuvaa selostuksissa (lisatiedot); uusi slug puutteelliset-jarjestelyt — redirect osoittaa nyt /jalkapalloarkisto/stadionit, integraatio päättää

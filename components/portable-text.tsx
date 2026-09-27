@@ -68,12 +68,14 @@ const components: PortableTextComponents = {
       if (!value) return null;
       return (
         <figure className="mt-8">
+          {/* Rajaamaton: migroidussa sisällössä on kaavioita ja otteluohjelmia,
+              joista 3:2-rajaus leikkaisi tietoa pois. */}
           <SanityImage
             image={value}
             width={1200}
-            height={800}
+            crop={false}
             sizes="(min-width: 768px) 720px, 100vw"
-            className="rounded-xl"
+            className="h-auto max-w-full rounded-xl"
           />
           {value.caption && (
             <figcaption className="mt-2 text-sm text-muted">

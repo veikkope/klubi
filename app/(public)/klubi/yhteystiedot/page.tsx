@@ -196,7 +196,7 @@ export default async function YhteystiedotPage() {
           <div className="mt-12">
             <EmptyState
               title="Yhteystiedot ovat vielä täydentämättä"
-              description="Sisältöä ei ole vielä lisätty Studiossa. Osoite, puhelin ja laskutustiedot täytetään Sanity Studion kohdassa “Yhteystiedot”."
+              description="Postiosoite, puhelinnumero ja laskutustiedot julkaistaan tällä sivulla pian."
             />
           </div>
         )}

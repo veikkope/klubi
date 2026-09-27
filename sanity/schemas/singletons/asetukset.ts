@@ -21,6 +21,21 @@ export const asetukset = defineType({
       name: "logo",
       title: "Logo",
       type: "image",
+      fields: [
+        defineField({
+          name: "alt",
+          title: "Vaihtoehtoinen teksti (alt)",
+          description:
+            'Mitä logossa lukee tai mitä se esittää, esim. "Lahden Suomalainen Klubi ry:n logo". Ruudunlukija lukee tämän.',
+          type: "string",
+          validation: (rule) =>
+            rule.custom((value, context) =>
+              (context.parent as { asset?: unknown } | undefined)?.asset && !value
+                ? "Kirjoita logolle vaihtoehtoinen teksti."
+                : true,
+            ),
+        }),
+      ],
     }),
     defineField({
       name: "favicon",

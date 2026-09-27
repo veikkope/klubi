@@ -39,12 +39,14 @@ export async function Footer() {
                 <br />
               </>
             )}
-            <a className="hover:text-accent" href={`mailto:${contact.email}`}>
-              {contact.email}
-            </a>
+            {contact.email && (
+              <a className="hover:text-accent" href={`mailto:${contact.email}`}>
+                {contact.email}
+              </a>
+            )}
             {contact.phone && (
               <>
-                <br />
+                {contact.email && <br />}
                 <a className="hover:text-accent" href={`tel:${contact.phone}`}>
                   {contact.phone}
                 </a>
@@ -115,9 +117,9 @@ export async function Footer() {
           <h2 className="text-xs font-medium uppercase tracking-[0.18em] text-muted">
             Seuraa
           </h2>
-          {contact.socials.length > 0 ? (
+          {(contact.socials ?? []).length > 0 ? (
             <ul className="mt-3 flex gap-3">
-              {contact.socials.map((social) => (
+              {(contact.socials ?? []).map((social) => (
                 <li key={social.url}>
                   <a
                     href={social.url}

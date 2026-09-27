@@ -19,6 +19,7 @@ import { defineQuery } from "next-sanity";
 import type { PortableTextBlock } from "@portabletext/react";
 
 import type { SanityImage } from "@/lib/types";
+import type { TilastoDoc } from "@/sanity/lib/queries/arkisto";
 
 /* -------------------------------------------------------------------------- */
 /* Jaetut tyypit                                                              */
@@ -69,6 +70,7 @@ export const KISATYYPIT = [
   "em",
   "kansojen-liiga",
   "olympialaiset",
+  "u21-em",
   "muu",
 ] as const;
 
@@ -79,6 +81,7 @@ const KISATYYPPI_LABELS: Record<Kisatyyppi, string> = {
   em: "EM-kisat",
   "kansojen-liiga": "Kansojen liiga",
   olympialaiset: "Olympialaiset",
+  "u21-em": "Alle 21-vuotiaiden EM",
   muu: "Muut kisat",
 };
 
@@ -102,8 +105,13 @@ export type ArvokisaCard = {
 
 export type ArvokisaFull = ArvokisaCard & {
   _updatedAt: string;
+  alkuPvm?: string | null;
+  loppuPvm?: string | null;
+  hopea?: string | null;
+  pronssi?: string | null;
   kuvaus?: PortableTextBlock[] | null;
-  tilastot?: TilastoTable[] | null;
+  /** Lohko- ja mitalitaulukot samassa muodossa kuin arkiston tilastosivuilla. */
+  tilastot?: TilastoDoc[] | null;
   kuvat?: SanityImage[] | null;
   seoTitle?: string | null;
   seoDescription?: string | null;
@@ -139,18 +147,57 @@ export const arvokisaBySlugQuery = defineQuery(`
     isantamaat,
     voittaja,
     suomenSijoitus,
+    alkuPvm,
+    loppuPvm,
+    hopea,
+    pronssi,
     kuvaus,
     tilastot[]->{
       _id,
+      _updatedAt,
       title,
       "slug": slug.current,
       tiivistelma,
+      category,
+      intro,
       columns[]{ key, label, type },
-      rows[]{ cells[]{ key, value } }
+      rows[]{ cells[]{ key, value } },
+      lisatiedot,
+      kuvat[]{ _key, alt, caption, asset },
+      paivitetty,
+      jarjestys,
+      "sources": coalesce(sources, [])
     },
     kuvat[]{ _key, alt, caption, asset },
     seoTitle,
     seoDescription
+  }
+`);
+
+/**
+ * Arvokisatilastot, joihin mikään kisa ei viittaa: MM- ja EM-kisojen sekä
+ * Kansojen liigan mitalitaulukot. Lohkotaulukot näkyvät kisansa sivulla.
+ */
+export const arvokisaMitalitaulukotQuery = defineQuery(`
+  *[
+    _type == "jalkapalloTilasto"
+    && category == "arvokisa"
+    && count(*[_type == "arvokisa" && references(^._id)]) == 0
+  ] | order(coalesce(jarjestys, 1000) asc, title asc){
+    _id,
+      _updatedAt,
+      title,
+      "slug": slug.current,
+      tiivistelma,
+      category,
+      intro,
+      columns[]{ key, label, type },
+      rows[]{ cells[]{ key, value } },
+      lisatiedot,
+      kuvat[]{ _key, alt, caption, asset },
+      paivitetty,
+      jarjestys,
+      "sources": coalesce(sources, [])
   }
 `);
 
@@ -211,6 +258,8 @@ export type PelaajaFull = Omit<PelaajaCard, "kuva"> & {
   syntymaaika?: string | null;
   seurat?: PelaajaSeura[] | null;
   kuvaus?: PortableTextBlock[] | null;
+  /** Pelaajaan liittyvät taulukot, esim. loukkaantumiset. */
+  tilastot?: TilastoDoc[] | null;
   kuvat?: SanityImage[] | null;
   seoTitle?: string | null;
   seoDescription?: string | null;
@@ -246,6 +295,22 @@ export const pelaajaBySlugQuery = defineQuery(`
     syntymaaika,
     seurat[]{ _key, seura, alkuvuosi, loppuvuosi },
     kuvaus,
+    tilastot[]->{
+      _id,
+      _updatedAt,
+      title,
+      "slug": slug.current,
+      tiivistelma,
+      category,
+      intro,
+      columns[]{ key, label, type },
+      rows[]{ cells[]{ key, value } },
+      lisatiedot,
+      kuvat[]{ _key, alt, caption, asset },
+      paivitetty,
+      jarjestys,
+      "sources": coalesce(sources, [])
+    },
     kuvat[]{ _key, alt, caption, asset },
     seoTitle,
     seoDescription
@@ -297,6 +362,7 @@ export type StadionLocation = {
 
 export type StadionFull = Omit<StadionCard, "kuva"> & {
   _updatedAt: string;
+  address?: string | null;
   location?: StadionLocation | null;
   description?: PortableTextBlock[] | null;
   images?: SanityImage[] | null;
@@ -331,6 +397,7 @@ export const stadionBySlugQuery = defineQuery(`
     tiivistelma,
     capacity,
     openedYear,
+    address,
     "city": city->{ name, "slug": slug.current, country },
     location{ lat, lng, alt },
     description,

@@ -23,7 +23,10 @@ export const arkistoNav: SectionNavItem[] = [
   { label: "FIFA-ranking", href: "/jalkapalloarkisto/fifa-ranking" },
   { label: "Lupaavat", href: "/jalkapalloarkisto/lupaavat" },
   { label: "Saavutukset", href: "/jalkapalloarkisto/saavutukset" },
+  { label: "Ulkomaiset mestarit", href: "/jalkapalloarkisto/ulkomaiset-mestarit" },
+  { label: "Palloliitto", href: "/jalkapalloarkisto/palloliitto" },
   { label: "Stadionit", href: "/jalkapalloarkisto/stadionit" },
+  { label: "Muut tilastot", href: "/jalkapalloarkisto/tilastot" },
 ];
 
 export const klubiNav: SectionNavItem[] = [

@@ -27,6 +27,10 @@ export type UutinenListItem = UutinenCard & {
 export type UutinenDetail = UutinenListItem & {
   _updatedAt: string;
   body?: PortableTextBlock[] | null;
+  /** Mistä uutinen on lainattu, esim. "palloliitto.fi 07.02.2008". */
+  lahde?: { nimi?: string | null; url?: string | null; pvm?: string | null } | null;
+  /** Alkuperäinen kirjoitus muualla (esim. klubin Blogspot). */
+  ulkoinenLinkki?: string | null;
   author?: { name: string; role?: string | null } | null;
   seoTitle?: string | null;
   seoDescription?: string | null;
@@ -112,6 +116,8 @@ export const uutinenDetailQuery = defineQuery(`
   *[${uutinenFilter} && slug.current == $slug][0]{${uutinenCardFields},
     _updatedAt,
     body,
+    lahde{ nimi, url, pvm },
+    ulkoinenLinkki,
     "author": author->{ name, role },
     seoTitle,
     seoDescription

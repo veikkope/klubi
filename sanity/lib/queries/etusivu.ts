@@ -31,6 +31,7 @@ export const etusivuQuery = defineQuery(`
     heroDescription,
     heroImage,
     heroCtas[]{ label, href, primary },
+    seuraavaOttelu{ ottelu, kilpailu, aika },
     blocks[]{
       _type,
       _key,

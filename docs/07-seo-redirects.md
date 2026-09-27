@@ -70,7 +70,7 @@ Toteutus: per-sivu komponentti `<JsonLd schema={...} />` joka renderöi `<script
 
 ### Strategia
 - **Kovat redirectit** (yksittäinen vanha URL → yksittäinen uusi URL): suora mapping
-- **Pehmeät redirectit** (kategoria → hakemisto): query-parametri (esim. `/ruokailulahti.htm` → `/ravintolat?kaupunki=lahti`)
+- **Pehmeät redirectit** (kategoria → hakemisto): query-parametri. Vanhat ravintolasivut (`ruokailu*.htm`) ohjautuvat tarkimpaan hakemistonäkymään, joka näyttää kaikki sivun ravintolat (ks. "Ravintolasivujen ohjaukset" alla).
 - **Kuolleet linkit**: ohjaa hakemistoon, esim. `/ruokailu.htm` → `/ravintolat`
 
 ### Manuaalisen lisäyksen prosessi
@@ -79,6 +79,20 @@ Toteutus: per-sivu komponentti `<JsonLd schema={...} />` joka renderöi `<script
 3. Deploy
 
 Tai: lisää `data/manual-redirects.csv`:hen ja aja `npm run redirects` — skripti generoi `lib/redirects.ts`:n. Tämä helpottaa kun rivejä on paljon (sprintin 5 aikana).
+
+### Ravintolasivujen ohjaukset (ruokailu*.htm)
+
+`scripts/generate-redirects.ts` johtaa kohteen sivun ravintoloista (Sanityn `legacyUrl` ja `muutLegacyUrlit`), ei sivun nimestä. Kohde on tarkin hakemistonäkymä, joka näyttää kaikki sivun ravintolat:
+
+1. kaikki samassa kaupungissa → `?kaupunki=<slug>` (ei maa-tason viitteitä)
+2. kaikki Suomessa, yksi maakunta → `?maakunta=<arvo>`
+3. kaikki Suomessa, 2–3 maakuntaa → `?maakunta=<a>,<b>`
+4. kaikki samassa maassa → `?maa=<slug>`
+5. muuten → `/ravintolat`
+
+Jos sivulla on lopettaneita ravintoloita, kohteeseen lisätään `lopettaneet=1`. Skripti simuloi hakemiston suodattimen ja kaatuu, jos jokin ohjaus ei näytä 100 %:a sivun ravintoloista. Kattavuustaulukko tulostuu jokaisella ajolla (`npm run redirects`). `ruokailu.htm` ja `ruokailutop5.htm` → `/ravintolat` (koostesivut). `--offline`-ajon sääntö (`?kaupunki=<sivun nimi>`) on vain varajärjestely.
+
+Tilanne 2026-09-27: 44 ravintolasivua, kaikki 100 %. Tasot: kaupunki 27, maakunta 5, maakunnat 4, maa 8. Koko taulukko: docs/12 "Maa- ja maakuntasuodatin".
 
 ### Vahvistus
 Sprint 5:ssä aja testiskripti:

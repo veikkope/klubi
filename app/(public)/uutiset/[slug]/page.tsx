@@ -28,6 +28,33 @@ export const revalidate = 3600;
 
 type Params = { slug: string };
 
+/** Portable Textin tavallinen teksti yhtenä rivinä vertailua varten. */
+function plainText(blocks: UutinenDetail["body"]): string {
+  return (blocks ?? [])
+    .map((block) =>
+      block._type === "block" && Array.isArray(block.children)
+        ? block.children.map((child) => (typeof child.text === "string" ? child.text : "")).join("")
+        : "",
+    )
+    .join(" ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/**
+ * Onko tiivistelmä leipätekstin alku? Katkaistun tiivistelmän loppu-"…"
+ * ja välilyöntierot eivät vaikuta vertailuun.
+ */
+function leadRepeatsBody(
+  lead: string | null | undefined,
+  body: UutinenDetail["body"],
+): boolean {
+  if (!lead) return false;
+  const normalizedLead = lead.replace(/(…|\.\.\.)\s*$/, "").replace(/\s+/g, " ").trim();
+  if (normalizedLead.length < 20) return false;
+  return plainText(body).startsWith(normalizedLead);
+}
+
 export async function generateStaticParams(): Promise<Params[]> {
   if (!hasSanity) return [];
   const slugs = await sanityFetch<string[]>({
@@ -108,6 +135,11 @@ export default async function UutinenPage({
     { label: news.title },
   ];
   const publishedYear = news.publishedAt?.slice(0, 4);
+  const summary = news.tiivistelma ?? news.excerpt;
+  // Migroiduissa uutisissa tiivistelmä on leipätekstin sanatarkka alku
+  // (docs/12 §2.1.6). Ingressinä se toistaisi saman tekstin kahdesti.
+  const lead = leadRepeatsBody(summary, news.body) ? null : summary;
+  const lahde = news.lahde?.nimi?.trim() ? news.lahde : null;
 
   return (
     <article>
@@ -128,7 +160,7 @@ export default async function UutinenPage({
       <Container size="narrow" className="pt-12">
         <PageHeader
           title={news.title}
-          lead={news.tiivistelma ?? news.excerpt}
+          lead={lead}
           breadcrumbs={trail}
           meta={
             <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-muted">
@@ -173,21 +205,75 @@ export default async function UutinenPage({
 
       {news.coverImage?.asset && (
         <Container size="wide" className="mt-12">
-          <div className="overflow-hidden rounded-2xl">
-            <SanityImage
-              image={news.coverImage}
-              width={1600}
-              height={900}
-              sizes="(min-width: 1280px) 1152px, 100vw"
-              className="h-auto w-full object-cover"
-              priority
-            />
-          </div>
+          {/* Kuvateksti (esim. "Sami Hyypiä 20.08.2008") on lähteen tietoa:
+              figure + figcaption sitoo sen kuvaan myös ruudunlukijalle. */}
+          <figure>
+            <div className="overflow-hidden rounded-2xl">
+              <SanityImage
+                image={news.coverImage}
+                width={1600}
+                height={900}
+                sizes="(min-width: 1280px) 1152px, 100vw"
+                className="h-auto w-full object-cover"
+                priority
+              />
+            </div>
+            {news.coverImage.caption?.trim() && (
+              <figcaption className="mt-3 text-sm text-muted">
+                {news.coverImage.caption}
+              </figcaption>
+            )}
+          </figure>
         </Container>
       )}
 
       <Container size="narrow" className="py-16">
         <PortableText value={news.body} />
+
+        {(lahde || news.ulkoinenLinkki) && (
+          <dl className="mt-10 space-y-1 border-t border-border pt-6 text-sm text-muted">
+            {lahde && (
+              <div className="flex flex-wrap gap-x-2">
+                <dt className="font-medium text-foreground">Lähde:</dt>
+                <dd>
+                  {lahde.url ? (
+                    <a
+                      href={lahde.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-accent underline-offset-4 hover:underline"
+                    >
+                      {lahde.nimi}
+                    </a>
+                  ) : (
+                    lahde.nimi
+                  )}
+                  {lahde.pvm && (
+                    <>
+                      {" "}
+                      <time dateTime={lahde.pvm}>{formatDate(lahde.pvm)}</time>
+                    </>
+                  )}
+                </dd>
+              </div>
+            )}
+            {news.ulkoinenLinkki && (
+              <div className="flex flex-wrap gap-x-2">
+                <dt className="font-medium text-foreground">Alkuperäinen kirjoitus:</dt>
+                <dd>
+                  <a
+                    href={news.ulkoinenLinkki}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="break-all text-accent underline-offset-4 hover:underline"
+                  >
+                    {news.ulkoinenLinkki}
+                  </a>
+                </dd>
+              </div>
+            )}
+          </dl>
+        )}
 
         <p className="mt-12 text-sm text-muted">
           <Link href="/uutiset" className="text-accent hover:underline">

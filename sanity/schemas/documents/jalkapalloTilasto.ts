@@ -2,6 +2,7 @@ import { defineField, defineType } from "sanity";
 import { seoFields } from "../objects/seoFields";
 import {
   legacyUrlField,
+  muutLegacyUrlitField,
   needsReviewField,
   tiivistelmaField,
 } from "../objects/contentMeta";
@@ -54,6 +55,12 @@ export const jalkapalloTilasto = defineType({
           { title: "Conference League / Cup Winners' Cup", value: "conference-league" },
           { title: "Intercontinental / Club World Cup", value: "intercontinental" },
           { title: "Karsinta", value: "karsinta" },
+          { title: "Arvokisatilasto (MM, EM, Kansojen liiga)", value: "arvokisa" },
+          { title: "Pelaajatilasto (yksittäinen pelaaja)", value: "pelaaja" },
+          { title: "Ulkomaiden mestarit (Englanti, Venäjä …)", value: "ulkomaiset-mestarit" },
+          { title: "Palloliiton puheenjohtajat", value: "palloliitto" },
+          { title: "Klubin omat tilastot (veikkaus, mölkky, jouluruokailu)", value: "klubi" },
+          { title: "Muu tilasto", value: "muu" },
         ],
         layout: "dropdown",
       },
@@ -128,6 +135,39 @@ export const jalkapalloTilasto = defineType({
       group: "data",
     }),
     defineField({
+      name: "lisatiedot",
+      title: "Lisätiedot taulukon jälkeen",
+      description:
+        "Teksti, joka näytetään taulukon alla: otteluraportit, kokoonpanot, " +
+        "huomautukset ja selitteet.",
+      type: "portableText",
+      group: "data",
+    }),
+    defineField({
+      name: "paivitetty",
+      title: "Tiedot päivitetty",
+      description:
+        'Päivä, jolloin taulukon tiedot on viimeksi tarkistettu (vanhalla sivustolla esim. "päävalmentajat: 26.09.2026").',
+      type: "date",
+      group: "data",
+    }),
+    defineField({
+      name: "jarjestys",
+      title: "Järjestysnumero",
+      description:
+        "Kun samalla sivulla on useita taulukoita (esim. lohkot A–H), pienempi luku näkyy ylempänä.",
+      type: "number",
+      validation: (rule) => rule.integer().min(0),
+      group: "perustiedot",
+    }),
+    defineField({
+      name: "kuvat",
+      title: "Kuvat",
+      type: "array",
+      of: [{ type: "imageWithAlt" }],
+      group: "perustiedot",
+    }),
+    defineField({
       name: "sources",
       title: "Lähteet",
       type: "array",
@@ -137,6 +177,7 @@ export const jalkapalloTilasto = defineType({
     needsReviewField("perustiedot"),
     ...seoFields,
     legacyUrlField("seo"),
+    muutLegacyUrlitField("seo"),
   ],
   preview: {
     select: { title: "title", category: "category" },

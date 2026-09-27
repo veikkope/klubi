@@ -27,6 +27,8 @@ import {
   type PelaajaSeura,
 } from "@/sanity/lib/queries/arkisto-laajennus";
 
+import { StatSections } from "../../_tilastot/stat-sections";
+
 export const revalidate = 3600;
 
 type Params = { slug: string };
@@ -253,6 +255,22 @@ export default async function PelaajaPage({
               );
             })}
           </ol>
+        </section>
+      )}
+
+      {(pelaaja.tilastot ?? []).filter(Boolean).length > 0 && (
+        <section aria-labelledby="pelaajan-tilastot" className="mt-16">
+          <h2
+            id="pelaajan-tilastot"
+            className="font-serif text-2xl text-foreground sm:text-3xl"
+          >
+            Tilastot
+          </h2>
+          <StatSections
+            tilastot={(pelaaja.tilastot ?? []).filter(Boolean)}
+            headingLevel="h3"
+            className="mt-6"
+          />
         </section>
       )}
 

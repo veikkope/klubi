@@ -31,7 +31,7 @@ export default async function SaannotPage() {
       sivu={sivu}
       path={PATH}
       fallbackTitle={FALLBACK_TITLE}
-      emptyDescription="Yhdistyksen säännöt lisätään Sanity Studiossa sivulle, jonka polku on “klubi/saannot”."
+      emptyDescription="Yhdistyksen säännöt julkaistaan tällä sivulla pian. Säännöt saa pyydettäessä hallitukselta."
     />
   );
 }

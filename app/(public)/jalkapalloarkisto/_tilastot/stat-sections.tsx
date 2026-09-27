@@ -1,6 +1,9 @@
 import { PortableText } from "@/components/portable-text";
+import { SanityImage } from "@/components/sanity-image";
 import { StatTable } from "@/components/ui/stat-table";
 import { cn } from "@/lib/cn";
+import { formatDate } from "@/lib/format";
+import type { SanityImage as SanityImageData } from "@/lib/types";
 import type { TilastoDoc } from "@/sanity/lib/queries/arkisto";
 
 /**
@@ -54,8 +57,49 @@ function Sources({ sources }: { sources: string[] | null }) {
 }
 
 /**
- * Yhden tilaston sisältö ilman otsikkoa: johdanto, taulukko ja lähteet.
- * Otsikon omistaa kutsuja, jotta otsikkotasot pysyvät järjestyksessä.
+ * Tilaston kuvat (kaaviot, otteluohjelmat, joukkuekuvat) rajaamattomina.
+ * Kuvateksti näkyy `figcaption`ina; alt-teksti on kuvassa itsessään.
+ */
+export function TilastoKuvat({
+  kuvat,
+  className,
+}: {
+  kuvat: SanityImageData[] | null | undefined;
+  className?: string;
+}) {
+  const items = (kuvat ?? []).filter((kuva) => kuva?.asset);
+  if (items.length === 0) return null;
+
+  return (
+    <ul className={cn("grid gap-6 sm:grid-cols-2 lg:grid-cols-3", className)}>
+      {items.map((kuva, index) => (
+        <li key={`${kuva?.asset?._ref ?? "kuva"}-${index}`}>
+          <figure>
+            <SanityImage
+              image={kuva}
+              width={900}
+              crop={false}
+              sizes="(min-width: 1024px) 380px, (min-width: 640px) 45vw, 90vw"
+              className="h-auto w-full rounded-xl border border-border bg-surface"
+            />
+            {kuva?.caption && (
+              <figcaption className="mt-2 text-sm text-muted">{kuva.caption}</figcaption>
+            )}
+          </figure>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function hasBlocks(value: unknown[] | null | undefined): boolean {
+  return Array.isArray(value) && value.length > 0;
+}
+
+/**
+ * Yhden tilaston sisältö ilman otsikkoa: johdanto, taulukko, lisätiedot,
+ * kuvat, päivityspäivä ja lähteet. Otsikon omistaa kutsuja, jotta
+ * otsikkotasot pysyvät järjestyksessä.
  */
 export function TilastoBody({
   tilasto,
@@ -64,21 +108,44 @@ export function TilastoBody({
   tilasto: TilastoDoc;
   className?: string;
 }) {
+  const hasTable = (tilasto.columns?.length ?? 0) > 0 && (tilasto.rows?.length ?? 0) > 0;
+  // Osa tilastoista on pelkkää tekstiä (valmentajien palkat, FIFA-rankingin
+  // uutinen, EM 2028 -karsinnan ottelut): tyhjää taulukkoa ei silloin mainita.
+  const hasText = hasBlocks(tilasto.intro) || hasBlocks(tilasto.lisatiedot);
+  const hasImages = (tilasto.kuvat ?? []).some((kuva) => kuva?.asset);
+
   return (
     <div className={className}>
-      {tilasto.intro && tilasto.intro.length > 0 && (
+      {hasBlocks(tilasto.intro) && (
         <div className="max-w-3xl">
           <PortableText value={tilasto.intro} />
         </div>
       )}
 
-      <StatTable
-        className="mt-6"
-        caption={tilasto.title}
-        columns={tilasto.columns ?? []}
-        rows={tilasto.rows ?? []}
-        emptyLabel="Taulukon rivejä ei ole vielä lisätty Studiossa."
-      />
+      {(hasTable || (!hasText && !hasImages)) && (
+        <StatTable
+          className="mt-6"
+          caption={tilasto.title}
+          columns={tilasto.columns ?? []}
+          rows={tilasto.rows ?? []}
+          emptyLabel="Taulukon rivejä ei ole vielä lisätty Studiossa."
+        />
+      )}
+
+      {tilasto.paivitetty && (
+        <p className="mt-3 text-sm text-muted">
+          Tiedot päivitetty{" "}
+          <time dateTime={tilasto.paivitetty}>{formatDate(tilasto.paivitetty)}</time>
+        </p>
+      )}
+
+      {hasBlocks(tilasto.lisatiedot) && (
+        <div className="mt-8 max-w-3xl">
+          <PortableText value={tilasto.lisatiedot} />
+        </div>
+      )}
+
+      <TilastoKuvat kuvat={tilasto.kuvat} className="mt-8" />
 
       <Sources sources={tilasto.sources} />
     </div>

@@ -26,6 +26,13 @@ export function karsintaPath(slug: string): string {
   return `${karsinnatBasePath}/${slug}`;
 }
 
+/** Kategorian "muu" koosteet: oma sivu per dokumentti (ks. lib/path.ts). */
+export const muutTilastotPath = "/jalkapalloarkisto/tilastot";
+
+export function muuTilastoPath(slug: string): string {
+  return `${muutTilastotPath}/${slug}`;
+}
+
 /** Murupolku arkiston sisällä. Alkaa aina etusivulta. */
 export function arkistoTrail(...steps: Crumb[]): Crumb[] {
   return [rootCrumb, arkistoCrumb, ...steps];

@@ -122,13 +122,20 @@ export default async function TapahtumatPage() {
 
 function EmptyState() {
   return (
-    <div className="rounded-2xl border border-dashed border-border bg-surface p-10 text-center">
+    <div
+      data-empty-state=""
+      className="rounded-2xl border border-dashed border-border bg-surface p-10 text-center"
+    >
       <p className="font-serif text-2xl">Ei vielä tapahtumia</p>
       <p className="mx-auto mt-2 max-w-md text-muted">
-        Tapahtumat lisätään Sanity Studiossa. Heti kun ensimmäinen tapahtuma on
-        julkaistu, se ilmestyy tähän — tulevat ensin, menneet omana osionaan.
+        Tulevista tapahtumista kerrotaan tällä sivulla. Aiempien vuosien vaput,
+        mölkkyturnaukset, jouluruokailut ja muut tilaisuudet löytyvät klubin
+        toimintasivuilta.
       </p>
-      <p className="mt-6">
+      <p className="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2">
+        <Link href="/klubi/toiminta" className="text-accent hover:underline">
+          Klubin toiminta
+        </Link>
         <Link href="/uutiset" className="text-accent hover:underline">
           Lue uutisia
         </Link>

@@ -1,0 +1,22 @@
+legacyUrl	tila	kohde	huomio
+/etusivu.htm	migrated	etusivu	Singleton: seuraavaOttelu vanhalta etusivulta, hero lib/defaults.ts; Viimeiset-otsikot hakee uutiset-lohko
+/yleista.htm	migrated	sivu-klubi	Tarkoitus, perustaminen ja toimintalinkit; slug klubi
+/english.htm	migrated	sivu-english	Slug english → /english (redirect nyt /klubi: päivitä)
+/veikkaus.htm	migrated	sivu-klubi-palloveikkaus	Hubi = palloveikkaussivun legacyUrl; kolme alasivua muutLegacyUrlit
+/talkoot.htm	migrated	klubiToiminta-talkoot	19 vuosimerkintää
+/vappu.htm	migrated	klubiToiminta-vappu	16 vuosimerkintää
+/molkky.htm	migrated	klubiToiminta-molkky	38 vuosimerkintää, 37 taulukkoa
+/vuosikokous.htm	migrated	klubiToiminta-vuosikokous	19 vuosimerkintää
+/matkailu.htm	migrated	klubiToiminta-matkailu	23 vuosimerkintää; redirect nyt /klubi/toiminta → päivitä /klubi/toiminta/matkailu
+/ilotulitukset.htm	migrated	klubiToiminta-ilotulitukset	0 vuosimerkintää; needsReview
+/jouluruokailu.htm	migrated	klubiToiminta-jouluruokailu	25 vuosimerkintää, 2 taulukkoa
+/musiikki.htm	migrated	klubiToiminta-musiikki	1 vuosimerkintää; redirect nyt /klubi/toiminta → päivitä /klubi/toiminta/musiikki; needsReview
+/venetsialaiset.htm	migrated	klubiToiminta-venetsialaiset	10 vuosimerkintää
+/veikkausmaaottelujentulos.htm	merged	sivu-klubi-palloveikkaus	1 jalkapalloTilasto-dokumenttia (kategoria klubi), viitattu sivu.tilastot-kentästä; muutLegacyUrlit
+/veikkausarvokisat.htm	merged	sivu-klubi-palloveikkaus	12 jalkapalloTilasto-dokumenttia (kategoria klubi), viitattu sivu.tilastot-kentästä; muutLegacyUrlit
+/veikkauspalloveikkaus.htm	merged	sivu-klubi-palloveikkaus	21 jalkapalloTilasto-dokumenttia (kategoria klubi), viitattu sivu.tilastot-kentästä; muutLegacyUrlit
+/toriparkki.htm	migrated	sivu-toriparkki	Kuvapäiväkirja; slug toriparkki (redirect nyt /jalkapalloarkisto: väärä, päivitä /toriparkki)
+/toriparkkilahti.htm	merged	sivu-toriparkki	Tekniset tiedot osiona; muutLegacyUrlit (redirect nyt /jalkapalloarkisto: päivitä /toriparkki)
+/Kuu.htm	merged	ravintola-kuu	Arviokommentit valmiina data/normalized/klubi-ravintola-arviot.json; EI importoitu (ravintola on toisen putken dokumentti, --replace tuhoaisi kentät) → integraatio patchaa review/images/muutLegacyUrlit. Redirect nyt /jalkapalloarkisto: väärä
+/Loiste.htm	merged	ravintola-ravintola-loiste-vaakuna	Arviokommentit valmiina data/normalized/klubi-ravintola-arviot.json; EI importoitu (ravintola on toisen putken dokumentti, --replace tuhoaisi kentät) → integraatio patchaa review/images/muutLegacyUrlit. Redirect nyt /jalkapalloarkisto: väärä
+/Salud.htm	merged	ravintola-salud	Arviokommentit valmiina data/normalized/klubi-ravintola-arviot.json; EI importoitu (ravintola on toisen putken dokumentti, --replace tuhoaisi kentät) → integraatio patchaa review/images/muutLegacyUrlit. Redirect nyt /jalkapalloarkisto: väärä

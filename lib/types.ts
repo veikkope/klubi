@@ -101,6 +101,8 @@ export type EtusivuData = {
   heroDescription: string;
   heroImage?: SanityImage;
   heroCtas?: HeroCta[];
+  /** Vanhan etusivun "Seuraavaksi"-nosto. Näytetään vain ennen ottelua. */
+  seuraavaOttelu?: { ottelu?: string | null; kilpailu?: string | null; aika?: string | null } | null;
   blocks: EtusivuBlock[];
 };
 

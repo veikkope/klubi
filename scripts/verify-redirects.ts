@@ -26,8 +26,38 @@ const CONCURRENCY = 8;
  *  - `content`   Ohjaus toimii, mutta kohdesivulle ei ole vielä sisältöä.
  *                Ennen sisältömigraatiota tämä on odotettu tila; ennen
  *                julkaisua sen on oltava nolla.
+ *  - `empty`     Kohde vastaa 200:lla, mutta sivulla on tyhjätila ("Sisältöä
+ *                ei ole vielä lisätty Studiossa", "Ei vielä tilastoja").
+ *                Ohjaus veisi kävijän tyhjälle sivulle — sama vika kuin 404,
+ *                vain kohteliaammin sanottuna. Raportoidaan erikseen.
  */
-type FailureKind = "redirect" | "content";
+type FailureKind = "redirect" | "content" | "empty";
+
+/** Kohdepolku → löydetty tyhjätilateksti (tai null). */
+const emptyTargets = new Map<string, string | null>();
+
+const EMPTY_MARKERS = [
+  // Sivuston tyhjätilakomponentit merkitsevät itsensä tällä attribuutilla.
+  /data-empty-state[^>]*>\s*<p[^>]*>([^<]{3,80})</,
+  /ei ole vielä lisätty/i,
+  />\s*Ei vielä [^<]{3,60}</,
+  // Ravintolahakemiston suodatettu näkymä ilman tuloksia (?kaupunki=<tuntematon>).
+  />\s*Ei osumia näillä rajauksilla\s*</,
+];
+
+async function emptyStateOf(url: string): Promise<string | null> {
+  const res = await fetch(url, {
+    headers: { "User-Agent": "KlubiRedirectVerifier/1.0" },
+    signal: AbortSignal.timeout(60_000),
+  });
+  if (res.status !== 200) return null;
+  const html = (await res.text()).replace(/<script[\s\S]*?<\/script>/gi, "");
+  for (const marker of EMPTY_MARKERS) {
+    const match = marker.exec(html);
+    if (match) return (match[1] ?? match[0]).replace(/[<>]/g, "").trim();
+  }
+  return null;
+}
 
 interface Failure {
   source: string;
@@ -74,13 +104,21 @@ async function checkOne(
     }
 
     // Tarkistetaan kohde kerran per uniikki osoite, ei kerran per lähde.
-    if (!checkedTargets.has(destination)) {
-      const target = await head(`${BASE_URL}${destination}`);
-      checkedTargets.set(destination, target.status);
+    const targetPath = destination.split("#")[0];
+    if (!checkedTargets.has(targetPath)) {
+      const target = await head(`${BASE_URL}${targetPath}`);
+      checkedTargets.set(targetPath, target.status);
+      if (target.status === 200) {
+        emptyTargets.set(targetPath, await emptyStateOf(`${BASE_URL}${targetPath}`));
+      }
     }
-    const targetStatus = checkedTargets.get(destination)!;
+    const targetStatus = checkedTargets.get(targetPath)!;
     if (targetStatus === 404) {
       return { source, kind: "content", reason: `kohteella ${destination} ei ole sisältöä` };
+    }
+    const empty = emptyTargets.get(targetPath);
+    if (empty) {
+      return { source, kind: "empty", reason: `kohteessa ${targetPath} tyhjätila: "${empty}"` };
     }
 
     return null;
@@ -122,14 +160,24 @@ async function main() {
 
   const broken = failures.filter((f) => f.kind === "redirect");
   const missingContent = failures.filter((f) => f.kind === "content");
+  const emptyContent = failures.filter((f) => f.kind === "empty");
   const bySource = (a: Failure, b: Failure) => a.source.localeCompare(b.source, "fi");
 
   console.log(
     `Ohjauksia ............... ${legacyRedirects.length}\n` +
       `Toimii .................. ${legacyRedirects.length - broken.length}\n` +
       `Rikki ................... ${broken.length}\n` +
-      `Kohteella ei sisältöä ... ${missingContent.length}\n`,
+      `Kohteella ei sisältöä ... ${missingContent.length}\n` +
+      `Kohteessa tyhjätila ..... ${emptyContent.length}\n`,
   );
+
+  if (emptyContent.length > 0) {
+    console.warn(`HUOM: ${emptyContent.length} ohjausta osoittaa sivulle, jolla on tyhjätila:`);
+    for (const failure of emptyContent.sort(bySource)) {
+      console.warn(`  ${failure.source} → ${failure.reason}`);
+    }
+    console.warn("");
+  }
 
   if (missingContent.length > 0) {
     console.warn(

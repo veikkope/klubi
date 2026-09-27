@@ -14,7 +14,9 @@
  * Skripti on jatkettavissa: jo ladattuja tiedostoja ei haeta uudelleen.
  */
 import { mkdir, readFile, readdir, stat, writeFile } from "node:fs/promises";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
+
+import { decodeHtml } from "./lib/decode-html";
 
 const BASE = "https://www.lahdensuomalainenklubi.com";
 const RAW_DIR = join(process.cwd(), "data", "raw-html");
@@ -23,7 +25,18 @@ const INVENTORY = join(process.cwd(), "data", "normalized", "kuvat.json");
 
 const DELAY = 100;
 const IMG_TAG = /<img\b[^>]*>/gi;
-const ATTR = (name: string) => new RegExp(`\\b${name}\\s*=\\s*["']([^"']+)["']`, "i");
+/**
+ * Attribuutin arvo lainausmerkkityypin mukaan. Aiempi `["']([^"']+)["']`
+ * katkesi ensimmäiseen heittomerkkiin: alt="McDonald's Kluuvi" → "McDonald".
+ * Arvo voi olla myös ilman lainausmerkkejä (FrontPage: alt=Kuva).
+ */
+const ATTR = (name: string) =>
+  new RegExp(`(?:^|[\\s<])${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s"'>]+))`, "i");
+
+function attr(tag: string, name: string): string | undefined {
+  const m = ATTR(name).exec(tag);
+  return m ? (m[1] ?? m[2] ?? m[3]) : undefined;
+}
 
 export interface KuvaRecord {
   /** Alkuperäinen src sellaisenaan. */
@@ -42,18 +55,14 @@ export interface KuvaRecord {
   ok: boolean;
 }
 
-/** Vanhat sivut ovat osin windows-1252, osin us-ascii + entiteetit. */
+/**
+ * Vanhat sivut ovat osin windows-1252, osin UTF-8 väärällä `<meta charset>`:lla.
+ * Yhteinen dekooderi (scripts/lib/decode-html.ts): tiukka UTF-8, muuten
+ * windows-1252. Aiempi meta-charsetiin luottava versio tuotti alt-tekstiin
+ * mojibakea ("McDonald究 Tammisto").
+ */
 function decode(buf: Buffer): string {
-  const head = buf.subarray(0, 2048).toString("latin1").toLowerCase();
-  const charset = /charset=['"]?([a-z0-9-]+)/.exec(head)?.[1];
-  if (charset && charset !== "utf-8" && charset !== "us-ascii") {
-    try {
-      return new TextDecoder(charset).decode(buf);
-    } catch {
-      return new TextDecoder("windows-1252").decode(buf);
-    }
-  }
-  return buf.toString("utf-8");
+  return decodeHtml(buf).normalize("NFC");
 }
 
 /** Turvallinen tiedostonimi: alihakemistot litistetään, kysely pois. */
@@ -90,7 +99,7 @@ async function collectReferences(): Promise<Map<string, KuvaRecord>> {
   for (const page of files) {
     const html = decode(await readFile(join(RAW_DIR, page)));
     for (const tag of html.match(IMG_TAG) ?? []) {
-      const src = ATTR("src").exec(tag)?.[1]?.trim();
+      const src = attr(tag, "src")?.trim();
       if (!src) continue;
       // Ohitetaan inline-data ja ulkoiset isännät: ne eivät ole klubin kuvia.
       if (/^data:/i.test(src)) continue;
@@ -100,7 +109,7 @@ async function collectReferences(): Promise<Map<string, KuvaRecord>> {
       if (!file) continue;
 
       const existing = byKey.get(file);
-      const alt = ATTR("alt").exec(tag)?.[1]?.trim();
+      const alt = attr(tag, "alt")?.trim();
 
       if (existing) {
         if (!existing.pages.includes(page)) existing.pages.push(page);
@@ -174,6 +183,7 @@ async function main() {
     if (record.status !== 200) await sleep(DELAY);
   }
 
+  await mkdir(dirname(INVENTORY), { recursive: true });
   await writeFile(INVENTORY, JSON.stringify(records, null, 2), "utf-8");
 
   const ok = records.filter((r) => r.ok);

@@ -19,7 +19,7 @@ export interface StatColumn {
 }
 
 export interface StatRow {
-  cells: { key: string; value?: string | null }[];
+  cells: { key: string; value?: string | null }[] | null;
 }
 
 interface StatTableProps {
@@ -35,7 +35,74 @@ interface StatTableProps {
 const numericTypes = new Set(["number", "year"]);
 
 function cellValue(row: StatRow, key: string): string {
-  return row.cells.find((cell) => cell.key === key)?.value?.trim() ?? "";
+  // Tyhjä solu on tuonnissa jätetty kokonaan pois (ei tyhjiä merkkijonoja),
+  // joten sekä puuttuva solu että puuttuva arvo tulkitaan tyhjäksi.
+  return (row.cells ?? []).find((cell) => cell.key === key)?.value?.trim() ?? "";
+}
+
+const isoDay = /^(\d{4})-(\d{2})-(\d{2})$/;
+const isoMonth = /^(\d{4})-(\d{2})$/;
+const integer = /^-?\d+$/;
+
+const numberFormat = new Intl.NumberFormat("fi-FI", { maximumFractionDigits: 0 });
+
+type IsoParts = { y: string; m: string; d?: string };
+
+function parseIso(value: string): IsoParts | null {
+  const day = isoDay.exec(value);
+  if (day) return { y: day[1], m: day[2], d: day[3] };
+  const month = isoMonth.exec(value);
+  if (month) return { y: month[1], m: month[2] };
+  return null;
+}
+
+function formatIso({ y, m, d }: IsoParts): string {
+  return d ? `${d}.${m}.${y}` : `${m}/${y}`;
+}
+
+/**
+ * ISO 8601 -väli (2009-01-30/2009-02-01) suomalaisittain: vuosi (ja kuukausi)
+ * kirjoitetaan vain kerran, jos ne ovat samat — "30.01.–01.02.2009".
+ * Palauttaa alun ja lopun erikseen, jotta kumpikin saa oman `<time>`-elementin.
+ */
+function formatInterval(start: IsoParts, end: IsoParts): [string, string] {
+  if (start.d && end.d) {
+    if (start.y === end.y && start.m === end.m) return [`${start.d}.`, `${end.d}.${end.m}.${end.y}`];
+    if (start.y === end.y) return [`${start.d}.${start.m}.`, `${end.d}.${end.m}.${end.y}`];
+  }
+  return [formatIso(start), formatIso(end)];
+}
+
+/**
+ * Solun näyttömuoto:
+ *  - päivämääräsarake: ISO-päivä (2026-09-26) → 26.09.2026, kuukausi
+ *    (2026-09) → 09/2026 ja väli (2009-01-30/2009-02-01) → 30.01.–01.02.2009,
+ *    aina koneluettavana `<time dateTime>`-elementtinä (väli kahtena: alku ja loppu)
+ *  - lukusarake: kokonaisluku suomalaisella tuhaterottimella (61 035)
+ *  - muut arvot sellaisenaan (osa arkiston arvoista on tekstiä tarkoituksella).
+ */
+function CellContent({ value, type }: { value: string; type?: StatColumn["type"] }) {
+  if (type === "date") {
+    const single = parseIso(value);
+    if (single) return <time dateTime={value}>{formatIso(single)}</time>;
+    const [a, b, ...rest] = value.split("/");
+    const start = a ? parseIso(a) : null;
+    const end = b ? parseIso(b) : null;
+    if (start && end && rest.length === 0) {
+      // `datetime` ei hyväksy ISO-väliä, joten alku ja loppu omina elementteinään.
+      const [startText, endText] = formatInterval(start, end);
+      return (
+        <>
+          <time dateTime={a}>{startText}</time>–<time dateTime={b}>{endText}</time>
+        </>
+      );
+    }
+    return <>{value}</>;
+  }
+  if (type === "number" && integer.test(value)) {
+    return <>{numberFormat.format(Number(value))}</>;
+  }
+  return <>{value}</>;
 }
 
 export function StatTable({
@@ -108,11 +175,11 @@ export function StatTable({
                     scope="row"
                     className={cn(classes, "font-medium text-foreground")}
                   >
-                    {value}
+                    <CellContent value={value} type={column.type} />
                   </th>
                 ) : (
                   <td key={column.key} className={cn(classes, "text-muted")}>
-                    {value}
+                    <CellContent value={value} type={column.type} />
                   </td>
                 );
               })}
