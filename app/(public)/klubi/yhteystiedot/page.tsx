@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Mail, MapPin, Phone } from "lucide-react";
+import { stegaClean } from "next-sanity";
 
 import { EmptyState } from "../_components/empty-state";
 import { Container } from "@/components/layout/container";
@@ -130,7 +131,7 @@ export default async function YhteystiedotPage() {
                 </dt>
                 <dd className="mt-1">
                   <a
-                    href={`tel:${contact.phone.replace(/\s+/g, "")}`}
+                    href={`tel:${stegaClean(contact.phone).replace(/\s+/g, "")}`}
                     className="inline-flex min-h-11 items-center text-base text-foreground hover:text-accent"
                   >
                     {contact.phone}

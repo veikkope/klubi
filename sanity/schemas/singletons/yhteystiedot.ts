@@ -1,9 +1,11 @@
+import { EnvelopeIcon } from "@sanity/icons";
 import { defineField, defineType } from "sanity";
 
 export const yhteystiedot = defineType({
   name: "yhteystiedot",
   title: "Yhteystiedot",
   type: "document",
+  icon: EnvelopeIcon,
   fields: [
     defineField({
       name: "address",

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { stegaClean } from "next-sanity";
 import { toPlainText, type PortableTextBlock } from "@portabletext/react";
 
 import { buildIcs } from "@/lib/ics";
@@ -19,12 +20,15 @@ export async function GET(
 ) {
   const { slug } = await params;
 
-  const event = await sanityFetch<TapahtumaDetail | null>({
-    query: tapahtumaDetailQuery,
-    params: { slug },
-    tags: ["tapahtuma", `tapahtuma:${slug}`],
-    fallback: null,
-  });
+  // Kalenteritiedosto ei ole React-näkymä: luonnosnäkymän stega-merkit pois.
+  const event = stegaClean(
+    await sanityFetch<TapahtumaDetail | null>({
+      query: tapahtumaDetailQuery,
+      params: { slug },
+      tags: ["tapahtuma", `tapahtuma:${slug}`],
+      fallback: null,
+    }),
+  );
 
   if (!event) {
     return new NextResponse("Tapahtumaa ei löydy.", {

@@ -163,12 +163,12 @@ export const arvokisaBySlugQuery = defineQuery(`
       columns[]{ key, label, type },
       rows[]{ cells[]{ key, value } },
       lisatiedot,
-      kuvat[]{ _key, alt, caption, asset },
+      kuvat[]{ _key, alt, caption, asset, hotspot, crop },
       paivitetty,
       jarjestys,
       "sources": coalesce(sources, [])
     },
-    kuvat[]{ _key, alt, caption, asset },
+    kuvat[]{ _key, alt, caption, asset, hotspot, crop },
     seoTitle,
     seoDescription
   }
@@ -194,7 +194,7 @@ export const arvokisaMitalitaulukotQuery = defineQuery(`
       columns[]{ key, label, type },
       rows[]{ cells[]{ key, value } },
       lisatiedot,
-      kuvat[]{ _key, alt, caption, asset },
+      kuvat[]{ _key, alt, caption, asset, hotspot, crop },
       paivitetty,
       jarjestys,
       "sources": coalesce(sources, [])
@@ -274,7 +274,7 @@ export const pelaajatListQuery = defineQuery(`
     pelipaikka,
     maaottelut,
     maalit,
-    "kuva": kuvat[0]{ alt, caption, asset }
+    "kuva": kuvat[0]{ alt, caption, asset, hotspot, crop }
   }
 `);
 
@@ -306,12 +306,12 @@ export const pelaajaBySlugQuery = defineQuery(`
       columns[]{ key, label, type },
       rows[]{ cells[]{ key, value } },
       lisatiedot,
-      kuvat[]{ _key, alt, caption, asset },
+      kuvat[]{ _key, alt, caption, asset, hotspot, crop },
       paivitetty,
       jarjestys,
       "sources": coalesce(sources, [])
     },
-    kuvat[]{ _key, alt, caption, asset },
+    kuvat[]{ _key, alt, caption, asset, hotspot, crop },
     seoTitle,
     seoDescription
   }
@@ -328,7 +328,7 @@ export const pelaajatRelatedQuery = defineQuery(`
     pelipaikka,
     maaottelut,
     maalit,
-    "kuva": kuvat[0]{ alt, caption, asset }
+    "kuva": kuvat[0]{ alt, caption, asset, hotspot, crop }
   }
 `);
 
@@ -380,7 +380,7 @@ export const stadionitListQuery = defineQuery(`
     capacity,
     openedYear,
     "city": city->{ name, "slug": slug.current, country },
-    "kuva": images[0]{ alt, caption, asset }
+    "kuva": images[0]{ alt, caption, asset, hotspot, crop }
   }
 `);
 
@@ -401,7 +401,7 @@ export const stadionBySlugQuery = defineQuery(`
     "city": city->{ name, "slug": slug.current, country },
     location{ lat, lng, alt },
     description,
-    images[]{ _key, alt, caption, asset },
+    images[]{ _key, alt, caption, asset, hotspot, crop },
     seoTitle,
     seoDescription
   }
@@ -418,6 +418,6 @@ export const stadionitRelatedQuery = defineQuery(`
     capacity,
     openedYear,
     "city": city->{ name, "slug": slug.current, country },
-    "kuva": images[0]{ alt, caption, asset }
+    "kuva": images[0]{ alt, caption, asset, hotspot, crop }
   }
 `);

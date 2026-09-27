@@ -230,7 +230,7 @@ export default async function RavintolaPage({ params }: PageProps) {
             <div className="my-3 grid grid-cols-2 gap-4">
               {pairImages.map((image, i) => (
                 <SanityImage
-                  key={i}
+                  key={image?._key ?? i}
                   image={image}
                   width={600}
                   height={600}

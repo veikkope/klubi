@@ -6,6 +6,7 @@
 import type { PortableTextBlock } from "@portabletext/react";
 
 export type SanityImage = {
+  _key?: string;
   _type?: "imageWithAlt" | "image";
   asset?: { _ref?: string; _id?: string; url?: string } | null;
   alt?: string | null;

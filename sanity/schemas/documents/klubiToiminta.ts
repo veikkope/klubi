@@ -1,3 +1,4 @@
+import { ConfettiIcon } from "@sanity/icons";
 import { defineField, defineType } from "sanity";
 import { seoFields } from "../objects/seoFields";
 import {
@@ -19,6 +20,7 @@ export const klubiToiminta = defineType({
   name: "klubiToiminta",
   title: "Klubin toiminta",
   type: "document",
+  icon: ConfettiIcon,
   groups: [
     { name: "perustiedot", title: "Perustiedot", default: true },
     { name: "vuodet", title: "Vuosittain" },

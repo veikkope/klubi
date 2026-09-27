@@ -1,3 +1,4 @@
+import { StarIcon } from "@sanity/icons";
 import { defineField, defineType } from "sanity";
 import { seoFields } from "../objects/seoFields";
 import {
@@ -18,6 +19,7 @@ export const arvokisa = defineType({
   name: "arvokisa",
   title: "Arvokisa",
   type: "document",
+  icon: StarIcon,
   groups: [
     { name: "perustiedot", title: "Perustiedot", default: true },
     { name: "tulokset", title: "Tulokset" },

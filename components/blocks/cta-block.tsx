@@ -1,3 +1,5 @@
+import { stegaClean } from "next-sanity";
+
 import { Container } from "@/components/layout/container";
 import { LinkButton } from "@/components/ui/button";
 import type { EtusivuBlock } from "@/lib/types";
@@ -32,7 +34,8 @@ export function CtaBlock(props: Props) {
             )}
           </div>
           <LinkButton
-            href={props.ctaHref}
+            // Stega pois hrefistä (luonnosnäkymä); teksti jää muokattavaksi.
+            href={stegaClean(props.ctaHref)}
             size="lg"
             variant="onDarkPrimary"
           >

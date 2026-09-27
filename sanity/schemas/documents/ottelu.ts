@@ -1,3 +1,4 @@
+import { TargetIcon } from "@sanity/icons";
 import { defineField, defineType } from "sanity";
 
 /**
@@ -17,6 +18,7 @@ export const ottelu = defineType({
   name: "ottelu",
   title: "Ottelu",
   type: "document",
+  icon: TargetIcon,
   fields: [
     defineField({
       name: "aika",

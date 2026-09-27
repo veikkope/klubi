@@ -1,3 +1,4 @@
+import { MenuIcon } from "@sanity/icons";
 import { defineArrayMember, defineField, defineType } from "sanity";
 
 /**
@@ -11,6 +12,7 @@ export const navigaatio = defineType({
   name: "navigaatio",
   title: "Navigaatio",
   type: "document",
+  icon: MenuIcon,
   fields: [
     defineField({
       name: "items",
@@ -23,8 +25,17 @@ export const navigaatio = defineType({
           fields: [
             { name: "label", title: "Otsikko", type: "string", validation: (rule) => rule.required() },
             { name: "href", title: "Linkki (esim. /tapahtumat)", type: "string", validation: (rule) => rule.required() },
-            // Tyyliopas: valikossa ei ole CTA-korostusta. Piilotettu, jotta vanha data pysyy validina.
-            { name: "highlight", title: "Korosta (CTA)", type: "boolean", initialValue: false, hidden: true },
+            // Tyyliopas: valikossa ei ole CTA-korostusta. Vanhentunut kenttä: näkyy vain
+            // (lukittuna, varoituksen kera) niissä linkeissä, joissa sillä on jo arvo.
+            defineField({
+              name: "highlight",
+              title: "Korosta (CTA)",
+              type: "boolean",
+              deprecated: { reason: "Uudessa ilmeessä valikossa ei ole korostettuja linkkejä. Kenttää ei enää käytetä." },
+              readOnly: true,
+              hidden: ({ value }) => value === undefined,
+              initialValue: undefined,
+            }),
             {
               name: "children",
               title: "Alavalikko",
@@ -55,7 +66,6 @@ export const navigaatio = defineType({
         {
           label: "Klubi",
           href: "/klubi",
-          highlight: false,
           children: [
             { label: "Esittely", href: "/klubi" },
             { label: "Hallitus", href: "/klubi/hallitus" },
@@ -64,12 +74,11 @@ export const navigaatio = defineType({
             { label: "Yhteystiedot", href: "/klubi/yhteystiedot" },
           ],
         },
-        { label: "Tapahtumat", href: "/tapahtumat", highlight: false },
-        { label: "Uutiset", href: "/uutiset", highlight: false },
+        { label: "Tapahtumat", href: "/tapahtumat" },
+        { label: "Uutiset", href: "/uutiset" },
         {
           label: "Jalkapalloarkisto",
           href: "/jalkapalloarkisto",
-          highlight: false,
           children: [
             { label: "Huuhkajat", href: "/jalkapalloarkisto/huuhkajat" },
             { label: "Suomen mestarit", href: "/jalkapalloarkisto/mestarit" },
@@ -78,8 +87,8 @@ export const navigaatio = defineType({
             { label: "Stadionit", href: "/jalkapalloarkisto/stadionit" },
           ],
         },
-        { label: "Ravintolat", href: "/ravintolat", highlight: false },
-        { label: "Liity jäseneksi", href: "/klubi/liity", highlight: true },
+        { label: "Ravintolat", href: "/ravintolat" },
+        { label: "Liity jäseneksi", href: "/klubi/liity" },
       ],
     }),
   ],

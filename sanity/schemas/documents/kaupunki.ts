@@ -1,3 +1,4 @@
+import { PinIcon } from "@sanity/icons";
 import { defineField, defineType } from "sanity";
 
 import { MAAKUNNAT, SUOMI, maakuntaTitle } from "../../../lib/maakunnat";
@@ -6,6 +7,7 @@ export const kaupunki = defineType({
   name: "kaupunki",
   title: "Kaupunki",
   type: "document",
+  icon: PinIcon,
   fields: [
     defineField({
       name: "name",

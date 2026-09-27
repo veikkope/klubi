@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { stegaClean } from "next-sanity";
 
 import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
@@ -62,7 +63,7 @@ function groupByKisatyyppi(items: (ArvokisaCard & { slug: string })[]) {
 
 /** Tuntematon tai puuttuva kisatyyppi päätyy "Muut kisat" -ryhmään. */
 function resolveKisatyyppi(item: ArvokisaCard): Kisatyyppi {
-  const value = item.kisatyyppi as Kisatyyppi | null | undefined;
+  const value = stegaClean(item.kisatyyppi) as Kisatyyppi | null | undefined;
   return value && KISATYYPIT.includes(value) ? value : "muu";
 }
 

@@ -1,3 +1,5 @@
+import { stegaClean } from "next-sanity";
+
 import type { UutinenCategory } from "@/lib/types";
 
 /**
@@ -21,11 +23,13 @@ export const UUTINEN_CATEGORIES: {
 
 const labelMap = new Map(UUTINEN_CATEGORIES.map((c) => [c.value, c.label]));
 
+// Arvot tulevat Sanitysta: luonnosnäkymän stega-merkit poistetaan ennen
+// hakua, muuten Map ei löydä avainta.
 export function categoryLabel(value: string): string {
-  return labelMap.get(value as UutinenCategory) ?? value;
+  return labelMap.get(stegaClean(value) as UutinenCategory) ?? value;
 }
 
 export function isValidCategory(value: string | undefined | null): value is UutinenCategory {
   if (!value) return false;
-  return labelMap.has(value as UutinenCategory);
+  return labelMap.has(stegaClean(value) as UutinenCategory);
 }

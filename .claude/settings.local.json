@@ -43,5 +43,8 @@
       "Bash(git add *)",
       "Bash(git commit *)"
     ]
+  },
+  "enabledPlugins": {
+    "sanity@sanity-agent-toolkit": true
   }
 }

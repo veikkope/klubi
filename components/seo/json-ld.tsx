@@ -6,6 +6,8 @@
  * organisaatiokuvausta toistetaan joka sivulla.
  */
 
+import { stegaClean } from "next-sanity";
+
 type Json = Record<string, unknown>;
 
 interface JsonLdProps {
@@ -18,7 +20,8 @@ export function JsonLd({ schema }: JsonLdProps) {
 
   const payload = {
     "@context": "https://schema.org",
-    "@graph": graph,
+    // Luonnosnäkymän stega-merkit eivät kuulu rakenteiseen dataan.
+    "@graph": stegaClean(graph),
   };
 
   return (

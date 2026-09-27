@@ -1,3 +1,4 @@
+import { ImagesIcon } from "@sanity/icons";
 import { defineField, defineType } from "sanity";
 import {
   legacyUrlField,
@@ -9,6 +10,7 @@ export const galleriaAlbumi = defineType({
   name: "galleriaAlbumi",
   title: "Galleria-albumi",
   type: "document",
+  icon: ImagesIcon,
   fields: [
     defineField({
       name: "title",

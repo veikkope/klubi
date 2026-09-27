@@ -1,3 +1,4 @@
+import { ArchiveIcon, CogIcon, ControlsIcon, EnvelopeIcon, HomeIcon, LemonIcon, MenuIcon } from "@sanity/icons";
 import type { StructureResolver } from "sanity/structure";
 
 /**
@@ -13,21 +14,26 @@ export const structure: StructureResolver = (S) =>
     .items([
       S.listItem()
         .title("Sivun asetukset")
+        .icon(ControlsIcon)
         .child(
           S.list()
             .title("Sivun asetukset")
             .items([
               S.listItem()
                 .title("Etusivu")
+                .icon(HomeIcon)
                 .child(S.document().schemaType("etusivu").documentId("etusivu")),
               S.listItem()
                 .title("Navigaatio")
+                .icon(MenuIcon)
                 .child(S.document().schemaType("navigaatio").documentId("navigaatio")),
               S.listItem()
                 .title("Yhteystiedot")
+                .icon(EnvelopeIcon)
                 .child(S.document().schemaType("yhteystiedot").documentId("yhteystiedot")),
               S.listItem()
                 .title("Sivuston asetukset")
+                .icon(CogIcon)
                 .child(S.document().schemaType("asetukset").documentId("asetukset")),
             ]),
         ),
@@ -48,6 +54,7 @@ export const structure: StructureResolver = (S) =>
 
       S.listItem()
         .title("Ravintolat")
+        .icon(LemonIcon)
         .child(
           S.list()
             .title("Ravintolat")
@@ -64,6 +71,7 @@ export const structure: StructureResolver = (S) =>
 
       S.listItem()
         .title("Jalkapalloarkisto")
+        .icon(ArchiveIcon)
         .child(
           S.list()
             .title("Jalkapalloarkisto")

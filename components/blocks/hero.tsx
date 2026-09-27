@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { stegaClean } from "next-sanity";
 
 import { Container } from "@/components/layout/container";
 import { SanityImage } from "@/components/sanity-image";
@@ -49,7 +50,8 @@ export function Hero({ data }: { data: EtusivuData }) {
               {ctas.map((cta) => (
                 <Link
                   key={`${cta.href}-${cta.label}`}
-                  href={cta.href}
+                  // Stega pois hrefistä (luonnosnäkymä); nimi jää muokattavaksi.
+                  href={stegaClean(cta.href)}
                   className={cn(
                     "text-[17px] font-semibold underline underline-offset-[5px] transition hover:decoration-2",
                     cta.primary

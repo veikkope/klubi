@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { stegaClean } from "next-sanity";
 
 import { absoluteUrl, siteLocale, siteName } from "@/lib/site";
 import { urlForImage } from "@/sanity/lib/image";
@@ -51,18 +52,22 @@ function resolveOgImage(image: unknown, title: string): string {
   return absoluteUrl(`/api/og?title=${encodeURIComponent(title)}`);
 }
 
-export function buildMetadata({
-  title,
-  description,
-  path,
-  image,
-  publishedAt,
-  modifiedAt,
-  noIndex = false,
-  noFollow = false,
-  absoluteTitle = false,
-  type = "website",
-}: BuildMetadataInput): Metadata {
+export function buildMetadata(input: BuildMetadataInput): Metadata {
+  // Luonnosnäkymässä Sanityn merkkijonoissa on näkymättömiä stega-merkkejä.
+  // Niitä ei saa päätyä <head>iin (otsikko, kuvaus, canonical, OG-kuvan URL),
+  // joten koko syöte puhdistetaan tässä kerran kaikkien reittien puolesta.
+  const {
+    title,
+    description,
+    path,
+    image,
+    publishedAt,
+    modifiedAt,
+    noIndex = false,
+    noFollow = false,
+    absoluteTitle = false,
+    type = "website",
+  } = stegaClean(input);
   const url = absoluteUrl(path);
   const ogImage = resolveOgImage(image, title);
   const desc = description?.trim() || undefined;
@@ -106,7 +111,8 @@ export function resolveDescription(
   ...candidates: (string | null | undefined)[]
 ): string | undefined {
   for (const candidate of candidates) {
-    const text = candidate?.trim();
+    // Stega pois ennen pituuslaskua, ettei katkaisu osu koodattuun jaksoon.
+    const text = stegaClean(candidate)?.trim();
     if (text) return text.length > 160 ? `${text.slice(0, 157).trimEnd()}…` : text;
   }
   return undefined;

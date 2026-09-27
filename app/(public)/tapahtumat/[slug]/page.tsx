@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Calendar, ExternalLink, Mail, MapPin } from "lucide-react";
+import { stegaClean } from "next-sanity";
 
 import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
@@ -102,7 +103,9 @@ export default async function TapahtumaPage({
   ];
   const imageUrl =
     urlForImage(event.image)?.width(1200).height(630).fit("crop").url() ?? null;
-  const mailtoSubject = encodeURIComponent(`Ilmoittautuminen: ${event.title}`);
+  // mailto-osoitteeseen ei saa päätyä luonnosnäkymän stega-merkkejä.
+  const signupEmail = stegaClean(event.signupEmail);
+  const mailtoSubject = encodeURIComponent(`Ilmoittautuminen: ${stegaClean(event.title)}`);
 
   return (
     <article>
@@ -153,7 +156,7 @@ export default async function TapahtumaPage({
               )}
               {!isPast && !event.signupUrl && event.signupEmail && (
                 <LinkButton
-                  href={`mailto:${event.signupEmail}?subject=${mailtoSubject}`}
+                  href={`mailto:${signupEmail}?subject=${mailtoSubject}`}
                   variant="primary"
                 >
                   <Mail aria-hidden size={16} />
@@ -258,7 +261,7 @@ export default async function TapahtumaPage({
                       </dt>
                       <dd className="mt-1">
                         <a
-                          href={`mailto:${event.signupEmail}`}
+                          href={`mailto:${signupEmail}`}
                           className="text-foreground hover:text-accent"
                         >
                           {event.signupEmail}

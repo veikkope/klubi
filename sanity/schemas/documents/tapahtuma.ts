@@ -1,3 +1,4 @@
+import { CalendarIcon } from "@sanity/icons";
 import { defineField, defineType } from "sanity";
 import { seoFields } from "../objects/seoFields";
 import {
@@ -10,6 +11,7 @@ export const tapahtuma = defineType({
   name: "tapahtuma",
   title: "Tapahtuma",
   type: "document",
+  icon: CalendarIcon,
   groups: [
     { name: "perustiedot", title: "Perustiedot", default: true },
     { name: "ilmoittautuminen", title: "Ilmoittautuminen" },

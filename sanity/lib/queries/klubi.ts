@@ -61,7 +61,7 @@ export const klubiSivuQuery = defineQuery(`
       columns[]{ key, label, type },
       rows[]{ cells[]{ key, value } },
       lisatiedot,
-      kuvat[]{ _key, alt, caption, asset },
+      kuvat[]{ _key, alt, caption, asset, hotspot, crop },
       paivitetty,
       jarjestys,
       "sources": coalesce(sources, [])
@@ -163,7 +163,7 @@ export const klubiToimintaBySlugQuery = defineQuery(`
       columns[]{ key, label, type },
       rows[]{ cells[]{ key, value } },
       lisatiedot,
-      kuvat[]{ _key, alt, caption, asset },
+      kuvat[]{ _key, alt, caption, asset, hotspot, crop },
       paivitetty,
       jarjestys,
       "sources": coalesce(sources, [])
