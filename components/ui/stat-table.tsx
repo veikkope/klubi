@@ -124,14 +124,14 @@ export function StatTable({
       aria-label={caption}
       className={cn(
         "overflow-x-auto rounded-2xl border border-border",
-        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500",
+        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
         className,
       )}
     >
       <table className="w-full border-collapse text-sm">
         <caption
           className={cn(
-            "px-4 py-3 text-left font-serif text-lg text-foreground",
+            "px-4 py-3 text-left font-display text-lg text-foreground",
             !captionVisible && "sr-only",
           )}
         >

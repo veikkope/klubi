@@ -8,11 +8,15 @@ export const UUTINEN_CATEGORIES: {
   value: UutinenCategory;
   label: string;
 }[] = [
+  // Tyyliopas (Sivut v3): jalkapallojuttujen pääkategoriat
+  { value: "otteluraportti", label: "Otteluraportti" },
+  { value: "kannattajakulttuuri", label: "Kannattajakulttuuri" },
   { value: "tiedote", label: "Tiedote" },
   { value: "tapahtumaraportti", label: "Tapahtumaraportti" },
   { value: "jasentieto", label: "Jäsentieto" },
   { value: "jalkapallo", label: "Jalkapallo" },
   { value: "ravintola", label: "Ravintola" },
+  { value: "blogi", label: "Blogikirjoitus" },
 ];
 
 const labelMap = new Map(UUTINEN_CATEGORIES.map((c) => [c.value, c.label]));

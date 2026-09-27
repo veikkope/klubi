@@ -1,33 +1,37 @@
 # 02 — Informaatioarkkitehtuuri
 
-> **Päivitetty 2026-05-18** vanhan sivuston täydellisen auditoinnin pohjalta. Nykyiset 10 + 1 yläpalkin linkkiä on tiivistetty 6 päälinkkiin + 1 CTA:han.
+> **Päivitetty 2026-09-27** tyylioppaan "Sivut v3" (docs/design-handoff/) mukaiseksi. Sivuston pääaihe on suomalainen jalkapallokulttuuri, toinen aihe ravintola-arviot. Valikossa ei ole liittymis-CTA:ta (tyyliopas: "Do not build any join CTA").
 
 ## Päänavigaatio
 
 | # | Linkki | Polku | Tyyppi |
 |---|---|---|---|
-| 1 | **Klubi** ▾ | `/klubi` | Dropdown (5 alasivua) |
-| 2 | **Tapahtumat** | `/tapahtumat` | Lista + yksittäiset |
-| 3 | **Uutiset** | `/uutiset` | Lista + yksittäiset (sis. arkiston) |
-| 4 | **Jalkapalloarkisto** ▾ | `/jalkapalloarkisto` | Dropdown (5 alasivua) |
-| 5 | **Ravintolat** | `/ravintolat` | Hakemisto + yksittäiset |
-| 6 | **Liity jäseneksi** | `/klubi/liity` | CTA-nappi (korostettu) |
+| 1 | **Jalkapallo** ▾ | `/uutiset` | Dropdown: jutut + jalkapalloarkisto |
+| 2 | **Ottelut** | `/ottelut` | Otteluohjelma (automaattinen, docs/13) |
+| 3 | **Ravintola-arviot** | `/ravintolat` | Hakemisto + yksittäiset arviot |
+| 4 | **Tapahtumat** | `/tapahtumat` | Klubin omat tapahtumat |
+| 5 | **Klubista** ▾ | `/klubi` | Dropdown |
 
-Logo viittaa etusivulle `/`.
+Logo viittaa etusivulle `/`. Aktiivinen kohta: sininen teksti + 2 px sininen alleviivaus. Valikko on Sanityssa (singleton `navigaatio`); oletukset `lib/defaults.ts`.
 
-### Klubi-dropdown
+### Jalkapallo-dropdown
+- Kentältä ja katsomosta → `/uutiset`
+- Jalkapalloarkisto → `/jalkapalloarkisto`
+- Huuhkajat → `/jalkapalloarkisto/huuhkajat`
+- Arvokisat → `/jalkapalloarkisto/arvokisat`
+- Suomen mestarit → `/jalkapalloarkisto/mestarit`
+- Pelaajat → `/jalkapalloarkisto/pelaajat`
+- Stadionit → `/jalkapalloarkisto/stadionit`
+
+### Klubista-dropdown
 - Esittely → `/klubi`
+- Toiminta → `/klubi/toiminta`
 - Hallitus → `/klubi/hallitus`
 - Säännöt → `/klubi/saannot`
 - Palloveikkaus → `/klubi/palloveikkaus`
 - Yhteystiedot → `/klubi/yhteystiedot`
 
-### Jalkapalloarkisto-dropdown
-- Huuhkajien ottelut → `/jalkapalloarkisto/huuhkajat`
-- Suomen mestarit → `/jalkapalloarkisto/mestarit`
-- Eurocupit → `/jalkapalloarkisto/eurocupit`
-- Vuoden pelaajat → `/jalkapalloarkisto/vuoden-pelaajat`
-- Stadionit → `/jalkapalloarkisto/stadionit`
+Jos alakohde osoittaa pääkohteen sivulle, erillistä "yleisesittely"-linkkiä ei lisätä.
 
 ## Sivukartta
 
@@ -39,6 +43,7 @@ Logo viittaa etusivulle `/`.
 │   ├── /klubi/palloveikkaus     Klubin ennustuskilpailu (entinen "Veikkaus")
 │   ├── /klubi/yhteystiedot
 │   └── /klubi/liity             Sähköinen jäsenhakemus
+├── /ottelut                     Otteluohjelma (Veikkausliiga + Studion ottelut)
 ├── /tapahtumat
 │   └── /tapahtumat/[slug]
 ├── /uutiset                     Yhdistetty (entinen "Blogi" + "Kommentit")
@@ -69,7 +74,7 @@ Logo viittaa etusivulle `/`.
     └── /galleria/[slug]
 ```
 
-> Galleria ei ole päänavigaatiossa — siihen pääsee uutisten ja tapahtumien yhteydestä. Jos isä toivoo myöhemmin galleriaa pääpalkkiin, lisätään.
+> Galleria ja uutisarkisto eivät ole päänavigaatiossa — niihin on linkki footerissa. `/klubi/liity` säilyy osoitteena, mutta sitä ei nosteta valikkoon eikä etusivulle.
 
 ## Linkkimuutokset — vanha → uusi (jokaisesta lähtee 301)
 
@@ -78,7 +83,7 @@ Logo viittaa etusivulle `/`.
 | `/` `/etusivu.htm` | `/` | Etusivu säilyy |
 | `/yleista.htm` | `/klubi` | "Yleistä" → "Klubi (esittely)" |
 | `/klubi.htm` | `/klubi` | Nykyisin 404 — ohjataan klubisivulle |
-| `/ottelut.htm` | `/tapahtumat` | Nykyisin 404 — tulevat ottelut ovat tapahtumissa |
+| `/ottelut.htm` | — | Ei ollut olemassa vanhalla sivustolla (404), ei ohjausta. Uusi `/ottelut` on eri sisältö. |
 | `/arvostelu.htm` | `/jalkapalloarkisto/huuhkajat` | "Arvostelu" oli harhaanjohtava nimi |
 | `/veikkaus.htm` | `/klubi/palloveikkaus` | Klubin sisäinen aktiviteetti |
 | `/kommentit.htm` | `/uutiset/arkisto` | Yhdistetty uutisarkiston kanssa |
@@ -109,11 +114,11 @@ Järjestys osoitteessa: kaupunki, maa, maakunta, ruoka, arvosana, lopettaneet, j
 
 ## Footer
 
-- **Yhdistys**: Lyhyt esittely, Y-tunnus, perustamisvuosi
-- **Linkit**: Klubi, Tapahtumat, Uutiset, Ravintolat
-- **Yhteystiedot**: Osoite, sähköposti, puhelin
-- **Sosiaalinen media**: YouTube @suomalainenklubi, mahdolliset uudet kanavat
-- **Tekijänoikeus**: © 2026 Lahden Suomalainen Klubi ry
+Tyyliopas: yönsininen, valkoinen pystylogo, linkkisarakkeet ja tekijänoikeusrivi.
+- **Jalkapallo**: Ottelut, Kentältä ja katsomosta, Jalkapalloarkisto, Uutisarkisto
+- **Klubi**: Ravintola-arviot, Tapahtumat, Klubista, Kuvagalleria
+- **Yhteystiedot**: sähköposti, puhelin, osoite/kaupunki, some, Y-tunnus/IBAN (Sanity `yhteystiedot`)
+- **Alarivi**: © vuosi Lahden Suomalainen Klubi ry · Ylläpito (`/studio`)
 
 ## Breadcrumbs
 
@@ -127,15 +132,15 @@ Kaikilla alasivulla. Generoidaan automaattisesti URL-rakenteesta + Sanity-otsiko
 
 ## Etusivun rakenne
 
-1. **Hero** — kuva, otsikko, slogan, CTA "Liity jäseneksi"
-2. **Ajankohtaista** — 3 viimeisintä uutista korttina (yhdistetty entiset BLOGI + KOMMENTIT)
-3. **Tulevat tapahtumat** — 3 seuraavaa tapahtumaa kortteina
-4. **Esittely** — lyhyt klubin esittely + CTA → `/klubi`
-5. **Ravintolat-spotlight** — TOP 5 Lahden ravintoloista
-6. **Jalkapalloarkisto-teaser** — nykyinen FIFA-ranking + linkki arkistoon
-7. **CTA-banneri** — Liity jäseneksi
+Tyyliopas (Sivut v3): etusivu esittelee klubin ensin ja näyttää sitten ajankohtaisen sisällön. Uutta sisältöä tulee noin kerran kuussa.
 
-Etusivun lohkot ovat Sanityssa konfiguroitavissa (singleton `etusivu`).
+1. **Hero** (yönsininen) — yläotsake, H1, ingressi, kaksi tekstilinkkiä (Tulevat ottelut → / Lue klubista →), oikealla 4:5 kuva
+2. **Otteluohjelma ja tapahtumat** — tulevat ottelut listana (1,5fr) + klubin tapahtumat kortteina (1fr)
+3. **Kentältä ja katsomosta** (valkoinen) — uusin juttu isona + 3 listana
+4. **Ravintola-arviot** — 3 parhaiten arvioitua korttina
+5. **Klubista** (valkoinen) — kuva + esittelyteksti + linkki
+
+Lohkot ovat Sanityssa konfiguroitavissa (singleton `etusivu`). Tyhjät lohkot piilottavat itsensä. Jalkapalloarkisto-, galleria- ja CTA-lohkotyypit ovat yhä olemassa, mutta niitä ei käytetä etusivulla.
 
 ## Mobiilikäytettävyys
 

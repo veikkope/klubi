@@ -136,7 +136,7 @@ const fieldClass =
   "focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background";
 
 const labelClass =
-  "text-xs font-medium uppercase tracking-[0.18em] text-muted";
+  "font-sans text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-soft";
 
 type Props = {
   active: RavintolaFilterValues;
@@ -334,14 +334,14 @@ export function RavintolaFilterBar({ active, facets, resultCount }: Props) {
             {isFiltered && (
               <Link
                 href="/ravintolat"
-                className="inline-flex min-h-11 items-center rounded-full px-4 text-sm font-medium text-muted transition hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                className="inline-flex min-h-11 items-center rounded-sm px-4 text-sm font-medium text-muted transition hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
                 Tyhjennä rajaukset
               </Link>
             )}
             <button
               type="submit"
-              className="inline-flex min-h-11 items-center justify-center rounded-full bg-accent px-6 text-sm font-medium text-white shadow-sm transition hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              className="inline-flex min-h-11 items-center justify-center rounded-sm bg-primary px-6 text-sm font-medium text-on-primary shadow-sm transition hover:bg-primary-hover hover:text-on-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
               Näytä tulokset
             </button>
@@ -429,7 +429,7 @@ function ActiveFilterChips({
           <Link
             href={chip.href}
             className={cn(
-              "inline-flex min-h-11 items-center gap-2 rounded-full border border-border",
+              "inline-flex min-h-11 items-center gap-2 rounded-sm border border-border",
               "bg-background px-4 text-sm text-foreground transition hover:border-accent hover:text-accent",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
             )}

@@ -45,6 +45,10 @@ export type RavintolaCardData = {
   cuisine?: string[] | null;
   closed?: boolean | null;
   tiivistelma?: string | null;
+  /** Yhden rivin tuomio korttiin. */
+  tuomio?: string | null;
+  /** Esim. "15 min stadionille". */
+  stadionHuomio?: string | null;
   image?: SanityImage;
 };
 
@@ -62,6 +66,7 @@ export type RavintolaDetail = RavintolaCardData & {
   visits?: string[] | null;
   visitContext?: string | null;
   review?: PortableTextBlock[] | null;
+  ottelupaivana?: string | null;
   images?: SanityImage[] | null;
   seoTitle?: string | null;
   seoDescription?: string | null;
@@ -154,6 +159,8 @@ const cardProjection = /* groq */ `
   cuisine,
   closed,
   tiivistelma,
+  tuomio,
+  stadionHuomio,
   "image": images[0]
 `;
 
@@ -325,6 +332,7 @@ export const ravintolaBySlugQuery = defineQuery(`
     visits,
     visitContext,
     review,
+    ottelupaivana,
     images,
     seoTitle,
     seoDescription,

@@ -131,7 +131,7 @@ function PelaajaListCard({
         ) : (
           <span
             aria-hidden
-            className="flex h-full w-full items-center justify-center font-serif text-4xl text-border-strong"
+            className="flex h-full w-full items-center justify-center font-display text-4xl text-border-strong"
           >
             {pelaaja.name.charAt(0)}
           </span>

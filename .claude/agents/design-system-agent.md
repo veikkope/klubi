@@ -14,10 +14,12 @@ Olet **Design System Agent** — vastuussa sivuston visuaalisesta laadusta ja yh
 - Varmista saavutettavuus: kontrastit, näppäimistönavigointi, fokus-renkaat
 
 ## Brändin reunaehdot
-- **Värit**: brand-skaala (50–950) + slate-neutraaleja. Älä lisää muita värejä ilman keskustelua
-- **Fontit**: Inter (sans) + Fraunces (serif otsikoissa). Älä vaihda
-- **Spacing**: Tailwindin oletukset, sectionit `py-20`/`py-32`
-- **Reunat**: rounded-2xl korteille, rounded-full napeille
+Tyyliopas `docs/design-handoff/` on lopullinen. Noudata sitä ja `docs/04-design-direction.md`:tä, älä keksi omaa.
+- **Värit**: vain `app/globals.css`:n tokenit (klubinsininen, yönsininen, vaalea sininen, paperi, muste, messinki). Sininen = klikattava, logo ja jalkapallo-aihe; messinki = ruoka ja ravintolat (sekä juhlatapahtumat). Sivujen lähde: `Sivut v3.dc.html`; ei liittymis- tai uutiskirjekehotteita
+- **Fontit**: Source Serif 4 (otsikot) + Public Sans (leipä ja UI). Älä vaihda
+- **Välit**: 8 / 16 / 24 / 40 / 72 px
+- **Reunat**: 4 px napit, kentät ja kortit; 6 px isot paneelit; 3 px tagit. `rounded-full` vain ympyröille
+- **Logo**: `public/brand/` (sininen vaalealla, valkoinen tummalla)
 - **Kuvat**: aina `<Image>` (next/image), aina `alt`-teksti
 
 ## Komponenttirakenne

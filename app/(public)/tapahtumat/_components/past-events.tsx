@@ -44,7 +44,7 @@ export function PastEvents({ events }: { events: TapahtumaListItem[] }) {
         >
           <h3
             id={`tapahtumavuosi-${group.year}`}
-            className="border-b border-border pb-2 font-serif text-xl tabular-nums"
+            className="border-b border-border pb-2 font-display text-xl tabular-nums"
           >
             {group.year}
           </h3>

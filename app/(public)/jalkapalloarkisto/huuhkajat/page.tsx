@@ -113,7 +113,7 @@ export default async function HuuhkajatPage() {
         <section aria-labelledby="ottelut-otsikko">
           <h2
             id="ottelut-otsikko"
-            className="font-serif text-2xl leading-tight text-foreground sm:text-3xl"
+            className="font-display text-2xl leading-tight text-foreground sm:text-3xl"
           >
             Otteluhistoria ja pelaajatilastot
           </h2>
@@ -129,7 +129,7 @@ export default async function HuuhkajatPage() {
         <section aria-labelledby="karsinnat-otsikko" className="mt-16">
           <h2
             id="karsinnat-otsikko"
-            className="font-serif text-2xl leading-tight text-foreground sm:text-3xl"
+            className="font-display text-2xl leading-tight text-foreground sm:text-3xl"
           >
             Karsintasarjat
           </h2>
@@ -171,7 +171,7 @@ export default async function HuuhkajatPage() {
         <section aria-labelledby="jatka-otsikko" className="mt-16">
           <h2
             id="jatka-otsikko"
-            className="font-serif text-2xl leading-tight text-foreground sm:text-3xl"
+            className="font-display text-2xl leading-tight text-foreground sm:text-3xl"
           >
             Jatka arkistossa
           </h2>

@@ -14,7 +14,7 @@ export const etusivu = defineType({
     defineField({
       name: "heroEyebrow",
       title: "Hero — yläteksti",
-      description: 'Pieni teksti otsikon yläpuolella, esim. "Perustettu 2007"',
+      description: 'Pieni teksti otsikon yläpuolella, esim. "Lahden Suomalainen Klubi ry"',
       type: "string",
       group: "hero",
     }),
@@ -36,13 +36,17 @@ export const etusivu = defineType({
     }),
     defineField({
       name: "heroImage",
-      title: "Hero — taustakuva (valinnainen)",
+      title: "Hero — kuva (valinnainen)",
+      description:
+        "Näkyy tekstin oikealla puolella pystykuvana (4:5), mobiilissa tekstin alla. Esim. klubilaiset katsomossa.",
       type: "imageWithAlt",
       group: "hero",
     }),
     defineField({
       name: "heroCtas",
-      title: "Hero — napit",
+      title: "Hero — linkit",
+      description:
+        "Näkyvät alleviivattuina tekstilinkkeinä (esim. \"Tulevat ottelut\", \"Lue klubista\"). Pääpainike-valinta näyttää linkin valkoisena, muut vaaleampina.",
       type: "array",
       of: [
         {
@@ -50,7 +54,7 @@ export const etusivu = defineType({
           fields: [
             { name: "label", title: "Teksti", type: "string", validation: (rule) => rule.required() },
             { name: "href", title: "Linkki", type: "string", validation: (rule) => rule.required() },
-            { name: "primary", title: "Pääpainike", type: "boolean", initialValue: false },
+            { name: "primary", title: "Korostettu (valkoinen)", type: "boolean", initialValue: false },
           ],
           preview: { select: { title: "label", subtitle: "href" } },
         },
@@ -65,6 +69,9 @@ export const etusivu = defineType({
         'Vanhan etusivun "Seuraavaksi" -nosto ja laskuri, esim. "Suomi – Valko-Venäjä, Kansojen liiga". ' +
         "Jätä tyhjäksi, kun ottelua ei ole tiedossa.",
       type: "object",
+      // Korvattu etusivun otteluohjelmalla (Otteluohjelma ja tapahtumat -lohko).
+      // Piilotettu Studiosta; kenttä säilyy, jotta vanha data pysyy validina.
+      hidden: true,
       options: { collapsible: true, collapsed: false },
       fields: [
         defineField({
@@ -101,13 +108,29 @@ export const etusivu = defineType({
       of: [
         defineArrayMember({
           name: "uutiset",
-          title: "Uutiset-nostot",
+          title: "Jutut (Kentältä ja katsomosta)",
           type: "object",
+          description: "Uusin juttu isona, seuraavat listana vieressä.",
           fields: [
-            { name: "heading", title: "Otsikko", type: "string", initialValue: "Ajankohtaista" },
-            { name: "count", title: "Näytettävien määrä", type: "number", initialValue: 3, validation: (r) => r.min(1).max(6) },
+            { name: "eyebrow", title: "Yläotsake", type: "string", description: "Pieni versaaliteksti otsikon yläpuolella.", initialValue: "Jalkapallo" },
+            { name: "heading", title: "Otsikko", type: "string", initialValue: "Kentältä ja katsomosta" },
+            { name: "count", title: "Näytettävien määrä", type: "number", initialValue: 4, validation: (r) => r.min(1).max(6) },
           ],
-          preview: { prepare: () => ({ title: "Uutiset-nostot" }) },
+          preview: { prepare: () => ({ title: "Jutut (Kentältä ja katsomosta)" }) },
+        }),
+        defineArrayMember({
+          name: "otteluohjelma",
+          title: "Otteluohjelma ja tapahtumat",
+          type: "object",
+          description:
+            "Vasemmalla tulevat ottelut (haetaan automaattisesti), oikealla klubin omat tapahtumat. Jos toinen puoli on tyhjä, toinen täyttää koko leveyden.",
+          fields: [
+            { name: "ottelutHeading", title: "Otteluiden otsikko", type: "string", initialValue: "Tulevat ottelut" },
+            { name: "ottelutCount", title: "Otteluiden määrä", type: "number", initialValue: 4, validation: (r) => r.min(1).max(10) },
+            { name: "tapahtumatHeading", title: "Tapahtumien otsikko", type: "string", initialValue: "Nähdään" },
+            { name: "tapahtumatCount", title: "Tapahtumien määrä", type: "number", initialValue: 3, validation: (r) => r.min(1).max(6) },
+          ],
+          preview: { prepare: () => ({ title: "Otteluohjelma ja tapahtumat" }) },
         }),
         defineArrayMember({
           name: "tapahtumat",
@@ -121,27 +144,31 @@ export const etusivu = defineType({
         }),
         defineArrayMember({
           name: "esittely",
-          title: "Esittelyteksti",
+          title: "Esittelyteksti (Klubista)",
           type: "object",
+          description: "Kuva vasemmalla, teksti oikealla.",
           fields: [
+            { name: "eyebrow", title: "Yläotsake", type: "string", description: "Pieni versaaliteksti otsikon yläpuolella.", initialValue: "Klubista" },
             { name: "heading", title: "Otsikko", type: "string" },
             { name: "body", title: "Teksti", type: "portableText" },
             { name: "image", title: "Kuva", type: "imageWithAlt" },
-            { name: "ctaLabel", title: "Napin teksti", type: "string" },
-            { name: "ctaHref", title: "Napin linkki", type: "string" },
+            { name: "ctaLabel", title: "Linkin teksti", type: "string", description: 'Esim. "Lue lisää klubista".' },
+            { name: "ctaHref", title: "Linkin osoite", type: "string" },
           ],
           preview: { select: { title: "heading" }, prepare: ({ title }) => ({ title: title || "Esittelyteksti" }) },
         }),
         defineArrayMember({
           name: "ravintolatSpotlight",
-          title: "Ravintolat-spotlight",
+          title: "Ravintola-arviot",
           type: "object",
+          description: "Parhaiten arvioidut ravintolat kortteina.",
           fields: [
-            { name: "heading", title: "Otsikko", type: "string", initialValue: "Parhaat ravintolat" },
+            { name: "eyebrow", title: "Yläotsake", type: "string", description: "Pieni versaaliteksti otsikon yläpuolella.", initialValue: "Ravintola-arviot" },
+            { name: "heading", title: "Otsikko", type: "string", initialValue: "Missä pelipäivänä syödään" },
             { name: "city", title: "Kaupunki (suodatin, valinnainen)", type: "reference", to: [{ type: "kaupunki" }] },
-            { name: "count", title: "Näytettävien määrä", type: "number", initialValue: 5, validation: (r) => r.min(1).max(10) },
+            { name: "count", title: "Näytettävien määrä", type: "number", initialValue: 3, validation: (r) => r.min(1).max(9) },
           ],
-          preview: { prepare: () => ({ title: "Ravintolat-spotlight" }) },
+          preview: { prepare: () => ({ title: "Ravintola-arviot" }) },
         }),
         defineArrayMember({
           name: "jalkapalloarkisto",
@@ -202,7 +229,9 @@ export const etusivu = defineType({
         }),
         defineArrayMember({
           name: "cta",
-          title: "CTA-lohko",
+          // Tyyliopas: ei liittymis- tai uutiskirjekehotteita. Tyyppi säilyy,
+          // jotta vanha data pysyy validina, mutta sitä ei suositella.
+          title: "CTA-lohko (vanha — ei käytössä)",
           type: "object",
           fields: [
             { name: "heading", title: "Otsikko", type: "string", validation: (r) => r.required() },

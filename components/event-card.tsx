@@ -1,57 +1,72 @@
-import { CalendarDays, MapPin } from "lucide-react";
+import Link from "next/link";
 
-import {
-  Card,
-  CardArrow,
-  CardEyebrow,
-  CardTitle,
-  CardBody,
-} from "@/components/ui/card";
-import { SanityImage } from "@/components/sanity-image";
-import { formatEventRange } from "@/lib/format";
+import { cn } from "@/lib/cn";
 import type { TapahtumaCard } from "@/lib/types";
 
 type Props = {
   event: TapahtumaCard;
-  /** Menneillä tapahtumilla pienennetty kuvasuhde + harmaampi sävy. */
+  /** Menneet tapahtumat: himmeämpi, ei messinkikorostusta. */
   past?: boolean;
-  /** Ensimmäisen rivin kortit voivat olla LCP-elementti. */
-  priority?: boolean;
 };
 
-export function EventCard({ event, past = false, priority = false }: Props) {
+const TZ = "Europe/Helsinki";
+const dayFmt = new Intl.DateTimeFormat("fi-FI", { day: "numeric", timeZone: TZ });
+const monthFmt = new Intl.DateTimeFormat("fi-FI", { month: "short", timeZone: TZ });
+const yearFmt = new Intl.DateTimeFormat("fi-FI", { year: "numeric", timeZone: TZ });
+
+/** "loka" tai "lokak." → "Loka" (tyyliopas: versaali lyhenne ilman pistettä). */
+function shortMonth(d: Date): string {
+  return monthFmt.format(d).replace(/k?\.$/, "").replace(/kuuta$/, "");
+}
+
+/**
+ * Tapahtumakortti (tyyliopas Sivut v3: "Klubin tapahtumat").
+ *
+ * Valkoinen kortti, 3 px yläreuna: sininen, juhlatapahtumalla messinki.
+ * Vasemmalla 60 px päivämääräsarake (päivä serif 34 px + kuukausi versaalina),
+ * oikealla otsikko ja yhden rivin kuvaus (`tiivistelma`).
+ */
+export function EventCard({ event, past = false }: Props) {
+  const festive = Boolean(event.juhla) && !past;
+  const start = new Date(event.startsAt);
+  const thisYear = yearFmt.format(new Date()) === yearFmt.format(start);
+
   return (
-    <Card href={`/tapahtumat/${event.slug}`} className="w-full">
-      {event.image?.asset && (
-        <div className="-m-6 mb-4 overflow-hidden rounded-t-2xl">
-          <SanityImage
-            image={event.image}
-            width={600}
-            height={360}
-            sizes="(min-width: 1024px) 380px, (min-width: 640px) 45vw, 100vw"
-            className={
-              past
-                ? "h-40 w-full object-cover opacity-80 saturate-75"
-                : "h-44 w-full object-cover"
-            }
-            priority={priority}
-          />
-        </div>
+    <Link
+      href={`/tapahtumat/${event.slug}`}
+      className={cn(
+        "group grid w-full grid-cols-[52px_1fr] gap-3.5 rounded-sm border-t-[3px] bg-surface p-[18px] no-underline transition hover:shadow-panel sm:grid-cols-[60px_1fr] sm:gap-5 sm:p-[26px]",
+        festive ? "border-t-brass" : "border-t-blue",
+        past && "opacity-85",
       )}
-      <CardEyebrow className="flex items-center gap-2">
-        <CalendarDays aria-hidden size={14} className="shrink-0" />
-        <time dateTime={event.startsAt}>
-          {formatEventRange(event.startsAt, event.endsAt)}
-        </time>
-      </CardEyebrow>
-      <CardTitle className="mt-2">{event.title}</CardTitle>
-      {event.location && (
-        <CardBody className="mt-2 flex items-start gap-2">
-          <MapPin aria-hidden size={16} className="mt-1 shrink-0 text-accent" />
-          <span>{event.location}</span>
-        </CardBody>
-      )}
-      <CardArrow label={past ? "Lue raportti" : "Lue tapahtumasta"} />
-    </Card>
+    >
+      <time
+        dateTime={event.startsAt}
+        className={cn(
+          "flex flex-col items-center",
+          festive ? "text-brass-text" : "text-accent",
+        )}
+      >
+        <span className="font-display text-[1.75rem] font-semibold leading-none sm:text-[2.125rem]">
+          {dayFmt.format(start)}
+        </span>
+        <span className="mt-1 text-[11px] font-semibold uppercase tracking-[0.08em] sm:text-xs">
+          {shortMonth(start)}
+        </span>
+        {!thisYear && (
+          <span className="text-[11px] font-semibold tabular-nums">{yearFmt.format(start)}</span>
+        )}
+      </time>
+      <div className="flex flex-col gap-1.5">
+        <h3 className="font-display text-lg leading-[1.3] text-heading group-hover:text-accent sm:text-[1.3125rem]">
+          {event.title}
+        </h3>
+        {(event.tiivistelma || event.location) && (
+          <p className="hidden text-[15px] leading-[1.55] text-muted sm:block">
+            {event.tiivistelma ?? event.location}
+          </p>
+        )}
+      </div>
+    </Link>
   );
 }

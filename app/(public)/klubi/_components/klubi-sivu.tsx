@@ -101,7 +101,7 @@ export function KlubiSivuPage({
 
         {(sivu?.tilastot ?? []).filter(Boolean).length > 0 && (
           <section aria-labelledby="sivun-taulukot" className="mt-16">
-            <h2 id="sivun-taulukot" className="font-serif text-3xl leading-tight">
+            <h2 id="sivun-taulukot" className="font-display text-3xl leading-tight">
               Taulukot
             </h2>
             <StatSections

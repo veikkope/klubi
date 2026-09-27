@@ -23,7 +23,8 @@ export const navigaatio = defineType({
           fields: [
             { name: "label", title: "Otsikko", type: "string", validation: (rule) => rule.required() },
             { name: "href", title: "Linkki (esim. /tapahtumat)", type: "string", validation: (rule) => rule.required() },
-            { name: "highlight", title: "Korosta (CTA)", type: "boolean", initialValue: false },
+            // Tyyliopas: valikossa ei ole CTA-korostusta. Piilotettu, jotta vanha data pysyy validina.
+            { name: "highlight", title: "Korosta (CTA)", type: "boolean", initialValue: false, hidden: true },
             {
               name: "children",
               title: "Alavalikko",

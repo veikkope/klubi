@@ -1,0 +1,59 @@
+# 13 — Otteluohjelma
+
+Etusivun "Tulevat ottelut" ja `/ottelut`-sivu. Toteutus: `lib/ottelut.ts`, näkymä `components/fixture-list.tsx`, etusivulohko `otteluohjelma`.
+
+## Lähteet
+
+| # | Lähde | Milloin | Kattavuus | Huomio |
+|---|---|---|---|---|
+| 1 | **Palloliiton Taso-rajapinta** (`spl.torneopal.fi/taso/rest/getMatches`) | Kun `TASO_API_KEY` on asetettu | Veikkausliiga, Ykkösliiga, Suomen Cup (sarjat `TASO_SARJAT`-muuttujassa) | Virallinen. Avain vain palvelimella. Parametrien nimet ja vastausmuoto perustuvat julkiseen dokumentaatioon, ja ne on tarkistettava, kun avain on saatu. |
+| 2 | **Veikkausliigan kalenterisyöte** (`veikkausliiga.com/tilastot/spljp{vv}/kalenterit/`) | Oletus ilman avainta | Vain Veikkausliiga | Ei stadioneja. Kausi vaihtuu automaattisesti vuoden mukaan. |
+| 3 | **Studion `ottelu`-dokumentit** | Aina | Mitä tahansa | Maajoukkue- ja cup-ottelut sekä merkinnät "Klubi paikalla" ja "Vierasmatka". |
+
+Ulkoinen data välimuistitetaan tunniksi. Jos haku epäonnistuu, lista näytetään pelkillä Studion otteluilla, eikä sivu kaadu.
+
+### Studion ottelu yhdistyy automaattiseen
+
+Studion ottelu yhdistyy automaattisesti haettuun, kun Helsingin aikaan päivä on sama ja joukkueiden nimet täsmäävät. Vertailussa kirjainkoko, välilyönnit ja välimerkit ohitetaan. Kirjoita siksi joukkueet Studioon kuten Veikkausliigan sivuilla (esim. "FC Lahti", "IF Gnistan"). Studion täytetyt kentät (kilpailu, stadion) voittavat, mutta kellonaika tulee aina syötteestä.
+
+Esimerkki: klubi lähtee vierasmatkalle Seinäjoelle. Lisää Studioon ottelu "SJK – FC Lahti" oikealle päivälle ja valitse "Vierasmatka". Merkintä ilmestyy automaattisesti haetun ottelun viereen.
+
+## Huuhkajien ottelut
+
+Suomen miesten maajoukkueen ottelut ovat klubille erityisiä. Klubi käy jokaisessa kotiottelussa, mutta vieraspeleihin se ei yleensä mene.
+- Ottelu tunnistetaan, kun kotijoukkue tai vierasjoukkue on tasan **"Suomi"** (kirjainkoko ohitetaan).
+- **Kotiottelu** (Suomi kotijoukkueena) saa automaattisesti merkinnän **"Klubi paikalla"**, eikä sitä tarvitse valita Studiossa.
+- **Vieraspeli** korostetaan, mutta ilman merkintää. Jos klubi lähtee mukaan, valitse Studiossa "Klubi paikalla" tai "Vierasmatka".
+- Listassa rivillä on vaalean sininen pohja, sininen palkki vasemmassa reunassa ja sininen **"Huuhkajat"**-tunniste kilpailun edessä.
+- Muut Suomen joukkueet kirjoitetaan tarkenteella ("Suomi (naiset)", "Suomi U21"), jolloin niitä ei tulkita Huuhkajiksi.
+
+Maajoukkueen ottelut lisätään Studioon käsin, koska automaattinen syöte kattaa vain Veikkausliigan. Pelejä on noin 10 vuodessa.
+
+## Varmenneongelma (veikkausliiga.com)
+
+veikkausliiga.com ei lähetä TLS-ketjussa välivarmennettaan (ZeroSSL ECC DV SSL CA 2). Selaimet hakevat sen itse, mutta Node ei, joten tavallinen `fetch` kaatuu virheeseen `UNABLE_TO_VERIFY_LEAF_SIGNATURE`.
+
+`lib/fetch-with-intermediate.ts` lisää puuttuvan välivarmenteen luotettujen juurien rinnalle vain tätä hakua varten. Varmennusta ei ohiteta. Välivarmenne on voimassa 23.9.2035 asti. Jos veikkausliiga.com korjaa ketjunsa, koodi toimii silti.
+
+## Ympäristömuuttujat
+
+| Muuttuja | Pakollinen | Esimerkki |
+|---|---|---|
+| `TASO_API_KEY` | ei | (Palloliitolta) |
+| `TASO_SARJAT` | ei | `spljp26:VL,splcup26:SC`. Oletuksena kuluvan kauden Veikkausliiga. |
+
+## Taso-avaimen hankkiminen
+
+Toimi näin:
+1. Jos klubilla on TASO-pääkäyttäjätunnukset (taso.palloliitto.fi), ota rajapinta käyttöön kohdasta "Rajapinta" ja hyväksy käyttöehdot.
+2. Muuten lähetä sähköpostia osoitteeseen **tuki@torneopal.fi**. Pyydä `getMatches`-avainta Veikkausliigaan, Ykkösliigaan ja Suomen Cupiin voittoa tavoittelemattoman yhdistyksen sivustolle. Kysy samalla käyttöehdot, pyyntörajat ja kuuluvatko A-maajoukkueen ottelut rajapintaan.
+3. Aseta `TASO_API_KEY` Verceliin (Production + Preview). Älä koskaan laita avainta `NEXT_PUBLIC_`-muuttujaan.
+
+Maajoukkueen ottelut (noin 10 vuodessa) lisätään toistaiseksi Studiossa.
+
+## Selvitetyt vaihtoehdot (syyskuu 2026)
+
+- **football-data.org:** Veikkausliiga ja Suomen Cup vain maksullisissa tasoissa (alkaen 49 €/kk).
+- **API-Football:** maksuton taso ei sisällä kuluvaa kautta. Pro-taso 19 $/kk.
+- **TheSportsDB:** ilmaisella avaimella vain yksi seuraava ottelu. Data on yhteisön ylläpitämää.
+- **FotMob ja vastaavat:** epävirallisia rajapintoja, joiden käyttöä ei ole sallittu. Ei käytetä.

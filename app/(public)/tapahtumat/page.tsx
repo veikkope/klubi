@@ -74,7 +74,7 @@ export default async function TapahtumatPage() {
         ) : (
           <>
             <section aria-labelledby="tulevat">
-              <h2 id="tulevat" className="font-serif text-2xl sm:text-3xl">
+              <h2 id="tulevat" className="font-display text-2xl sm:text-3xl">
                 Tulevat tapahtumat
               </h2>
 
@@ -89,9 +89,9 @@ export default async function TapahtumatPage() {
                 </p>
               ) : (
                 <ul className="mt-8 grid list-none grid-cols-1 gap-6 p-0 sm:grid-cols-2 lg:grid-cols-3">
-                  {upcoming.map((event, index) => (
+                  {upcoming.map((event) => (
                     <li key={event._id} className="flex">
-                      <EventCard event={event} priority={index < 3} />
+                      <EventCard event={event} />
                     </li>
                   ))}
                 </ul>
@@ -101,7 +101,7 @@ export default async function TapahtumatPage() {
             {past.length > 0 && (
               <section aria-labelledby="menneet" className="mt-20">
                 <div className="flex flex-wrap items-end justify-between gap-3">
-                  <h2 id="menneet" className="font-serif text-2xl sm:text-3xl">
+                  <h2 id="menneet" className="font-display text-2xl sm:text-3xl">
                     Menneet tapahtumat
                   </h2>
                   <span className="text-sm text-muted">
@@ -126,7 +126,7 @@ function EmptyState() {
       data-empty-state=""
       className="rounded-2xl border border-dashed border-border bg-surface p-10 text-center"
     >
-      <p className="font-serif text-2xl">Ei vielä tapahtumia</p>
+      <p className="font-display text-2xl">Ei vielä tapahtumia</p>
       <p className="mx-auto mt-2 max-w-md text-muted">
         Tulevista tapahtumista kerrotaan tällä sivulla. Aiempien vuosien vaput,
         mölkkyturnaukset, jouluruokailut ja muut tilaisuudet löytyvät klubin

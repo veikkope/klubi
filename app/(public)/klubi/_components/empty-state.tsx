@@ -24,7 +24,7 @@ export function EmptyState({
       data-empty-state=""
       className="rounded-2xl border border-dashed border-border bg-surface p-8 text-center sm:p-10"
     >
-      <p className="font-serif text-2xl text-foreground">{title}</p>
+      <p className="font-display text-2xl text-foreground">{title}</p>
       <p className="mx-auto mt-2 max-w-md text-muted">{description}</p>
       {action && <div className="mt-6 flex justify-center">{action}</div>}
     </div>

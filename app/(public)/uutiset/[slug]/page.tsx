@@ -192,7 +192,7 @@ export default async function UutinenPage({
                 <li key={category}>
                   <Link
                     href={`/uutiset?kategoria=${category}`}
-                    className="inline-flex min-h-11 items-center rounded-full border border-border bg-surface px-4 text-sm font-medium text-foreground transition hover:border-accent hover:text-accent"
+                    className="inline-flex min-h-11 items-center rounded-sm border border-border bg-surface px-4 text-sm font-medium text-foreground transition hover:border-accent hover:text-accent"
                   >
                     {categoryLabel(category)}
                   </Link>
@@ -299,7 +299,7 @@ export default async function UutinenPage({
           className="border-t border-border bg-surface py-16"
         >
           <Container>
-            <h2 id="lue-lisaa" className="font-serif text-2xl sm:text-3xl">
+            <h2 id="lue-lisaa" className="font-display text-2xl sm:text-3xl">
               Lue lisää
             </h2>
             <ul className="mt-8 grid list-none grid-cols-1 gap-6 p-0 sm:grid-cols-2 lg:grid-cols-3">

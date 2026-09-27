@@ -54,7 +54,7 @@ function HeaderClientInner({
       <nav
         ref={navRef}
         aria-label="Päänavigaatio"
-        className="hidden lg:flex items-center gap-1"
+        className="hidden lg:flex items-center gap-7 xl:gap-10"
       >
         {items.map((item) => {
           const hasChildren = item.children && item.children.length > 0;
@@ -72,8 +72,10 @@ function HeaderClientInner({
                   aria-expanded={isOpen}
                   onClick={() => setOpenDropdown(isOpen ? null : item.href)}
                   className={cn(
-                    "inline-flex items-center gap-1 rounded-full px-3 py-2 text-sm font-medium transition",
-                    active ? "text-accent" : "text-foreground hover:text-accent",
+                    "inline-flex items-center gap-1 py-1 text-base font-medium transition",
+                    active
+                      ? "text-accent shadow-[inset_0_-2px_0_var(--blue)]"
+                      : "text-foreground hover:text-accent",
                   )}
                 >
                   {item.label}
@@ -84,14 +86,18 @@ function HeaderClientInner({
                   />
                 </button>
                 {isOpen && (
-                  <div className="absolute left-0 top-full mt-1 min-w-56 rounded-2xl border border-border bg-background p-2 shadow-lg">
-                    <Link
-                      href={item.href}
-                      className="block rounded-lg px-3 py-2 text-sm text-foreground hover:bg-surface-strong"
-                    >
-                      {item.label} — yleisesittely
-                    </Link>
-                    <div className="my-1 h-px bg-border" />
+                  <div className="absolute left-0 top-full mt-1 min-w-56 rounded-2xl border border-border bg-surface p-2 shadow-panel">
+                    {!hasOverviewChild(item) && (
+                      <>
+                        <Link
+                          href={item.href}
+                          className="block rounded-lg px-3 py-2 text-sm text-foreground hover:bg-surface-strong"
+                        >
+                          {item.label} — yleisesittely
+                        </Link>
+                        <div className="my-1 h-px bg-border" />
+                      </>
+                    )}
                     {item.children!.map((c) => (
                       <Link
                         key={c.href}
@@ -111,12 +117,11 @@ function HeaderClientInner({
               key={item.href}
               href={item.href}
               className={cn(
-                "rounded-full px-3 py-2 text-sm font-medium transition",
-                item.highlight
-                  ? "bg-accent text-white hover:bg-accent-hover"
-                  : active
-                    ? "text-accent"
-                    : "text-foreground hover:text-accent",
+                // Tyyliopas: ei CTA-painiketta, joten highlight-kohdetta ei korosteta.
+                "py-1 text-base font-medium no-underline transition",
+                active
+                  ? "text-accent shadow-[inset_0_-2px_0_var(--blue)]"
+                  : "text-foreground hover:text-accent",
               )}
             >
               {item.label}
@@ -130,13 +135,13 @@ function HeaderClientInner({
         aria-label={mobileOpen ? "Sulje valikko" : "Avaa valikko"}
         aria-expanded={mobileOpen}
         onClick={() => setMobileOpen((v) => !v)}
-        className="inline-flex h-10 w-10 items-center justify-center rounded-full text-foreground hover:bg-surface-strong lg:hidden"
+        className="inline-flex h-11 w-11 items-center justify-center rounded-sm text-navy hover:bg-surface-strong lg:hidden"
       >
         {mobileOpen ? <X size={20} /> : <Menu size={20} />}
       </button>
 
       {mobileOpen && (
-        <div className="absolute inset-x-0 top-16 z-30 border-b border-border bg-background lg:hidden">
+        <div className="absolute inset-x-0 top-full z-30 border-b border-border bg-surface text-foreground shadow-panel lg:hidden">
           <nav
             aria-label="Mobiilinavigaatio"
             className="mx-auto flex max-w-6xl flex-col gap-1 px-6 py-4"
@@ -167,9 +172,7 @@ function MobileItem({
         href={item.href}
         className={cn(
           "rounded-lg px-3 py-3 text-base font-medium transition",
-          item.highlight
-            ? "bg-accent text-center text-white"
-            : active
+          active
               ? "text-accent"
               : "text-foreground hover:bg-surface-strong",
         )}
@@ -198,12 +201,14 @@ function MobileItem({
       </button>
       {open && (
         <div className="ml-2 mt-1 flex flex-col gap-0.5 border-l border-border pl-3">
-          <Link
-            href={item.href}
-            className="rounded-lg px-3 py-2 text-sm text-muted hover:text-foreground"
-          >
-            Yleisesittely
-          </Link>
+          {!hasOverviewChild(item) && (
+            <Link
+              href={item.href}
+              className="rounded-lg px-3 py-2 text-sm text-muted hover:text-foreground"
+            >
+              Yleisesittely
+            </Link>
+          )}
           {item.children!.map((c) => (
             <Link
               key={c.href}
@@ -217,4 +222,12 @@ function MobileItem({
       )}
     </div>
   );
+}
+
+/**
+ * Jos jokin alakohde osoittaa jo pääkohteen sivulle (esim. Klubista → Esittely
+ * /klubi), erillistä "yleisesittely"-linkkiä ei lisätä — se toistaisi saman.
+ */
+function hasOverviewChild(item: NavigationItem): boolean {
+  return Boolean(item.children?.some((c) => c.href === item.href));
 }

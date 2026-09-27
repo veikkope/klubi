@@ -42,6 +42,7 @@ Useimmissa julkaistavissa dokumenteissa on:
 | startsAt | datetime | kyllä | Alkamisaika |
 | endsAt | datetime | ei | Päättymisaika |
 | location | string | ei | Paikka (esim. "Klubin tila, Lahti") |
+| juhla | boolean | ei | Juhlatapahtuma (itsenäisyyspäivä, vuosijuhla): kortti saa messinkikorostuksen. Oletus false. |
 | description | portableText | kyllä | Tapahtuman kuvaus |
 | image | image (alt pakollinen) | ei | Kansikuva |
 | signupUrl | url | ei | Ilmoittautumislinkki |
@@ -60,7 +61,7 @@ Listanäkymässä järjestys: `startsAt` desc (tulevat ensin).
 | excerpt | text | kyllä | Lyhenne listoja varten (max 200 merkkiä) |
 | coverImage | image (alt pakollinen) | ei | Kansikuva |
 | body | portableText | kyllä | Sisältö |
-| categories | array of string | ei | Esim. "Tapahtumaraportti", "Tiedote" |
+| categories | array of string | ei | Tyyliopas (Sivut v3): jalkapallojuttujen pääkategoriat **otteluraportti** ja **kannattajakulttuuri**. Lisäksi tiedote, tapahtumaraportti, jäsentieto, jalkapallo, ravintola, blogi. Ensimmäinen kategoria näkyy etusivun jutuissa sinisenä yläotsakkeena. |
 | author | reference→hallitus-jasen | ei | Kirjoittaja |
 
 ### 4. `hallitus-jasen`
@@ -91,8 +92,25 @@ Listanäkymässä järjestys: `startsAt` desc (tulevat ensin).
 | stars | number 1–5 | kyllä | Klubin tähtiarvio |
 | review | portableText | kyllä | Klubin arvostelu |
 | images | array of image (alt pakollinen) | ei | Ravintolan kuvat |
-| website | url | ei | |
+| website | url | ei | Näkyy arviosivulla "Ravintolan verkkosivut ↗" -painikkeena |
 | visitedAt | date | ei | Käyntiaika |
+| ratingOverall, ratingFood, ratingPrice, ratingAtmosphere | number 0–5 | ei | Kokonaisarvosana ja ala-arvosanat (Ruoka / Hinta / Viihtyvyys). Näytetään arvosanapisteinä (pyöristettynä), tarkka arvo ruudunlukijalle. Tyylioppaan Palvelu-arvosanaa ei lisätty (päätös 2026-09-27). |
+| tuomio | string (max 90) | ei | Yhden rivin tuomio arviokorttiin (tyyliopas). |
+| stadionHuomio | string (max 30) | ei | Kortin tagi, esim. "15 min stadionille" tai "Vierasmatka". |
+| ottelupaivana | text | ei | "Ottelupäivänä"-laatikko arvion lopussa. |
+
+### 5b. `ottelu`
+**Tarkoitus:** Otteluohjelman käsin lisätyt ottelut ja klubin merkinnät (docs/13). Veikkausliigan ottelut tulevat automaattisesti; Studion ottelu yhdistyy niihin päivän ja joukkueiden perusteella.
+
+| Kenttä | Tyyppi | Pakollinen | Kuvaus |
+|---|---|---|---|
+| aika | datetime | kyllä | Alkamisaika |
+| koti | string | kyllä | Kotijoukkue, kirjoitettuna kuten Veikkausliigan sivuilla |
+| vieras | string | kyllä | Vierasjoukkue |
+| kilpailu | string | ei | Esim. "Veikkausliiga", "Maaottelu" |
+| stadion | string | ei | |
+| klubiPaikalla | boolean | ei | Sininen "Klubi paikalla" -merkki. Automaattinen Huuhkajien kotiotteluissa (kotijoukkue tasan "Suomi"). Kaikki Huuhkajien ottelut korostetaan listassa (docs/13). |
+| vierasmatka | boolean | ei | "Vierasmatka"-merkki |
 
 ### 6. `ravintola-kayttaja-arvostelu`
 **Tarkoitus:** Yleisön jättämät arvostelut. Tallennetaan Server Actionilla, isä moderoi Studiossa.
@@ -183,7 +201,7 @@ Vain `status: "approved"` näytetään julkisesti.
 
 | Kenttä | Tyyppi | Pakollinen | Kuvaus |
 |---|---|---|---|
-| items | array of { label, href, children? } | kyllä | Linkit (mahd. alavalikot) |
+| items | array of { label, href, children? } | kyllä | Linkit (mahd. alavalikot). `highlight` on piilotettu — tyylioppaassa ei ole CTA-korostusta. |
 
 ### 13. `asetukset` (singleton)
 **Tarkoitus:** Sivuston yleisasetukset.
@@ -206,8 +224,10 @@ Vain `status: "approved"` näytetään julkisesti.
 | heroTitle | string | kyllä | Hero-otsikko |
 | heroEyebrow | string | ei | Pieni teksti otsikon yläpuolella |
 | heroDescription | text | kyllä | |
-| heroCtas | array of { label, href } | ei | CTA-napit |
-| blocks | array (multi-type: uutiset, tapahtumat, esittely, ravintolat-spotlight, cta) | ei | Etusivun lohkot järjestyksessä |
+| heroImage | imageWithAlt | ei | Pystykuva heron oikealla puolella (4:5) |
+| heroCtas | array of { label, href, primary } (max 2) | ei | Näkyvät alleviivattuina tekstilinkkeinä (tyyliopas) |
+| seuraavaOttelu | object | ei | **Piilotettu** — korvattu otteluohjelmalla. Säilyy, jotta vanha data on validia. |
+| blocks | array (multi-type: otteluohjelma, uutiset, tapahtumat, esittely, ravintolatSpotlight, jalkapalloarkisto, galleria, cta) | ei | Etusivun lohkot järjestyksessä. Tyylioppaan järjestys: otteluohjelma, uutiset, ravintolatSpotlight, esittely. `uutiset`, `esittely` ja `ravintolatSpotlight` saavat `eyebrow`-kentän. `otteluohjelma`: ottelutHeading, ottelutCount, tapahtumatHeading, tapahtumatCount. `cta` on vanha — tyyliopas kieltää liittymiskehotteet. |
 
 ## Singletonien hallinta Studiossa
 

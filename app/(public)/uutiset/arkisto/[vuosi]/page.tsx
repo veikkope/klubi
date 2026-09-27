@@ -178,7 +178,7 @@ export default async function ArkistoVuosiPage({
 
         {result.items.length === 0 ? (
           <div className="mt-12 rounded-2xl border border-dashed border-border bg-surface p-10 text-center">
-            <p className="font-serif text-2xl">Ei kirjoituksia vuodelta {year}</p>
+            <p className="font-display text-2xl">Ei kirjoituksia vuodelta {year}</p>
             <p className="mx-auto mt-2 max-w-md text-muted">
               Valitse toinen vuosi yltä tai palaa arkiston etusivulle.
             </p>

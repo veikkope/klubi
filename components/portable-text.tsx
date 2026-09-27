@@ -10,31 +10,31 @@ import type { SanityImage as SanityImageData } from "@/lib/types";
 const components: PortableTextComponents = {
   block: {
     normal: ({ children }) => (
-      <p className="mt-4 text-base leading-relaxed text-foreground first:mt-0">
+      <p className="mt-4 text-lg leading-relaxed text-foreground first:mt-0">
         {children}
       </p>
     ),
     h2: ({ children }) => (
-      <h2 className="mt-12 font-serif text-3xl leading-tight">{children}</h2>
+      <h2 className="mt-12 font-display text-3xl leading-tight">{children}</h2>
     ),
     h3: ({ children }) => (
-      <h3 className="mt-10 font-serif text-2xl leading-tight">{children}</h3>
+      <h3 className="mt-10 font-display text-2xl leading-tight">{children}</h3>
     ),
     h4: ({ children }) => (
-      <h4 className="mt-8 font-serif text-xl leading-tight">{children}</h4>
+      <h4 className="mt-8 font-display text-xl leading-tight">{children}</h4>
     ),
     blockquote: ({ children }) => (
-      <blockquote className="mt-6 border-l-4 border-brand-300 bg-surface px-5 py-3 italic text-foreground">
+      <blockquote className="mt-6 border-l-2 border-navy bg-surface px-5 py-3 text-lg italic text-foreground">
         {children}
       </blockquote>
     ),
   },
   list: {
     bullet: ({ children }) => (
-      <ul className="mt-4 list-disc space-y-1 pl-6 text-foreground">{children}</ul>
+      <ul className="mt-4 list-disc space-y-1 pl-6 text-lg text-foreground marker:text-muted-soft">{children}</ul>
     ),
     number: ({ children }) => (
-      <ol className="mt-4 list-decimal space-y-1 pl-6 text-foreground">{children}</ol>
+      <ol className="mt-4 list-decimal space-y-1 pl-6 text-lg text-foreground marker:text-muted">{children}</ol>
     ),
   },
   marks: {
@@ -50,14 +50,14 @@ const components: PortableTextComponents = {
             href={href}
             target={newTab ? "_blank" : undefined}
             rel={newTab ? "noopener noreferrer" : undefined}
-            className="text-accent underline-offset-4 hover:underline"
+            className="text-accent underline decoration-1 underline-offset-4 hover:decoration-2"
           >
             {children}
           </a>
         );
       }
       return (
-        <Link href={href} className="text-accent underline-offset-4 hover:underline">
+        <Link href={href} className="text-accent underline decoration-1 underline-offset-4 hover:decoration-2">
           {children}
         </Link>
       );

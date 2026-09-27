@@ -31,6 +31,13 @@ export function SectionNav({ items, label, className }: SectionNavProps) {
   const pathname = usePathname();
   if (items.length === 0) return null;
 
+  // Tarkin osuma voittaa: yleiskatsaus (/jalkapalloarkisto) on alasivujen
+  // etuliite, eikä sen kuulu näkyä aktiivisena alasivulla.
+  const activeHref = items
+    .map((item) => item.href)
+    .filter((href) => pathname === href || pathname.startsWith(`${href}/`))
+    .sort((x, y) => y.length - x.length)[0];
+
   return (
     <nav
       aria-label={label}
@@ -38,18 +45,17 @@ export function SectionNav({ items, label, className }: SectionNavProps) {
     >
       <ul className="flex gap-2 whitespace-nowrap pb-1">
         {items.map((item) => {
-          const active =
-            pathname === item.href || pathname.startsWith(`${item.href}/`);
+          const active = item.href === activeHref;
           return (
             <li key={item.href}>
               <Link
                 href={item.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "inline-flex min-h-11 items-center rounded-full border px-4 text-sm transition",
+                  "inline-flex min-h-11 items-center rounded-sm border px-4 text-sm transition",
                   active
-                    ? "border-accent bg-accent text-white"
-                    : "border-border bg-surface text-muted hover:border-brand-300 hover:text-foreground",
+                    ? "border-primary bg-primary text-on-primary"
+                    : "border-border bg-surface text-muted hover:border-accent hover:text-foreground",
                 )}
               >
                 {item.label}

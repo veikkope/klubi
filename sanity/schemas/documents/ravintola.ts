@@ -161,9 +161,38 @@ export const ravintola = defineType({
       group: "arvostelu",
     }),
     defineField({
+      name: "tuomio",
+      title: "Tuomio yhdellä rivillä",
+      description:
+        'Näkyy arviokortissa nimen alla. Esim. "Rehellistä järvikalaa ilman kikkailua." Enintään 90 merkkiä.',
+      type: "string",
+      validation: (rule) => rule.max(90).warning("Pidä tuomio lyhyenä — se mahtuu korttiin yhdelle riville."),
+      group: "arvostelu",
+    }),
+    defineField({
+      name: "stadionHuomio",
+      title: "Matka stadionille tai ottelu-yhteys",
+      description:
+        'Lyhyt merkintä korttiin, esim. "15 min stadionille" tai "Vierasmatka". Jätä tyhjäksi, jos ei liity otteluun.',
+      type: "string",
+      validation: (rule) => rule.max(30),
+      group: "arvostelu",
+    }),
+    defineField({
       name: "review",
       title: "Sanallinen arvostelu",
+      description:
+        "Ensimmäinen kappale näytetään ingressinä isommalla fontilla. Lainaus-tyyli (Quote) näkyy nostona messinkiviivalla.",
       type: "portableText",
+      group: "arvostelu",
+    }),
+    defineField({
+      name: "ottelupaivana",
+      title: "Ottelupäivänä",
+      description:
+        "Vinkit ottelupäivälle, esim. kävelymatka stadionille ja pöytävaraus. Näkyy arvion lopussa omana laatikkonaan.",
+      type: "text",
+      rows: 3,
       group: "arvostelu",
     }),
     defineField({

@@ -141,7 +141,7 @@ export default async function StadionitPage() {
             >
               <h2
                 id={countryId(group.country)}
-                className="font-serif text-2xl text-foreground sm:text-3xl"
+                className="font-display text-2xl text-foreground sm:text-3xl"
               >
                 {group.country}
               </h2>

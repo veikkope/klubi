@@ -80,7 +80,7 @@ export default async function GalleriaPage() {
 function EmptyState() {
   return (
     <div className="rounded-2xl border border-dashed border-border bg-surface p-10 text-center">
-      <p className="font-serif text-2xl">Ei vielä albumeita</p>
+      <p className="font-display text-2xl">Ei vielä albumeita</p>
       <p className="mx-auto mt-2 max-w-md text-muted">
         Kuva-albumit lisätään Sanity Studiossa. Heti kun ensimmäinen albumi on
         julkaistu, se ilmestyy tänne.

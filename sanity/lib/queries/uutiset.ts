@@ -80,6 +80,7 @@ const tapahtumaCardFields = `
       endsAt,
       location,
       tiivistelma,
+      juhla,
       image`;
 
 /** Julkaistu, näkyvä uutinen. */

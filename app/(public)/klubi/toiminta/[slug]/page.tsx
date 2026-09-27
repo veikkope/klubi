@@ -148,7 +148,7 @@ export default async function ToimintaDetailPage({
 
         {kuvat.length > 0 && (
           <section aria-labelledby="kuvat" className="mt-16">
-            <h2 id="kuvat" className="font-serif text-3xl leading-tight">
+            <h2 id="kuvat" className="font-display text-3xl leading-tight">
               Kuvat
             </h2>
             <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -176,7 +176,7 @@ export default async function ToimintaDetailPage({
 
         {(vuodet.length > 0 || !(hasKuvaus || kuvat.length > 0 || tilastot.length > 0)) && (
           <section aria-labelledby="vuosittain" className="mt-16">
-            <h2 id="vuosittain" className="font-serif text-3xl leading-tight">
+            <h2 id="vuosittain" className="font-display text-3xl leading-tight">
               Vuosittain
             </h2>
 
@@ -202,7 +202,7 @@ export default async function ToimintaDetailPage({
                         aria-hidden
                         className="absolute -left-[30px] top-2 size-3 rounded-full border-2 border-background bg-accent"
                       />
-                      <h3 className="font-serif text-2xl leading-tight">
+                      <h3 className="font-display text-2xl leading-tight">
                         {vuosi.vuosi ?? "Ajankohta ei tiedossa"}
                         {vuosi.otsikko && <> — {vuosi.otsikko}</>}
                         {vuosi.jarjestysnumero != null && (
@@ -273,7 +273,7 @@ export default async function ToimintaDetailPage({
 
         {tilastot.length > 0 && (
           <section aria-labelledby="toiminnan-tilastot" className="mt-16">
-            <h2 id="toiminnan-tilastot" className="font-serif text-3xl leading-tight">
+            <h2 id="toiminnan-tilastot" className="font-display text-3xl leading-tight">
               Tilastot
             </h2>
             <StatSections
@@ -286,7 +286,7 @@ export default async function ToimintaDetailPage({
 
         {siblings.length > 0 && (
           <section aria-labelledby="muu-toiminta" className="mt-16">
-            <h2 id="muu-toiminta" className="font-serif text-3xl leading-tight">
+            <h2 id="muu-toiminta" className="font-display text-3xl leading-tight">
               Muuta klubin toimintaa
             </h2>
             <ul className="mt-6 grid gap-3 sm:grid-cols-2">
@@ -294,7 +294,7 @@ export default async function ToimintaDetailPage({
                 <li key={sibling._id}>
                   <Link
                     href={`/klubi/toiminta/${sibling.slug}`}
-                    className="flex min-h-11 items-center justify-between gap-3 rounded-xl border border-border bg-surface px-5 py-3 text-foreground transition hover:border-brand-300"
+                    className="flex min-h-11 items-center justify-between gap-3 rounded-xl border border-border bg-surface px-5 py-3 text-foreground transition hover:border-accent"
                   >
                     <span>{sibling.title}</span>
                     <span aria-hidden className="text-accent">

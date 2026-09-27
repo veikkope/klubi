@@ -124,6 +124,8 @@ export const uutinen = defineType({
       of: [{ type: "string" }],
       options: {
         list: [
+          { title: "Otteluraportti", value: "otteluraportti" },
+          { title: "Kannattajakulttuuri", value: "kannattajakulttuuri" },
           { title: "Tiedote", value: "tiedote" },
           { title: "Tapahtumaraportti", value: "tapahtumaraportti" },
           { title: "Jäsentieto", value: "jasentieto" },

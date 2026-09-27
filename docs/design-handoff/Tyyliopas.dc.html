@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#f7f6f2;font-family:'Public Sans',Helvetica,sans-serif;color:#1b1d26}a{color:#1a2cd8}a:hover{color:#141f4d}</style>
+</helmet>
+<div style="max-width:1200px;margin:0 auto;padding:64px 40px 96px;display:flex;flex-direction:column;gap:72px">
+
+  <header style="display:flex;flex-direction:column;gap:20px">
+    <img src="assets/mark-blue.png" style="height:72px;align-self:flex-start" alt="">
+    <h1 style="margin:0;font-family:'Source Serif 4',serif;font-weight:600;font-size:52px;line-height:1.1;color:#141f4d">Verkkosivujen tyyliopas</h1>
+    <p style="margin:0;font-size:18px;line-height:1.6;color:#4a4d5c;max-width:640px;text-wrap:pretty">Lahden Suomalainen Klubi ry. Värit ja tyyli tulevat logosta: kirkas sininen aaltomerkki ja klassinen antiikvateksti. Ilme on asiallinen ja rauhallinen, ja siinä on paljon tyhjää tilaa.</p>
+  </header>
+
+  <section style="display:flex;flex-direction:column;gap:24px">
+    <h2 style="margin:0;font-family:'Source Serif 4',serif;font-weight:600;font-size:30px;color:#141f4d">1 · Värit</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:16px">
+      <div style="background:#fff;border-radius:6px;overflow:hidden"><div style="height:110px;background:#1a2cd8"></div><div style="padding:12px 14px;font-size:13px;line-height:1.5"><div style="font-weight:600">Klubinsininen</div><div style="font-family:'IBM Plex Mono',monospace;color:#6b6e7c">#1A2CD8</div><div style="color:#4a4d5c">Pääväri: painikkeet, linkit, logo</div></div></div>
+      <div style="background:#fff;border-radius:6px;overflow:hidden"><div style="height:110px;background:#141f4d"></div><div style="padding:12px 14px;font-size:13px;line-height:1.5"><div style="font-weight:600">Yönsininen</div><div style="font-family:'IBM Plex Mono',monospace;color:#6b6e7c">#141F4D</div><div style="color:#4a4d5c">Otsikot, alatunniste, tummat osiot</div></div></div>
+      <div style="background:#fff;border-radius:6px;overflow:hidden"><div style="height:110px;background:#e6e9fb"></div><div style="padding:12px 14px;font-size:13px;line-height:1.5"><div style="font-weight:600">Vaalea sininen</div><div style="font-family:'IBM Plex Mono',monospace;color:#6b6e7c">#E6E9FB</div><div style="color:#4a4d5c">Korostuspohjat, tagit</div></div></div>
+      <div style="background:#fff;border-radius:6px;overflow:hidden"><div style="height:110px;background:#f7f6f2;border-bottom:1px solid #e4e2da"></div><div style="padding:12px 14px;font-size:13px;line-height:1.5"><div style="font-weight:600">Paperi</div><div style="font-family:'IBM Plex Mono',monospace;color:#6b6e7c">#F7F6F2</div><div style="color:#4a4d5c">Sivun tausta</div></div></div>
+      <div style="background:#fff;border-radius:6px;overflow:hidden"><div style="height:110px;background:#1b1d26"></div><div style="padding:12px 14px;font-size:13px;line-height:1.5"><div style="font-weight:600">Muste</div><div style="font-family:'IBM Plex Mono',monospace;color:#6b6e7c">#1B1D26</div><div style="color:#4a4d5c">Leipäteksti</div></div></div>
+      <div style="background:#fff;border-radius:6px;overflow:hidden"><div style="height:110px;background:#b8862e"></div><div style="padding:12px 14px;font-size:13px;line-height:1.5"><div style="font-weight:600">Messinki</div><div style="font-family:'IBM Plex Mono',monospace;color:#6b6e7c">#B8862E</div><div style="color:#4a4d5c">Harvoin käytettävä lisäväri: juhla, merkkipäivät</div></div></div>
+    </div>
+    <div style="display:flex;height:14px;border-radius:7px;overflow:hidden;max-width:560px">
+      <div style="flex:60;background:#f7f6f2;border:1px solid #e4e2da"></div><div style="flex:20;background:#141f4d"></div><div style="flex:12;background:#1a2cd8"></div><div style="flex:6;background:#e6e9fb"></div><div style="flex:2;background:#b8862e"></div>
+    </div>
+    <div style="font-size:13px;color:#6b6e7c">Suhde: 60 % vaalea pohja · 20 % yönsininen · 12 % klubinsininen · loput korosteina</div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:24px">
+    <h2 style="margin:0;font-family:'Source Serif 4',serif;font-weight:600;font-size:30px;color:#141f4d">2 · Typografia</h2>
+    <div style="background:#fff;border-radius:6px;padding:36px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6b6e7c">Otsikot · Source Serif 4</div>
+        <div style="font-family:'Source Serif 4',serif;font-size:64px;line-height:1;color:#141f4d">Aa Öö</div>
+        <div style="font-size:14px;color:#4a4d5c;line-height:1.6;text-wrap:pretty">Antiikva, joka sopii logon tekstiin. Käytä otsikoissa ja nostoissa.</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6b6e7c">Leipäteksti · Public Sans</div>
+        <div style="font-family:'Public Sans',sans-serif;font-size:64px;line-height:1;color:#1b1d26">Aa Öö</div>
+        <div style="font-size:14px;color:#4a4d5c;line-height:1.6;text-wrap:pretty">Selkeä groteski. Käytä leipätekstissä, valikoissa, painikkeissa ja lomakkeissa.</div>
+      </div>
+      <div style="grid-column:1 / -1;border-top:1px solid #ecebe5;padding-top:28px;display:flex;flex-direction:column;gap:18px">
+        <div style="display:grid;grid-template-columns:120px 1fr;align-items:baseline;gap:16px"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#6b6e7c">H1 · 48/1.1</span><span style="font-family:'Source Serif 4',serif;font-weight:600;font-size:48px;line-height:1.1;color:#141f4d">Tervetuloa klubille</span></div>
+        <div style="display:grid;grid-template-columns:120px 1fr;align-items:baseline;gap:16px"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#6b6e7c">H2 · 32/1.2</span><span style="font-family:'Source Serif 4',serif;font-weight:600;font-size:32px;line-height:1.2;color:#141f4d">Tulevat tapahtumat</span></div>
+        <div style="display:grid;grid-template-columns:120px 1fr;align-items:baseline;gap:16px"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#6b6e7c">H3 · 22/1.3</span><span style="font-family:'Source Serif 4',serif;font-weight:600;font-size:22px;line-height:1.3;color:#141f4d">Syyskokous 2026</span></div>
+        <div style="display:grid;grid-template-columns:120px 1fr;align-items:baseline;gap:16px"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#6b6e7c">Leipä · 18/1.6</span><span style="font-size:18px;line-height:1.6;max-width:620px;text-wrap:pretty">Klubi kokoaa lahtelaisia yhteen keskustelemaan, kuulemaan esitelmiä ja vaalimaan suomalaista kulttuuria.</span></div>
+        <div style="display:grid;grid-template-columns:120px 1fr;align-items:baseline;gap:16px"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#6b6e7c">Pieni · 14/1.5</span><span style="font-size:14px;line-height:1.5;color:#4a4d5c">Julkaistu 12.9.2026 · Hallitus</span></div>
+        <div style="display:grid;grid-template-columns:120px 1fr;align-items:baseline;gap:16px"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#6b6e7c">Yläotsake · 13</span><span style="font-size:13px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#1a2cd8">Ajankohtaista</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:24px">
+    <h2 style="margin:0;font-family:'Source Serif 4',serif;font-weight:600;font-size:30px;color:#141f4d">3 · Painikkeet, linkit ja lomakkeet</h2>
+    <div style="background:#fff;border-radius:6px;padding:36px;display:flex;flex-direction:column;gap:28px">
+      <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center">
+        <button style="font:inherit;font-weight:600;font-size:16px;padding:14px 26px;border-radius:4px;border:0;background:#1a2cd8;color:#fff;cursor:pointer" style-hover="background:#141f4d">Liity jäseneksi</button>
+        <button style="font:inherit;font-weight:600;font-size:16px;padding:13px 25px;border-radius:4px;border:1px solid #141f4d;background:transparent;color:#141f4d;cursor:pointer" style-hover="background:#e6e9fb">Katso tapahtumat</button>
+        <a href="#" style="font-weight:600;font-size:16px;color:#1a2cd8;text-decoration:underline;text-underline-offset:4px" style-hover="color:#141f4d">Lue lisää →</a>
+        <span style="font-size:13px;font-weight:600;padding:5px 10px;border-radius:3px;background:#e6e9fb;color:#141f4d">Esitelmä</span>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;max-width:640px">
+        <label style="display:flex;flex-direction:column;gap:6px;flex:1;min-width:220px;font-size:14px;font-weight:500">Sähköposti
+          <input placeholder="nimi@esimerkki.fi" style="font:inherit;font-size:16px;padding:12px 14px;border:1px solid #c9c8c0;border-radius:4px;background:#fff;outline:none" style-focus="border-color:#1a2cd8;box-shadow:0 0 0 3px #e6e9fb">
+        </label>
+        <button style="font:inherit;font-weight:600;font-size:16px;padding:13px 22px;border-radius:4px;border:0;background:#141f4d;color:#fff;cursor:pointer">Tilaa uutiskirje</button>
+      </div>
+      <div style="font-size:13px;color:#6b6e7c;line-height:1.6">Pyöristys 4 px · painikkeen korkeus 48 px · valintakehys vaalea sininen 3 px · välit 8 px:n askelin (8 / 16 / 24 / 40 / 72)</div>
+    </div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:24px">
+    <h2 style="margin:0;font-family:'Source Serif 4',serif;font-weight:600;font-size:30px;color:#141f4d">4 · Esimerkkisivu</h2>
+    <div style="border-radius:6px;overflow:hidden;box-shadow:0 1px 3px rgba(20,31,77,.08),0 12px 40px rgba(20,31,77,.08)">
+      <div style="background:#fff;padding:18px 36px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;border-bottom:1px solid #ecebe5">
+        <div style="display:flex;align-items:center;gap:12px"><img src="assets/mark-blue.png" style="height:44px" alt=""><img src="assets/wordmark-blue.png" style="height:22px" alt="Lahden Suomalainen Klubi ry"></div>
+        <div style="display:flex;gap:28px;align-items:center;font-size:15px;font-weight:500"><span>Tapahtumat</span><span>Klubista</span><span>Jäsenyys</span><span>Yhteystiedot</span></div>
+      </div>
+      <div style="background:#141f4d;color:#fff;padding:72px 36px;display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:48px;align-items:center">
+        <div style="display:flex;flex-direction:column;gap:20px">
+          <div style="font-size:13px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#aeb6f2">Perustettu Lahdessa</div>
+          <div style="font-family:'Source Serif 4',serif;font-weight:600;font-size:48px;line-height:1.1;text-wrap:pretty">Keskustelua, sivistystä ja yhteisöä</div>
+          <div style="font-size:18px;line-height:1.6;color:#d4d8f0;max-width:520px">Järjestämme esitelmäiltoja, retkiä ja juhlia lahtelaisille, joita kiinnostavat suomalainen kulttuuri ja yhteiskunta.</div>
+          <div style="display:flex;gap:14px;flex-wrap:wrap"><span style="font-weight:600;padding:14px 26px;border-radius:4px;background:#fff;color:#141f4d">Liity jäseneksi</span><span style="font-weight:600;padding:13px 25px;border-radius:4px;border:1px solid #fff">Tapahtumat</span></div>
+        </div>
+        <div style="aspect-ratio:4/3;border-radius:4px;background:repeating-linear-gradient(135deg,#1c2a60 0 10px,#18255a 10px 20px);display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:13px;color:#aeb6f2">kuva klubi-illasta</div>
+      </div>
+      <div style="background:#f7f6f2;padding:56px 36px;display:flex;flex-direction:column;gap:28px">
+        <div style="font-family:'Source Serif 4',serif;font-weight:600;font-size:32px;color:#141f4d">Tulevat tapahtumat</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px">
+          <div style="background:#fff;border-radius:4px;padding:24px;display:flex;flex-direction:column;gap:12px;border-top:3px solid #1a2cd8">
+            <div style="font-size:14px;font-weight:600;color:#1a2cd8">Ti 14.10. · klo 18.00</div>
+            <div style="font-family:'Source Serif 4',serif;font-weight:600;font-size:22px;line-height:1.3;color:#141f4d">Esitelmä: Lahden kaupunkihistoria</div>
+            <div style="font-size:15px;line-height:1.6;color:#4a4d5c">Seurahuone, Aleksanterinkatu</div>
+          </div>
+          <div style="background:#fff;border-radius:4px;padding:24px;display:flex;flex-direction:column;gap:12px;border-top:3px solid #1a2cd8">
+            <div style="font-size:14px;font-weight:600;color:#1a2cd8">La 8.11. · klo 12.00</div>
+            <div style="font-family:'Source Serif 4',serif;font-weight:600;font-size:22px;line-height:1.3;color:#141f4d">Syyskokous</div>
+            <div style="font-size:15px;line-height:1.6;color:#4a4d5c">Vain jäsenille</div>
+          </div>
+          <div style="background:#fff;border-radius:4px;padding:24px;display:flex;flex-direction:column;gap:12px;border-top:3px solid #b8862e">
+            <div style="font-size:14px;font-weight:600;color:#8a6420">La 6.12. · klo 17.00</div>
+            <div style="font-family:'Source Serif 4',serif;font-weight:600;font-size:22px;line-height:1.3;color:#141f4d">Itsenäisyyspäivän juhla</div>
+            <div style="font-size:15px;line-height:1.6;color:#4a4d5c">Juhla-ilta ja illallinen</div>
+          </div>
+        </div>
+      </div>
+      <div style="background:#141f4d;color:#d4d8f0;padding:32px 36px;display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap;font-size:14px">
+        <div style="display:flex;align-items:center;gap:12px"><img src="assets/mark-white.png" style="height:36px" alt=""><img src="assets/wordmark-white.png" style="height:18px" alt="Lahden Suomalainen Klubi ry"></div>
+        <span>info@esimerkki.fi</span>
+      </div>
+    </div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:16px">
+    <h2 style="margin:0;font-family:'Source Serif 4',serif;font-weight:600;font-size:30px;color:#141f4d">5 · Periaatteet</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;font-size:15px;line-height:1.6">
+      <div style="background:#fff;border-radius:6px;padding:22px"><div style="font-weight:600;margin-bottom:6px">Sininen on toimintaa</div><div style="color:#4a4d5c">Käytä klubinsinistä vain siihen, mitä voi klikata, ja logoon. Näin se pysyy tunnistettavana.</div></div>
+      <div style="background:#fff;border-radius:6px;padding:22px"><div style="font-weight:600;margin-bottom:6px">Serif otsikoihin</div><div style="color:#4a4d5c">Antiikva otsikoissa jatkaa logon tyyliä. Käytä leipätekstissä aina groteskia.</div></div>
+      <div style="background:#fff;border-radius:6px;padding:22px"><div style="font-weight:600;margin-bottom:6px">Logolle tilaa</div><div style="color:#4a4d5c">Jätä logon ympärille vähintään merkin leveyden puolikkaan verran tyhjää. Tummalla pohjalla käytä valkoista versiota.</div></div>
+      <div style="background:#fff;border-radius:6px;padding:22px"><div style="font-weight:600;margin-bottom:6px">Messinki säästeliäästi</div><div style="color:#4a4d5c">Käytä messinkiä vain juhlaan ja merkkipäiviin, korkeintaan yhdessä kohdassa sivua.</div></div>
+    </div>
+  </section>
+</div>
+</x-dc>
+</body>
+</html>

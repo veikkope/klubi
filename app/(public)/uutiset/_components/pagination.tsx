@@ -20,7 +20,7 @@ interface PaginationProps {
 }
 
 const linkBase =
-  "inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border px-4 text-sm font-medium transition";
+  "inline-flex min-h-11 min-w-11 items-center justify-center rounded-sm border px-4 text-sm font-medium transition";
 
 function windowedPages(page: number, total: number): (number | "gap")[] {
   const pages = new Set<number>([1, total, page - 1, page, page + 1]);
@@ -95,7 +95,7 @@ export function Pagination({
                 className={cn(
                   linkBase,
                   item === current
-                    ? "border-accent bg-accent text-white"
+                    ? "border-primary bg-primary text-on-primary"
                     : "border-border bg-background text-foreground hover:border-accent hover:text-accent",
                 )}
               >

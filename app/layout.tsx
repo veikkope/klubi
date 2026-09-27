@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { draftMode } from "next/headers";
-import { Inter, Fraunces } from "next/font/google";
+import { Public_Sans, Source_Serif_4 } from "next/font/google";
 import { VisualEditing } from "next-sanity/visual-editing";
 
 import { JsonLd } from "@/components/seo/json-ld";
@@ -14,17 +14,21 @@ import {
 } from "@/lib/site";
 import "./globals.css";
 
-const sans = Inter({
+// Tyyliopas (docs/04): Source Serif 4 otsikoihin, Public Sans leipätekstiin ja
+// käyttöliittymään. next/font lataa fontit buildissa ja tarjoilee ne omalta
+// palvelimelta, joten ajonaikaista Google Fonts -kutsua ei ole.
+const sans = Public_Sans({
   variable: "--font-sans",
   subsets: ["latin", "latin-ext"],
+  weight: ["400", "500", "600"],
   display: "swap",
 });
 
-const serif = Fraunces({
+const serif = Source_Serif_4({
   variable: "--font-serif",
   subsets: ["latin", "latin-ext"],
+  weight: ["400", "600"],
   display: "swap",
-  axes: ["opsz", "SOFT"],
 });
 
 export const metadata: Metadata = {
@@ -64,7 +68,7 @@ export default async function RootLayout({
 
         <a
           href="#sisalto"
-          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-accent focus:px-4 focus:py-2 focus:text-white"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-primary focus:px-4 focus:py-2 focus:text-on-primary"
         >
           Siirry sisältöön
         </a>

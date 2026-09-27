@@ -53,6 +53,15 @@ export const tapahtuma = defineType({
       group: "perustiedot",
     }),
     defineField({
+      name: "juhla",
+      title: "Juhlatapahtuma",
+      description:
+        "Valitse vain juhlille ja merkkipäiville (esim. itsenäisyyspäivä, vuosijuhla). Kortti saa messingin värisen korostuksen. Käytä harvoin — korostus menettää merkityksensä, jos sitä on joka kortissa.",
+      type: "boolean",
+      initialValue: false,
+      group: "perustiedot",
+    }),
+    defineField({
       name: "image",
       title: "Kansikuva",
       type: "imageWithAlt",

@@ -8,10 +8,30 @@
 
 import type { NavigationData, ContactData, EtusivuData } from "@/lib/types";
 
+// Tyyliopas (Sivut v3): Jalkapallo · Ottelut · Ravintola-arviot · Tapahtumat ·
+// Klubista. Ei "Liity jäseneksi" -korostusta. Jalkapalloarkisto on
+// Jalkapallo-valikon alla (docs/02).
 export const defaultNavigation: NavigationData = {
   items: [
     {
-      label: "Klubi",
+      label: "Jalkapallo",
+      href: "/uutiset",
+      highlight: false,
+      children: [
+        { label: "Kentältä ja katsomosta", href: "/uutiset" },
+        { label: "Jalkapalloarkisto", href: "/jalkapalloarkisto" },
+        { label: "Huuhkajat", href: "/jalkapalloarkisto/huuhkajat" },
+        { label: "Arvokisat", href: "/jalkapalloarkisto/arvokisat" },
+        { label: "Suomen mestarit", href: "/jalkapalloarkisto/mestarit" },
+        { label: "Pelaajat", href: "/jalkapalloarkisto/pelaajat" },
+        { label: "Stadionit", href: "/jalkapalloarkisto/stadionit" },
+      ],
+    },
+    { label: "Ottelut", href: "/ottelut", highlight: false },
+    { label: "Ravintola-arviot", href: "/ravintolat", highlight: false },
+    { label: "Tapahtumat", href: "/tapahtumat", highlight: false },
+    {
+      label: "Klubista",
       href: "/klubi",
       highlight: false,
       children: [
@@ -23,24 +43,6 @@ export const defaultNavigation: NavigationData = {
         { label: "Yhteystiedot", href: "/klubi/yhteystiedot" },
       ],
     },
-    { label: "Tapahtumat", href: "/tapahtumat", highlight: false },
-    { label: "Uutiset", href: "/uutiset", highlight: false },
-    {
-      label: "Jalkapalloarkisto",
-      href: "/jalkapalloarkisto",
-      highlight: false,
-      children: [
-        { label: "Huuhkajat", href: "/jalkapalloarkisto/huuhkajat" },
-        { label: "Arvokisat", href: "/jalkapalloarkisto/arvokisat" },
-        { label: "Suomen mestarit", href: "/jalkapalloarkisto/mestarit" },
-        { label: "Eurocupit", href: "/jalkapalloarkisto/eurocupit" },
-        { label: "Pelaajat", href: "/jalkapalloarkisto/pelaajat" },
-        { label: "Vuoden pelaajat", href: "/jalkapalloarkisto/vuoden-pelaajat" },
-        { label: "Stadionit", href: "/jalkapalloarkisto/stadionit" },
-      ],
-    },
-    { label: "Ravintolat", href: "/ravintolat", highlight: false },
-    { label: "Liity jäseneksi", href: "/klubi/liity", highlight: true },
   ],
 };
 
@@ -55,24 +57,26 @@ export const defaultContact: ContactData = {
   socials: [],
 };
 
+// Tyyliopas (Sivut v3): etusivu esittelee klubin ensin. Ei liittymiskehotetta.
 export const defaultEtusivu: EtusivuData = {
-  heroEyebrow: "Perustettu 2007",
-  heroTitle: "Lahden Suomalainen Klubi",
+  heroEyebrow: "Lahden Suomalainen Klubi ry",
+  heroTitle: "Suomalaisen jalkapallon ystävien klubi",
   heroDescription:
-    "Yhdistys joka kokoaa lahtelaiset perinteen, jalkapallon ja hyvän seuran ääreen. Tapahtumat, uutiset ja laaja jalkapalloarkisto — samasta paikasta.",
+    "Seuraamme kotimaista jalkapalloa kentän laidalta ja katsomosta, kirjoitamme otteluista ja kannattajakulttuurista – ja kerromme, missä pelimatkoilla kannattaa syödä.",
   heroImage: null,
   heroCtas: [
-    { label: "Liity jäseneksi", href: "/klubi/liity", primary: true },
-    { label: "Tulevat tapahtumat", href: "/tapahtumat", primary: false },
+    { label: "Tulevat ottelut", href: "/ottelut", primary: true },
+    { label: "Lue klubista", href: "/klubi", primary: false },
   ],
   blocks: [
     {
       _type: "esittely",
       _key: "default-esittely",
-      heading: "Sivusto on rakenteilla",
+      eyebrow: "Klubista",
+      heading: "Lahtelainen klubi, jonka yhdistää suomalainen jalkapallo",
       body: null,
       image: null,
-      ctaLabel: "Tutustu klubiin",
+      ctaLabel: "Lue lisää klubista",
       ctaHref: "/klubi",
     },
   ],

@@ -7,8 +7,10 @@ type CardProps = {
   children: React.ReactNode;
 };
 
+// Tyyliopas: valkoinen kortti paperipohjalla, pyöristys 4 px, pehmuste 24 px.
+// Reunaviiva on paperin sävyinen, jotta kortti erottuu myös valkoisella osiolla.
 const cardBase =
-  "block rounded-2xl border border-border bg-surface p-6 transition";
+  "block rounded-sm border border-border bg-surface p-6 no-underline transition";
 
 export function Card({ href, className, children }: CardProps) {
   if (href) {
@@ -17,7 +19,7 @@ export function Card({ href, className, children }: CardProps) {
         href={href}
         className={cn(
           cardBase,
-          "group hover:border-brand-300 hover:shadow-lg",
+          "group hover:border-border-strong hover:shadow-panel",
           className,
         )}
       >
@@ -38,7 +40,7 @@ export function CardEyebrow({
   return (
     <p
       className={cn(
-        "text-xs uppercase tracking-[0.18em] text-muted",
+        "font-sans text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-soft",
         className,
       )}
     >
@@ -55,7 +57,7 @@ export function CardTitle({
   className?: string;
 }) {
   return (
-    <h3 className={cn("font-serif text-xl text-foreground", className)}>
+    <h3 className={cn("font-display text-[1.375rem] leading-[1.3] text-heading", className)}>
       {children}
     </h3>
   );
@@ -69,13 +71,13 @@ export function CardBody({
   className?: string;
 }) {
   return (
-    <p className={cn("text-muted leading-relaxed", className)}>{children}</p>
+    <p className={cn("text-[15px] text-muted leading-relaxed", className)}>{children}</p>
   );
 }
 
 export function CardArrow({ label = "Lue lisää" }: { label?: string }) {
   return (
-    <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-accent transition group-hover:translate-x-1">
+    <span className="mt-4 inline-flex items-center gap-1 text-[15px] font-semibold text-accent underline underline-offset-4 transition group-hover:text-accent-hover">
       {label}
       <span aria-hidden>→</span>
     </span>

@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Tyylioppaan HTML-referenssin ajotiedosto, ei sovelluskoodia.
+    "docs/design-handoff/**",
   ]),
 ]);
 

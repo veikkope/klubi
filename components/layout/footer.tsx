@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Container } from "./container";
 import { SocialIcon, socialLabels } from "@/components/ui/social-icon";
@@ -5,6 +6,37 @@ import { sanityFetch } from "@/sanity/lib/fetch";
 import { contactQuery } from "@/sanity/lib/queries";
 import { defaultContact } from "@/lib/defaults";
 import type { ContactData } from "@/lib/types";
+
+/**
+ * Alatunniste (tyyliopas Sivut v3): yönsininen, valkoinen pystylogo (merkki
+ * 56 px + teksti 24 px), linkkisarakkeet Jalkapallo / Klubi / Yhteystiedot
+ * ja tekijänoikeusrivi.
+ *
+ * Galleria ja uutisarkisto eivät ole päänavigaatiossa (docs/02), joten niille
+ * on linkki täällä — muuten ne olisivat orpoja sivuja.
+ */
+const linkColumns: { title: string; links: { label: string; href: string }[] }[] = [
+  {
+    title: "Jalkapallo",
+    links: [
+      { label: "Ottelut", href: "/ottelut" },
+      { label: "Kentältä ja katsomosta", href: "/uutiset" },
+      { label: "Jalkapalloarkisto", href: "/jalkapalloarkisto" },
+      { label: "Uutisarkisto", href: "/uutiset/arkisto" },
+    ],
+  },
+  {
+    title: "Klubi",
+    links: [
+      { label: "Ravintola-arviot", href: "/ravintolat" },
+      { label: "Tapahtumat", href: "/tapahtumat" },
+      { label: "Klubista", href: "/klubi" },
+      { label: "Kuvagalleria", href: "/galleria" },
+    ],
+  },
+];
+
+const linkClass = "text-on-chrome-muted no-underline hover:text-on-chrome hover:underline";
 
 export async function Footer() {
   const contact = await sanityFetch<ContactData>({
@@ -14,47 +46,89 @@ export async function Footer() {
   });
 
   const year = new Date().getFullYear();
-  const hasAddress = Boolean(contact.address);
+  const socials = contact.socials ?? [];
 
   return (
-    <footer className="mt-20 border-t border-border bg-surface">
-      <Container size="wide" className="py-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
-        <div>
-          <p className="font-serif text-lg leading-tight">
-            Lahden Suomalainen Klubi ry
-          </p>
-          <p className="mt-2 text-sm text-muted">Perustettu 2007</p>
-        </div>
+    <footer className="mt-auto bg-chrome text-[15px] text-on-chrome-muted">
+      <Container
+        size="wide"
+        className="grid gap-10 pb-8 pt-9 sm:grid-cols-2 sm:pt-[72px] lg:grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,1fr))] lg:gap-12"
+      >
+        <Link
+          href="/"
+          className="flex items-center gap-2.5 self-start sm:flex-col sm:items-start sm:gap-3.5"
+        >
+          <Image
+            src="/brand/mark-white.png"
+            alt=""
+            width={50}
+            height={56}
+            className="h-[38px] w-auto sm:h-14"
+          />
+          <Image
+            src="/brand/wordmark-white.png"
+            alt="Lahden Suomalainen Klubi ry — etusivu"
+            width={153}
+            height={24}
+            className="h-[17px] w-auto sm:h-6"
+          />
+        </Link>
 
-        <div>
-          <h2 className="text-xs font-medium uppercase tracking-[0.18em] text-muted">
-            Yhteystiedot
-          </h2>
-          <address className="mt-3 not-italic text-sm leading-relaxed text-foreground">
-            {hasAddress && (
-              <>
-                {contact.address}
-                <br />
-                {contact.postalCode} {contact.city}
-                <br />
-              </>
-            )}
+        {linkColumns.map((col) => (
+          <nav key={col.title} aria-label={col.title} className="flex flex-col gap-2.5">
+            <h2 className="mb-1 font-sans text-[15px] font-semibold text-on-chrome">{col.title}</h2>
+            <ul className="flex flex-col gap-2.5">
+              {col.links.map((l) => (
+                <li key={l.href}>
+                  <Link href={l.href} className={linkClass}>
+                    {l.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        ))}
+
+        <div className="flex flex-col gap-2.5">
+          <h2 className="mb-1 font-sans text-[15px] font-semibold text-on-chrome">Yhteystiedot</h2>
+          <address className="flex flex-col gap-2.5 not-italic">
             {contact.email && (
-              <a className="hover:text-accent" href={`mailto:${contact.email}`}>
+              <a href={`mailto:${contact.email}`} className={linkClass}>
                 {contact.email}
               </a>
             )}
             {contact.phone && (
-              <>
-                {contact.email && <br />}
-                <a className="hover:text-accent" href={`tel:${contact.phone}`}>
-                  {contact.phone}
-                </a>
-              </>
+              <a href={`tel:${contact.phone}`} className={linkClass}>
+                {contact.phone}
+              </a>
+            )}
+            {contact.address ? (
+              <span>
+                {contact.address}, {contact.postalCode} {contact.city}
+              </span>
+            ) : (
+              contact.city && <span>{contact.city}</span>
             )}
           </address>
+          {socials.length > 0 && (
+            <ul className="mt-2 flex gap-3">
+              {socials.map((social) => (
+                <li key={social.url}>
+                  <a
+                    href={social.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={socialLabels[social.platform]}
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-chrome-border text-on-chrome-muted transition hover:border-white hover:text-white"
+                  >
+                    <SocialIcon platform={social.platform} />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )}
           {(contact.yTunnus || contact.iban) && (
-            <dl className="mt-3 text-xs text-muted">
+            <dl className="mt-2 text-[13px]">
               {contact.yTunnus && (
                 <div className="flex gap-2">
                   <dt>Y-tunnus:</dt>
@@ -70,84 +144,16 @@ export async function Footer() {
             </dl>
           )}
         </div>
+      </Container>
 
-        <div>
-          <h2 className="text-xs font-medium uppercase tracking-[0.18em] text-muted">
-            Pikalinkit
-          </h2>
-          <ul className="mt-3 space-y-1.5 text-sm">
-            <li>
-              <Link className="hover:text-accent" href="/klubi">
-                Yhdistys
-              </Link>
-            </li>
-            <li>
-              <Link className="hover:text-accent" href="/klubi/liity">
-                Liity jäseneksi
-              </Link>
-            </li>
-            <li>
-              <Link className="hover:text-accent" href="/tapahtumat">
-                Tapahtumat
-              </Link>
-            </li>
-            {/*
-              Galleria ei ole päänavigaatiossa (docs/02), mutta sen on
-              löydyttävä jostain — muuten se on orpo sivu jota ei indeksoida.
-            */}
-            <li>
-              <Link className="hover:text-accent" href="/galleria">
-                Kuvagalleria
-              </Link>
-            </li>
-            <li>
-              <Link className="hover:text-accent" href="/uutiset/arkisto">
-                Uutisarkisto
-              </Link>
-            </li>
-            <li>
-              <Link className="hover:text-accent" href="/klubi/yhteystiedot">
-                Yhteystiedot
-              </Link>
-            </li>
-          </ul>
-        </div>
-
-        <div>
-          <h2 className="text-xs font-medium uppercase tracking-[0.18em] text-muted">
-            Seuraa
-          </h2>
-          {(contact.socials ?? []).length > 0 ? (
-            <ul className="mt-3 flex gap-3">
-              {(contact.socials ?? []).map((social) => (
-                <li key={social.url}>
-                  <a
-                    href={social.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={socialLabels[social.platform]}
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border text-muted transition hover:border-accent hover:text-accent"
-                  >
-                    <SocialIcon platform={social.platform} />
-                  </a>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="mt-3 text-sm text-muted">Sosiaaliset mediat lisätään pian.</p>
-          )}
+      <Container size="wide">
+        <div className="flex flex-col gap-2 border-t border-[#2a3668] pb-6 pt-4 text-[13px] text-on-chrome-eyebrow sm:flex-row sm:items-center sm:justify-between sm:pb-10 sm:pt-6">
+          <p>© {year} Lahden Suomalainen Klubi ry</p>
+          <Link href="/studio" className="text-on-chrome-eyebrow no-underline hover:text-on-chrome hover:underline">
+            Ylläpito
+          </Link>
         </div>
       </Container>
-      <div className="border-t border-border">
-        <Container size="wide" className="flex flex-col gap-2 py-6 text-xs text-muted sm:flex-row sm:items-center sm:justify-between">
-          <p>© {year} Lahden Suomalainen Klubi ry. Kaikki oikeudet pidätetään.</p>
-          <p>
-            <Link className="hover:text-accent" href="/studio">
-              Studio
-            </Link>
-          </p>
-        </Container>
-      </div>
     </footer>
   );
 }
