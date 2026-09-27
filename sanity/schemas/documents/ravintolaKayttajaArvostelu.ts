@@ -1,9 +1,11 @@
+import { CommentIcon } from "@sanity/icons";
 import { defineField, defineType } from "sanity";
 
 export const ravintolaKayttajaArvostelu = defineType({
   name: "ravintolaKayttajaArvostelu",
   title: "Käyttäjän ravintola-arvostelu",
   type: "document",
+  icon: CommentIcon,
   fields: [
     defineField({
       name: "reviewerName",

@@ -284,7 +284,7 @@ export default async function PelaajaPage({
           </h2>
           <ul className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {lisakuvat.map((kuva, index) => (
-              <li key={kuva?.asset?._ref ?? index}>
+              <li key={kuva?._key ?? index}>
                 <figure>
                   <SanityImage
                     image={kuva}

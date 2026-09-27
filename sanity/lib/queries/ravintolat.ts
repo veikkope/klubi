@@ -1,4 +1,4 @@
-import { defineQuery } from "next-sanity";
+import { defineQuery, stegaClean } from "next-sanity";
 
 import { MAAKUNNAT, SUOMI, isMaakunta } from "@/lib/maakunnat";
 import { isCountryLevelPlace } from "@/lib/places";
@@ -258,7 +258,10 @@ export const ravintolatFacetsQuery = defineQuery(`{
 const fi = (a: string, b: string) => a.localeCompare(b, "fi");
 
 /** Koostaa kaupunki-, maa- ja maakuntavalinnat paikkalistasta. */
-export function buildRavintolatFacets(raw: RavintolatFacetsRaw): RavintolatFacetData {
+export function buildRavintolatFacets(dirty: RavintolatFacetsRaw): RavintolatFacetData {
+  // Fasetit ovat vertailu- ja URL-arvoja (maa, maakunta, GROQ-parametrit):
+  // luonnosnäkymän stega-merkit pois, muuten vertailut eivät täsmää.
+  const raw = stegaClean(dirty);
   const places = raw.places.filter(
     (p): p is RavintolatFacetsRaw["places"][number] & { name: string; slug: string } =>
       Boolean(p.name && p.slug),

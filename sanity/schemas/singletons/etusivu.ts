@@ -1,3 +1,4 @@
+import { HomeIcon } from "@sanity/icons";
 import { defineArrayMember, defineField, defineType } from "sanity";
 import { legacyUrlField } from "../objects/contentMeta";
 
@@ -5,6 +6,7 @@ export const etusivu = defineType({
   name: "etusivu",
   title: "Etusivu",
   type: "document",
+  icon: HomeIcon,
   groups: [
     { name: "hero", title: "Hero-alue", default: true },
     { name: "blocks", title: "Lohkot" },
@@ -70,8 +72,14 @@ export const etusivu = defineType({
         "Jätä tyhjäksi, kun ottelua ei ole tiedossa.",
       type: "object",
       // Korvattu etusivun otteluohjelmalla (Otteluohjelma ja tapahtumat -lohko).
-      // Piilotettu Studiosta; kenttä säilyy, jotta vanha data pysyy validina.
-      hidden: true,
+      // Vanhentunut kenttä: säilyy, jotta vanha data pysyy validina, mutta näkyy
+      // (lukittuna, varoituksen kera) vain jos sillä on jo arvo.
+      deprecated: {
+        reason: 'Korvattu etusivun "Otteluohjelma ja tapahtumat" -lohkolla. Lisää tulevat ottelut Ottelut-osioon.',
+      },
+      readOnly: true,
+      hidden: ({ value }) => value === undefined,
+      initialValue: undefined,
       options: { collapsible: true, collapsed: false },
       fields: [
         defineField({

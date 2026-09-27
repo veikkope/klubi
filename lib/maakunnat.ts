@@ -1,3 +1,5 @@
+import { stegaClean } from "next-sanity";
+
 /**
  * Suomen 19 maakuntaa (Tilastokeskuksen maakuntaluokitus, voimassa 2021–2025).
  *
@@ -42,12 +44,14 @@ export const SUOMI = "Suomi";
 /** `?maa=`-parametrin arvo Suomelle. */
 export const SUOMI_SLUG = "suomi";
 
+// Arvot voivat tulla Sanitysta luonnosnäkymän stega-merkkeineen: puhdistetaan
+// ennen hakua.
 const titles = new Map<string, string>(MAAKUNNAT.map((m) => [m.value, m.title]));
 
 export function maakuntaTitle(value: string | null | undefined): string | null {
-  return value ? (titles.get(value) ?? null) : null;
+  return value ? (titles.get(stegaClean(value)) ?? null) : null;
 }
 
 export function isMaakunta(value: string | null | undefined): value is MaakuntaValue {
-  return Boolean(value) && titles.has(value as string);
+  return Boolean(value) && titles.has(stegaClean(value) as string);
 }

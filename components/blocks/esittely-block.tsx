@@ -1,3 +1,5 @@
+import { stegaClean } from "next-sanity";
+
 import { Container } from "@/components/layout/container";
 import { ArrowLink, Eyebrow } from "@/components/blocks/block-heading";
 import { SanityImage } from "@/components/sanity-image";
@@ -61,7 +63,7 @@ export function EsittelyBlock(props: Props) {
           )}
 
           {hasCta && (
-            <ArrowLink href={props.ctaHref!} className="self-start">
+            <ArrowLink href={stegaClean(props.ctaHref!)} className="self-start">
               {props.ctaLabel}
             </ArrowLink>
           )}

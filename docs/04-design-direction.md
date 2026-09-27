@@ -125,6 +125,8 @@ Kuvat on generoitu tiedostosta `mark-blue.png` sharp-kirjastolla.
 - Aidot valokuvat (klubi-illat, tapahtumat, hallitus, Lahti), ei stockkuvia
 - Etusivun hero: yönsininen pohja, kuva oikeassa sarakkeessa 4:5 (tyyliopas: "klubilaiset katsomossa")
 - Kuvat Sanityn Asset CDN:stä, näytetään `next/image`:lla, AVIF/WebP automaattisesti
+- **Polttopiste:** kuvakentissä on `hotspot` päällä. `SanityImage` rajaa kuvan CDN:ssä (`fit=crop`) toimittajan valitseman polttopisteen mukaan ja asettaa saman kohdan `object-position`-arvoksi, jolloin myös breakpointissa vaihtuva CSS-mittasuhde rajaa polttopisteen ympäriltä. Anna `width`/`height` kutsujan CSS-mittasuhteessa, ja kyselyissä palauta kuvan `hotspot` ja `crop` (koko kuvaobjekti tai eksplisiittinen projektio).
+- **Stega:** luonnosnäkymän stega-merkit puhdistetaan keskitetysti (`buildMetadata`, `JsonLd`, navigaation hrefit, kategoria- ja ruokatyyppihaut). Uusissa komponenteissa puhdista `stegaClean`illa Sanity-merkkijonot, joita verrataan, käytetään avaimina, id:inä tai URL:eissa — älä pelkkää näytettävää tekstiä.
 
 ## Animaatiot
 

@@ -1,3 +1,4 @@
+import { CubeIcon } from "@sanity/icons";
 import { defineField, defineType } from "sanity";
 import { seoFields } from "../objects/seoFields";
 import {
@@ -11,6 +12,7 @@ export const stadion = defineType({
   name: "stadion",
   title: "Stadion",
   type: "document",
+  icon: CubeIcon,
   groups: [
     { name: "perustiedot", title: "Perustiedot", default: true },
     { name: "seo", title: "SEO" },

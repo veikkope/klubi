@@ -1,3 +1,4 @@
+import { DocumentTextIcon } from "@sanity/icons";
 import { defineField, defineType } from "sanity";
 import { seoFields } from "../objects/seoFields";
 import {
@@ -11,6 +12,7 @@ export const uutinen = defineType({
   name: "uutinen",
   title: "Uutinen",
   type: "document",
+  icon: DocumentTextIcon,
   groups: [
     { name: "sisalto", title: "Sisältö", default: true },
     { name: "seo", title: "SEO" },

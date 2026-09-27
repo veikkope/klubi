@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { stegaClean } from "next-sanity";
 import { Container } from "./container";
 import { SocialIcon, socialLabels } from "@/components/ui/social-icon";
 import { sanityFetch } from "@/sanity/lib/fetch";
@@ -98,7 +99,7 @@ export async function Footer() {
               </a>
             )}
             {contact.phone && (
-              <a href={`tel:${contact.phone}`} className={linkClass}>
+              <a href={`tel:${stegaClean(contact.phone)}`} className={linkClass}>
                 {contact.phone}
               </a>
             )}

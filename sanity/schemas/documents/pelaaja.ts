@@ -1,3 +1,4 @@
+import { UserIcon } from "@sanity/icons";
 import { defineField, defineType } from "sanity";
 import { seoFields } from "../objects/seoFields";
 import {
@@ -16,6 +17,7 @@ export const pelaaja = defineType({
   name: "pelaaja",
   title: "Pelaaja",
   type: "document",
+  icon: UserIcon,
   groups: [
     { name: "perustiedot", title: "Perustiedot", default: true },
     { name: "ura", title: "Ura" },

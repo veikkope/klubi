@@ -1,3 +1,4 @@
+import { BarChartIcon } from "@sanity/icons";
 import { defineField, defineType } from "sanity";
 import { seoFields } from "../objects/seoFields";
 import {
@@ -11,6 +12,7 @@ export const jalkapalloTilasto = defineType({
   name: "jalkapalloTilasto",
   title: "Jalkapallotilasto",
   type: "document",
+  icon: BarChartIcon,
   groups: [
     { name: "perustiedot", title: "Perustiedot", default: true },
     { name: "data", title: "Tilastodata" },

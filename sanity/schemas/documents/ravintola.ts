@@ -1,3 +1,4 @@
+import { LemonIcon } from "@sanity/icons";
 import { defineField, defineType } from "sanity";
 import { seoFields } from "../objects/seoFields";
 import {
@@ -19,6 +20,7 @@ export const ravintola = defineType({
   name: "ravintola",
   title: "Ravintola",
   type: "document",
+  icon: LemonIcon,
   groups: [
     { name: "perustiedot", title: "Perustiedot", default: true },
     { name: "arvostelu", title: "Arvostelu" },

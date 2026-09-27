@@ -1,9 +1,11 @@
+import { CogIcon } from "@sanity/icons";
 import { defineField, defineType } from "sanity";
 
 export const asetukset = defineType({
   name: "asetukset",
   title: "Sivuston asetukset",
   type: "document",
+  icon: CogIcon,
   fields: [
     defineField({
       name: "siteName",

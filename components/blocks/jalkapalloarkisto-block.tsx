@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { stegaClean } from "next-sanity";
 
 import { Container } from "@/components/layout/container";
 import { BlockHeading } from "@/components/blocks/block-heading";
@@ -56,8 +57,10 @@ export async function JalkapalloarkistoBlock({
   heading = "Jalkapalloarkisto",
   body,
   ctaLabel = "Selaa arkistoa",
-  ctaHref = "/jalkapalloarkisto",
+  ctaHref: rawCtaHref = "/jalkapalloarkisto",
 }: JalkapalloarkistoBlockProps) {
+  // Luonnosnäkymän stega-merkit rikkoisivat sekä linkin että vertailun alla.
+  const ctaHref = stegaClean(rawCtaHref);
   const data = await sanityFetch<ArkistoTeaserData>({
     query: etusivuArkistoQuery,
     tags: ["arvokisa", "pelaaja", "stadion", "jalkapalloTilasto"],

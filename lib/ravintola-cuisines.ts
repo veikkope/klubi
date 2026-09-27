@@ -4,6 +4,8 @@
  * -taulukon kanssa.
  */
 
+import { stegaClean } from "next-sanity";
+
 export const RAVINTOLA_CUISINES: { value: string; label: string }[] = [
   { value: "lounas", label: "Lounas" },
   { value: "pizza", label: "Pizza" },
@@ -19,12 +21,13 @@ export const RAVINTOLA_CUISINES: { value: string; label: string }[] = [
 
 const labelMap = new Map(RAVINTOLA_CUISINES.map((c) => [c.value, c.label]));
 
+// Stega-merkit pois ennen hakua (luonnosnäkymä), muuten avain ei täsmää.
 export function cuisineLabel(value: string): string {
-  return labelMap.get(value) ?? value;
+  return labelMap.get(stegaClean(value)) ?? value;
 }
 
 export function isValidCuisine(value: string | undefined | null): boolean {
-  return Boolean(value) && labelMap.has(value as string);
+  return Boolean(value) && labelMap.has(stegaClean(value) as string);
 }
 
 export const PRICE_LEVELS = ["€", "€€", "€€€"] as const;

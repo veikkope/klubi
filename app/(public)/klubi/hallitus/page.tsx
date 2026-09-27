@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Mail, Phone } from "lucide-react";
+import { stegaClean } from "next-sanity";
 
 import { EmptyState } from "../_components/empty-state";
 import { fetchKlubiSivu } from "../_components/klubi-sivu";
@@ -154,7 +155,7 @@ export default async function HallitusPage() {
                     {jasen.phone && (
                       <li>
                         <a
-                          href={`tel:${jasen.phone.replace(/\s+/g, "")}`}
+                          href={`tel:${stegaClean(jasen.phone).replace(/\s+/g, "")}`}
                           className="inline-flex min-h-11 items-center gap-2 text-foreground hover:text-accent"
                         >
                           <Phone

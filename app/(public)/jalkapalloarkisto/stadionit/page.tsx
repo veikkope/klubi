@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { stegaClean } from "next-sanity";
 
 import { SanityImage } from "@/components/sanity-image";
 import { Container } from "@/components/layout/container";
@@ -55,7 +56,8 @@ function groupByCountry(items: (StadionCard & { slug: string })[]) {
   const groups = new Map<string, (StadionCard & { slug: string })[]>();
 
   for (const item of items) {
-    const country = item.city?.country?.trim() || UNKNOWN_COUNTRY;
+    // Maa on ryhmittelyavain ja ankkuri-id: stega-merkit pois (luonnosnäkymä).
+    const country = stegaClean(item.city?.country)?.trim() || UNKNOWN_COUNTRY;
     const bucket = groups.get(country);
     if (bucket) bucket.push(item);
     else groups.set(country, [item]);

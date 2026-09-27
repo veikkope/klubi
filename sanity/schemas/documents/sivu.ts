@@ -1,3 +1,4 @@
+import { DocumentIcon } from "@sanity/icons";
 import { defineField, defineType } from "sanity";
 import { seoFields } from "../objects/seoFields";
 import {
@@ -68,6 +69,7 @@ export const sivu = defineType({
   name: "sivu",
   title: "Sivu",
   type: "document",
+  icon: DocumentIcon,
   groups: [
     { name: "sisalto", title: "Sisältö", default: true },
     { name: "seo", title: "SEO" },
