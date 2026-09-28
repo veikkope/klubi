@@ -68,15 +68,51 @@
 > **Blogin sijaan Studioon.** Kun uusi sivusto on julkaistu, uudet kirjoitukset
 > tehdään tässä eikä enää Blogspotissa. Palloveikkauksen tilanne on tavallinen uutinen:
 > kirjoita sarjataulukko riveinä (Shift+Enter vaihtaa rivin kappaleen sisällä).
-> Veikkausten keräämisestä ks. docs/14 §8.
+> Jäsenet jättävät veikkauksensa uutisen alle, ks. seuraava kohta.
+
+### Veikkaus tai kommentit uutisen alle
+
+Jäsenet voivat jättää veikkauksen tai kommentin suoraan uutisen alle, kuten blogissa
+ennen. Viesti näkyy sivulla heti.
+
+**Ensimmäisellä kerralla:** **Sivun asetukset → Kommenttien koodisana**. Kirjoita sana,
+jonka kerrot jäsenille (esim. vuosikokouksessa tai sähköpostilla), ja paina **Publish**.
+Ilman koodisanaa kukaan ei voi lähettää viestejä. Sana ei näy sivulla eikä
+sivuston rajapinnassa. Vaihda se, jos sivulle alkaa tulla roskaviestejä.
+
+**Palloveikkaus (joukkueet järjestykseen):**
+1. Tee uutinen, esim. "Palloveikkaus 2027", ja kirjoita ohjeet leipätekstiin.
+2. Välilehti **Kommentit ja veikkaus** → rasti **Salli kommentit**.
+3. Lomakkeen tyyppi **Sarjajärjestys**.
+4. **Joukkueet**: kaikki sarjan joukkueet, yksi per rivi. Vinkki: avaa edellisen kauden
+   veikkaus → valikko (⋯) → **Duplicate**, niin joukkueet ovat valmiina.
+5. **Veikkaus sulkeutuu**: esim. ensimmäisen kierroksen alku. Sen jälkeen uusia
+   veikkauksia ei oteta vastaan, mutta annetut näkyvät.
+6. **Publish**.
+
+**Voittajaveikkaus (EM/MM):** sama, mutta tyyppi **Voittajaveikkaus**. Valitse montako
+sijaa veikataan (oletus 4) ja kysytäänkö maalikuningas. Joukkueet-lista on
+vapaaehtoinen: tyhjänä jäsen kirjoittaa maat itse.
+
+**Tavallinen kommentti** (esim. "Suomen paras avaus" tai kesäjuhla): tyyppi
+**Kommentti**.
+
+**Viestien valvonta:** valikon **Kommentit ja veikkaukset → Uusimmat** näyttää kaikki
+viestit uusin ensin. Asiattoman viestin saa pois sivulta valinnalla **Piilota sivulta**
+→ **Publish**, eikä mitään tarvitse poistaa. Jos jäsen pyytää poistamaan viestinsä,
+piilota tai poista se (⋯ → Delete).
+
+Pisteet lasket edelleen itse jäsenten veikkauksista. Ne näkyvät sivulla selkeästi
+järjestyksessä ("1. HJK 2. KuPS …"), joten vapaata tekstiä ei tarvitse tulkita.
 
 ### Blogista tuodut kirjoitukset
 
 Blogin kirjoitukset ovat uutisina omilla päivämäärillään. Kuvat, kuvatekstit ja
 kategoriat on siirretty, ja jokaiselle kuvalle on kirjoitettu kuvaus
 (näkövammaisille ruudunlukijalla luettava teksti). Voit korjata kuvauksen avaamalla
-kuvan ja muokkaamalla kenttää **Vaihtoehtoinen teksti (alt)**. Kommentit jäivät
-blogiin.
+kuvan ja muokkaamalla kenttää **Vaihtoehtoinen teksti (alt)**. Palloveikkausten ja
+"paras avaus" -kirjoitusten vanhat kommentit (502) on tuotu kirjoitusten alle. Muut
+kommentit jäivät blogiin.
 
 SEO-välilehden **Alkuperäinen Blogspot-kirjoitus** kertoo, mistä kirjoitus tuli.
 Älä muuta sitä: blogin vanhat osoitteet ohjautuvat sen avulla oikeaan uutiseen.

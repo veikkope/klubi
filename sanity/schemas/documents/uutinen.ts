@@ -15,6 +15,7 @@ export const uutinen = defineType({
   icon: DocumentTextIcon,
   groups: [
     { name: "sisalto", title: "Sisältö", default: true },
+    { name: "kommentit", title: "Kommentit ja veikkaus" },
     { name: "seo", title: "SEO" },
   ],
   fields: [
@@ -149,6 +150,93 @@ export const uutinen = defineType({
       group: "sisalto",
     }),
     needsReviewField("sisalto"),
+    defineField({
+      name: "kommentointi",
+      title: "Kommentit ja veikkaus",
+      description:
+        "Salli jäsenten jättää kommentteja tai veikkauksia tämän uutisen alle. " +
+        "Kommentit näkyvät sivulla heti. Ne löytyvät Studiosta kohdasta Kommentit ja veikkaukset.",
+      type: "object",
+      group: "kommentit",
+      fields: [
+        defineField({
+          name: "kaytossa",
+          title: "Salli kommentit",
+          type: "boolean",
+          initialValue: false,
+        }),
+        defineField({
+          name: "tyyppi",
+          title: "Lomakkeen tyyppi",
+          type: "string",
+          options: {
+            list: [
+              { title: "Kommentti (vapaa teksti)", value: "kommentti" },
+              { title: "Sarjajärjestys (esim. Palloveikkaus: joukkueet järjestykseen)", value: "sarjajarjestys" },
+              { title: "Voittajaveikkaus (esim. EM/MM: parhaat sijat ja maalikuningas)", value: "voittajaveikkaus" },
+            ],
+            layout: "radio",
+          },
+          initialValue: "kommentti",
+          hidden: ({ parent }) => !parent?.kaytossa,
+        }),
+        defineField({
+          name: "sulkeutuu",
+          title: "Veikkaus sulkeutuu",
+          description: "Tämän jälkeen uusia kommentteja ei voi lähettää. Jätä tyhjäksi, jos ei sulkeudu.",
+          type: "datetime",
+          hidden: ({ parent }) => !parent?.kaytossa,
+        }),
+        defineField({
+          name: "vaihtoehdot",
+          title: "Joukkueet",
+          description:
+            "Sarjajärjestys: kaikki sarjan joukkueet (esim. Veikkausliigan 12). Jäsen laittaa ne " +
+            "järjestykseen. Voittajaveikkaus: valinnainen lista maista, joista jäsen valitsee. " +
+            "Tyhjä = jäsen kirjoittaa itse.",
+          type: "array",
+          of: [{ type: "string" }],
+          hidden: ({ parent }) => !parent?.kaytossa || parent?.tyyppi === "kommentti" || !parent?.tyyppi,
+          validation: (rule) =>
+            rule.custom((value, context) => {
+              const parent = context.parent as { kaytossa?: boolean; tyyppi?: string } | undefined;
+              const list = (value ?? []) as string[];
+              if (!parent?.kaytossa) return true;
+              if (parent.tyyppi === "sarjajarjestys" && list.length < 2) {
+                return "Lisää vähintään kaksi joukkuetta.";
+              }
+              const seen = new Set(list.map((v) => v.trim().toLowerCase()));
+              if (seen.size !== list.length) return "Sama joukkue on listalla kahdesti.";
+              if (list.length > 60) return "Enintään 60 vaihtoehtoa.";
+              return true;
+            }),
+        }),
+        defineField({
+          name: "sijoituksia",
+          title: "Montako sijaa veikataan",
+          description: "Esim. 4 = voittaja, hopea, pronssi ja neljäs.",
+          type: "number",
+          initialValue: 4,
+          hidden: ({ parent }) => !parent?.kaytossa || parent?.tyyppi !== "voittajaveikkaus",
+          validation: (rule) => rule.integer().min(1).max(10),
+        }),
+        defineField({
+          name: "maalikuningas",
+          title: "Kysy myös maalikuningasta",
+          type: "boolean",
+          initialValue: true,
+          hidden: ({ parent }) => !parent?.kaytossa || parent?.tyyppi !== "voittajaveikkaus",
+        }),
+        defineField({
+          name: "ohje",
+          title: "Ohje jäsenille",
+          description: 'Näkyy lomakkeen yläpuolella, esim. "Veikkaa Veikkausliigan lopputaulukko."',
+          type: "text",
+          rows: 2,
+          hidden: ({ parent }) => !parent?.kaytossa,
+        }),
+      ],
+    }),
     ...seoFields,
     legacyUrlField("seo"),
     muutLegacyUrlitField("seo"),

@@ -14,7 +14,7 @@
 import { defineQuery } from "next-sanity";
 import type { PortableTextBlock } from "@portabletext/react";
 
-import type { TapahtumaCard, UutinenCard } from "@/lib/types";
+import type { Kommentointi, TapahtumaCard, UutinenCard } from "@/lib/types";
 
 /* -------------------------------------------------------------------------- */
 /* Tyypit                                                                      */
@@ -32,6 +32,8 @@ export type UutinenDetail = UutinenListItem & {
   /** Alkuperäinen kirjoitus muualla (esim. klubin Blogspot). */
   ulkoinenLinkki?: string | null;
   author?: { name: string; role?: string | null } | null;
+  /** Kommentit ja veikkaus (docs/15). */
+  kommentointi?: Kommentointi | null;
   seoTitle?: string | null;
   seoDescription?: string | null;
 };
@@ -120,6 +122,7 @@ export const uutinenDetailQuery = defineQuery(`
     lahde{ nimi, url, pvm },
     ulkoinenLinkki,
     "author": author->{ name, role },
+    kommentointi{ kaytossa, tyyppi, sulkeutuu, vaihtoehdot, sijoituksia, maalikuningas, ohje },
     seoTitle,
     seoDescription
   }

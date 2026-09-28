@@ -15,6 +15,15 @@
 export declare const internalGroqTypeReferenceTo: unique symbol;
 
 // Source: sanity/extract.json
+export type Kommenttikoodi = {
+  _id: string;
+  _type: "kommenttikoodi";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  koodi?: string;
+};
+
 export type KaupunkiReference = {
   _ref: string;
   _type: "reference";
@@ -240,6 +249,32 @@ export type Geopoint = {
   lat?: number;
   lng?: number;
   alt?: number;
+};
+
+export type UutinenReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "uutinen";
+};
+
+export type Kommentti = {
+  _id: string;
+  _type: "kommentti";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  piilotettu?: boolean;
+  uutinen?: UutinenReference;
+  nimi?: string;
+  teksti?: string;
+  veikkaus?: {
+    jarjestys?: Array<string>;
+    maalikuningas?: string;
+  };
+  lahetetty?: string;
+  lahde?: "sivusto" | "blogspot";
+  blogspotId?: string;
 };
 
 export type JalkapalloTilastoReference = {
@@ -625,6 +660,15 @@ export type Uutinen = {
   categories?: Array<string>;
   author?: HallitusJasenReference;
   needsReview?: boolean;
+  kommentointi?: {
+    kaytossa?: boolean;
+    tyyppi?: "kommentti" | "sarjajarjestys" | "voittajaveikkaus";
+    sulkeutuu?: string;
+    vaihtoehdot?: Array<string>;
+    sijoituksia?: number;
+    maalikuningas?: boolean;
+    ohje?: string;
+  };
   seoTitle?: string;
   seoDescription?: string;
   legacyUrl?: string;
@@ -806,6 +850,7 @@ export type SanityImageAsset = {
 };
 
 export type AllSanitySchemaTypes =
+  | Kommenttikoodi
   | KaupunkiReference
   | Etusivu
   | SanityImageAssetReference
@@ -817,6 +862,8 @@ export type AllSanitySchemaTypes =
   | Navigaatio
   | Yhteystiedot
   | Geopoint
+  | UutinenReference
+  | Kommentti
   | JalkapalloTilastoReference
   | Pelaaja
   | Slug
@@ -1928,6 +1975,21 @@ export type HallitusListQueryResult = Array<{
   phone: string | null;
 }>;
 
+// Source: sanity/lib/queries/kommentit.ts
+// Variable: kommentitQuery
+// Query: *[_type == "kommentti" && uutinen._ref == $uutinenId && piilotettu != true]    | order(lahetetty asc){      _id,      nimi,      teksti,      veikkaus{ jarjestys, maalikuningas },      lahetetty,      lahde    }
+export type KommentitQueryResult = Array<{
+  _id: string;
+  nimi: string | null;
+  teksti: string | null;
+  veikkaus: {
+    jarjestys: Array<string> | null;
+    maalikuningas: string | null;
+  } | null;
+  lahetetty: string | null;
+  lahde: "blogspot" | "sivusto" | null;
+}>;
+
 // Source: sanity/lib/queries/ottelut.ts
 // Variable: tulevatOttelutQuery
 // Query: *[_type == "ottelu" && defined(aika) && dateTime(aika) > dateTime(now()) - 60*60*24]    | order(aika asc){    _id,    aika,    koti,    vieras,    kilpailu,    stadion,    klubiPaikalla,    vierasmatka  }
@@ -2179,7 +2241,7 @@ export type UutinenSlugsQueryResult = Array<string | null>;
 
 // Source: sanity/lib/queries/uutiset.ts
 // Variable: uutinenDetailQuery
-// Query: *[_type == "uutinen" && defined(slug.current) && slug.current == $slug][0]{      _id,      title,      "slug": slug.current,      publishedAt,      excerpt,      tiivistelma,      coverImage,      categories,    _updatedAt,    body,    lahde{ nimi, url, pvm },    ulkoinenLinkki,    "author": author->{ name, role },    seoTitle,    seoDescription  }
+// Query: *[_type == "uutinen" && defined(slug.current) && slug.current == $slug][0]{      _id,      title,      "slug": slug.current,      publishedAt,      excerpt,      tiivistelma,      coverImage,      categories,    _updatedAt,    body,    lahde{ nimi, url, pvm },    ulkoinenLinkki,    "author": author->{ name, role },    kommentointi{ kaytossa, tyyppi, sulkeutuu, vaihtoehdot, sijoituksia, maalikuningas, ohje },    seoTitle,    seoDescription  }
 export type UutinenDetailQueryResult = {
   _id: string;
   title: string | null;
@@ -2200,6 +2262,15 @@ export type UutinenDetailQueryResult = {
   author: {
     name: string | null;
     role: string | null;
+  } | null;
+  kommentointi: {
+    kaytossa: boolean | null;
+    tyyppi: "kommentti" | "sarjajarjestys" | "voittajaveikkaus" | null;
+    sulkeutuu: string | null;
+    vaihtoehdot: Array<string> | null;
+    sijoituksia: number | null;
+    maalikuningas: boolean | null;
+    ohje: string | null;
   } | null;
   seoTitle: string | null;
   seoDescription: string | null;
@@ -2333,6 +2404,7 @@ declare module "@sanity/client" {
     '\n  *[_type == "klubiToiminta" && defined(slug.current) && slug.current != $slug]\n    | order(jarjestys asc, title asc)[0...4]{\n    _id,\n    title,\n    "slug": slug.current,\n    tiivistelma\n  }\n': KlubiToimintaSiblingsQueryResult;
     '\n  *[_type == "klubiToiminta" && defined(slug.current)][].slug.current\n': KlubiToimintaSlugsQueryResult;
     '\n  *[_type == "hallitusJasen"] | order(order asc, name asc){\n    _id,\n    name,\n    role,\n    image,\n    bio,\n    email,\n    phone\n  }\n': HallitusListQueryResult;
+    '\n  *[_type == "kommentti" && uutinen._ref == $uutinenId && piilotettu != true]\n    | order(lahetetty asc){\n      _id,\n      nimi,\n      teksti,\n      veikkaus{ jarjestys, maalikuningas },\n      lahetetty,\n      lahde\n    }\n': KommentitQueryResult;
     '\n  *[_type == "ottelu" && defined(aika) && dateTime(aika) > dateTime(now()) - 60*60*24]\n    | order(aika asc){\n    _id,\n    aika,\n    koti,\n    vieras,\n    kilpailu,\n    stadion,\n    klubiPaikalla,\n    vierasmatka\n  }\n': TulevatOttelutQueryResult;
     '\n  count(*[\n  _type == "ravintola" && defined(slug.current)\n  && ($citySlug == null || city->slug.current == $citySlug)\n  && ($countryNames == null || city->country in $countryNames)\n  && ($maakuntaSlugs == null\n      || (city->country == "Suomi" && city->maakunta in $maakuntaSlugs))\n  && ($cuisine == null || $cuisine in cuisine)\n  && ($minRating == null || coalesce(ratingOverall, stars, 0) >= $minRating)\n  && ($includeClosed == true || closed != true)\n])\n': RavintolatCountQueryResult;
     '{\n  "places": *[_type == "kaupunki" && defined(slug.current)\n      && count(*[_type == "ravintola" && references(^._id)]) > 0]\n    | order(name asc){\n      name,\n      "slug": slug.current,\n      country,\n      maakunta,\n      "count": count(*[_type == "ravintola" && references(^._id) && closed != true])\n    },\n  "cuisines": array::unique(*[_type == "ravintola" && defined(cuisine)].cuisine[]),\n  "total": count(*[_type == "ravintola" && defined(slug.current) && closed != true]),\n  "closedCount": count(*[_type == "ravintola" && closed == true]),\n  "firstVisitYear": *[_type == "ravintola" && defined(visitedAt)]\n    | order(visitedAt asc)[0].visitedAt\n}': RavintolatFacetsQueryResult;
@@ -2345,7 +2417,7 @@ declare module "@sanity/client" {
     '\n  {\n    "items": *[_type == "uutinen" && defined(slug.current) && ($category == null || $category in categories)] | order(publishedAt desc)[$start...$end]{\n      _id,\n      title,\n      "slug": slug.current,\n      publishedAt,\n      excerpt,\n      tiivistelma,\n      coverImage,\n      categories\n    },\n    "total": count(*[_type == "uutinen" && defined(slug.current) && ($category == null || $category in categories)])\n  }\n': UutisetPageQueryResult;
     '\n  array::unique(*[_type == "uutinen" && defined(slug.current)].categories[])\n': UutisetCategoriesQueryResult;
     '\n  *[_type == "uutinen" && defined(slug.current)].slug.current\n': UutinenSlugsQueryResult;
-    '\n  *[_type == "uutinen" && defined(slug.current) && slug.current == $slug][0]{\n      _id,\n      title,\n      "slug": slug.current,\n      publishedAt,\n      excerpt,\n      tiivistelma,\n      coverImage,\n      categories,\n    _updatedAt,\n    body,\n    lahde{ nimi, url, pvm },\n    ulkoinenLinkki,\n    "author": author->{ name, role },\n    seoTitle,\n    seoDescription\n  }\n': UutinenDetailQueryResult;
+    '\n  *[_type == "uutinen" && defined(slug.current) && slug.current == $slug][0]{\n      _id,\n      title,\n      "slug": slug.current,\n      publishedAt,\n      excerpt,\n      tiivistelma,\n      coverImage,\n      categories,\n    _updatedAt,\n    body,\n    lahde{ nimi, url, pvm },\n    ulkoinenLinkki,\n    "author": author->{ name, role },\n    kommentointi{ kaytossa, tyyppi, sulkeutuu, vaihtoehdot, sijoituksia, maalikuningas, ohje },\n    seoTitle,\n    seoDescription\n  }\n': UutinenDetailQueryResult;
     '\n  *[_type == "uutinen" && defined(slug.current) && slug.current != $slug\n    && count((categories[])[@ in $categories]) > 0]\n    | order(publishedAt desc)[0...$count]{\n      _id,\n      title,\n      "slug": slug.current,\n      publishedAt,\n      excerpt,\n      tiivistelma,\n      coverImage,\n      categories\n  }\n': RelatedUutisetQueryResult;
     '\n  *[_type == "uutinen" && defined(slug.current) && defined(publishedAt)]{\n    "year": string::split(publishedAt, "-")[0]\n  }\n': UutisetArchiveYearsQueryResult;
     '\n  {\n    "items": *[_type == "uutinen" && defined(slug.current) && publishedAt >= $from && publishedAt < $to]\n      | order(publishedAt desc)[$start...$end]{\n      _id,\n      title,\n      "slug": slug.current,\n      publishedAt,\n      excerpt,\n      tiivistelma,\n      coverImage,\n      categories\n    },\n    "total": count(*[_type == "uutinen" && defined(slug.current) && publishedAt >= $from && publishedAt < $to])\n  }\n': UutisetByYearQueryResult;

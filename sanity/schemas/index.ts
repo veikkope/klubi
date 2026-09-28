@@ -17,17 +17,20 @@ import { galleriaAlbumi } from "./documents/galleriaAlbumi";
 import { klubiToiminta } from "./documents/klubiToiminta";
 import { arvokisa } from "./documents/arvokisa";
 import { pelaaja } from "./documents/pelaaja";
+import { kommentti } from "./documents/kommentti";
 
 import { yhteystiedot } from "./singletons/yhteystiedot";
 import { navigaatio } from "./singletons/navigaatio";
 import { asetukset } from "./singletons/asetukset";
 import { etusivu } from "./singletons/etusivu";
+import { kommenttikoodi } from "./singletons/kommenttikoodi";
 
 export const singletonTypes = new Set([
   "yhteystiedot",
   "navigaatio",
   "asetukset",
   "etusivu",
+  "kommenttikoodi",
 ]);
 
 export const schemaTypes: SchemaTypeDefinition[] = [
@@ -47,8 +50,10 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   klubiToiminta,
   arvokisa,
   pelaaja,
+  kommentti,
   yhteystiedot,
   navigaatio,
   asetukset,
   etusivu,
+  kommenttikoodi,
 ];

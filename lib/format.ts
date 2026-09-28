@@ -1,10 +1,13 @@
+/** Kaikki ajat Suomen aikaan: palvelin (Vercel) toimii UTC-ajassa. */
 const dateFormatter = new Intl.DateTimeFormat("fi-FI", {
+  timeZone: "Europe/Helsinki",
   day: "numeric",
   month: "long",
   year: "numeric",
 });
 
 const dateTimeFormatter = new Intl.DateTimeFormat("fi-FI", {
+  timeZone: "Europe/Helsinki",
   day: "numeric",
   month: "long",
   year: "numeric",
@@ -13,11 +16,13 @@ const dateTimeFormatter = new Intl.DateTimeFormat("fi-FI", {
 });
 
 const timeFormatter = new Intl.DateTimeFormat("fi-FI", {
+  timeZone: "Europe/Helsinki",
   hour: "2-digit",
   minute: "2-digit",
 });
 
 const dayMonthFormatter = new Intl.DateTimeFormat("fi-FI", {
+  timeZone: "Europe/Helsinki",
   day: "numeric",
   month: "long",
 });
