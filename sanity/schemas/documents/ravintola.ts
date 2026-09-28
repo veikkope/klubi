@@ -5,6 +5,7 @@ import {
   legacyUrlField,
   muutLegacyUrlitField,
   needsReviewField,
+  tarkistettavaaField,
   tiivistelmaField,
 } from "../objects/contentMeta";
 
@@ -263,6 +264,7 @@ export const ravintola = defineType({
     }),
 
     needsReviewField("perustiedot"),
+    tarkistettavaaField("perustiedot"),
     ...seoFields,
     legacyUrlField("seo"),
     muutLegacyUrlitField("seo"),

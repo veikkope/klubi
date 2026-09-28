@@ -4,6 +4,7 @@ import { seoFields } from "../objects/seoFields";
 import {
   legacyUrlField,
   needsReviewField,
+  tarkistettavaaField,
   tiivistelmaField,
 } from "../objects/contentMeta";
 
@@ -90,6 +91,7 @@ export const tapahtuma = defineType({
       group: "ilmoittautuminen",
     }),
     needsReviewField("perustiedot"),
+    tarkistettavaaField("perustiedot"),
     ...seoFields,
     legacyUrlField("seo"),
   ],

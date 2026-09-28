@@ -5,6 +5,7 @@ import {
   legacyUrlField,
   muutLegacyUrlitField,
   needsReviewField,
+  tarkistettavaaField,
   tiivistelmaField,
 } from "../objects/contentMeta";
 
@@ -131,6 +132,7 @@ export const sivu = defineType({
       group: "sisalto",
     }),
     needsReviewField("sisalto"),
+    tarkistettavaaField("sisalto"),
     ...seoFields,
     legacyUrlField("seo"),
     muutLegacyUrlitField("seo"),

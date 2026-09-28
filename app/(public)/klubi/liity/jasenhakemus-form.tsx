@@ -252,7 +252,11 @@ export function JasenhakemusForm() {
                 className="min-h-11 text-sm leading-relaxed text-foreground"
               >
                 Annan Lahden Suomalainen Klubi ry:lle luvan käsitellä yllä
-                antamiani tietoja jäsenhakemuksen käsittelyä varten.
+                antamiani tietoja jäsenhakemuksen käsittelyä varten{" "}
+                <Link href="/tietosuoja" className="text-accent underline underline-offset-4">
+                  tietosuojaselosteen
+                </Link>{" "}
+                mukaisesti.
                 <span className="ml-1 text-accent" aria-hidden>
                   *
                 </span>

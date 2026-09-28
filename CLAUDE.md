@@ -51,9 +51,10 @@ public/                Staattiset tiedostot (favicon, robots, kuvat joita Sanity
 | Hae Blogspot-blogi paikallisesti | `npm run blogspot:fetch` → `data/blogspot/` (gitignoressa) |
 | Blogi → `development` | `npm run migrate:blogspot` (ensimmäinen kerta) · `npm run sync:blogspot` (vain uudet, säilyttää Studion muokkaukset) |
 | Generoi redirectit | `npm run redirects` |
-| Vie `development` → `production` | `npx sanity dataset export development dev-export.tar.gz` + `npx sanity dataset import dev-export.tar.gz --dataset production --replace` (poista arkisto sen jälkeen, se ei ole gitignoressa) |
+| Vie uutta sisältöä `development` → `production` | **Vain lisäys:** `npx sanity dataset import data/migration-<tyyppi>.ndjson --dataset production --missing`. **Ei koskaan `--replace` koko datasettiin**: isä muokkaa productionia (docs/17 §D) |
+| Varmuuskopio productionista | `npm run backup` → `varmuuskopiot/` (gitignoressa). Aina ennen isompaa muutosta |
 
-**Datasetit:** migraatiot ja kehitys kirjoittavat aina `development`-datasettiin (`.env.local`). `production` päivitetään vain yllä olevalla export/import-parilla, ja Vercel käyttää `production`-datasettia. Jos sisältö näyttää puuttuvan, tarkista ensin `NEXT_PUBLIC_SANITY_PROJECT_ID` ja `NEXT_PUBLIC_SANITY_DATASET`. Migraation sopimus ja tila: `docs/12-sisaltomigraatio.md`.
+**Datasetit:** migraatiot ja kehitys kirjoittavat aina `development`-datasettiin (`.env.local`). `production` on isän ylläpitämä tuotantodata, jota Vercel käyttää: sinne viedään vain puuttuvia dokumentteja (`--missing`) tai dokumenttikohtaisia patcheja, ja aina varmuuskopion jälkeen. Jos sisältö näyttää puuttuvan, tarkista ensin `NEXT_PUBLIC_SANITY_PROJECT_ID` ja `NEXT_PUBLIC_SANITY_DATASET`. Migraation sopimus ja tila: `docs/12-sisaltomigraatio.md`.
 
 ## Tärkeät käytännöt
 
@@ -114,6 +115,7 @@ Täydellinen työnkulku: `docs/10-agent-workflow.md`.
 | Sisältömigraatio (maali, tila) | `docs/12-sisaltomigraatio.md` |
 | Otteluohjelma (lähteet, avaimet) | `docs/13-otteluohjelma.md` |
 | Veikkaus ja kommentit | `docs/15-veikkaus-ja-kommentit.md` |
-| Kokonaisauditointi 28.9.2026 (julkaisun tarkistuslista) | `docs/16-kokonaisauditointi.md` |
+| Kokonaisauditointi 28.9.2026 | `docs/16-kokonaisauditointi.md` |
+| Julkaisu: käyttöoikeudet, Vercel, domainin siirto | `docs/17-julkaisu-domain-ja-oikeudet.md` |
 | Blogspot-migraatio (blogi → uutiset) | `docs/14-blogspot-migraatio.md` |
 | Tyyliopas (lopullinen, HTML) | `docs/design-handoff/` |

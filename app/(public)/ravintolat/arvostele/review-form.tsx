@@ -35,7 +35,6 @@ const labelClass = "text-sm font-medium text-foreground";
 /** Kenttäkohtaiset ohjetekstit. Yhdessä paikassa, koska sekä `<label>`-lohko
  *  että `aria-describedby` tarvitsevat tiedon siitä, onko ohjetta olemassa. */
 const FIELD_HINTS: Partial<Record<ReviewField, string>> = {
-  sahkoposti: "Ei julkaista. Käytämme sitä vain tarvittaessa yhteydenottoon.",
   kommentti: "10–1000 merkkiä. Kerro mitä söit ja millainen kokemus oli.",
 };
 
@@ -118,7 +117,7 @@ export function ReviewForm({
         </select>
       </Field>
 
-      <div className="grid gap-6 sm:grid-cols-2">
+      <div className="sm:max-w-md">
         <Field field="nimi" error={state.fieldErrors.nimi} required>
           <input
             id={reviewFieldId("nimi")}
@@ -130,25 +129,6 @@ export function ReviewForm({
             defaultValue={state.values.nimi}
             aria-invalid={state.fieldErrors.nimi ? true : undefined}
             aria-describedby={describedBy("nimi", state)}
-            className={fieldClass}
-          />
-        </Field>
-
-        <Field
-          field="sahkoposti"
-          error={state.fieldErrors.sahkoposti}
-          required
-        >
-          <input
-            id={reviewFieldId("sahkoposti")}
-            name="sahkoposti"
-            type="email"
-            required
-            maxLength={160}
-            autoComplete="email"
-            defaultValue={state.values.sahkoposti}
-            aria-invalid={state.fieldErrors.sahkoposti ? true : undefined}
-            aria-describedby={describedBy("sahkoposti", state)}
             className={fieldClass}
           />
         </Field>
@@ -193,8 +173,12 @@ export function ReviewForm({
       </div>
 
       <p className="text-sm text-muted">
-        Lähetetyt arvostelut tarkistetaan ennen julkaisua. Emme julkaise
-        sähköpostiosoitettasi.
+        Lähetetyt arvostelut tarkistetaan ennen julkaisua. Nimesi näkyy
+        arvostelun yhteydessä. Lue{" "}
+        <Link href="/tietosuoja" className="text-accent underline underline-offset-4">
+          tietosuojaseloste
+        </Link>
+        .
       </p>
 
       <SubmitButton />

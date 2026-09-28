@@ -1,5 +1,7 @@
 "use server";
 
+import { randomUUID } from "node:crypto";
+
 import { createClient } from "next-sanity";
 
 import { apiVersion, dataset, hasSanity, projectId } from "@/sanity/env";
@@ -12,9 +14,14 @@ import {
 /**
  * Käyttäjän ravintola-arvostelun vastaanotto.
  *
- * Arvostelu ei mene suoraan julkaisuun: dokumentti luodaan tilaan `pending`, ja
- * sihteeri hyväksyy sen Studiossa. Julkinen sivu näyttää vain `approved`-
- * tilaiset. Moderoimaton kirjoitusoikeus julkiseen datasettiin olisi riski.
+ * Arvostelu ei mene suoraan julkaisuun: se tallennetaan **luonnoksena**
+ * (`drafts.<uuid>`). Luonnokset eivät näy julkisen datasetin kirjautumattomille
+ * kyselyille, joten moderoimaton teksti ei päädy sivulle eikä rajapintaan.
+ * Sihteeri hyväksyy arvostelun julkaisemalla sen Studiossa (Publish) tai
+ * hylkää poistamalla luonnoksen.
+ *
+ * Tietojen minimointi (GDPR art. 5): arvostelijalta kysytään vain julkaistava
+ * nimi. Sähköpostia ei kerätä, koska sille ei ole välttämätöntä käyttötarkoitusta.
  *
  * Validointi tehdään kokonaan palvelimella. Selaimen `required`-attribuutit
  * ovat käytettävyyttä varten, eivät suoja — lomakkeen voi lähettää suoraan
@@ -29,9 +36,6 @@ function text(data: FormData, key: string): string {
 /** Sanity-dokumentti-id: kirjaimia, numeroita, väliviivoja ja pisteitä. */
 const DOCUMENT_ID = /^[A-Za-z0-9._-]{1,128}$/;
 
-/** Riittävän tiukka sähköpostitarkistus ilman että se hylkää valideja osoitteita. */
-const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-
 const SUPPORT_EMAIL = "info@lahdensuomalainenklubi.com";
 
 export async function submitReview(
@@ -41,7 +45,6 @@ export async function submitReview(
   const values: Record<ReviewField, string> = {
     ravintola: text(formData, "ravintola"),
     nimi: text(formData, "nimi"),
-    sahkoposti: text(formData, "sahkoposti"),
     tahdet: text(formData, "tahdet"),
     kommentti: text(formData, "kommentti"),
   };
@@ -68,12 +71,6 @@ export async function submitReview(
     fieldErrors.nimi = "Kirjoita nimesi (vähintään 2 merkkiä).";
   } else if (values.nimi.length > 80) {
     fieldErrors.nimi = "Nimi saa olla enintään 80 merkkiä.";
-  }
-
-  if (!EMAIL.test(values.sahkoposti)) {
-    fieldErrors.sahkoposti = "Tarkista sähköpostiosoite.";
-  } else if (values.sahkoposti.length > 160) {
-    fieldErrors.sahkoposti = "Sähköpostiosoite on liian pitkä.";
   }
 
   const stars = Number.parseInt(values.tahdet, 10);
@@ -148,13 +145,13 @@ export async function submitReview(
     }
 
     await writeClient.create({
+      // Luonnos: ei näy julkisesti ennen kuin sihteeri julkaisee sen Studiossa.
+      _id: `drafts.${randomUUID()}`,
       _type: "ravintolaKayttajaArvostelu",
       reviewerName: values.nimi,
-      reviewerEmail: values.sahkoposti,
       restaurant: { _type: "reference", _ref: values.ravintola },
       stars,
       comment: values.kommentti,
-      status: "pending",
       submittedAt: new Date().toISOString(),
     });
   } catch (error) {

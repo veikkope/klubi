@@ -6,7 +6,7 @@ import { parseBody } from "next-sanity/webhook";
  * Sanity-webhook: tyhjentää välimuistin kun sisältö muuttuu.
  *
  * Ilman tätä isän Studiossa tekemä muutos näkyisi vasta kun sivun
- * `revalidate`-ikkuna (1 h) umpeutuu. Webhookin kanssa se näkyy sekunneissa.
+ * välimuistin 60 sekunnin ikkuna (sanity/lib/fetch.ts) umpeutuu. Webhookin kanssa se näkyy sekunneissa.
  *
  * Sanity Studiossa: API → Webhooks → luo webhook
  *   URL:     https://www.lahdensuomalainenklubi.com/api/revalidate
@@ -20,6 +20,12 @@ import { parseBody } from "next-sanity/webhook";
  */
 
 const secret = process.env.SANITY_REVALIDATE_SECRET;
+
+/** Tyyppi → muut tagit, joiden sivuilla tyypin sisältö näkyy. */
+const RIIPPUVAT: Record<string, string[]> = {
+  ravintolaKayttajaArvostelu: ["ravintola"],
+  kaupunki: ["ravintola"],
+};
 
 interface WebhookPayload {
   _type?: string;
@@ -50,6 +56,10 @@ export async function POST(request: NextRequest): Promise<Response> {
     // Tyypin tagi kattaa listaukset; slug-tagi yksittäisen dokumentin sivun.
     const tags = [body._type];
     if (body.slug) tags.push(`${body._type}:${body.slug}`);
+    // Tyypit, jotka näkyvät toisen tyypin sivuilla: hyväksytty arvostelu ja
+    // kaupungin nimi näkyvät ravintolasivulla, joka hakee tagilla "ravintola".
+    const NAKYY_MYOS = RIIPPUVAT[body._type];
+    if (NAKYY_MYOS) tags.push(...NAKYY_MYOS);
 
     // Next 16 vaatii cache-profiilin toisena argumenttina. "max" tarkoittaa
     // tässä: mitätöi riippumatta siitä, kuinka pitkä välimuistin elinikä oli —
@@ -58,8 +68,8 @@ export async function POST(request: NextRequest): Promise<Response> {
 
     return Response.json({ revalidated: true, tags, now: Date.now() });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Tuntematon virhe";
-    console.error("[revalidate] virhe:", message);
-    return Response.json({ message }, { status: 500 });
+    // Yksityiskohdat vain palvelimen lokiin, ei kutsujalle.
+    console.error("[revalidate] virhe:", error instanceof Error ? error.message : error);
+    return Response.json({ message: "Välimuistin tyhjennys epäonnistui." }, { status: 500 });
   }
 }

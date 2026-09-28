@@ -57,6 +57,22 @@ export const muutLegacyUrlitField = (group?: string) =>
     ...(group ? { group } : {}),
   });
 
+/**
+ * Mitä tarkistaa: migraation kirjaama syy "Vaatii tarkistuksen" -lipulle
+ * (scripts/patch-tarkistussyyt.ts). Näkyy vain, kun lippu on päällä.
+ */
+export const tarkistettavaaField = (group?: string) =>
+  defineField({
+    name: "tarkistettavaa",
+    title: "Mitä tarkistaa",
+    description: "Migraation huomio. Kun asia on kunnossa, ota rasti pois kohdasta Vaatii tarkistuksen.",
+    type: "text",
+    rows: 3,
+    readOnly: true,
+    hidden: ({ document }) => !document?.needsReview,
+    ...(group ? { group } : {}),
+  });
+
 /** Migraation merkitsemä lippu: tieto vaatii ihmisen tarkistuksen. */
 export const needsReviewField = (group?: string) =>
   defineField({

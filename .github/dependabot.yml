@@ -1,0 +1,18 @@
+# Tietoturva- ja versiopäivitykset automaattisina PR:inä (docs/16, este 6).
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      next:
+        patterns: ["next", "eslint-config-next", "react", "react-dom"]
+      sanity:
+        patterns: ["sanity", "@sanity/*", "next-sanity"]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

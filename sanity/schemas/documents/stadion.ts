@@ -5,6 +5,7 @@ import {
   legacyUrlField,
   muutLegacyUrlitField,
   needsReviewField,
+  tarkistettavaaField,
   tiivistelmaField,
 } from "../objects/contentMeta";
 
@@ -85,15 +86,16 @@ export const stadion = defineType({
       group: "perustiedot",
     }),
     needsReviewField("perustiedot"),
+    tarkistettavaaField("perustiedot"),
     ...seoFields,
     legacyUrlField("seo"),
     muutLegacyUrlitField("seo"),
   ],
   preview: {
-    select: { title: "name", city: "city.name", capacity: "capacity", media: "images.0" },
-    prepare({ title, city, capacity, media }) {
+    select: { title: "name", city: "city.name", capacity: "capacity", media: "images.0", needsReview: "needsReview" },
+    prepare({ title, city, capacity, media, needsReview }) {
       const cap = capacity ? `${capacity.toLocaleString("fi-FI")} paikkaa` : "";
-      return { title, subtitle: [city, cap].filter(Boolean).join(" — "), media };
+      return { title: needsReview ? `⚠ ${title}` : title, subtitle: [city, cap].filter(Boolean).join(" — "), media };
     },
   },
 });

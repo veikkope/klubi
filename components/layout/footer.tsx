@@ -150,9 +150,14 @@ export async function Footer() {
       <Container size="wide">
         <div className="flex flex-col gap-2 border-t border-[#2a3668] pb-6 pt-4 text-[13px] text-on-chrome-eyebrow sm:flex-row sm:items-center sm:justify-between sm:pb-10 sm:pt-6">
           <p>© {year} Lahden Suomalainen Klubi ry</p>
-          <Link href="/studio" className="text-on-chrome-eyebrow no-underline hover:text-on-chrome hover:underline">
-            Ylläpito
-          </Link>
+          <div className="flex gap-5">
+            <Link href="/tietosuoja" className="text-on-chrome-eyebrow no-underline hover:text-on-chrome hover:underline">
+              Tietosuojaseloste
+            </Link>
+            <Link href="/studio" className="text-on-chrome-eyebrow no-underline hover:text-on-chrome hover:underline">
+              Ylläpito
+            </Link>
+          </div>
         </div>
       </Container>
     </footer>

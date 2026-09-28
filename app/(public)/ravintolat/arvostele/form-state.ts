@@ -10,7 +10,6 @@
 export const REVIEW_FIELDS = [
   "ravintola",
   "nimi",
-  "sahkoposti",
   "tahdet",
   "kommentti",
 ] as const;
@@ -20,7 +19,6 @@ export type ReviewField = (typeof REVIEW_FIELDS)[number];
 export const REVIEW_FIELD_LABELS: Record<ReviewField, string> = {
   ravintola: "Ravintola",
   nimi: "Nimi",
-  sahkoposti: "Sähköposti",
   tahdet: "Arvosana",
   kommentti: "Arvostelu",
 };
@@ -37,7 +35,6 @@ export type ReviewFormState = {
 export const EMPTY_REVIEW_VALUES: Record<ReviewField, string> = {
   ravintola: "",
   nimi: "",
-  sahkoposti: "",
   tahdet: "",
   kommentti: "",
 };
