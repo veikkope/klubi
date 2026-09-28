@@ -7,7 +7,7 @@ import type { EtusivuBlock } from "@/lib/types";
 type Props = Extract<EtusivuBlock, { _type: "cta" }>;
 
 /**
- * Etusivun päätösbanneri — yleensä "Liity jäseneksi".
+ * Etusivun päätösbanneri, esim. kehote tuleviin otteluihin.
  *
  * Yönsininen paneeli erottaa sen sisältölohkoista. Paneeli eikä täysleveä
  * pinta, jotta se ei sulaudu samanväriseen footeriin.

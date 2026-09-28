@@ -32,7 +32,6 @@ const STATIC_ROUTES: { path: string; priority: number; changeFrequency: Entry["c
   { path: "/", priority: 1.0, changeFrequency: "weekly" },
 
   { path: "/klubi", priority: 0.9, changeFrequency: "monthly" },
-  { path: "/klubi/liity", priority: 0.9, changeFrequency: "yearly" },
   { path: "/klubi/toiminta", priority: 0.8, changeFrequency: "monthly" },
   { path: "/klubi/hallitus", priority: 0.7, changeFrequency: "yearly" },
   { path: "/klubi/saannot", priority: 0.5, changeFrequency: "yearly" },

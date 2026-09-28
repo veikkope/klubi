@@ -7,7 +7,7 @@
  * Sisältö kuuluu Sanityyn (CLAUDE.md §1), joten tämä on kertaluonteinen
  * pohja: `createIfNotExists` ei koskaan ylikirjoita sivua, jota on jo muokattu
  * Studiossa. Seloste kattaa GDPR:n artiklan 13 vähimmäistiedot sivuston
- * todellisista käsittelyistä (lomakkeet, kommentit, lokit). Hallituksen on
+ * todellisista käsittelyistä (kommentit, arvostelut, lokit). Hallituksen on
  * vahvistettava kohdat, jotka on listattu kenttään "Mitä tarkistaa".
  */
 import { createHash } from "node:crypto";
@@ -26,11 +26,6 @@ const SISALTO: Rivi[] = [
   { teksti: "Lahden Suomalainen Klubi ry, Lahti." },
   { teksti: "Yhteydenotot tietosuoja-asioissa: info@lahdensuomalainenklubi.com." },
   { tyyli: "h2", teksti: "Mitä tietoja käsittelemme ja miksi" },
-  { tyyli: "h3", teksti: "Jäsenhakemus" },
-  { lista: true, teksti: "Tiedot: etu- ja sukunimi, sähköposti, puhelinnumero, syntymävuosi, paikkakunta ja vapaaehtoinen perustelu." },
-  { lista: true, teksti: "Tarkoitus: jäsenhakemuksen käsittely ja yhteydenotto hakijaan." },
-  { lista: true, teksti: "Peruste: jäsenyyttä koskevan sopimuksen valmistelu hakijan pyynnöstä (GDPR 6 art. 1 b)." },
-  { lista: true, teksti: "Hakemus lähetetään sähköpostina hallitukselle. Sivusto ei tallenna hakemusta. Hyväksytyn hakijan tiedot siirtyvät yhdistyksen jäsenluetteloon, jota yhdistyslaki edellyttää. Hylätyn hakemuksen tiedot poistetaan." },
   { tyyli: "h3", teksti: "Kommentit ja veikkaukset" },
   { lista: true, teksti: "Tiedot: kirjoittajan itse antama nimi sekä viesti tai veikkaus." },
   { lista: true, teksti: "Tarkoitus: jäsenten veikkausten ja kommenttien julkaiseminen sivustolla." },
@@ -48,7 +43,6 @@ const SISALTO: Rivi[] = [
   { teksti: "Tietoja ei myydä eikä luovuteta markkinointiin. Sivuston toteuttamiseen käytämme seuraavia palveluntarjoajia, jotka käsittelevät tietoja lukuumme:" },
   { lista: true, teksti: "Vercel Inc. (sivuston palvelin, Yhdysvallat)" },
   { lista: true, teksti: "Sanity AS (sisällönhallinta, jossa kommentit ja arvostelut säilytetään)" },
-  { lista: true, teksti: "Resend (jäsenhakemusten sähköpostilähetys, Yhdysvallat)" },
   { teksti: "Kun tietoja siirretään EU:n ulkopuolelle, siirto perustuu EU:n ja Yhdysvaltojen väliseen tietosuojakehykseen tai Euroopan komission hyväksymiin vakiosopimuslausekkeisiin." },
   { tyyli: "h2", teksti: "Oikeutesi" },
   { teksti: "Sinulla on oikeus tarkastaa tietosi, pyytää niiden oikaisemista tai poistamista, rajoittaa niiden käsittelyä ja vastustaa käsittelyä. Jos käsittely perustuu suostumukseen, voit perua sen milloin tahansa. Pyynnöt voi lähettää yllä olevaan osoitteeseen." },
@@ -62,8 +56,7 @@ const TARKISTETTAVAA = [
   "Hallitus vahvistaa ennen domainin siirtoa:",
   "• info@lahdensuomalainenklubi.com on toimiva ja luettu osoite (tai vaihda oikeaan).",
   "• Lisää halutessasi yhdistyksen Y-tunnus ja postiosoite kohtaan Rekisterinpitäjä.",
-  "• Jäsenhakemusten vastaanottaja ja hylättyjen hakemusten poistokäytäntö vastaavat todellisuutta.",
-  "• Palveluntarjoajien siirtoperusteet ovat ajan tasalla (Vercel, Sanity, Resend).",
+  "• Palveluntarjoajien siirtoperusteet ovat ajan tasalla (Vercel, Sanity).",
 ].join("\n");
 
 const key = (s: string) => createHash("sha1").update(`${ID}|${s}`).digest("hex").slice(0, 12);

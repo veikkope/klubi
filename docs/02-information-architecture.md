@@ -41,8 +41,7 @@ Jos alakohde osoittaa pääkohteen sivulle, erillistä "yleisesittely"-linkkiä 
 │   ├── /klubi/hallitus
 │   ├── /klubi/saannot
 │   ├── /klubi/palloveikkaus     Klubin ennustuskilpailu (entinen "Veikkaus")
-│   ├── /klubi/yhteystiedot
-│   └── /klubi/liity             Sähköinen jäsenhakemus
+│   └── /klubi/yhteystiedot
 ├── /ottelut                     Otteluohjelma (Veikkausliiga + Studion ottelut)
 ├── /tapahtumat
 │   └── /tapahtumat/[slug]
@@ -74,7 +73,7 @@ Jos alakohde osoittaa pääkohteen sivulle, erillistä "yleisesittely"-linkkiä 
     └── /galleria/[slug]
 ```
 
-> Galleria ja uutisarkisto eivät ole päänavigaatiossa — niihin on linkki footerissa. `/klubi/liity` säilyy osoitteena, mutta sitä ei nosteta valikkoon eikä etusivulle.
+> Galleria ja uutisarkisto eivät ole päänavigaatiossa — niihin on linkki footerissa. Jäsenhakemuksia ei oteta vastaan sivuston kautta (päätös 28.9.2026): `/klubi/liity` on poistettu ja ohjautuu `/klubi`-sivulle.
 
 ## Linkkimuutokset — vanha → uusi (jokaisesta lähtee 301)
 

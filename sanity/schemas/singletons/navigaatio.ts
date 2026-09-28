@@ -88,7 +88,6 @@ export const navigaatio = defineType({
           ],
         },
         { label: "Ravintolat", href: "/ravintolat" },
-        { label: "Liity jäseneksi", href: "/klubi/liity" },
       ],
     }),
   ],

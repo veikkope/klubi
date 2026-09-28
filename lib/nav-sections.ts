@@ -36,7 +36,6 @@ export const klubiNav: SectionNavItem[] = [
   { label: "Säännöt", href: "/klubi/saannot" },
   { label: "Palloveikkaus", href: "/klubi/palloveikkaus" },
   { label: "Yhteystiedot", href: "/klubi/yhteystiedot" },
-  { label: "Liity jäseneksi", href: "/klubi/liity" },
 ];
 
 /** Murupolun juuri — kaikilla sivuilla sama ensimmäinen askel. */

@@ -58,7 +58,6 @@ Vercel → projekti → **Settings → Environment Variables** (Production ja Pr
 | `SANITY_API_WRITE_TOKEN` | token "Vercel – lomakkeet" | kommentit ja arvostelut |
 | `SANITY_API_READ_TOKEN` | token "Vercel – esikatselu" | Studion esikatselu (draft mode) |
 | `SANITY_REVALIDATE_SECRET` | arvo `.env.local`-tiedostosta | webhookin allekirjoitus |
-| `RESEND_API_KEY`, `JASENHAKEMUS_VASTAANOTTAJA`, `JASENHAKEMUS_LAHETTAJA` | ks. B1 | jäsenhakemukset |
 
 Muutosten jälkeen: **Deployments → Redeploy** (muuttujat tulevat voimaan vasta uudessa
 deployssa).
@@ -69,15 +68,14 @@ Salaisuus on kehittäjän `.env.local`-tiedostossa (`SANITY_REVALIDATE_SECRET`),
 kopioidaan Verceliin. Tarkistus: Studio → julkaise muutos → sanity.io/manage → API →
 Webhooks → *Attempts* näyttää 200.
 
-### B1. Jäsenhakemukset (Resend)
+### B1. Jäsenhakemukset: ei käytössä
 
-Lomake lähettää hakemuksen sähköpostina eikä tallenna sitä. Ilman Resendiä lomake
-kertoo rehellisesti, ettei lähetys ole käytössä. Käyttöönotto:
-1. Hallitus päättää vastaanottajan (esim. sihteerin osoite).
-2. resend.com → lisää domain `lahdensuomalainenklubi.com` → lisää Resendin antamat
-   DKIM- ja SPF-tietueet int2000:n DNS:ään (**älä muuta olemassa olevaa SPF:ää,
-   vaan lisää `include:` samaan tietueeseen**).
-3. Muuttujat Verceliin, redeploy ja oma testihakemus.
+Päätetty 28.9.2026: klubi **ei ota jäsenhakemuksia vastaan sivuston kautta**.
+Lomake, `/klubi/liity`-sivu ja Resend on poistettu, ja vanha osoite ohjautuu
+`/klubi`-sivulle (next.config.ts). Siksi DNS:ään ei tarvita Resendin DKIM- tai
+SPF-tietueita. Tietosuojaselosteen jäsenhakemusosio poistetaan skriptillä
+`scripts/poista-jasenhakemus-tietosuojasta.ts` (ensin development, sitten
+`--production` varmuuskopion jälkeen).
 
 ---
 
@@ -181,6 +179,6 @@ riippuvainen web-muutoksesta C2:n jälkeen.
 | 10 | Isän kutsu (Editor) ja perehdytys | kehittäjä + isä | kutsu lähetetty 28.9., perehdytys ☐ |
 | 11 | Koodisana ja perustiedot Studiossa (docs/09 "Täytä itse") | isä + hallitus | ☐ |
 | 12 | Tietosuojaselosteen vahvistus | hallitus | ☐ |
-| 13 | Resend (jäsenhakemukset) | kehittäjä + hallitus | ☐ |
+| 13 | Jäsenhakemukset poistettu (ei Resendiä) | kehittäjä | ✅ 28.9. koodi · tietosuojaselosteen patch ☐ |
 | 14 | DNS C1–C4 | kehittäjä + int2000 | ☐ |
 | 15 | Blogin ohjaus (docs/14 §6) | kehittäjä | ☐ siirron jälkeen |
