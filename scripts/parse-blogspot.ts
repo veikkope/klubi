@@ -4,6 +4,7 @@
  * Ajo:    `npx tsx scripts/parse-blogspot.ts`   (osa `npm run migrate:blogspot`)
  * Lähde:  data/blogspot/posts.json, images.json, images/   (`npm run blogspot:fetch`)
  * Tulos:  data/normalized/blogspot.json          kirjoitukset lohkoina
+ *         data/normalized/blogspot-kommentit.json veikkauskirjoitusten kommentit (docs/15 §5)
  *         data/normalized/blogspot-report.json   määrät, tarkistussyyt, pudotetut kuvat
  *
  * Ajetaan paikallista kopiota vasten, ei verkkoa (docs/12 §0) → sama kopio
@@ -24,7 +25,7 @@ import { join } from "node:path";
 import { load } from "cheerio";
 import type { AnyNode, Element } from "domhandler";
 
-import { canonicalImageUrl, type BlogspotImage, type BlogspotPost } from "./lib/blogspot";
+import { canonicalImageUrl, type BlogspotComment, type BlogspotImage, type BlogspotPost } from "./lib/blogspot";
 import { decodeEntities } from "./lib/decode-html";
 import { stripInvisible } from "./lib/normalize-cell";
 import { leadSentences, summaryFromText } from "./lib/summary";
@@ -32,6 +33,7 @@ import { leadSentences, summaryFromText } from "./lib/summary";
 const SRC_DIR = join(process.cwd(), "data", "blogspot");
 const OUT_FILE = join(process.cwd(), "data", "normalized", "blogspot.json");
 const REPORT_FILE = join(process.cwd(), "data", "normalized", "blogspot-report.json");
+const COMMENTS_FILE = join(process.cwd(), "data", "normalized", "blogspot-kommentit.json");
 
 // ─── Tyypit ────────────────────────────────────────────────────────────────
 
@@ -562,6 +564,58 @@ function parsePost(post: BlogspotPost, ctx: ParseContext, dropped: DroppedImage[
   };
 }
 
+// ─── Kommentit ─────────────────────────────────────────────────────────────
+
+export interface BlogspotKommentti {
+  id: string;
+  postId: string;
+  /** Julkaisuaika UTC, sekunnin tarkkuudella. */
+  publishedAt: string;
+  nimi: string;
+  teksti: string;
+}
+
+/**
+ * Veikkauskirjoitus: palloveikkaus (kategoria) tai "paras avaus". Vain näiden
+ * kommentit tuodaan: ne ovat klubin veikkaushistoriaa (docs/15 §5). Muut
+ * (tapahtumat, avoin palsta) jäävät paikalliseen arkistoon.
+ */
+function isVeikkausPost(e: BlogspotEntry): boolean {
+  return e.categories.includes("palloveikkaus") || /paras avaus/i.test(e.title);
+}
+
+/** Kommentin HTML tekstiksi: `<br>` rivinvaihdoiksi, tagit pois, entiteetit auki. */
+function commentText(html: string): string {
+  const withBreaks = html.replace(/<br\s*\/?>/gi, "\n").replace(/<\/p>\s*<p[^>]*>/gi, "\n\n");
+  const $ = load(withBreaks, null, false);
+  return stripInvisible(decodeEntities($.root().text()).normalize("NFC"))
+    .replace(/[^\S\n]+/g, " ")
+    .replace(/ *\n */g, "\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
+/** "Anonymous" → "Nimetön". Muut nimet sellaisinaan (allekirjoitus jää tekstiin). */
+function commentAuthor(author: string): string {
+  const name = cleanText(author).trim();
+  if (!name || /^(anonymous|anonyymi|nimetön)$/i.test(name)) return "Nimetön";
+  return name.slice(0, 40);
+}
+
+function parseComments(comments: BlogspotComment[], entries: BlogspotEntry[]): BlogspotKommentti[] {
+  const veikkaus = new Set(entries.filter(isVeikkausPost).map((e) => e.id));
+  return comments
+    .filter((c) => veikkaus.has(c.postId))
+    .map((c) => ({
+      id: c.id,
+      postId: c.postId,
+      publishedAt: toUtcSeconds(c.published),
+      nimi: commentAuthor(c.author),
+      teksti: commentText(c.html),
+    }))
+    .filter((c) => c.teksti.length > 0);
+}
+
 // ─── Pääohjelma ────────────────────────────────────────────────────────────
 
 async function main() {
@@ -579,6 +633,8 @@ async function main() {
   };
   const dropped: DroppedImage[] = [];
   const entries = posts.map((p) => parsePost(p, ctx, dropped));
+  const rawComments = JSON.parse(await readFile(join(SRC_DIR, "comments.json"), "utf-8")) as BlogspotComment[];
+  const kommentit = parseComments(rawComments, entries);
 
   const reasonCounts: Record<string, number> = {};
   for (const e of entries) for (const r of e.reviewReasons) reasonCounts[r] = (reasonCounts[r] ?? 0) + 1;
@@ -603,10 +659,16 @@ async function main() {
       .filter((e) => e.reviewReasons.length)
       .map((e) => ({ id: e.id, otsikko: e.title, url: e.url, syyt: e.reviewReasons })),
     pudotetutKuvat: dropped,
+    kommentit: {
+      blogissa: rawComments.length,
+      veikkauskirjoituksia: entries.filter(isVeikkausPost).length,
+      tuodaan: kommentit.length,
+    },
   };
 
   await writeFile(OUT_FILE, `${JSON.stringify(entries, null, 2)}\n`, "utf-8");
   await writeFile(REPORT_FILE, `${JSON.stringify(report, null, 2)}\n`, "utf-8");
+  await writeFile(COMMENTS_FILE, `${JSON.stringify(kommentit, null, 2)}\n`, "utf-8");
 
   console.log(`
 Kirjoituksia ............ ${entries.length}
@@ -614,6 +676,7 @@ Kuvia liitetty .......... ${imageCount}  (kansikuvia ${report.kansikuvia}, pudot
 Tiivistelmiä ............ ${report.tiivistelmia}
 Ilman kategoriaa ........ ${report.ilmanKategoriaa}
 Kategoriat .............. ${Object.entries(categoryCounts).map(([k, v]) => `${k} ${v}`).join(", ")}
+Kommentteja tuodaan ..... ${kommentit.length} / ${rawComments.length}  (${report.kommentit.veikkauskirjoituksia} veikkauskirjoitusta)
 Tarkistettavia .......... ${report.tarkistettavia} (${((report.tarkistettavia / entries.length) * 100).toFixed(1)} %)
 ${Object.entries(reasonCounts).map(([k, v]) => `  ${v} × ${k}`).join("\n")}
 

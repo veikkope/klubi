@@ -181,3 +181,20 @@ avoin palsta) jäävät paikalliseen arkistoon.
 - Isä piilottaa kommentin Studiossa → poistuu sivulta minuutissa.
 - Vanhat veikkauskommentit näkyvät omien kirjoitustensa alla.
 - type-check, lint, build puhtaat; saavutettavuus (näppäimistö, ruudunlukija) tarkistettu.
+
+---
+
+## 8. Tila (vaihe 1 toteutettu 2026-09-28)
+
+| | |
+|---|---|
+| Skeemat | `kommentti`, `uutinen.kommentointi`, singleton `kommenttikoodi` (id `secrets.kommenttikoodi`) |
+| Koodisanan piilotus | ✅ testattu: kirjautumaton kysely id:llä, tyypillä ja raw-perspektiivillä → ei tulosta; tokenilla näkyy |
+| Lomake | `app/(public)/uutiset/_kommentit/`: Server Action, validointi `validointi.ts`, lomake `kommentti-lomake.tsx`, lista `kommentit-osio.tsx` |
+| Välimuisti | lista haetaan ohi CDN:n tagilla `kommentit:<uutisen id>`; lähetyksen jälkeen `updateTag` → näkyy lähettäjälle heti. Webhook tyhjentää tagin `kommentti` (piilotus näkyy heti), ilman webhookia 60 s |
+| Yksikkötestit | `npm run test:kommentit` 12/12 |
+| Päästä päähän (HTTP, ilman JavaScriptiä, `next start`) | 15/15: väärä koodi, sama sija kahdesti, puuttuva nimi, kelvollinen (koodi eri kirjainkoolla), tulvasuoja, hunajapurkki, näkyy heti oikeassa järjestyksessä, voittajaveikkauksen 3 tapausta, sulkeutunut hylätään, piilotettu katoaa (30 s), vanhat kommentit oikean kirjoituksen alla (7/7) |
+| Vanhat kommentit | 502 / 2 140 tuotu (124 veikkauskirjoitusta), `kommentti-blogspot-<id>`, tuonti `--missing` |
+| Korjattu samalla | `lib/format.ts`: päivämäärät ja kellonajat Suomen aikaan. Vercel toimii UTC-ajassa, joten tapahtumien kellonajat olisivat näkyneet 2–3 h väärin |
+| Ei testattu | ulkoasu ja näppäimistökäyttö selaimessa (selainlaajennus ei ollut käytettävissä). Tarkistettava käsin ennen julkaisua: puhelin, ↑/↓-napit, ruudunlukijan ilmoitus siirrosta |
+| Käyttöönotto | isä asettaa koodisanan Studiossa julkaisun jälkeen (docs/09) |

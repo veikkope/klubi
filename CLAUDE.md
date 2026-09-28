@@ -47,6 +47,7 @@ public/                Staattiset tiedostot (favicon, robots, kuvat joita Sanity
 | Hae vanha sivusto paikallisesti | `npm run crawl` + `npm run images` → `data/` (gitignoressa) |
 | Koko migraatio → `development` | `npm run migrate:all` (yksittäin `migrate:<tyyppi>`) |
 | Tarkista migraatio | `npm run verify:migration`, `verify:content`, `verify:redirects`, `verify:blogspot` |
+| Testaa kommenttilomakkeen säännöt | `npm run test:kommentit` |
 | Hae Blogspot-blogi paikallisesti | `npm run blogspot:fetch` → `data/blogspot/` (gitignoressa) |
 | Blogi → `development` | `npm run migrate:blogspot` (ensimmäinen kerta) · `npm run sync:blogspot` (vain uudet, säilyttää Studion muokkaukset) |
 | Generoi redirectit | `npm run redirects` |
@@ -112,6 +113,6 @@ Täydellinen työnkulku: `docs/10-agent-workflow.md`.
 | Maalimäärittely ja rinnakkaistoteutus | `docs/11-maali-ja-rinnakkaistoteutus.md` |
 | Sisältömigraatio (maali, tila) | `docs/12-sisaltomigraatio.md` |
 | Otteluohjelma (lähteet, avaimet) | `docs/13-otteluohjelma.md` |
-| Veikkaus ja kommentit (suunnitelma) | `docs/15-veikkaus-ja-kommentit.md` |
+| Veikkaus ja kommentit | `docs/15-veikkaus-ja-kommentit.md` |
 | Blogspot-migraatio (blogi → uutiset) | `docs/14-blogspot-migraatio.md` |
 | Tyyliopas (lopullinen, HTML) | `docs/design-handoff/` |

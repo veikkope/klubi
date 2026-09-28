@@ -13,6 +13,7 @@ import { rootCrumb } from "@/lib/nav-sections";
 import { articleSchema, breadcrumbSchema } from "@/lib/schema-org";
 import { buildMetadata, resolveDescription } from "@/lib/seo";
 import { categoryLabel } from "@/lib/uutinen-categories";
+import { KommentitOsio } from "../_kommentit/kommentit-osio";
 import { hasSanity } from "@/sanity/env";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import { urlForImage } from "@/sanity/lib/image";
@@ -274,6 +275,8 @@ export default async function UutinenPage({
             )}
           </dl>
         )}
+
+        <KommentitOsio uutinenId={news._id} kommentointi={news.kommentointi} />
 
         <p className="mt-12 text-sm text-muted">
           <Link href="/uutiset" className="text-accent hover:underline">

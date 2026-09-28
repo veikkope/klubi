@@ -26,13 +26,19 @@ import { pathToFileURL } from "node:url";
 import { legacyRedirects } from "../lib/redirects";
 import { slugify } from "../lib/slugify";
 import { deriveAltFromFilename, hasCorruptChars, isJammedCamelCase, looksLikeFilename, splitCamelCase } from "./lib/derive-alt";
-import type { BlogspotEntry, BodyNode, ImageNode, Span } from "./parse-blogspot";
+import type { BlogspotEntry, BlogspotKommentti, BodyNode, ImageNode, Span } from "./parse-blogspot";
 
 const SOURCE = join(process.cwd(), "data", "normalized", "blogspot.json");
 const IMAGES_DIR = join(process.cwd(), "data", "blogspot", "images");
 const OUT = join(process.cwd(), "data", "migration-blogspot.ndjson");
 const REPORT = join(process.cwd(), "data", "normalized", "blogspot-import-report.json");
 const MAP_FILE = join(process.cwd(), "data", "normalized", "blogspot-map.json");
+const COMMENTS_SOURCE = join(process.cwd(), "data", "normalized", "blogspot-kommentit.json");
+/**
+ * Veikkauskirjoitusten vanhat kommentit (docs/15 §5). Oma tiedosto, jotta ne
+ * voi tuoda `--missing`-tilassa: isän Studiossa piilottamat pysyvät piilossa.
+ */
+const COMMENTS_OUT = join(process.cwd(), "data", "migration-blogspot-kommentit.ndjson");
 /**
  * Kuvien kuvaukset, kirjoitettu katsomalla kuvat (docs/14 §4). Versionhallinnassa,
  * koska tämä on käsin tarkistettavaa lähdedataa kuten `import-uutiset.ts`:n
@@ -267,6 +273,26 @@ async function main() {
   const map = ordered.map((e) => ({ url: e.url, polku: e.path, uusi: `/uutiset/${slugs.get(e.id)}` }));
   await writeFile(MAP_FILE, `${JSON.stringify(map, null, 2)}\n`, "utf-8");
 
+  // Kommentit: `_id` = kommentti-blogspot-<Bloggerin kommentti-id>, viittaus uutiseen.
+  const kommentit = existsSync(COMMENTS_SOURCE)
+    ? (JSON.parse(await readFile(COMMENTS_SOURCE, "utf-8")) as BlogspotKommentti[])
+    : [];
+  const postIds = new Set(entries.map((e) => e.id));
+  const commentDocs = kommentit
+    .filter((k) => postIds.has(k.postId))
+    .map((k) => ({
+      _id: `kommentti-blogspot-${k.id}`,
+      _type: "kommentti",
+      uutinen: { _type: "reference", _ref: `uutinen-blogspot-${k.postId}` },
+      nimi: k.nimi,
+      teksti: k.teksti,
+      lahetetty: k.publishedAt,
+      lahde: "blogspot",
+      blogspotId: k.id,
+      piilotettu: false,
+    }));
+  await writeFile(COMMENTS_OUT, `${commentDocs.map((d) => JSON.stringify(d)).join("\n")}\n`, "utf-8");
+
   const review = docs.filter((d) => d.needsReview);
   await writeFile(
     REPORT,
@@ -296,7 +322,10 @@ Kuvien alt-lähteet ...... ${Object.entries(stats.altSources).map(([k, v]) => `$
 Slug-törmäyksiä ......... ${collisions.length}
 Linkkihuomioita ......... ${links.notes.length}
 
+Kommentteja ............. ${commentDocs.length}
+
 Kirjoitettu: ${OUT}
+             ${COMMENTS_OUT}
              ${MAP_FILE}`);
 }
 

@@ -1,4 +1,6 @@
-import { ArchiveIcon, CogIcon, ControlsIcon, EnvelopeIcon, HomeIcon, LemonIcon, MenuIcon } from "@sanity/icons";
+import { ArchiveIcon, CogIcon, CommentIcon, ControlsIcon, EnvelopeIcon, HomeIcon, LemonIcon, LockIcon, MenuIcon } from "@sanity/icons";
+
+import { KOMMENTTIKOODI_ID } from "./schemas/singletons/kommenttikoodi";
 import type { StructureResolver } from "sanity/structure";
 
 /**
@@ -35,6 +37,10 @@ export const structure: StructureResolver = (S) =>
                 .title("Sivuston asetukset")
                 .icon(CogIcon)
                 .child(S.document().schemaType("asetukset").documentId("asetukset")),
+              S.listItem()
+                .title("Kommenttien koodisana")
+                .icon(LockIcon)
+                .child(S.document().schemaType("kommenttikoodi").documentId(KOMMENTTIKOODI_ID)),
             ]),
         ),
 
@@ -43,6 +49,33 @@ export const structure: StructureResolver = (S) =>
       S.listItem().title("Tapahtumat").schemaType("tapahtuma").child(S.documentTypeList("tapahtuma").title("Tapahtumat")),
       S.listItem().title("Ottelut").schemaType("ottelu").child(S.documentTypeList("ottelu").title("Ottelut").defaultOrdering([{ field: "aika", direction: "asc" }])),
       S.listItem().title("Uutiset").schemaType("uutinen").child(S.documentTypeList("uutinen").title("Uutiset")),
+      S.listItem()
+        .title("Kommentit ja veikkaukset")
+        .icon(CommentIcon)
+        .child(
+          S.list()
+            .title("Kommentit ja veikkaukset")
+            .items([
+              S.listItem()
+                .title("Uusimmat")
+                .schemaType("kommentti")
+                .child(
+                  S.documentTypeList("kommentti")
+                    .title("Uusimmat kommentit")
+                    .defaultOrdering([{ field: "lahetetty", direction: "desc" }]),
+                ),
+              S.listItem()
+                .title("Piilotetut")
+                .schemaType("kommentti")
+                .child(
+                  S.documentList()
+                    .title("Piilotetut kommentit")
+                    .schemaType("kommentti")
+                    .filter(`_type == "kommentti" && piilotettu == true`)
+                    .defaultOrdering([{ field: "lahetetty", direction: "desc" }]),
+                ),
+            ]),
+        ),
       S.listItem().title("Galleria-albumit").schemaType("galleriaAlbumi").child(S.documentTypeList("galleriaAlbumi").title("Galleria-albumit")),
       S.listItem().title("Sivut").schemaType("sivu").child(S.documentTypeList("sivu").title("Sivut")),
 

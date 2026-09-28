@@ -284,3 +284,28 @@ export type RavintolatFacets = {
   cuisines: string[];
   priceLevels: string[];
 };
+
+/* Kommentit ja veikkaus (docs/15) */
+
+export type KommentointiTyyppi = "kommentti" | "sarjajarjestys" | "voittajaveikkaus";
+
+/** `uutinen.kommentointi` Sanitysta. */
+export interface Kommentointi {
+  kaytossa?: boolean | null;
+  tyyppi?: KommentointiTyyppi | null;
+  sulkeutuu?: string | null;
+  vaihtoehdot?: string[] | null;
+  sijoituksia?: number | null;
+  maalikuningas?: boolean | null;
+  ohje?: string | null;
+}
+
+/** Sivulla näytettävä kommentti. */
+export interface KommenttiItem {
+  _id: string;
+  nimi: string;
+  teksti?: string | null;
+  veikkaus?: { jarjestys?: string[] | null; maalikuningas?: string | null } | null;
+  lahetetty: string;
+  lahde?: "sivusto" | "blogspot" | null;
+}

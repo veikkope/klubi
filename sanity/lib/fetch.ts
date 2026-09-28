@@ -31,6 +31,12 @@ type FetchOptions<T> = {
   tags?: string[];
   /** Palautetaan jos Sanity ei ole konfiguroitu tai tulos on null. */
   fallback: T;
+  /**
+   * false = ohita Sanityn CDN. Kävijöiden itse lähettämälle sisällölle
+   * (kommentit): muuten CDN voi palauttaa vanhan tuloksen heti tallennuksen
+   * jälkeen, vaikka Next.js:n välimuisti on jo tyhjennetty.
+   */
+  useCdn?: boolean;
 };
 
 /** Onko draft mode päällä. Palauttaa false jos konteksti ei salli lukemista. */
@@ -49,6 +55,7 @@ export async function sanityFetch<T>({
   params,
   tags,
   fallback,
+  useCdn = true,
 }: FetchOptions<T>): Promise<T> {
   if (!hasSanity || !client) {
     return fallback;
@@ -65,7 +72,9 @@ export async function sanityFetch<T>({
         useCdn: false,
         stega: { enabled: true, studioUrl },
       })
-    : client;
+    : useCdn
+      ? client
+      : client.withConfig({ useCdn: false });
 
   try {
     const result = await activeClient.fetch<T | null>(query, params ?? {}, {
