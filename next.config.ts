@@ -1,5 +1,5 @@
 import type { NextConfig } from "next";
-import { legacyRedirects } from "./lib/redirects";
+import { blogspotRedirects, legacyRedirects } from "./lib/redirects";
 
 const nextConfig: NextConfig = {
   // Otetaan typedRoutes käyttöön sprintissä 2 kun kaikki reitit on luotu.
@@ -13,7 +13,7 @@ const nextConfig: NextConfig = {
     ],
   },
   async redirects() {
-    return legacyRedirects;
+    return [...legacyRedirects, ...blogspotRedirects];
   },
 };
 

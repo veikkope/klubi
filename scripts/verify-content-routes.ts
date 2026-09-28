@@ -16,7 +16,7 @@
  *  4. Jos dokumentti on listaussivun osio (ankkuri), sivulla on `id="<slug>"`,
  *     jotta vanhojen osoitteiden ohjaukset (`…#slug`) osuvat oikeaan kohtaan.
  *
- * "Migroitu dokumentti" = dokumentti, jolla on `legacyUrl` tai
+ * "Migroitu dokumentti" = dokumentti, jolla on `legacyUrl`, `blogspot.id` tai
  * `muutLegacyUrlit` development-datasetissa. Viitedokumentit ilman omaa
  * näkymää (`kaupunki`) raportoidaan erikseen, eivätkä ne kaada ajoa.
  */
@@ -55,7 +55,7 @@ async function fetchDocs(): Promise<MigratedDoc[]> {
   const token = process.env.SANITY_API_WRITE_TOKEN ?? process.env.SANITY_API_READ_TOKEN;
   const query = /* groq */ `*[
     !(_id in path("drafts.**"))
-    && (defined(legacyUrl) || defined(muutLegacyUrlit))
+    && (defined(legacyUrl) || defined(muutLegacyUrlit) || defined(blogspot.id))
   ] | order(_type asc, _id asc){
     ${routableProjection},
     "title": coalesce(title, name, heroTitle)

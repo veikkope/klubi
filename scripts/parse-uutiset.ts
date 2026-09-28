@@ -34,6 +34,7 @@ import type { KuvaRecord } from "./download-images";
 import { decodeHtml } from "./lib/decode-html";
 import { localImageName } from "./lib/image-names";
 import { fold } from "./lib/match-image-owner";
+import { summaryFromText } from "./lib/summary";
 
 const RAW_DIR = join(process.cwd(), "data", "raw-html");
 const NORMALIZED = join(process.cwd(), "data", "normalized");
@@ -713,13 +714,6 @@ function blocksText(blocks: Block[]): string {
 
 // ─── Tiivistelmä ───────────────────────────────────────────────────────────
 
-const SUMMARY_MAX = 300;
-/** Virkeraja: välimerkki (+ lainaus/sulku) + välilyönti + iso kirjain/lainaus/viiva. */
-const SENTENCE_SPLIT = /(?<=[.!?]["”»)]*)\s+(?=[A-ZÅÄÖ"”–-])/;
-const SENTENCE_COMPLETE = /[.!?]["”»)]*$/;
-/** Piste, joka ei pääty virkettä: "esim. FC Lahti", "J. Litmanen", "klo 18.". */
-const ABBREVIATION_END = /(?:^|\s)(?:esim|mm|ym|ns|n|ks|vrt|klo|jne|tms|yms|vs|ts|os|synt|pj|puh|tri|prof|jr|st|dr|mr|[A-ZÅÄÖ])\.$/i;
-
 /**
  * Tiivistelmä leipätekstin ensimmäisistä kokonaisista virkkeistä sanatarkasti,
  * enintään 300 merkkiä (docs/12 §2.1.6). Ei katkaista kesken virkkeen eikä
@@ -727,38 +721,12 @@ const ABBREVIATION_END = /(?:^|\s)(?:esim|mm|ym|ns|n|ks|vrt|klo|jne|tms|yms|vs|t
  * asiavirke (liian lyhyt, ei pääty välimerkkiin tai on yli 300 merkkiä).
  */
 function deriveSummary(blocks: Block[]): string | null {
-  const text = blocks
-    .filter((b) => b.style === "normal")
-    .map((b) => b.spans.map((s) => s.text).join(""))
-    .join(" ")
-    .replace(/\s+/g, " ")
-    .trim();
-  if (!text) return null;
-
-  const sentences: string[] = [];
-  for (const piece of text.split(SENTENCE_SPLIT)) {
-    const prev = sentences[sentences.length - 1];
-    if (prev !== undefined && ABBREVIATION_END.test(prev)) sentences[sentences.length - 1] = `${prev} ${piece}`;
-    else sentences.push(piece);
-  }
-
-  // Lainaus voi sisältää useita virkkeitä ("Mitä vielä. Yrittivät …") — tiivistelmä
-  // ei saa päättyä kesken lainauksen, joten hyväksytään vain tasapainoiset kohdat.
-  const quotesBalanced = (s: string) =>
-    (s.match(/["”“]/g)?.length ?? 0) % 2 === 0 && (s.match(/«/g)?.length ?? 0) === (s.match(/»/g)?.length ?? 0);
-
-  let out = "";
-  let best = "";
-  for (const s of sentences) {
-    if (!SENTENCE_COMPLETE.test(s)) break;
-    const next = out ? `${out} ${s}` : s;
-    if (next.length > SUMMARY_MAX) break;
-    out = next;
-    if (quotesBalanced(out)) best = out;
-  }
-  // Vähintään yksi kokonainen asiavirke: ei pelkkää "Kiitos!"-tyyppistä huudahdusta.
-  if (!best || best.length < 25 || best.split(" ").length < 4) return null;
-  return best;
+  return summaryFromText(
+    blocks
+      .filter((b) => b.style === "normal")
+      .map((b) => b.spans.map((s) => s.text).join(""))
+      .join(" "),
+  );
 }
 
 // ─── Otsikko ───────────────────────────────────────────────────────────────

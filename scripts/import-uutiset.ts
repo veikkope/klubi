@@ -29,6 +29,7 @@ import { pathToFileURL } from "node:url";
 import { legacyRedirects } from "../lib/redirects";
 import type { KuvaRecord } from "./download-images";
 import { deriveAltFromFilename } from "./lib/derive-alt";
+import { leadSentences } from "./lib/summary";
 import type { Block, OtsikkoarkistoLinkki, Span, Uutinen, UutinenImage } from "./parse-uutiset";
 
 const SOURCE = join(process.cwd(), "data", "normalized", "uutiset.json");
@@ -86,29 +87,6 @@ function noonHelsinki(date: string): string {
   const localHour = Number(parts.find((p) => p.type === "hour")?.value ?? "12");
   const offset = localHour - 10; // 2 tai 3
   return new Date(Date.UTC(y, m - 1, d, 12 - offset, 0, 0)).toISOString().replace(".000Z", "Z");
-}
-
-/**
- * Virkkeet alusta kunnes raja täyttyy. Jos jo ensimmäinen virke ylittää rajan,
- * se katkaistaan sanarajaan "…"-merkillä. Tekstiä ei muokata muuten.
- */
-function leadSentences(text: string, max: number): string {
-  const clean = text.replace(/\s+/g, " ").trim();
-  if (clean.length <= max) return clean;
-  // Virkeraja = välimerkki + välilyönti + iso kirjain/lainausmerkki/viiva.
-  // Päivämäärät ("29.07.2007") ja järjestysluvut ("15. marraskuuta") eivät katkaise.
-  const sentences = clean.split(/(?<=[.!?]["”»)]*)\s+(?=[A-ZÅÄÖ"”–-])/);
-  let out = "";
-  for (const s of sentences) {
-    const next = out ? `${out} ${s}` : s;
-    if (next.length > max) break;
-    out = next;
-  }
-  out = out.trim();
-  // Liian lyhyt osuma (esim. "FC:n" tai "9.8." katkaisi) → sanaraja.
-  if (out.length >= Math.min(60, max / 3)) return out;
-  const cut = clean.lastIndexOf(" ", max - 1);
-  return `${clean.slice(0, cut > 0 ? cut : max - 1).replace(/[\s,;:–-]+$/, "")}…`;
 }
 
 function blockPlainText(blocks: Block[]): string {

@@ -14,7 +14,10 @@
  *  3. Kohde itse ei palauta 404:ää — ohjaus kuolleeseen sivuun on yhtä paha
  *     kuin puuttuva ohjaus
  */
-import { legacyRedirects } from "../lib/redirects";
+import { blogspotRedirects, legacyRedirects } from "../lib/redirects";
+
+// Blogin yleisohjaus (/blogspot/:polku*) on kuvio, ei osoite: testataan yksittäiset.
+const redirects = [...legacyRedirects, ...blogspotRedirects.filter((r) => !r.source.includes(":"))];
 
 const BASE_URL = process.env.BASE_URL ?? "http://localhost:3000";
 const CONCURRENCY = 8;
@@ -132,11 +135,11 @@ async function checkOne(
 }
 
 async function main() {
-  console.log(`Todennetaan ${legacyRedirects.length} ohjausta osoitetta ${BASE_URL} vasten\n`);
+  console.log(`Todennetaan ${redirects.length} ohjausta osoitetta ${BASE_URL} vasten\n`);
 
   const failures: Failure[] = [];
   const checkedTargets = new Map<string, number>();
-  const queue = [...legacyRedirects];
+  const queue = [...redirects];
 
   async function worker() {
     while (queue.length > 0) {
@@ -164,8 +167,8 @@ async function main() {
   const bySource = (a: Failure, b: Failure) => a.source.localeCompare(b.source, "fi");
 
   console.log(
-    `Ohjauksia ............... ${legacyRedirects.length}\n` +
-      `Toimii .................. ${legacyRedirects.length - broken.length}\n` +
+    `Ohjauksia ............... ${redirects.length}\n` +
+      `Toimii .................. ${redirects.length - broken.length}\n` +
       `Rikki ................... ${broken.length}\n` +
       `Kohteella ei sisältöä ... ${missingContent.length}\n` +
       `Kohteessa tyhjätila ..... ${emptyContent.length}\n`,

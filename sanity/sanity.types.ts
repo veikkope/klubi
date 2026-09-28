@@ -45,9 +45,18 @@ export type Etusivu = {
   };
   blocks?: Array<
     | {
+        eyebrow?: string;
         heading?: string;
         count?: number;
         _type: "uutiset";
+        _key: string;
+      }
+    | {
+        ottelutHeading?: string;
+        ottelutCount?: number;
+        tapahtumatHeading?: string;
+        tapahtumatCount?: number;
+        _type: "otteluohjelma";
         _key: string;
       }
     | {
@@ -57,6 +66,7 @@ export type Etusivu = {
         _key: string;
       }
     | {
+        eyebrow?: string;
         heading?: string;
         body?: PortableText;
         image?: ImageWithAlt;
@@ -66,6 +76,7 @@ export type Etusivu = {
         _key: string;
       }
     | {
+        eyebrow?: string;
         heading?: string;
         city?: KaupunkiReference;
         count?: number;
@@ -531,7 +542,10 @@ export type Ravintola = {
   ratingFood?: number;
   ratingPrice?: number;
   ratingAtmosphere?: number;
+  tuomio?: string;
+  stadionHuomio?: string;
   review?: PortableText;
+  ottelupaivana?: string;
   pros?: Array<string>;
   cons?: Array<string>;
   visitedAt?: string;
@@ -615,6 +629,13 @@ export type Uutinen = {
   seoDescription?: string;
   legacyUrl?: string;
   muutLegacyUrlit?: Array<string>;
+  blogspot?: {
+    id?: string;
+    url?: string;
+    polku?: string;
+    tunnisteet?: Array<string>;
+    kommentteja?: number;
+  };
 };
 
 export type HallitusJasen = {
@@ -632,6 +653,21 @@ export type HallitusJasen = {
   order?: number;
 };
 
+export type Ottelu = {
+  _id: string;
+  _type: "ottelu";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  aika?: string;
+  koti?: string;
+  vieras?: string;
+  kilpailu?: string;
+  stadion?: string;
+  klubiPaikalla?: boolean;
+  vierasmatka?: boolean;
+};
+
 export type Tapahtuma = {
   _id: string;
   _type: "tapahtuma";
@@ -644,6 +680,7 @@ export type Tapahtuma = {
   startsAt?: string;
   endsAt?: string;
   location?: string;
+  juhla?: boolean;
   image?: ImageWithAlt;
   description?: PortableText;
   signupUrl?: string;
@@ -796,6 +833,7 @@ export type AllSanitySchemaTypes =
   | HallitusJasenReference
   | Uutinen
   | HallitusJasen
+  | Ottelu
   | Tapahtuma
   | Sivu
   | SanityImagePaletteSwatch
@@ -835,7 +873,7 @@ export type ArvokisaSlugsQueryResult = Array<string | null>;
 
 // Source: sanity/lib/queries/arkisto-laajennus.ts
 // Variable: arvokisaBySlugQuery
-// Query: *[_type == "arvokisa" && slug.current == $slug][0]{    _id,    _updatedAt,    title,    "slug": slug.current,    tiivistelma,    kisatyyppi,    vuosi,    isantamaat,    voittaja,    suomenSijoitus,    alkuPvm,    loppuPvm,    hopea,    pronssi,    kuvaus,    tilastot[]->{      _id,      _updatedAt,      title,      "slug": slug.current,      tiivistelma,      category,      intro,      columns[]{ key, label, type },      rows[]{ cells[]{ key, value } },      lisatiedot,      kuvat[]{ _key, alt, caption, asset },      paivitetty,      jarjestys,      "sources": coalesce(sources, [])    },    kuvat[]{ _key, alt, caption, asset },    seoTitle,    seoDescription  }
+// Query: *[_type == "arvokisa" && slug.current == $slug][0]{    _id,    _updatedAt,    title,    "slug": slug.current,    tiivistelma,    kisatyyppi,    vuosi,    isantamaat,    voittaja,    suomenSijoitus,    alkuPvm,    loppuPvm,    hopea,    pronssi,    kuvaus,    tilastot[]->{      _id,      _updatedAt,      title,      "slug": slug.current,      tiivistelma,      category,      intro,      columns[]{ key, label, type },      rows[]{ cells[]{ key, value } },      lisatiedot,      kuvat[]{ _key, alt, caption, asset, hotspot, crop },      paivitetty,      jarjestys,      "sources": coalesce(sources, [])    },    kuvat[]{ _key, alt, caption, asset, hotspot, crop },    seoTitle,    seoDescription  }
 export type ArvokisaBySlugQueryResult = {
   _id: string;
   _updatedAt: string;
@@ -906,6 +944,8 @@ export type ArvokisaBySlugQueryResult = {
       alt: string | null;
       caption: string | null;
       asset: SanityImageAssetReference | null;
+      hotspot: SanityImageHotspot | null;
+      crop: SanityImageCrop | null;
     }> | null;
     paivitetty: string | null;
     jarjestys: number | null;
@@ -916,6 +956,8 @@ export type ArvokisaBySlugQueryResult = {
     alt: string | null;
     caption: string | null;
     asset: SanityImageAssetReference | null;
+    hotspot: SanityImageHotspot | null;
+    crop: SanityImageCrop | null;
   }> | null;
   seoTitle: string | null;
   seoDescription: string | null;
@@ -923,7 +965,7 @@ export type ArvokisaBySlugQueryResult = {
 
 // Source: sanity/lib/queries/arkisto-laajennus.ts
 // Variable: arvokisaMitalitaulukotQuery
-// Query: *[    _type == "jalkapalloTilasto"    && category == "arvokisa"    && count(*[_type == "arvokisa" && references(^._id)]) == 0  ] | order(coalesce(jarjestys, 1000) asc, title asc){    _id,      _updatedAt,      title,      "slug": slug.current,      tiivistelma,      category,      intro,      columns[]{ key, label, type },      rows[]{ cells[]{ key, value } },      lisatiedot,      kuvat[]{ _key, alt, caption, asset },      paivitetty,      jarjestys,      "sources": coalesce(sources, [])  }
+// Query: *[    _type == "jalkapalloTilasto"    && category == "arvokisa"    && count(*[_type == "arvokisa" && references(^._id)]) == 0  ] | order(coalesce(jarjestys, 1000) asc, title asc){    _id,      _updatedAt,      title,      "slug": slug.current,      tiivistelma,      category,      intro,      columns[]{ key, label, type },      rows[]{ cells[]{ key, value } },      lisatiedot,      kuvat[]{ _key, alt, caption, asset, hotspot, crop },      paivitetty,      jarjestys,      "sources": coalesce(sources, [])  }
 export type ArvokisaMitalitaulukotQueryResult = Array<{
   _id: string;
   _updatedAt: string;
@@ -971,6 +1013,8 @@ export type ArvokisaMitalitaulukotQueryResult = Array<{
     alt: string | null;
     caption: string | null;
     asset: SanityImageAssetReference | null;
+    hotspot: SanityImageHotspot | null;
+    crop: SanityImageCrop | null;
   }> | null;
   paivitetty: string | null;
   jarjestys: number | null;
@@ -1001,7 +1045,7 @@ export type ArvokisatRelatedQueryResult = Array<{
 
 // Source: sanity/lib/queries/arkisto-laajennus.ts
 // Variable: pelaajatListQuery
-// Query: *[_type == "pelaaja" && defined(slug.current)] | order(name asc){    _id,    name,    "slug": slug.current,    tiivistelma,    pelipaikka,    maaottelut,    maalit,    "kuva": kuvat[0]{ alt, caption, asset }  }
+// Query: *[_type == "pelaaja" && defined(slug.current)] | order(name asc){    _id,    name,    "slug": slug.current,    tiivistelma,    pelipaikka,    maaottelut,    maalit,    "kuva": kuvat[0]{ alt, caption, asset, hotspot, crop }  }
 export type PelaajatListQueryResult = Array<{
   _id: string;
   name: string | null;
@@ -1014,6 +1058,8 @@ export type PelaajatListQueryResult = Array<{
     alt: string | null;
     caption: string | null;
     asset: SanityImageAssetReference | null;
+    hotspot: SanityImageHotspot | null;
+    crop: SanityImageCrop | null;
   } | null;
 }>;
 
@@ -1024,7 +1070,7 @@ export type PelaajaSlugsQueryResult = Array<string | null>;
 
 // Source: sanity/lib/queries/arkisto-laajennus.ts
 // Variable: pelaajaBySlugQuery
-// Query: *[_type == "pelaaja" && slug.current == $slug][0]{    _id,    _updatedAt,    name,    "slug": slug.current,    tiivistelma,    pelipaikka,    maaottelut,    maalit,    syntymaaika,    seurat[]{ _key, seura, alkuvuosi, loppuvuosi },    kuvaus,    tilastot[]->{      _id,      _updatedAt,      title,      "slug": slug.current,      tiivistelma,      category,      intro,      columns[]{ key, label, type },      rows[]{ cells[]{ key, value } },      lisatiedot,      kuvat[]{ _key, alt, caption, asset },      paivitetty,      jarjestys,      "sources": coalesce(sources, [])    },    kuvat[]{ _key, alt, caption, asset },    seoTitle,    seoDescription  }
+// Query: *[_type == "pelaaja" && slug.current == $slug][0]{    _id,    _updatedAt,    name,    "slug": slug.current,    tiivistelma,    pelipaikka,    maaottelut,    maalit,    syntymaaika,    seurat[]{ _key, seura, alkuvuosi, loppuvuosi },    kuvaus,    tilastot[]->{      _id,      _updatedAt,      title,      "slug": slug.current,      tiivistelma,      category,      intro,      columns[]{ key, label, type },      rows[]{ cells[]{ key, value } },      lisatiedot,      kuvat[]{ _key, alt, caption, asset, hotspot, crop },      paivitetty,      jarjestys,      "sources": coalesce(sources, [])    },    kuvat[]{ _key, alt, caption, asset, hotspot, crop },    seoTitle,    seoDescription  }
 export type PelaajaBySlugQueryResult = {
   _id: string;
   _updatedAt: string;
@@ -1089,6 +1135,8 @@ export type PelaajaBySlugQueryResult = {
       alt: string | null;
       caption: string | null;
       asset: SanityImageAssetReference | null;
+      hotspot: SanityImageHotspot | null;
+      crop: SanityImageCrop | null;
     }> | null;
     paivitetty: string | null;
     jarjestys: number | null;
@@ -1099,6 +1147,8 @@ export type PelaajaBySlugQueryResult = {
     alt: string | null;
     caption: string | null;
     asset: SanityImageAssetReference | null;
+    hotspot: SanityImageHotspot | null;
+    crop: SanityImageCrop | null;
   }> | null;
   seoTitle: string | null;
   seoDescription: string | null;
@@ -1106,7 +1156,7 @@ export type PelaajaBySlugQueryResult = {
 
 // Source: sanity/lib/queries/arkisto-laajennus.ts
 // Variable: pelaajatRelatedQuery
-// Query: *[_type == "pelaaja" && defined(slug.current) && slug.current != $slug]    | order(coalesce(maaottelut, 0) desc, name asc)[0...4]{    _id,    name,    "slug": slug.current,    tiivistelma,    pelipaikka,    maaottelut,    maalit,    "kuva": kuvat[0]{ alt, caption, asset }  }
+// Query: *[_type == "pelaaja" && defined(slug.current) && slug.current != $slug]    | order(coalesce(maaottelut, 0) desc, name asc)[0...4]{    _id,    name,    "slug": slug.current,    tiivistelma,    pelipaikka,    maaottelut,    maalit,    "kuva": kuvat[0]{ alt, caption, asset, hotspot, crop }  }
 export type PelaajatRelatedQueryResult = Array<{
   _id: string;
   name: string | null;
@@ -1119,12 +1169,14 @@ export type PelaajatRelatedQueryResult = Array<{
     alt: string | null;
     caption: string | null;
     asset: SanityImageAssetReference | null;
+    hotspot: SanityImageHotspot | null;
+    crop: SanityImageCrop | null;
   } | null;
 }>;
 
 // Source: sanity/lib/queries/arkisto-laajennus.ts
 // Variable: stadionitListQuery
-// Query: *[_type == "stadion" && defined(slug.current)]    | order(city->country asc, name asc){    _id,    name,    "slug": slug.current,    tiivistelma,    capacity,    openedYear,    "city": city->{ name, "slug": slug.current, country },    "kuva": images[0]{ alt, caption, asset }  }
+// Query: *[_type == "stadion" && defined(slug.current)]    | order(city->country asc, name asc){    _id,    name,    "slug": slug.current,    tiivistelma,    capacity,    openedYear,    "city": city->{ name, "slug": slug.current, country },    "kuva": images[0]{ alt, caption, asset, hotspot, crop }  }
 export type StadionitListQueryResult = Array<{
   _id: string;
   name: string | null;
@@ -1141,6 +1193,8 @@ export type StadionitListQueryResult = Array<{
     alt: string | null;
     caption: string | null;
     asset: SanityImageAssetReference | null;
+    hotspot: SanityImageHotspot | null;
+    crop: SanityImageCrop | null;
   } | null;
 }>;
 
@@ -1151,7 +1205,7 @@ export type StadionSlugsQueryResult = Array<string | null>;
 
 // Source: sanity/lib/queries/arkisto-laajennus.ts
 // Variable: stadionBySlugQuery
-// Query: *[_type == "stadion" && slug.current == $slug][0]{    _id,    _updatedAt,    name,    "slug": slug.current,    tiivistelma,    capacity,    openedYear,    address,    "city": city->{ name, "slug": slug.current, country },    location{ lat, lng, alt },    description,    images[]{ _key, alt, caption, asset },    seoTitle,    seoDescription  }
+// Query: *[_type == "stadion" && slug.current == $slug][0]{    _id,    _updatedAt,    name,    "slug": slug.current,    tiivistelma,    capacity,    openedYear,    address,    "city": city->{ name, "slug": slug.current, country },    location{ lat, lng, alt },    description,    images[]{ _key, alt, caption, asset, hotspot, crop },    seoTitle,    seoDescription  }
 export type StadionBySlugQueryResult = {
   _id: string;
   _updatedAt: string;
@@ -1177,6 +1231,8 @@ export type StadionBySlugQueryResult = {
     alt: string | null;
     caption: string | null;
     asset: SanityImageAssetReference | null;
+    hotspot: SanityImageHotspot | null;
+    crop: SanityImageCrop | null;
   }> | null;
   seoTitle: string | null;
   seoDescription: string | null;
@@ -1184,7 +1240,7 @@ export type StadionBySlugQueryResult = {
 
 // Source: sanity/lib/queries/arkisto-laajennus.ts
 // Variable: stadionitRelatedQuery
-// Query: *[_type == "stadion" && defined(slug.current) && slug.current != $slug]    | order(select(city->name == $cityName => 0, 1) asc, name asc)[0...4]{    _id,    name,    "slug": slug.current,    tiivistelma,    capacity,    openedYear,    "city": city->{ name, "slug": slug.current, country },    "kuva": images[0]{ alt, caption, asset }  }
+// Query: *[_type == "stadion" && defined(slug.current) && slug.current != $slug]    | order(select(city->name == $cityName => 0, 1) asc, name asc)[0...4]{    _id,    name,    "slug": slug.current,    tiivistelma,    capacity,    openedYear,    "city": city->{ name, "slug": slug.current, country },    "kuva": images[0]{ alt, caption, asset, hotspot, crop }  }
 export type StadionitRelatedQueryResult = Array<{
   _id: string;
   name: string | null;
@@ -1201,12 +1257,14 @@ export type StadionitRelatedQueryResult = Array<{
     alt: string | null;
     caption: string | null;
     asset: SanityImageAssetReference | null;
+    hotspot: SanityImageHotspot | null;
+    crop: SanityImageCrop | null;
   } | null;
 }>;
 
 // Source: sanity/lib/queries/arkisto.ts
 // Variable: tilastotByCategoryQuery
-// Query: *[_type == "jalkapalloTilasto" && category == $category]    | order(coalesce(jarjestys, 1000) asc, title asc){      _id,  _updatedAt,  title,  "slug": slug.current,  tiivistelma,  category,  intro,  columns[]{ key, label, type },  rows[]{ cells[]{ key, value } },  lisatiedot,  kuvat[]{ _key, alt, caption, asset },  paivitetty,  jarjestys,  "sources": coalesce(sources, [])  }
+// Query: *[_type == "jalkapalloTilasto" && category == $category]    | order(coalesce(jarjestys, 1000) asc, title asc){      _id,  _updatedAt,  title,  "slug": slug.current,  tiivistelma,  category,  intro,  columns[]{ key, label, type },  rows[]{ cells[]{ key, value } },  lisatiedot,  kuvat[]{ _key, alt, caption, asset, hotspot, crop },  paivitetty,  jarjestys,  "sources": coalesce(sources, [])  }
 export type TilastotByCategoryQueryResult = Array<{
   _id: string;
   _updatedAt: string;
@@ -1254,6 +1312,8 @@ export type TilastotByCategoryQueryResult = Array<{
     alt: string | null;
     caption: string | null;
     asset: SanityImageAssetReference | null;
+    hotspot: SanityImageHotspot | null;
+    crop: SanityImageCrop | null;
   }> | null;
   paivitetty: string | null;
   jarjestys: number | null;
@@ -1262,7 +1322,7 @@ export type TilastotByCategoryQueryResult = Array<{
 
 // Source: sanity/lib/queries/arkisto.ts
 // Variable: tilastotByCategoriesQuery
-// Query: *[_type == "jalkapalloTilasto" && category in $categories]    | order(coalesce(jarjestys, 1000) asc, title asc){      _id,  _updatedAt,  title,  "slug": slug.current,  tiivistelma,  category,  intro,  columns[]{ key, label, type },  rows[]{ cells[]{ key, value } },  lisatiedot,  kuvat[]{ _key, alt, caption, asset },  paivitetty,  jarjestys,  "sources": coalesce(sources, [])  }
+// Query: *[_type == "jalkapalloTilasto" && category in $categories]    | order(coalesce(jarjestys, 1000) asc, title asc){      _id,  _updatedAt,  title,  "slug": slug.current,  tiivistelma,  category,  intro,  columns[]{ key, label, type },  rows[]{ cells[]{ key, value } },  lisatiedot,  kuvat[]{ _key, alt, caption, asset, hotspot, crop },  paivitetty,  jarjestys,  "sources": coalesce(sources, [])  }
 export type TilastotByCategoriesQueryResult = Array<{
   _id: string;
   _updatedAt: string;
@@ -1310,6 +1370,8 @@ export type TilastotByCategoriesQueryResult = Array<{
     alt: string | null;
     caption: string | null;
     asset: SanityImageAssetReference | null;
+    hotspot: SanityImageHotspot | null;
+    crop: SanityImageCrop | null;
   }> | null;
   paivitetty: string | null;
   jarjestys: number | null;
@@ -1318,7 +1380,7 @@ export type TilastotByCategoriesQueryResult = Array<{
 
 // Source: sanity/lib/queries/arkisto.ts
 // Variable: tilastoBySlugQuery
-// Query: *[    _type == "jalkapalloTilasto"    && category == $category    && slug.current == $slug  ][0]{      _id,  _updatedAt,  title,  "slug": slug.current,  tiivistelma,  category,  intro,  columns[]{ key, label, type },  rows[]{ cells[]{ key, value } },  lisatiedot,  kuvat[]{ _key, alt, caption, asset },  paivitetty,  jarjestys,  "sources": coalesce(sources, [])  }
+// Query: *[    _type == "jalkapalloTilasto"    && category == $category    && slug.current == $slug  ][0]{      _id,  _updatedAt,  title,  "slug": slug.current,  tiivistelma,  category,  intro,  columns[]{ key, label, type },  rows[]{ cells[]{ key, value } },  lisatiedot,  kuvat[]{ _key, alt, caption, asset, hotspot, crop },  paivitetty,  jarjestys,  "sources": coalesce(sources, [])  }
 export type TilastoBySlugQueryResult = {
   _id: string;
   _updatedAt: string;
@@ -1366,6 +1428,8 @@ export type TilastoBySlugQueryResult = {
     alt: string | null;
     caption: string | null;
     asset: SanityImageAssetReference | null;
+    hotspot: SanityImageHotspot | null;
+    crop: SanityImageCrop | null;
   }> | null;
   paivitetty: string | null;
   jarjestys: number | null;
@@ -1408,7 +1472,7 @@ export type ArkistoSummaryQueryResult = Array<{
 
 // Source: sanity/lib/queries/etusivu.ts
 // Variable: etusivuQuery
-// Query: *[_type == "etusivu"][0]{    heroEyebrow,    heroTitle,    heroDescription,    heroImage,    heroCtas[]{ label, href, primary },    seuraavaOttelu{ ottelu, kilpailu, aika },    blocks[]{      _type,      _key,      heading,      count,      body,      image,      ctaLabel,      ctaHref,      "city": city->{ "_ref": _id, name }    }  }
+// Query: *[_type == "etusivu"][0]{    heroEyebrow,    heroTitle,    heroDescription,    heroImage,    heroCtas[]{ label, href, primary },    seuraavaOttelu{ ottelu, kilpailu, aika },    blocks[]{      _type,      _key,      eyebrow,      heading,      count,      ottelutHeading,      ottelutCount,      tapahtumatHeading,      tapahtumatCount,      body,      image,      ctaLabel,      ctaHref,      "city": city->{ "_ref": _id, name }    }  }
 export type EtusivuQueryResult = {
   heroEyebrow: string | null;
   heroTitle: string | null;
@@ -1428,8 +1492,13 @@ export type EtusivuQueryResult = {
     | {
         _type: "cta";
         _key: string;
+        eyebrow: null;
         heading: string | null;
         count: null;
+        ottelutHeading: null;
+        ottelutCount: null;
+        tapahtumatHeading: null;
+        tapahtumatCount: null;
         body: string | null;
         image: null;
         ctaLabel: string | null;
@@ -1439,8 +1508,13 @@ export type EtusivuQueryResult = {
     | {
         _type: "esittely";
         _key: string;
+        eyebrow: string | null;
         heading: string | null;
         count: null;
+        ottelutHeading: null;
+        ottelutCount: null;
+        tapahtumatHeading: null;
+        tapahtumatCount: null;
         body: PortableText | null;
         image: ImageWithAlt | null;
         ctaLabel: string | null;
@@ -1450,8 +1524,13 @@ export type EtusivuQueryResult = {
     | {
         _type: "galleria";
         _key: string;
+        eyebrow: null;
         heading: string | null;
         count: number | null;
+        ottelutHeading: null;
+        ottelutCount: null;
+        tapahtumatHeading: null;
+        tapahtumatCount: null;
         body: null;
         image: null;
         ctaLabel: null;
@@ -1461,8 +1540,13 @@ export type EtusivuQueryResult = {
     | {
         _type: "jalkapalloarkisto";
         _key: string;
+        eyebrow: null;
         heading: string | null;
         count: null;
+        ottelutHeading: null;
+        ottelutCount: null;
+        tapahtumatHeading: null;
+        tapahtumatCount: null;
         body: string | null;
         image: null;
         ctaLabel: string | null;
@@ -1470,10 +1554,31 @@ export type EtusivuQueryResult = {
         city: null;
       }
     | {
+        _type: "otteluohjelma";
+        _key: string;
+        eyebrow: null;
+        heading: null;
+        count: null;
+        ottelutHeading: string | null;
+        ottelutCount: number | null;
+        tapahtumatHeading: string | null;
+        tapahtumatCount: number | null;
+        body: null;
+        image: null;
+        ctaLabel: null;
+        ctaHref: null;
+        city: null;
+      }
+    | {
         _type: "ravintolatSpotlight";
         _key: string;
+        eyebrow: string | null;
         heading: string | null;
         count: number | null;
+        ottelutHeading: null;
+        ottelutCount: null;
+        tapahtumatHeading: null;
+        tapahtumatCount: null;
         body: null;
         image: null;
         ctaLabel: null;
@@ -1486,8 +1591,13 @@ export type EtusivuQueryResult = {
     | {
         _type: "tapahtumat";
         _key: string;
+        eyebrow: null;
         heading: string | null;
         count: number | null;
+        ottelutHeading: null;
+        ottelutCount: null;
+        tapahtumatHeading: null;
+        tapahtumatCount: null;
         body: null;
         image: null;
         ctaLabel: null;
@@ -1497,8 +1607,13 @@ export type EtusivuQueryResult = {
     | {
         _type: "uutiset";
         _key: string;
+        eyebrow: string | null;
         heading: string | null;
         count: number | null;
+        ottelutHeading: null;
+        ottelutCount: null;
+        tapahtumatHeading: null;
+        tapahtumatCount: null;
         body: null;
         image: null;
         ctaLabel: null;
@@ -1510,7 +1625,7 @@ export type EtusivuQueryResult = {
 
 // Source: sanity/lib/queries/etusivu.ts
 // Variable: etusivuRavintolatQuery
-// Query: *[_type == "ravintola" && defined(slug.current) && closed != true    && ($cityId == null || city._ref == $cityId)    && coalesce(ratingOverall, stars, 0) > 0]    | order(coalesce(ratingOverall, stars, 0) desc, name asc)[0...$count]{    _id,    name,    "slug": slug.current,    "city": city->{ name, "slug": slug.current },    "stars": coalesce(ratingOverall, stars, 0),    priceLevel,    cuisine,    "image": images[0]  }
+// Query: *[_type == "ravintola" && defined(slug.current) && closed != true    && ($cityId == null || city._ref == $cityId)    && coalesce(ratingOverall, stars, 0) > 0]    | order(coalesce(ratingOverall, stars, 0) desc, name asc)[0...$count]{    _id,    name,    "slug": slug.current,    "city": city->{ name, "slug": slug.current },    stars,    ratingOverall,    priceLevel,    cuisine,    tuomio,    stadionHuomio,    "image": images[0]  }
 export type EtusivuRavintolatQueryResult = Array<{
   _id: string;
   name: string | null;
@@ -1519,9 +1634,12 @@ export type EtusivuRavintolatQueryResult = Array<{
     name: string | null;
     slug: string | null;
   } | null;
-  stars: number | 0;
+  stars: number | null;
+  ratingOverall: number | null;
   priceLevel: "\u20AC" | "\u20AC\u20AC" | "\u20AC\u20AC\u20AC" | null;
   cuisine: Array<string> | null;
+  tuomio: string | null;
+  stadionHuomio: string | null;
   image:
     | ({
         _key: string;
@@ -1605,7 +1723,7 @@ export type GalleriaAlbumiBySlugQueryResult = {
 
 // Source: sanity/lib/queries/klubi.ts
 // Variable: klubiSivuQuery
-// Query: *[_type == "sivu" && slug.current == $slug][0]{    _id,    _updatedAt,    title,    "slug": slug.current,    tiivistelma,    ingress,    hero,    body,    tilastot[]->{      _id,      _updatedAt,      title,      "slug": slug.current,      tiivistelma,      category,      intro,      columns[]{ key, label, type },      rows[]{ cells[]{ key, value } },      lisatiedot,      kuvat[]{ _key, alt, caption, asset },      paivitetty,      jarjestys,      "sources": coalesce(sources, [])    },    seoTitle,    seoDescription  }
+// Query: *[_type == "sivu" && slug.current == $slug][0]{    _id,    _updatedAt,    title,    "slug": slug.current,    tiivistelma,    ingress,    hero,    body,    tilastot[]->{      _id,      _updatedAt,      title,      "slug": slug.current,      tiivistelma,      category,      intro,      columns[]{ key, label, type },      rows[]{ cells[]{ key, value } },      lisatiedot,      kuvat[]{ _key, alt, caption, asset, hotspot, crop },      paivitetty,      jarjestys,      "sources": coalesce(sources, [])    },    seoTitle,    seoDescription  }
 export type KlubiSivuQueryResult = {
   _id: string;
   _updatedAt: string;
@@ -1662,6 +1780,8 @@ export type KlubiSivuQueryResult = {
       alt: string | null;
       caption: string | null;
       asset: SanityImageAssetReference | null;
+      hotspot: SanityImageHotspot | null;
+      crop: SanityImageCrop | null;
     }> | null;
     paivitetty: string | null;
     jarjestys: number | null;
@@ -1690,7 +1810,7 @@ export type KlubiToimintaListQueryResult = Array<{
 
 // Source: sanity/lib/queries/klubi.ts
 // Variable: klubiToimintaBySlugQuery
-// Query: *[_type == "klubiToiminta" && slug.current == $slug][0]{    _id,    _updatedAt,    title,    "slug": slug.current,    tiivistelma,    kuvaus,    kuvat,    seoTitle,    seoDescription,    "vuodet": vuodet[] | order(vuosi desc, paivamaara desc){      _key,      vuosi,      paivamaara,      otsikko,      jarjestysnumero,      osallistujat,      paikka,      kuvaus,      linkki{ url, teksti },      kuvat    },    tilastot[]->{      _id,      _updatedAt,      title,      "slug": slug.current,      tiivistelma,      category,      intro,      columns[]{ key, label, type },      rows[]{ cells[]{ key, value } },      lisatiedot,      kuvat[]{ _key, alt, caption, asset },      paivitetty,      jarjestys,      "sources": coalesce(sources, [])    }  }
+// Query: *[_type == "klubiToiminta" && slug.current == $slug][0]{    _id,    _updatedAt,    title,    "slug": slug.current,    tiivistelma,    kuvaus,    kuvat,    seoTitle,    seoDescription,    "vuodet": vuodet[] | order(vuosi desc, paivamaara desc){      _key,      vuosi,      paivamaara,      otsikko,      jarjestysnumero,      osallistujat,      paikka,      kuvaus,      linkki{ url, teksti },      kuvat    },    tilastot[]->{      _id,      _updatedAt,      title,      "slug": slug.current,      tiivistelma,      category,      intro,      columns[]{ key, label, type },      rows[]{ cells[]{ key, value } },      lisatiedot,      kuvat[]{ _key, alt, caption, asset, hotspot, crop },      paivitetty,      jarjestys,      "sources": coalesce(sources, [])    }  }
 export type KlubiToimintaBySlugQueryResult = {
   _id: string;
   _updatedAt: string;
@@ -1771,6 +1891,8 @@ export type KlubiToimintaBySlugQueryResult = {
       alt: string | null;
       caption: string | null;
       asset: SanityImageAssetReference | null;
+      hotspot: SanityImageHotspot | null;
+      crop: SanityImageCrop | null;
     }> | null;
     paivitetty: string | null;
     jarjestys: number | null;
@@ -1806,18 +1928,54 @@ export type HallitusListQueryResult = Array<{
   phone: string | null;
 }>;
 
+// Source: sanity/lib/queries/ottelut.ts
+// Variable: tulevatOttelutQuery
+// Query: *[_type == "ottelu" && defined(aika) && dateTime(aika) > dateTime(now()) - 60*60*24]    | order(aika asc){    _id,    aika,    koti,    vieras,    kilpailu,    stadion,    klubiPaikalla,    vierasmatka  }
+export type TulevatOttelutQueryResult = Array<{
+  _id: string;
+  aika: string | null;
+  koti: string | null;
+  vieras: string | null;
+  kilpailu: string | null;
+  stadion: string | null;
+  klubiPaikalla: boolean | null;
+  vierasmatka: boolean | null;
+}>;
+
 // Source: sanity/lib/queries/ravintolat.ts
 // Variable: ravintolatCountQuery
-// Query: count(*[  _type == "ravintola" && defined(slug.current)  && ($citySlug == null || city->slug.current == $citySlug)  && ($cuisine == null || $cuisine in cuisine)  && ($minRating == null || coalesce(ratingOverall, stars, 0) >= $minRating)  && ($includeClosed == true || closed != true)])
+// Query: count(*[  _type == "ravintola" && defined(slug.current)  && ($citySlug == null || city->slug.current == $citySlug)  && ($countryNames == null || city->country in $countryNames)  && ($maakuntaSlugs == null      || (city->country == "Suomi" && city->maakunta in $maakuntaSlugs))  && ($cuisine == null || $cuisine in cuisine)  && ($minRating == null || coalesce(ratingOverall, stars, 0) >= $minRating)  && ($includeClosed == true || closed != true)])
 export type RavintolatCountQueryResult = number;
 
 // Source: sanity/lib/queries/ravintolat.ts
 // Variable: ravintolatFacetsQuery
-// Query: {  "cities": *[_type == "kaupunki" && defined(slug.current)      && count(*[_type == "ravintola" && references(^._id)]) > 0]    | order(name asc){      name,      "slug": slug.current,      "count": count(*[_type == "ravintola" && references(^._id) && closed != true])    },  "cuisines": array::unique(*[_type == "ravintola" && defined(cuisine)].cuisine[]),  "total": count(*[_type == "ravintola" && defined(slug.current) && closed != true]),  "closedCount": count(*[_type == "ravintola" && closed == true]),  "firstVisitYear": *[_type == "ravintola" && defined(visitedAt)]    | order(visitedAt asc)[0].visitedAt}
+// Query: {  "places": *[_type == "kaupunki" && defined(slug.current)      && count(*[_type == "ravintola" && references(^._id)]) > 0]    | order(name asc){      name,      "slug": slug.current,      country,      maakunta,      "count": count(*[_type == "ravintola" && references(^._id) && closed != true])    },  "cuisines": array::unique(*[_type == "ravintola" && defined(cuisine)].cuisine[]),  "total": count(*[_type == "ravintola" && defined(slug.current) && closed != true]),  "closedCount": count(*[_type == "ravintola" && closed == true]),  "firstVisitYear": *[_type == "ravintola" && defined(visitedAt)]    | order(visitedAt asc)[0].visitedAt}
 export type RavintolatFacetsQueryResult = {
-  cities: Array<{
+  places: Array<{
     name: string | null;
     slug: string | null;
+    country: string | null;
+    maakunta:
+      | "ahvenanmaa"
+      | "etela-karjala"
+      | "etela-pohjanmaa"
+      | "etela-savo"
+      | "kainuu"
+      | "kanta-hame"
+      | "keski-pohjanmaa"
+      | "keski-suomi"
+      | "kymenlaakso"
+      | "lappi"
+      | "paijat-hame"
+      | "pirkanmaa"
+      | "pohjanmaa"
+      | "pohjois-karjala"
+      | "pohjois-pohjanmaa"
+      | "pohjois-savo"
+      | "satakunta"
+      | "uusimaa"
+      | "varsinais-suomi"
+      | null;
     count: number;
   }>;
   cuisines: Array<string>;
@@ -1828,7 +1986,7 @@ export type RavintolatFacetsQueryResult = {
 
 // Source: sanity/lib/queries/ravintolat.ts
 // Variable: ravintolaBySlugQuery
-// Query: *[_type == "ravintola" && slug.current == $slug][0]{      _id,  name,  "slug": slug.current,  "city": city->{ name, "slug": slug.current, country },  stars,  ratingOverall,  ratingFood,  ratingPrice,  ratingAtmosphere,  priceLevel,  cuisine,  closed,  tiivistelma,  "image": images[0],    _updatedAt,    address,    postalCode,    phone,    website,    location,    closedNote,    pros,    cons,    visitedAt,    visits,    visitContext,    review,    images,    seoTitle,    seoDescription,    "userReviews": *[_type == "ravintolaKayttajaArvostelu"      && restaurant._ref == ^._id && status == "approved"]      | order(submittedAt desc){        _id,        reviewerName,        stars,        comment,        submittedAt      },    "related": *[_type == "ravintola" && defined(slug.current)      && _id != ^._id && closed != true && city._ref == ^.city._ref]      | order(coalesce(ratingOverall, stars, 0) desc, name asc)[0...3]{  _id,  name,  "slug": slug.current,  "city": city->{ name, "slug": slug.current, country },  stars,  ratingOverall,  ratingFood,  ratingPrice,  ratingAtmosphere,  priceLevel,  cuisine,  closed,  tiivistelma,  "image": images[0]}  }
+// Query: *[_type == "ravintola" && slug.current == $slug][0]{      _id,  name,  "slug": slug.current,  "city": city->{ name, "slug": slug.current, country },  stars,  ratingOverall,  ratingFood,  ratingPrice,  ratingAtmosphere,  priceLevel,  cuisine,  closed,  tiivistelma,  tuomio,  stadionHuomio,  "image": images[0],    _updatedAt,    address,    postalCode,    phone,    website,    location,    closedNote,    pros,    cons,    visitedAt,    visits,    visitContext,    review,    ottelupaivana,    images,    seoTitle,    seoDescription,    "userReviews": *[_type == "ravintolaKayttajaArvostelu"      && restaurant._ref == ^._id && status == "approved"]      | order(submittedAt desc){        _id,        reviewerName,        stars,        comment,        submittedAt      },    "related": *[_type == "ravintola" && defined(slug.current)      && _id != ^._id && closed != true && city._ref == ^.city._ref]      | order(coalesce(ratingOverall, stars, 0) desc, name asc)[0...3]{  _id,  name,  "slug": slug.current,  "city": city->{ name, "slug": slug.current, country },  stars,  ratingOverall,  ratingFood,  ratingPrice,  ratingAtmosphere,  priceLevel,  cuisine,  closed,  tiivistelma,  tuomio,  stadionHuomio,  "image": images[0]}  }
 export type RavintolaBySlugQueryResult = {
   _id: string;
   name: string | null;
@@ -1847,6 +2005,8 @@ export type RavintolaBySlugQueryResult = {
   cuisine: Array<string> | null;
   closed: boolean | null;
   tiivistelma: string | null;
+  tuomio: string | null;
+  stadionHuomio: string | null;
   image:
     | ({
         _key: string;
@@ -1865,6 +2025,7 @@ export type RavintolaBySlugQueryResult = {
   visits: Array<string> | null;
   visitContext: string | null;
   review: PortableText | null;
+  ottelupaivana: string | null;
   images: Array<
     {
       _key: string;
@@ -1897,6 +2058,8 @@ export type RavintolaBySlugQueryResult = {
     cuisine: Array<string> | null;
     closed: boolean | null;
     tiivistelma: string | null;
+    tuomio: string | null;
+    stadionHuomio: string | null;
     image:
       | ({
           _key: string;
@@ -2082,7 +2245,7 @@ export type UutisetByYearQueryResult = {
 
 // Source: sanity/lib/queries/uutiset.ts
 // Variable: tulevatTapahtumatQuery
-// Query: *[_type == "tapahtuma" && defined(slug.current) && startsAt >= now()] | order(startsAt asc){      _id,      title,      "slug": slug.current,      startsAt,      endsAt,      location,      tiivistelma,      image  }
+// Query: *[_type == "tapahtuma" && defined(slug.current) && startsAt >= now()] | order(startsAt asc){      _id,      title,      "slug": slug.current,      startsAt,      endsAt,      location,      tiivistelma,      juhla,      image  }
 export type TulevatTapahtumatQueryResult = Array<{
   _id: string;
   title: string | null;
@@ -2091,12 +2254,13 @@ export type TulevatTapahtumatQueryResult = Array<{
   endsAt: string | null;
   location: string | null;
   tiivistelma: string | null;
+  juhla: boolean | null;
   image: ImageWithAlt | null;
 }>;
 
 // Source: sanity/lib/queries/uutiset.ts
 // Variable: menneetTapahtumatQuery
-// Query: *[_type == "tapahtuma" && defined(slug.current) && startsAt < now()] | order(startsAt desc){      _id,      title,      "slug": slug.current,      startsAt,      endsAt,      location,      tiivistelma,      image  }
+// Query: *[_type == "tapahtuma" && defined(slug.current) && startsAt < now()] | order(startsAt desc){      _id,      title,      "slug": slug.current,      startsAt,      endsAt,      location,      tiivistelma,      juhla,      image  }
 export type MenneetTapahtumatQueryResult = Array<{
   _id: string;
   title: string | null;
@@ -2105,6 +2269,7 @@ export type MenneetTapahtumatQueryResult = Array<{
   endsAt: string | null;
   location: string | null;
   tiivistelma: string | null;
+  juhla: boolean | null;
   image: ImageWithAlt | null;
 }>;
 
@@ -2115,7 +2280,7 @@ export type TapahtumaSlugsQueryResult = Array<string | null>;
 
 // Source: sanity/lib/queries/uutiset.ts
 // Variable: tapahtumaDetailQuery
-// Query: *[_type == "tapahtuma" && defined(slug.current) && slug.current == $slug][0]{      _id,      title,      "slug": slug.current,      startsAt,      endsAt,      location,      tiivistelma,      image,    _updatedAt,    description,    signupUrl,    signupEmail,    seoTitle,    seoDescription  }
+// Query: *[_type == "tapahtuma" && defined(slug.current) && slug.current == $slug][0]{      _id,      title,      "slug": slug.current,      startsAt,      endsAt,      location,      tiivistelma,      juhla,      image,    _updatedAt,    description,    signupUrl,    signupEmail,    seoTitle,    seoDescription  }
 export type TapahtumaDetailQueryResult = {
   _id: string;
   title: string | null;
@@ -2124,6 +2289,7 @@ export type TapahtumaDetailQueryResult = {
   endsAt: string | null;
   location: string | null;
   tiivistelma: string | null;
+  juhla: boolean | null;
   image: ImageWithAlt | null;
   _updatedAt: string;
   description: PortableText | null;
@@ -2139,37 +2305,38 @@ declare module "@sanity/client" {
   interface SanityQueries {
     '\n  *[_type == "arvokisa" && defined(slug.current)] | order(vuosi desc, title asc){\n    _id,\n    title,\n    "slug": slug.current,\n    tiivistelma,\n    kisatyyppi,\n    vuosi,\n    isantamaat,\n    voittaja,\n    suomenSijoitus\n  }\n': ArvokisatListQueryResult;
     '\n  *[_type == "arvokisa" && defined(slug.current)][].slug.current\n': ArvokisaSlugsQueryResult;
-    '\n  *[_type == "arvokisa" && slug.current == $slug][0]{\n    _id,\n    _updatedAt,\n    title,\n    "slug": slug.current,\n    tiivistelma,\n    kisatyyppi,\n    vuosi,\n    isantamaat,\n    voittaja,\n    suomenSijoitus,\n    alkuPvm,\n    loppuPvm,\n    hopea,\n    pronssi,\n    kuvaus,\n    tilastot[]->{\n      _id,\n      _updatedAt,\n      title,\n      "slug": slug.current,\n      tiivistelma,\n      category,\n      intro,\n      columns[]{ key, label, type },\n      rows[]{ cells[]{ key, value } },\n      lisatiedot,\n      kuvat[]{ _key, alt, caption, asset },\n      paivitetty,\n      jarjestys,\n      "sources": coalesce(sources, [])\n    },\n    kuvat[]{ _key, alt, caption, asset },\n    seoTitle,\n    seoDescription\n  }\n': ArvokisaBySlugQueryResult;
-    '\n  *[\n    _type == "jalkapalloTilasto"\n    && category == "arvokisa"\n    && count(*[_type == "arvokisa" && references(^._id)]) == 0\n  ] | order(coalesce(jarjestys, 1000) asc, title asc){\n    _id,\n      _updatedAt,\n      title,\n      "slug": slug.current,\n      tiivistelma,\n      category,\n      intro,\n      columns[]{ key, label, type },\n      rows[]{ cells[]{ key, value } },\n      lisatiedot,\n      kuvat[]{ _key, alt, caption, asset },\n      paivitetty,\n      jarjestys,\n      "sources": coalesce(sources, [])\n  }\n': ArvokisaMitalitaulukotQueryResult;
+    '\n  *[_type == "arvokisa" && slug.current == $slug][0]{\n    _id,\n    _updatedAt,\n    title,\n    "slug": slug.current,\n    tiivistelma,\n    kisatyyppi,\n    vuosi,\n    isantamaat,\n    voittaja,\n    suomenSijoitus,\n    alkuPvm,\n    loppuPvm,\n    hopea,\n    pronssi,\n    kuvaus,\n    tilastot[]->{\n      _id,\n      _updatedAt,\n      title,\n      "slug": slug.current,\n      tiivistelma,\n      category,\n      intro,\n      columns[]{ key, label, type },\n      rows[]{ cells[]{ key, value } },\n      lisatiedot,\n      kuvat[]{ _key, alt, caption, asset, hotspot, crop },\n      paivitetty,\n      jarjestys,\n      "sources": coalesce(sources, [])\n    },\n    kuvat[]{ _key, alt, caption, asset, hotspot, crop },\n    seoTitle,\n    seoDescription\n  }\n': ArvokisaBySlugQueryResult;
+    '\n  *[\n    _type == "jalkapalloTilasto"\n    && category == "arvokisa"\n    && count(*[_type == "arvokisa" && references(^._id)]) == 0\n  ] | order(coalesce(jarjestys, 1000) asc, title asc){\n    _id,\n      _updatedAt,\n      title,\n      "slug": slug.current,\n      tiivistelma,\n      category,\n      intro,\n      columns[]{ key, label, type },\n      rows[]{ cells[]{ key, value } },\n      lisatiedot,\n      kuvat[]{ _key, alt, caption, asset, hotspot, crop },\n      paivitetty,\n      jarjestys,\n      "sources": coalesce(sources, [])\n  }\n': ArvokisaMitalitaulukotQueryResult;
     '\n  *[_type == "arvokisa" && defined(slug.current)\n    && slug.current != $slug\n    && kisatyyppi == $kisatyyppi] | order(vuosi desc)[0...4]{\n    _id,\n    title,\n    "slug": slug.current,\n    tiivistelma,\n    kisatyyppi,\n    vuosi,\n    isantamaat,\n    voittaja,\n    suomenSijoitus\n  }\n': ArvokisatRelatedQueryResult;
-    '\n  *[_type == "pelaaja" && defined(slug.current)] | order(name asc){\n    _id,\n    name,\n    "slug": slug.current,\n    tiivistelma,\n    pelipaikka,\n    maaottelut,\n    maalit,\n    "kuva": kuvat[0]{ alt, caption, asset }\n  }\n': PelaajatListQueryResult;
+    '\n  *[_type == "pelaaja" && defined(slug.current)] | order(name asc){\n    _id,\n    name,\n    "slug": slug.current,\n    tiivistelma,\n    pelipaikka,\n    maaottelut,\n    maalit,\n    "kuva": kuvat[0]{ alt, caption, asset, hotspot, crop }\n  }\n': PelaajatListQueryResult;
     '\n  *[_type == "pelaaja" && defined(slug.current)][].slug.current\n': PelaajaSlugsQueryResult;
-    '\n  *[_type == "pelaaja" && slug.current == $slug][0]{\n    _id,\n    _updatedAt,\n    name,\n    "slug": slug.current,\n    tiivistelma,\n    pelipaikka,\n    maaottelut,\n    maalit,\n    syntymaaika,\n    seurat[]{ _key, seura, alkuvuosi, loppuvuosi },\n    kuvaus,\n    tilastot[]->{\n      _id,\n      _updatedAt,\n      title,\n      "slug": slug.current,\n      tiivistelma,\n      category,\n      intro,\n      columns[]{ key, label, type },\n      rows[]{ cells[]{ key, value } },\n      lisatiedot,\n      kuvat[]{ _key, alt, caption, asset },\n      paivitetty,\n      jarjestys,\n      "sources": coalesce(sources, [])\n    },\n    kuvat[]{ _key, alt, caption, asset },\n    seoTitle,\n    seoDescription\n  }\n': PelaajaBySlugQueryResult;
-    '\n  *[_type == "pelaaja" && defined(slug.current) && slug.current != $slug]\n    | order(coalesce(maaottelut, 0) desc, name asc)[0...4]{\n    _id,\n    name,\n    "slug": slug.current,\n    tiivistelma,\n    pelipaikka,\n    maaottelut,\n    maalit,\n    "kuva": kuvat[0]{ alt, caption, asset }\n  }\n': PelaajatRelatedQueryResult;
-    '\n  *[_type == "stadion" && defined(slug.current)]\n    | order(city->country asc, name asc){\n    _id,\n    name,\n    "slug": slug.current,\n    tiivistelma,\n    capacity,\n    openedYear,\n    "city": city->{ name, "slug": slug.current, country },\n    "kuva": images[0]{ alt, caption, asset }\n  }\n': StadionitListQueryResult;
+    '\n  *[_type == "pelaaja" && slug.current == $slug][0]{\n    _id,\n    _updatedAt,\n    name,\n    "slug": slug.current,\n    tiivistelma,\n    pelipaikka,\n    maaottelut,\n    maalit,\n    syntymaaika,\n    seurat[]{ _key, seura, alkuvuosi, loppuvuosi },\n    kuvaus,\n    tilastot[]->{\n      _id,\n      _updatedAt,\n      title,\n      "slug": slug.current,\n      tiivistelma,\n      category,\n      intro,\n      columns[]{ key, label, type },\n      rows[]{ cells[]{ key, value } },\n      lisatiedot,\n      kuvat[]{ _key, alt, caption, asset, hotspot, crop },\n      paivitetty,\n      jarjestys,\n      "sources": coalesce(sources, [])\n    },\n    kuvat[]{ _key, alt, caption, asset, hotspot, crop },\n    seoTitle,\n    seoDescription\n  }\n': PelaajaBySlugQueryResult;
+    '\n  *[_type == "pelaaja" && defined(slug.current) && slug.current != $slug]\n    | order(coalesce(maaottelut, 0) desc, name asc)[0...4]{\n    _id,\n    name,\n    "slug": slug.current,\n    tiivistelma,\n    pelipaikka,\n    maaottelut,\n    maalit,\n    "kuva": kuvat[0]{ alt, caption, asset, hotspot, crop }\n  }\n': PelaajatRelatedQueryResult;
+    '\n  *[_type == "stadion" && defined(slug.current)]\n    | order(city->country asc, name asc){\n    _id,\n    name,\n    "slug": slug.current,\n    tiivistelma,\n    capacity,\n    openedYear,\n    "city": city->{ name, "slug": slug.current, country },\n    "kuva": images[0]{ alt, caption, asset, hotspot, crop }\n  }\n': StadionitListQueryResult;
     '\n  *[_type == "stadion" && defined(slug.current)][].slug.current\n': StadionSlugsQueryResult;
-    '\n  *[_type == "stadion" && slug.current == $slug][0]{\n    _id,\n    _updatedAt,\n    name,\n    "slug": slug.current,\n    tiivistelma,\n    capacity,\n    openedYear,\n    address,\n    "city": city->{ name, "slug": slug.current, country },\n    location{ lat, lng, alt },\n    description,\n    images[]{ _key, alt, caption, asset },\n    seoTitle,\n    seoDescription\n  }\n': StadionBySlugQueryResult;
-    '\n  *[_type == "stadion" && defined(slug.current) && slug.current != $slug]\n    | order(select(city->name == $cityName => 0, 1) asc, name asc)[0...4]{\n    _id,\n    name,\n    "slug": slug.current,\n    tiivistelma,\n    capacity,\n    openedYear,\n    "city": city->{ name, "slug": slug.current, country },\n    "kuva": images[0]{ alt, caption, asset }\n  }\n': StadionitRelatedQueryResult;
-    '\n  *[_type == "jalkapalloTilasto" && category == $category]\n    | order(coalesce(jarjestys, 1000) asc, title asc){\n    \n  _id,\n  _updatedAt,\n  title,\n  "slug": slug.current,\n  tiivistelma,\n  category,\n  intro,\n  columns[]{ key, label, type },\n  rows[]{ cells[]{ key, value } },\n  lisatiedot,\n  kuvat[]{ _key, alt, caption, asset },\n  paivitetty,\n  jarjestys,\n  "sources": coalesce(sources, [])\n\n  }\n': TilastotByCategoryQueryResult;
-    '\n  *[_type == "jalkapalloTilasto" && category in $categories]\n    | order(coalesce(jarjestys, 1000) asc, title asc){\n    \n  _id,\n  _updatedAt,\n  title,\n  "slug": slug.current,\n  tiivistelma,\n  category,\n  intro,\n  columns[]{ key, label, type },\n  rows[]{ cells[]{ key, value } },\n  lisatiedot,\n  kuvat[]{ _key, alt, caption, asset },\n  paivitetty,\n  jarjestys,\n  "sources": coalesce(sources, [])\n\n  }\n': TilastotByCategoriesQueryResult;
-    '\n  *[\n    _type == "jalkapalloTilasto"\n    && category == $category\n    && slug.current == $slug\n  ][0]{\n    \n  _id,\n  _updatedAt,\n  title,\n  "slug": slug.current,\n  tiivistelma,\n  category,\n  intro,\n  columns[]{ key, label, type },\n  rows[]{ cells[]{ key, value } },\n  lisatiedot,\n  kuvat[]{ _key, alt, caption, asset },\n  paivitetty,\n  jarjestys,\n  "sources": coalesce(sources, [])\n\n  }\n': TilastoBySlugQueryResult;
+    '\n  *[_type == "stadion" && slug.current == $slug][0]{\n    _id,\n    _updatedAt,\n    name,\n    "slug": slug.current,\n    tiivistelma,\n    capacity,\n    openedYear,\n    address,\n    "city": city->{ name, "slug": slug.current, country },\n    location{ lat, lng, alt },\n    description,\n    images[]{ _key, alt, caption, asset, hotspot, crop },\n    seoTitle,\n    seoDescription\n  }\n': StadionBySlugQueryResult;
+    '\n  *[_type == "stadion" && defined(slug.current) && slug.current != $slug]\n    | order(select(city->name == $cityName => 0, 1) asc, name asc)[0...4]{\n    _id,\n    name,\n    "slug": slug.current,\n    tiivistelma,\n    capacity,\n    openedYear,\n    "city": city->{ name, "slug": slug.current, country },\n    "kuva": images[0]{ alt, caption, asset, hotspot, crop }\n  }\n': StadionitRelatedQueryResult;
+    '\n  *[_type == "jalkapalloTilasto" && category == $category]\n    | order(coalesce(jarjestys, 1000) asc, title asc){\n    \n  _id,\n  _updatedAt,\n  title,\n  "slug": slug.current,\n  tiivistelma,\n  category,\n  intro,\n  columns[]{ key, label, type },\n  rows[]{ cells[]{ key, value } },\n  lisatiedot,\n  kuvat[]{ _key, alt, caption, asset, hotspot, crop },\n  paivitetty,\n  jarjestys,\n  "sources": coalesce(sources, [])\n\n  }\n': TilastotByCategoryQueryResult;
+    '\n  *[_type == "jalkapalloTilasto" && category in $categories]\n    | order(coalesce(jarjestys, 1000) asc, title asc){\n    \n  _id,\n  _updatedAt,\n  title,\n  "slug": slug.current,\n  tiivistelma,\n  category,\n  intro,\n  columns[]{ key, label, type },\n  rows[]{ cells[]{ key, value } },\n  lisatiedot,\n  kuvat[]{ _key, alt, caption, asset, hotspot, crop },\n  paivitetty,\n  jarjestys,\n  "sources": coalesce(sources, [])\n\n  }\n': TilastotByCategoriesQueryResult;
+    '\n  *[\n    _type == "jalkapalloTilasto"\n    && category == $category\n    && slug.current == $slug\n  ][0]{\n    \n  _id,\n  _updatedAt,\n  title,\n  "slug": slug.current,\n  tiivistelma,\n  category,\n  intro,\n  columns[]{ key, label, type },\n  rows[]{ cells[]{ key, value } },\n  lisatiedot,\n  kuvat[]{ _key, alt, caption, asset, hotspot, crop },\n  paivitetty,\n  jarjestys,\n  "sources": coalesce(sources, [])\n\n  }\n': TilastoBySlugQueryResult;
     '\n  *[\n    _type == "jalkapalloTilasto"\n    && category == $category\n    && defined(slug.current)\n  ].slug.current\n': TilastoSlugsByCategoryQueryResult;
     '\n  *[_type == "jalkapalloTilasto" && defined(category)]{\n    category,\n    "updatedAt": _updatedAt\n  }\n': ArkistoSummaryQueryResult;
-    '\n  *[_type == "etusivu"][0]{\n    heroEyebrow,\n    heroTitle,\n    heroDescription,\n    heroImage,\n    heroCtas[]{ label, href, primary },\n    seuraavaOttelu{ ottelu, kilpailu, aika },\n    blocks[]{\n      _type,\n      _key,\n      heading,\n      count,\n      body,\n      image,\n      ctaLabel,\n      ctaHref,\n      "city": city->{ "_ref": _id, name }\n    }\n  }\n': EtusivuQueryResult;
-    '\n  *[_type == "ravintola" && defined(slug.current) && closed != true\n    && ($cityId == null || city._ref == $cityId)\n    && coalesce(ratingOverall, stars, 0) > 0]\n    | order(coalesce(ratingOverall, stars, 0) desc, name asc)[0...$count]{\n    _id,\n    name,\n    "slug": slug.current,\n    "city": city->{ name, "slug": slug.current },\n    "stars": coalesce(ratingOverall, stars, 0),\n    priceLevel,\n    cuisine,\n    "image": images[0]\n  }\n': EtusivuRavintolatQueryResult;
+    '\n  *[_type == "etusivu"][0]{\n    heroEyebrow,\n    heroTitle,\n    heroDescription,\n    heroImage,\n    heroCtas[]{ label, href, primary },\n    seuraavaOttelu{ ottelu, kilpailu, aika },\n    blocks[]{\n      _type,\n      _key,\n      eyebrow,\n      heading,\n      count,\n      ottelutHeading,\n      ottelutCount,\n      tapahtumatHeading,\n      tapahtumatCount,\n      body,\n      image,\n      ctaLabel,\n      ctaHref,\n      "city": city->{ "_ref": _id, name }\n    }\n  }\n': EtusivuQueryResult;
+    '\n  *[_type == "ravintola" && defined(slug.current) && closed != true\n    && ($cityId == null || city._ref == $cityId)\n    && coalesce(ratingOverall, stars, 0) > 0]\n    | order(coalesce(ratingOverall, stars, 0) desc, name asc)[0...$count]{\n    _id,\n    name,\n    "slug": slug.current,\n    "city": city->{ name, "slug": slug.current },\n    stars,\n    ratingOverall,\n    priceLevel,\n    cuisine,\n    tuomio,\n    stadionHuomio,\n    "image": images[0]\n  }\n': EtusivuRavintolatQueryResult;
     '\n  {\n    "arvokisat": count(*[_type == "arvokisa" && defined(slug.current)]),\n    "pelaajat": count(*[_type == "pelaaja" && defined(slug.current)]),\n    "stadionit": count(*[_type == "stadion" && defined(slug.current)]),\n    "tilastot": count(*[_type == "jalkapalloTilasto" && defined(slug.current)]),\n    "fifa": *[_type == "jalkapalloTilasto" && category == "fifa-ranking"\n      && defined(slug.current)] | order(_updatedAt desc)[0]{\n      title,\n      "slug": slug.current,\n      _updatedAt,\n      columns[]{ key, label, type },\n      "rows": rows[0...5]{ cells[]{ key, value } }\n    }\n  }\n': EtusivuArkistoQueryResult;
     '\n  *[_type == "galleriaAlbumi" && defined(slug.current)]\n    | order(date desc){\n    _id,\n    title,\n    "slug": slug.current,\n    date,\n    tiivistelma,\n    coverImage,\n    "imageCount": count(images)\n  }\n': GalleriaAlbumitQueryResult;
     '\n  *[_type == "galleriaAlbumi" && defined(slug.current)]\n    | order(date desc)[0...$count]{\n    _id,\n    title,\n    "slug": slug.current,\n    date,\n    tiivistelma,\n    coverImage,\n    "imageCount": count(images)\n  }\n': EtusivuGalleriaQueryResult;
     '\n  *[_type == "galleriaAlbumi" && slug.current == $slug][0]{\n    _id,\n    _updatedAt,\n    title,\n    "slug": slug.current,\n    date,\n    tiivistelma,\n    coverImage,\n    images,\n    "event": event->{ title, "slug": slug.current }\n  }\n': GalleriaAlbumiBySlugQueryResult;
-    '\n  *[_type == "sivu" && slug.current == $slug][0]{\n    _id,\n    _updatedAt,\n    title,\n    "slug": slug.current,\n    tiivistelma,\n    ingress,\n    hero,\n    body,\n    tilastot[]->{\n      _id,\n      _updatedAt,\n      title,\n      "slug": slug.current,\n      tiivistelma,\n      category,\n      intro,\n      columns[]{ key, label, type },\n      rows[]{ cells[]{ key, value } },\n      lisatiedot,\n      kuvat[]{ _key, alt, caption, asset },\n      paivitetty,\n      jarjestys,\n      "sources": coalesce(sources, [])\n    },\n    seoTitle,\n    seoDescription\n  }\n': KlubiSivuQueryResult;
+    '\n  *[_type == "sivu" && slug.current == $slug][0]{\n    _id,\n    _updatedAt,\n    title,\n    "slug": slug.current,\n    tiivistelma,\n    ingress,\n    hero,\n    body,\n    tilastot[]->{\n      _id,\n      _updatedAt,\n      title,\n      "slug": slug.current,\n      tiivistelma,\n      category,\n      intro,\n      columns[]{ key, label, type },\n      rows[]{ cells[]{ key, value } },\n      lisatiedot,\n      kuvat[]{ _key, alt, caption, asset, hotspot, crop },\n      paivitetty,\n      jarjestys,\n      "sources": coalesce(sources, [])\n    },\n    seoTitle,\n    seoDescription\n  }\n': KlubiSivuQueryResult;
     '\n  *[_type == "klubiToiminta" && defined(slug.current)]\n    | order(jarjestys asc, title asc){\n    _id,\n    title,\n    "slug": slug.current,\n    tiivistelma,\n    "kuva": kuvat[0],\n    "vuosiMaara": count(vuodet),\n    "uusinVuosi": math::max(vuodet[].vuosi)\n  }\n': KlubiToimintaListQueryResult;
-    '\n  *[_type == "klubiToiminta" && slug.current == $slug][0]{\n    _id,\n    _updatedAt,\n    title,\n    "slug": slug.current,\n    tiivistelma,\n    kuvaus,\n    kuvat,\n    seoTitle,\n    seoDescription,\n    "vuodet": vuodet[] | order(vuosi desc, paivamaara desc){\n      _key,\n      vuosi,\n      paivamaara,\n      otsikko,\n      jarjestysnumero,\n      osallistujat,\n      paikka,\n      kuvaus,\n      linkki{ url, teksti },\n      kuvat\n    },\n    tilastot[]->{\n      _id,\n      _updatedAt,\n      title,\n      "slug": slug.current,\n      tiivistelma,\n      category,\n      intro,\n      columns[]{ key, label, type },\n      rows[]{ cells[]{ key, value } },\n      lisatiedot,\n      kuvat[]{ _key, alt, caption, asset },\n      paivitetty,\n      jarjestys,\n      "sources": coalesce(sources, [])\n    }\n  }\n': KlubiToimintaBySlugQueryResult;
+    '\n  *[_type == "klubiToiminta" && slug.current == $slug][0]{\n    _id,\n    _updatedAt,\n    title,\n    "slug": slug.current,\n    tiivistelma,\n    kuvaus,\n    kuvat,\n    seoTitle,\n    seoDescription,\n    "vuodet": vuodet[] | order(vuosi desc, paivamaara desc){\n      _key,\n      vuosi,\n      paivamaara,\n      otsikko,\n      jarjestysnumero,\n      osallistujat,\n      paikka,\n      kuvaus,\n      linkki{ url, teksti },\n      kuvat\n    },\n    tilastot[]->{\n      _id,\n      _updatedAt,\n      title,\n      "slug": slug.current,\n      tiivistelma,\n      category,\n      intro,\n      columns[]{ key, label, type },\n      rows[]{ cells[]{ key, value } },\n      lisatiedot,\n      kuvat[]{ _key, alt, caption, asset, hotspot, crop },\n      paivitetty,\n      jarjestys,\n      "sources": coalesce(sources, [])\n    }\n  }\n': KlubiToimintaBySlugQueryResult;
     '\n  *[_type == "klubiToiminta" && defined(slug.current) && slug.current != $slug]\n    | order(jarjestys asc, title asc)[0...4]{\n    _id,\n    title,\n    "slug": slug.current,\n    tiivistelma\n  }\n': KlubiToimintaSiblingsQueryResult;
     '\n  *[_type == "klubiToiminta" && defined(slug.current)][].slug.current\n': KlubiToimintaSlugsQueryResult;
     '\n  *[_type == "hallitusJasen"] | order(order asc, name asc){\n    _id,\n    name,\n    role,\n    image,\n    bio,\n    email,\n    phone\n  }\n': HallitusListQueryResult;
-    '\n  count(*[\n  _type == "ravintola" && defined(slug.current)\n  && ($citySlug == null || city->slug.current == $citySlug)\n  && ($cuisine == null || $cuisine in cuisine)\n  && ($minRating == null || coalesce(ratingOverall, stars, 0) >= $minRating)\n  && ($includeClosed == true || closed != true)\n])\n': RavintolatCountQueryResult;
-    '{\n  "cities": *[_type == "kaupunki" && defined(slug.current)\n      && count(*[_type == "ravintola" && references(^._id)]) > 0]\n    | order(name asc){\n      name,\n      "slug": slug.current,\n      "count": count(*[_type == "ravintola" && references(^._id) && closed != true])\n    },\n  "cuisines": array::unique(*[_type == "ravintola" && defined(cuisine)].cuisine[]),\n  "total": count(*[_type == "ravintola" && defined(slug.current) && closed != true]),\n  "closedCount": count(*[_type == "ravintola" && closed == true]),\n  "firstVisitYear": *[_type == "ravintola" && defined(visitedAt)]\n    | order(visitedAt asc)[0].visitedAt\n}': RavintolatFacetsQueryResult;
-    '\n  *[_type == "ravintola" && slug.current == $slug][0]{\n    \n  _id,\n  name,\n  "slug": slug.current,\n  "city": city->{ name, "slug": slug.current, country },\n  stars,\n  ratingOverall,\n  ratingFood,\n  ratingPrice,\n  ratingAtmosphere,\n  priceLevel,\n  cuisine,\n  closed,\n  tiivistelma,\n  "image": images[0]\n,\n    _updatedAt,\n    address,\n    postalCode,\n    phone,\n    website,\n    location,\n    closedNote,\n    pros,\n    cons,\n    visitedAt,\n    visits,\n    visitContext,\n    review,\n    images,\n    seoTitle,\n    seoDescription,\n    "userReviews": *[_type == "ravintolaKayttajaArvostelu"\n      && restaurant._ref == ^._id && status == "approved"]\n      | order(submittedAt desc){\n        _id,\n        reviewerName,\n        stars,\n        comment,\n        submittedAt\n      },\n    "related": *[_type == "ravintola" && defined(slug.current)\n      && _id != ^._id && closed != true && city._ref == ^.city._ref]\n      | order(coalesce(ratingOverall, stars, 0) desc, name asc)[0...3]{\n  _id,\n  name,\n  "slug": slug.current,\n  "city": city->{ name, "slug": slug.current, country },\n  stars,\n  ratingOverall,\n  ratingFood,\n  ratingPrice,\n  ratingAtmosphere,\n  priceLevel,\n  cuisine,\n  closed,\n  tiivistelma,\n  "image": images[0]\n}\n  }\n': RavintolaBySlugQueryResult;
+    '\n  *[_type == "ottelu" && defined(aika) && dateTime(aika) > dateTime(now()) - 60*60*24]\n    | order(aika asc){\n    _id,\n    aika,\n    koti,\n    vieras,\n    kilpailu,\n    stadion,\n    klubiPaikalla,\n    vierasmatka\n  }\n': TulevatOttelutQueryResult;
+    '\n  count(*[\n  _type == "ravintola" && defined(slug.current)\n  && ($citySlug == null || city->slug.current == $citySlug)\n  && ($countryNames == null || city->country in $countryNames)\n  && ($maakuntaSlugs == null\n      || (city->country == "Suomi" && city->maakunta in $maakuntaSlugs))\n  && ($cuisine == null || $cuisine in cuisine)\n  && ($minRating == null || coalesce(ratingOverall, stars, 0) >= $minRating)\n  && ($includeClosed == true || closed != true)\n])\n': RavintolatCountQueryResult;
+    '{\n  "places": *[_type == "kaupunki" && defined(slug.current)\n      && count(*[_type == "ravintola" && references(^._id)]) > 0]\n    | order(name asc){\n      name,\n      "slug": slug.current,\n      country,\n      maakunta,\n      "count": count(*[_type == "ravintola" && references(^._id) && closed != true])\n    },\n  "cuisines": array::unique(*[_type == "ravintola" && defined(cuisine)].cuisine[]),\n  "total": count(*[_type == "ravintola" && defined(slug.current) && closed != true]),\n  "closedCount": count(*[_type == "ravintola" && closed == true]),\n  "firstVisitYear": *[_type == "ravintola" && defined(visitedAt)]\n    | order(visitedAt asc)[0].visitedAt\n}': RavintolatFacetsQueryResult;
+    '\n  *[_type == "ravintola" && slug.current == $slug][0]{\n    \n  _id,\n  name,\n  "slug": slug.current,\n  "city": city->{ name, "slug": slug.current, country },\n  stars,\n  ratingOverall,\n  ratingFood,\n  ratingPrice,\n  ratingAtmosphere,\n  priceLevel,\n  cuisine,\n  closed,\n  tiivistelma,\n  tuomio,\n  stadionHuomio,\n  "image": images[0]\n,\n    _updatedAt,\n    address,\n    postalCode,\n    phone,\n    website,\n    location,\n    closedNote,\n    pros,\n    cons,\n    visitedAt,\n    visits,\n    visitContext,\n    review,\n    ottelupaivana,\n    images,\n    seoTitle,\n    seoDescription,\n    "userReviews": *[_type == "ravintolaKayttajaArvostelu"\n      && restaurant._ref == ^._id && status == "approved"]\n      | order(submittedAt desc){\n        _id,\n        reviewerName,\n        stars,\n        comment,\n        submittedAt\n      },\n    "related": *[_type == "ravintola" && defined(slug.current)\n      && _id != ^._id && closed != true && city._ref == ^.city._ref]\n      | order(coalesce(ratingOverall, stars, 0) desc, name asc)[0...3]{\n  _id,\n  name,\n  "slug": slug.current,\n  "city": city->{ name, "slug": slug.current, country },\n  stars,\n  ratingOverall,\n  ratingFood,\n  ratingPrice,\n  ratingAtmosphere,\n  priceLevel,\n  cuisine,\n  closed,\n  tiivistelma,\n  tuomio,\n  stadionHuomio,\n  "image": images[0]\n}\n  }\n': RavintolaBySlugQueryResult;
     '\n  *[_type == "ravintola" && defined(slug.current)].slug.current\n': RavintolaSlugsQueryResult;
     '\n  *[_type == "ravintola" && defined(slug.current)] | order(name asc){\n    _id,\n    name,\n    "slug": slug.current,\n    "city": city->name\n  }\n': RavintolaOptionsQueryResult;
     '\n  *[_type == $type && defined(slug.current)] | order(_updatedAt desc) {\n    "slug": slug.current,\n    "updatedAt": _updatedAt\n  }\n': SitemapByTypeQueryResult;
@@ -2182,9 +2349,9 @@ declare module "@sanity/client" {
     '\n  *[_type == "uutinen" && defined(slug.current) && slug.current != $slug\n    && count((categories[])[@ in $categories]) > 0]\n    | order(publishedAt desc)[0...$count]{\n      _id,\n      title,\n      "slug": slug.current,\n      publishedAt,\n      excerpt,\n      tiivistelma,\n      coverImage,\n      categories\n  }\n': RelatedUutisetQueryResult;
     '\n  *[_type == "uutinen" && defined(slug.current) && defined(publishedAt)]{\n    "year": string::split(publishedAt, "-")[0]\n  }\n': UutisetArchiveYearsQueryResult;
     '\n  {\n    "items": *[_type == "uutinen" && defined(slug.current) && publishedAt >= $from && publishedAt < $to]\n      | order(publishedAt desc)[$start...$end]{\n      _id,\n      title,\n      "slug": slug.current,\n      publishedAt,\n      excerpt,\n      tiivistelma,\n      coverImage,\n      categories\n    },\n    "total": count(*[_type == "uutinen" && defined(slug.current) && publishedAt >= $from && publishedAt < $to])\n  }\n': UutisetByYearQueryResult;
-    '\n  *[_type == "tapahtuma" && defined(slug.current) && startsAt >= now()] | order(startsAt asc){\n      _id,\n      title,\n      "slug": slug.current,\n      startsAt,\n      endsAt,\n      location,\n      tiivistelma,\n      image\n  }\n': TulevatTapahtumatQueryResult;
-    '\n  *[_type == "tapahtuma" && defined(slug.current) && startsAt < now()] | order(startsAt desc){\n      _id,\n      title,\n      "slug": slug.current,\n      startsAt,\n      endsAt,\n      location,\n      tiivistelma,\n      image\n  }\n': MenneetTapahtumatQueryResult;
+    '\n  *[_type == "tapahtuma" && defined(slug.current) && startsAt >= now()] | order(startsAt asc){\n      _id,\n      title,\n      "slug": slug.current,\n      startsAt,\n      endsAt,\n      location,\n      tiivistelma,\n      juhla,\n      image\n  }\n': TulevatTapahtumatQueryResult;
+    '\n  *[_type == "tapahtuma" && defined(slug.current) && startsAt < now()] | order(startsAt desc){\n      _id,\n      title,\n      "slug": slug.current,\n      startsAt,\n      endsAt,\n      location,\n      tiivistelma,\n      juhla,\n      image\n  }\n': MenneetTapahtumatQueryResult;
     '\n  *[_type == "tapahtuma" && defined(slug.current)].slug.current\n': TapahtumaSlugsQueryResult;
-    '\n  *[_type == "tapahtuma" && defined(slug.current) && slug.current == $slug][0]{\n      _id,\n      title,\n      "slug": slug.current,\n      startsAt,\n      endsAt,\n      location,\n      tiivistelma,\n      image,\n    _updatedAt,\n    description,\n    signupUrl,\n    signupEmail,\n    seoTitle,\n    seoDescription\n  }\n': TapahtumaDetailQueryResult;
+    '\n  *[_type == "tapahtuma" && defined(slug.current) && slug.current == $slug][0]{\n      _id,\n      title,\n      "slug": slug.current,\n      startsAt,\n      endsAt,\n      location,\n      tiivistelma,\n      juhla,\n      image,\n    _updatedAt,\n    description,\n    signupUrl,\n    signupEmail,\n    seoTitle,\n    seoDescription\n  }\n': TapahtumaDetailQueryResult;
   }
 }

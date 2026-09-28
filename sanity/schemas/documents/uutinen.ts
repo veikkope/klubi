@@ -134,6 +134,8 @@ export const uutinen = defineType({
           { title: "Jalkapallo", value: "jalkapallo" },
           { title: "Ravintola", value: "ravintola" },
           { title: "Blogikirjoitus", value: "blogi" },
+          { title: "Palloveikkaus", value: "palloveikkaus" },
+          { title: "Matkakuvaus", value: "matkakuvaus" },
         ],
         layout: "tags",
       },
@@ -150,6 +152,41 @@ export const uutinen = defineType({
     ...seoFields,
     legacyUrlField("seo"),
     muutLegacyUrlitField("seo"),
+    defineField({
+      name: "blogspot",
+      title: "Alkuperäinen Blogspot-kirjoitus",
+      description:
+        "Täytetään automaattisesti, kun kirjoitus tuodaan klubin Blogspot-blogista. " +
+        "Älä muuta käsin — blogin vanhat osoitteet ohjautuvat tämän varassa tähän uutiseen.",
+      type: "object",
+      readOnly: true,
+      options: { collapsible: true, collapsed: true },
+      hidden: ({ value }) => !value,
+      fields: [
+        defineField({ name: "id", title: "Kirjoituksen tunniste", type: "string" }),
+        defineField({ name: "url", title: "Osoite blogissa", type: "url" }),
+        defineField({
+          name: "polku",
+          title: "Polku blogissa",
+          description: "Esim. /2019/03/milano.html",
+          type: "string",
+        }),
+        defineField({
+          name: "tunnisteet",
+          title: "Blogin tunnisteet",
+          description: "Kirjoituksen tunnisteet (labels) blogissa sellaisenaan.",
+          type: "array",
+          of: [{ type: "string" }],
+        }),
+        defineField({
+          name: "kommentteja",
+          title: "Kommentteja blogissa",
+          description: "Kommentit jäivät blogiin; niitä ei tuotu sivustolle.",
+          type: "number",
+        }),
+      ],
+      group: "seo",
+    }),
   ],
   orderings: [
     {

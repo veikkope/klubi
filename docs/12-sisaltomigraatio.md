@@ -16,7 +16,7 @@
 |---|---|
 | Kohdedataset | **`development`**. Julkaisussa koko sisältö kopioidaan kerralla: `npx sanity dataset copy development production`. |
 | Lähdedata | Crawlataan tällä koneella uudelleen (`npm run crawl`, `npm run images`) → `data/raw-html/`. Parserit ajetaan **paikallista kopiota vasten, ei verkkoa**. |
-| Blogspot | **Ei tässä vaiheessa.** Linkit säilyvät ulkoisina. |
+| Blogspot | **Ei tässä vaiheessa.** Linkit säilyvät ulkoisina. → Toteutettu erillisenä: docs/14 (2026-09-28). |
 | Import | Agentit importtaavat itse `development`-datasetiin. Deterministiset `_id`:t + `--replace` → ajo on toistettava ja peruttava. |
 | Tuotanto | `production`-datasettiin **ei kirjoiteta** tämän suunnitelman aikana. |
 
@@ -484,7 +484,7 @@ kreikka Ateena → `?maa=kreikka` (Egina mukaan), venaja Pietari (23/35) → `?m
    `image-9dff22d0…-985x554-jpg`). Ne ovat BMP-lähteiden vanhoja versioita, jotka
    korvattiin PNG:llä, eikä putki luo niitä uudelleen. Ne voi poistaa, tai
    `import-kuvat.ts`:n vaihe 0 voi siivota ne.
-5. **Otsikkoarkiston 300 Blogspot-linkkiä** on jäsennetty, mutta niitä ei ole tuotu (§0).
+5. ~~**Otsikkoarkiston 300 Blogspot-linkkiä** on jäsennetty, mutta niitä ei ole tuotu (§0).~~ Blogin kaikki kirjoitukset tuodaan kokonaisina: docs/14.
 6. Kansojen liigan lohkotaulukot (M2) voisi linkittää arvokisojen `tilastot`-kenttään (M4).
 7. MM-kisojen mitalistitaulukossa on tulevia rivejä (2030, 2034), joissa on vain
    isäntämaa. Ne jätettiin, koska isäntä on todellinen tieto. QA päättää, rikkovatko
