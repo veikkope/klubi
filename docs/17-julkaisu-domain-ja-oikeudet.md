@@ -176,9 +176,9 @@ riippuvainen web-muutoksesta C2:n jälkeen.
 | 5 | Arvostelut: ei sähköpostia, luonnoksena | kehittäjä | ✅ 28.9. (odottaa deployta) |
 | 6 | Tietosuojaseloste /tietosuoja + linkit | kehittäjä | ✅ 28.9. Hallitus vahvistaa sisällön |
 | 7 | Studio: suomi, valikko, Tarkistettavat, syyt | kehittäjä | ✅ 28.9. (odottaa deployta) |
-| 8 | Vercel: `SANITY_API_READ_TOKEN`, `SANITY_REVALIDATE_SECRET` → redeploy | kehittäjä | ☐ |
-| 9 | Tokenit: "Vercel – lomakkeet" ja "Vercel – esikatselu", migraatiotokenien poisto | kehittäjä | ☐ |
-| 10 | Isän kutsu (Editor) ja perehdytys | kehittäjä + isä | ☐ |
+| 8 | Vercel: `SANITY_API_READ_TOKEN`, `SANITY_REVALIDATE_SECRET` → redeploy | kehittäjä | ✅ 28.9. |
+| 9 | Tokenit: "Vercel – lomakkeet" ja "Vercel – esikatselu", migraatiotokenien poisto | kehittäjä | ✅ 28.9. (lomake testattu tuotannossa) |
+| 10 | Isän kutsu (Editor) ja perehdytys | kehittäjä + isä | kutsu lähetetty 28.9., perehdytys ☐ |
 | 11 | Koodisana ja perustiedot Studiossa (docs/09 "Täytä itse") | isä + hallitus | ☐ |
 | 12 | Tietosuojaselosteen vahvistus | hallitus | ☐ |
 | 13 | Resend (jäsenhakemukset) | kehittäjä + hallitus | ☐ |
