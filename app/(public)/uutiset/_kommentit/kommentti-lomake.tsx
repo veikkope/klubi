@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState, useEffect, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
 
@@ -186,6 +187,11 @@ export function KommenttiLomake({
 
         <p className="text-sm text-muted">
           Nimesi ja {onVeikkaus ? "veikkauksesi" : "kommenttisi"} näkyvät sivulla julkisesti heti lähettämisen jälkeen.
+          Lue{" "}
+          <Link href="/tietosuoja" className="text-accent underline underline-offset-4">
+            tietosuojaseloste
+          </Link>
+          .
         </p>
 
         <SubmitButton label={onVeikkaus ? "Lähetä veikkaus" : "Lähetä kommentti"} />

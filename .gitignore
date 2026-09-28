@@ -64,3 +64,6 @@ next-env.d.ts
 # Blogspot-blogin paikallinen kopio (regeneroitavissa: npm run blogspot:fetch).
 # Sisältää kommentoijien nimiä → ei versionhallintaan.
 /data/blogspot/
+
+# Sanityn varmuuskopiot (npm run backup)
+/varmuuskopiot/

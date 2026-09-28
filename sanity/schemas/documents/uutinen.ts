@@ -5,6 +5,7 @@ import {
   legacyUrlField,
   muutLegacyUrlitField,
   needsReviewField,
+  tarkistettavaaField,
   tiivistelmaField,
 } from "../objects/contentMeta";
 
@@ -150,6 +151,7 @@ export const uutinen = defineType({
       group: "sisalto",
     }),
     needsReviewField("sisalto"),
+    tarkistettavaaField("sisalto"),
     defineField({
       name: "kommentointi",
       title: "Kommentit ja veikkaus",
@@ -284,12 +286,12 @@ export const uutinen = defineType({
     },
   ],
   preview: {
-    select: { title: "title", date: "publishedAt", media: "coverImage" },
-    prepare({ title, date, media }) {
+    select: { title: "title", date: "publishedAt", media: "coverImage", needsReview: "needsReview" },
+    prepare({ title, date, media, needsReview }) {
       const formatted = date
         ? new Date(date).toLocaleDateString("fi-FI")
         : "Ei päivämäärää";
-      return { title, subtitle: formatted, media };
+      return { title: needsReview ? `⚠ ${title}` : title, subtitle: formatted, media };
     },
   },
 });

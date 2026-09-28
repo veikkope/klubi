@@ -6,6 +6,27 @@
 
 ---
 
+## 0. Korjausten tila (päivitetty 28.9.2026 illalla)
+
+| Este | Tila |
+|---|---|
+| 1 Domain / info@-posti | Suunniteltu: **docs/17 §C**. Tarkennus: myös `mail` on CNAME apexiin, joten se muutetaan A-tietueeksi ennen MX-muutosta. |
+| 2 Studio ja CORS | ✅ CORS lisätty neljälle osoitteelle. Isän kutsu (Editor) ja tokenien siivous: docs/17 §A. |
+| 3 Arvostelijoiden sähköpostit | ✅ Sähköpostia ei enää kerätä. Arvostelu tallentuu luonnoksena (ei luettavissa julkisesti) ja hyväksytään julkaisemalla. Testattu. |
+| 4 Ottelun 29.9. aika | **Ei virhe.** Sivun 19.00 on oikein (vahvistettu). Vanhan sivun 21.45 oli väärä. |
+| 5 Tietosuojaseloste | ✅ /tietosuoja (Sanity-sivu), linkit footerissa ja kaikissa lomakkeissa. Hallitus vahvistaa sisällön ("Mitä tarkistaa"). |
+| 6 Next.js-haavoittuvuudet | ✅ 16.3.6 + `npm audit fix`: 31 → 9 haavoittuvuutta, kaikki jäljellä olevat vain Sanityn komentorivityökalussa (ei julkisella sivustolla). Dependabot ja CI lisätty. |
+| 7 404- ja virhesivut | ✅ Suomenkieliset, sivuston ulkoasulla, noindex. |
+| 8 Esikatselu | Koodi ✅ (Studio: sisältö ensin, esikatselulinkit dokumenteissa). Vercelistä puuttuu `SANITY_API_READ_TOKEN`: docs/17 §B. |
+| 9 Webhook | ✅ Luotu Sanityyn, ja riippuvuudet (arvostelu/kaupunki → ravintola) lisätty. Vercelistä puuttuu `SANITY_REVALIDATE_SECRET`: docs/17 §B. |
+| 10 Perustiedot | Isä ja hallitus: docs/09 "Täytä itse". |
+| 11 Studion valikko | ✅ Klubin toiminta, arvokisat, pelaajat, odottavat arvostelut. Studio suomeksi, Vision vain ylläpitäjille. |
+| 12 Tarkistusjono | ✅ Valikko **Tarkistettavat** tyypeittäin, kenttä **Mitä tarkistaa** täytetty 75 dokumenttiin (dev ja prod), ⚠ kaikissa tyypeissä. |
+| 13 Isän opas | ✅ docs/09 v2.0 kirjoitettu uudelleen. |
+| Varmuuskopiointi | ✅ `npm run backup`, ensimmäinen kopio otettu 28.9. CLAUDE.md:n `--replace`-ohje korjattu. |
+
+---
+
 ## 1. Vastaukset kysymyksiin
 
 ### Ovatko sivut täysin valmiit?

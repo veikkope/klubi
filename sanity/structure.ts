@@ -1,15 +1,43 @@
-import { ArchiveIcon, CogIcon, CommentIcon, ControlsIcon, EnvelopeIcon, HomeIcon, LemonIcon, LockIcon, MenuIcon } from "@sanity/icons";
+import {
+  ArchiveIcon,
+  CogIcon,
+  CommentIcon,
+  ControlsIcon,
+  EnvelopeIcon,
+  HomeIcon,
+  LemonIcon,
+  LockIcon,
+  MenuIcon,
+  WarningOutlineIcon,
+} from "@sanity/icons";
+import type { StructureBuilder, StructureResolver } from "sanity/structure";
 
 import { KOMMENTTIKOODI_ID } from "./schemas/singletons/kommenttikoodi";
-import type { StructureResolver } from "sanity/structure";
 
 /**
- * Desk-strukturointi: Sanity Studion vasemman valikon järjestys.
+ * Sanity Studion vasemman valikon järjestys (docs/09).
  *
- * - Singletonit (Etusivu, Asetukset, Navigaatio, Yhteystiedot) näkyvät erikseen "Asetukset"-osion alla
- *   ja niistä ei voi luoda useampaa kappaletta.
- * - Dokumenttityypit järjestetty käyttötarkoituksen mukaan, ei aakkosellisesti.
+ * - Singletonit ovat "Sivun asetukset" -osiossa, eikä niistä voi luoda kopioita.
+ * - Tyypit on järjestetty käyttötarkoituksen mukaan: ensin se, mitä sihteeri
+ *   päivittää usein (uutiset, ottelut, tapahtumat), sitten arkistot.
+ * - "Tarkistettavat" kokoaa migraation merkitsemät dokumentit tyypeittäin, joten
+ *   ne on helppo käydä läpi yksi kerrallaan.
  */
+
+/** Tyypit, joissa on migraation "Vaatii tarkistuksen" -lippu. */
+const TARKISTETTAVAT: { tyyppi: string; otsikko: string }[] = [
+  { tyyppi: "uutinen", otsikko: "Uutiset" },
+  { tyyppi: "ravintola", otsikko: "Ravintolat" },
+  { tyyppi: "jalkapalloTilasto", otsikko: "Tilastot" },
+  { tyyppi: "stadion", otsikko: "Stadionit" },
+  { tyyppi: "klubiToiminta", otsikko: "Klubin toiminta" },
+  { tyyppi: "pelaaja", otsikko: "Pelaajat" },
+  { tyyppi: "arvokisa", otsikko: "Arvokisat" },
+];
+
+const lista = (S: StructureBuilder, tyyppi: string, otsikko: string) =>
+  S.listItem().title(otsikko).schemaType(tyyppi).child(S.documentTypeList(tyyppi).title(otsikko));
+
 export const structure: StructureResolver = (S) =>
   S.list()
     .title("Sisältö")
@@ -21,10 +49,7 @@ export const structure: StructureResolver = (S) =>
           S.list()
             .title("Sivun asetukset")
             .items([
-              S.listItem()
-                .title("Etusivu")
-                .icon(HomeIcon)
-                .child(S.document().schemaType("etusivu").documentId("etusivu")),
+              S.listItem().title("Etusivu").icon(HomeIcon).child(S.document().schemaType("etusivu").documentId("etusivu")),
               S.listItem()
                 .title("Navigaatio")
                 .icon(MenuIcon)
@@ -44,11 +69,38 @@ export const structure: StructureResolver = (S) =>
             ]),
         ),
 
+      S.listItem()
+        .title("Tarkistettavat")
+        .icon(WarningOutlineIcon)
+        .child(
+          S.list()
+            .title("Vaatii tarkistuksen")
+            .items(
+              TARKISTETTAVAT.map(({ tyyppi, otsikko }) =>
+                S.listItem()
+                  .title(otsikko)
+                  .schemaType(tyyppi)
+                  .child(
+                    S.documentList()
+                      .title(`${otsikko}: tarkistettavat`)
+                      .schemaType(tyyppi)
+                      .filter(`_type == $tyyppi && needsReview == true`)
+                      .params({ tyyppi }),
+                  ),
+              ),
+            ),
+        ),
+
       S.divider(),
 
-      S.listItem().title("Tapahtumat").schemaType("tapahtuma").child(S.documentTypeList("tapahtuma").title("Tapahtumat")),
-      S.listItem().title("Ottelut").schemaType("ottelu").child(S.documentTypeList("ottelu").title("Ottelut").defaultOrdering([{ field: "aika", direction: "asc" }])),
-      S.listItem().title("Uutiset").schemaType("uutinen").child(S.documentTypeList("uutinen").title("Uutiset")),
+      S.listItem()
+        .title("Uutiset")
+        .schemaType("uutinen")
+        .child(
+          S.documentTypeList("uutinen")
+            .title("Uutiset")
+            .defaultOrdering([{ field: "publishedAt", direction: "desc" }]),
+        ),
       S.listItem()
         .title("Kommentit ja veikkaukset")
         .icon(CommentIcon)
@@ -76,12 +128,25 @@ export const structure: StructureResolver = (S) =>
                 ),
             ]),
         ),
-      S.listItem().title("Galleria-albumit").schemaType("galleriaAlbumi").child(S.documentTypeList("galleriaAlbumi").title("Galleria-albumit")),
-      S.listItem().title("Sivut").schemaType("sivu").child(S.documentTypeList("sivu").title("Sivut")),
+      S.listItem()
+        .title("Ottelut")
+        .schemaType("ottelu")
+        .child(S.documentTypeList("ottelu").title("Ottelut").defaultOrdering([{ field: "aika", direction: "asc" }])),
+      S.listItem()
+        .title("Tapahtumat")
+        .schemaType("tapahtuma")
+        .child(
+          S.documentTypeList("tapahtuma")
+            .title("Tapahtumat")
+            .defaultOrdering([{ field: "startsAt", direction: "desc" }]),
+        ),
+      lista(S, "galleriaAlbumi", "Galleria-albumit"),
+      lista(S, "sivu", "Sivut"),
 
       S.divider(),
 
-      S.listItem().title("Hallitus").schemaType("hallitusJasen").child(S.documentTypeList("hallitusJasen").title("Hallituksen jäsenet")),
+      lista(S, "klubiToiminta", "Klubin toiminta"),
+      lista(S, "hallitusJasen", "Hallitus"),
 
       S.divider(),
 
@@ -92,15 +157,32 @@ export const structure: StructureResolver = (S) =>
           S.list()
             .title("Ravintolat")
             .items([
-              S.listItem().title("Kaikki ravintolat").schemaType("ravintola").child(S.documentTypeList("ravintola").title("Ravintolat")),
-              S.listItem().title("Käyttäjäarvostelut").schemaType("ravintolaKayttajaArvostelu").child(
-                S.documentTypeList("ravintolaKayttajaArvostelu").title("Käyttäjäarvostelut"),
-              ),
-              S.listItem().title("Kaupungit").schemaType("kaupunki").child(S.documentTypeList("kaupunki").title("Kaupungit")),
+              lista(S, "ravintola", "Kaikki ravintolat"),
+              S.listItem()
+                .title("Arvostelut: odottavat hyväksyntää")
+                .schemaType("ravintolaKayttajaArvostelu")
+                .child(
+                  // Lomake tallentaa arvostelun luonnoksena. Julkaistu = hyväksytty.
+                  S.documentList()
+                    .title("Odottavat hyväksyntää")
+                    .schemaType("ravintolaKayttajaArvostelu")
+                    .filter(
+                      `_type == "ravintolaKayttajaArvostelu" && _id in path("drafts.**")
+                        && !defined(*[_id == string::split(^._id, "drafts.")[1]][0]._id)`,
+                    )
+                    .defaultOrdering([{ field: "submittedAt", direction: "desc" }]),
+                ),
+              S.listItem()
+                .title("Arvostelut: kaikki")
+                .schemaType("ravintolaKayttajaArvostelu")
+                .child(
+                  S.documentTypeList("ravintolaKayttajaArvostelu")
+                    .title("Kaikki arvostelut")
+                    .defaultOrdering([{ field: "submittedAt", direction: "desc" }]),
+                ),
+              lista(S, "kaupunki", "Kaupungit"),
             ]),
         ),
-
-      S.divider(),
 
       S.listItem()
         .title("Jalkapalloarkisto")
@@ -109,8 +191,10 @@ export const structure: StructureResolver = (S) =>
           S.list()
             .title("Jalkapalloarkisto")
             .items([
-              S.listItem().title("Tilastot").schemaType("jalkapalloTilasto").child(S.documentTypeList("jalkapalloTilasto").title("Tilastot")),
-              S.listItem().title("Stadionit").schemaType("stadion").child(S.documentTypeList("stadion").title("Stadionit")),
+              lista(S, "jalkapalloTilasto", "Tilastot"),
+              lista(S, "arvokisa", "Arvokisat"),
+              lista(S, "pelaaja", "Pelaajat"),
+              lista(S, "stadion", "Stadionit"),
             ]),
         ),
     ]);

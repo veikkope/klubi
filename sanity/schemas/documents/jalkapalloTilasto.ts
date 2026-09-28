@@ -5,6 +5,7 @@ import {
   legacyUrlField,
   muutLegacyUrlitField,
   needsReviewField,
+  tarkistettavaaField,
   tiivistelmaField,
 } from "../objects/contentMeta";
 
@@ -177,14 +178,15 @@ export const jalkapalloTilasto = defineType({
       group: "data",
     }),
     needsReviewField("perustiedot"),
+    tarkistettavaaField("perustiedot"),
     ...seoFields,
     legacyUrlField("seo"),
     muutLegacyUrlitField("seo"),
   ],
   preview: {
-    select: { title: "title", category: "category" },
-    prepare({ title, category }) {
-      return { title, subtitle: category };
+    select: { title: "title", category: "category", needsReview: "needsReview" },
+    prepare({ title, category, needsReview }) {
+      return { title: needsReview ? `⚠ ${title}` : title, subtitle: category };
     },
   },
 });

@@ -5,6 +5,7 @@ import {
   legacyUrlField,
   muutLegacyUrlitField,
   needsReviewField,
+  tarkistettavaaField,
   tiivistelmaField,
 } from "../objects/contentMeta";
 
@@ -145,6 +146,7 @@ export const arvokisa = defineType({
       group: "perustiedot",
     }),
     needsReviewField("perustiedot"),
+    tarkistettavaaField("perustiedot"),
     ...seoFields,
     legacyUrlField("seo"),
     muutLegacyUrlitField("seo"),

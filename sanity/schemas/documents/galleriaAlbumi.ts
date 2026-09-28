@@ -3,6 +3,7 @@ import { defineField, defineType } from "sanity";
 import {
   legacyUrlField,
   needsReviewField,
+  tarkistettavaaField,
   tiivistelmaField,
 } from "../objects/contentMeta";
 
@@ -52,6 +53,7 @@ export const galleriaAlbumi = defineType({
       validation: (rule) => rule.required().min(1).error("Vähintään yksi kuva tarvitaan."),
     }),
     needsReviewField(),
+    tarkistettavaaField(),
     legacyUrlField(),
   ],
   orderings: [

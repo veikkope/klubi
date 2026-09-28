@@ -340,7 +340,7 @@ export const ravintolaBySlugQuery = defineQuery(`
     seoTitle,
     seoDescription,
     "userReviews": *[_type == "ravintolaKayttajaArvostelu"
-      && restaurant._ref == ^._id && status == "approved"]
+      && restaurant._ref == ^._id]
       | order(submittedAt desc){
         _id,
         reviewerName,

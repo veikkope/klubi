@@ -2,10 +2,12 @@ import { defineConfig } from "sanity";
 import { structureTool } from "sanity/structure";
 import { presentationTool } from "sanity/presentation";
 import { visionTool } from "@sanity/vision";
+import { fiFILocale } from "@sanity/locale-fi-fi";
 
 import { apiVersion, dataset, projectId } from "./sanity/env";
 import { schemaTypes, singletonTypes } from "./sanity/schemas";
 import { structure } from "./sanity/structure";
+import { locations } from "./sanity/presentation";
 
 export default defineConfig({
   name: "klubi",
@@ -38,11 +40,13 @@ export default defineConfig({
     },
   },
   plugins: [
-    // Presentation on oletusnäkymä: editori näkee sivun sellaisena kuin se on
-    // ja muokkaa klikkaamalla. Rakennenäkymä jää sen rinnalle niitä kertoja
-    // varten kun halutaan selata dokumenttilistoja.
+    // Sisältö on ensimmäinen näkymä: sihteeri aloittaa selkeästä valikosta.
+    // Esikatselu on sen rinnalla, ja jokaisessa dokumentissa on linkki sivulle,
+    // jolla se näkyy (sanity/presentation.ts).
+    structureTool({ title: "Sisältö", structure }),
     presentationTool({
       title: "Esikatselu",
+      resolve: locations,
       previewUrl: {
         preview: "/",
         previewMode: {
@@ -51,7 +55,13 @@ export default defineConfig({
         },
       },
     }),
-    structureTool({ structure }),
-    visionTool({ defaultApiVersion: apiVersion }),
+    visionTool({ defaultApiVersion: apiVersion, title: "Kyselyt (kehittäjä)" }),
+    // Studion käyttöliittymä suomeksi (CLAUDE.md: kaikki käyttöliittymäteksti suomeksi).
+    fiFILocale(),
   ],
+  // Kyselytyökalu vain ylläpitäjille: sihteerin (Editor) valikko pysyy selkeänä.
+  tools: (prev, { currentUser }) =>
+    currentUser?.roles.some((role) => role.name === "administrator")
+      ? prev
+      : prev.filter((tool) => tool.name !== "vision"),
 });
