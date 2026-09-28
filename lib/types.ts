@@ -154,7 +154,9 @@ export type UutinenCategory =
   | "jasentieto"
   | "jalkapallo"
   | "ravintola"
-  | "blogi";
+  | "blogi"
+  | "palloveikkaus"
+  | "matkakuvaus";
 
 export type UutinenCard = {
   _id: string;

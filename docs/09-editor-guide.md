@@ -26,7 +26,7 @@
   - **Yhteystiedot** — osoite, sähköposti, sosiaaliset mediat
   - **Sivuston asetukset** — logo, oletustekstit
 - **Tapahtumat** — yhdistyksen tapahtumakalenteri
-- **Uutiset** — tiedotteet, blogimerkinnät
+- **Uutiset** — tiedotteet ja blogikirjoitukset (myös kaikki klubin Blogspot-blogin 528 kirjoitusta vuodesta 2007)
 - **Galleria-albumit** — kuvasarjat tapahtumista
 - **Sivut** — muut staattiset sivut (esim. yhdistys, säännöt)
 - **Hallitus** — hallituksen jäsenet
@@ -62,8 +62,24 @@
 2. Otsikko, slug (auto), julkaisuaika (oletus: nyt)
 3. **Lyhenne** — max 200 merkkiä, näkyy uutislistalla
 4. **Kansikuva**, **sisältö** (rich text)
-5. Kategoriat: valitse listalta
+5. Kategoriat: valitse listalta (esim. **Palloveikkaus**, **Matkakuvaus**, **Tapahtumaraportti**)
 6. **Publish**
+
+> **Blogin sijaan Studioon.** Kun uusi sivusto on julkaistu, uudet kirjoitukset
+> tehdään tässä eikä enää Blogspotissa. Palloveikkauksen tilanne on tavallinen uutinen:
+> kirjoita sarjataulukko riveinä (Shift+Enter vaihtaa rivin kappaleen sisällä).
+> Veikkausten keräämisestä ks. docs/14 §8.
+
+### Blogista tuodut kirjoitukset
+
+Blogin kirjoitukset ovat uutisina omilla päivämäärillään. Kuvat, kuvatekstit ja
+kategoriat on siirretty, ja jokaiselle kuvalle on kirjoitettu kuvaus
+(näkövammaisille ruudunlukijalla luettava teksti). Voit korjata kuvauksen avaamalla
+kuvan ja muokkaamalla kenttää **Vaihtoehtoinen teksti (alt)**. Kommentit jäivät
+blogiin.
+
+SEO-välilehden **Alkuperäinen Blogspot-kirjoitus** kertoo, mistä kirjoitus tuli.
+Älä muuta sitä: blogin vanhat osoitteet ohjautuvat sen avulla oikeaan uutiseen.
 
 ### Kuvan vaihtaminen
 

@@ -18,6 +18,10 @@
  * ylläpidetty lista ajautuu erilleen todellisuudesta hiljaa, ja jokainen
  * puuttuva ohjaus on menetetty sivu hakukoneessa.
  *
+ * Lisäksi Blogspot-blogin kirjoitukset (docs/14 §5): `/blogspot/<blogin polku>` →
+ * uutisen reitti, Sanityn `blogspot.polku`-kentästä. Bloggerin teema ohjaa
+ * kävijän tähän polkuun, joten koko kartoitus pysyy tällä sivustolla.
+ *
  * Skripti EPÄONNISTUU jos jokin vanha URL jää kartoittamatta. Se on
  * tarkoituksellista: hiljainen aukko on pahempi kuin punainen build.
  */
@@ -32,6 +36,7 @@ import { slugify as placeSlug } from "../lib/slugify";
 
 const STATUS_FILE = join(process.cwd(), "data", "crawl-status.tsv");
 const MANUAL_FILE = join(process.cwd(), "data", "manual-redirects.csv");
+const BLOGSPOT_MAP = join(process.cwd(), "data", "normalized", "blogspot-map.json");
 const OUT_FILE = join(process.cwd(), "lib", "redirects.ts");
 
 /** Kehyssivut — eivät ole sisältöä, ohjataan etusivulle. */
@@ -393,6 +398,53 @@ async function fetchLegacyDocs(): Promise<LegacyDoc[]> {
   return body.result;
 }
 
+/* -------------------------------------------------------------------------- */
+/* Blogspot                                                                   */
+/* -------------------------------------------------------------------------- */
+
+interface BlogspotDoc extends RoutableDoc {
+  polku: string;
+}
+
+/**
+ * Blogin polku → uutisen reitti. Sanity on auktoritatiivinen (slug voi muuttua
+ * Studiossa); `--offline`-ajossa käytetään importin karttaa, jos se on olemassa.
+ */
+async function blogspotDestinations(offline: boolean): Promise<Map<string, string>> {
+  const out = new Map<string, string>();
+  if (offline) {
+    if (!existsSync(BLOGSPOT_MAP)) return out;
+    const map = JSON.parse(await readFile(BLOGSPOT_MAP, "utf-8")) as { polku: string; uusi: string }[];
+    for (const row of map) out.set(row.polku, row.uusi);
+    return out;
+  }
+  const query = /* groq */ `*[
+    _type == "uutinen" && defined(blogspot.polku) && !(_id in path("drafts.**"))
+  ] | order(blogspot.polku asc){ ${routableProjection}, "polku": blogspot.polku }`;
+  for (const doc of await sanityQuery<BlogspotDoc[]>(query)) {
+    const route = documentRoute(doc);
+    if (route) out.set(doc.polku, route.path);
+  }
+  return out;
+}
+
+async function sanityQuery<T>(query: string): Promise<T> {
+  if (existsSync(".env.local")) process.loadEnvFile(".env.local");
+  const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
+  if (!projectId) throw new Error("NEXT_PUBLIC_SANITY_PROJECT_ID puuttuu.");
+  const dataset = process.env.SANITY_REDIRECTS_DATASET ?? process.env.NEXT_PUBLIC_SANITY_DATASET ?? "development";
+  const token = process.env.SANITY_API_WRITE_TOKEN ?? process.env.SANITY_API_READ_TOKEN;
+  const url =
+    `https://${projectId}.api.sanity.io/v2024-10-01/data/query/${dataset}` +
+    `?query=${encodeURIComponent(query)}&perspective=published`;
+  const res = await fetch(url, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    signal: AbortSignal.timeout(60_000),
+  });
+  if (!res.ok) throw new Error(`Sanity-kysely epäonnistui: HTTP ${res.status}`);
+  return ((await res.json()) as { result: T }).result;
+}
+
 /** `/Sivu.htm`, `sivu.htm` → `sivu.htm` (vertailuavain; kirjainkoko ei ratkaise). */
 function legacyKey(url: string): string {
   return url.trim().replace(/^\/+/, "").toLowerCase();
@@ -554,6 +606,18 @@ async function main() {
       `  { source: "/${from}", destination: ${JSON.stringify(to)}, permanent: true },`,
   );
 
+  const blogspot = await blogspotDestinations(offline);
+  if (offline && blogspot.size === 0) {
+    console.warn("\nHUOM: --offline ilman data/normalized/blogspot-map.json-tiedostoa: vain blogin yleisohjaus.");
+  }
+  const blogspotLines = [...blogspot.entries()]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(
+      ([from, to]) =>
+        `  { source: ${JSON.stringify(`/blogspot${from}`)}, destination: ${JSON.stringify(to)}, permanent: true },`,
+    );
+  blogspotLines.push(`  { source: "/blogspot/:polku*", destination: "/uutiset", permanent: true },`);
+
   const file = `import type { Redirect } from "next/dist/lib/load-custom-routes";
 
 /**
@@ -572,6 +636,16 @@ async function main() {
  */
 export const legacyRedirects: Redirect[] = [
 ${lines.join("\n")}
+];
+
+/**
+ * Blogspot-blogin kirjoitukset (${blogspot.size}) → uutiset. Bloggerin teema ohjaa
+ * kävijän osoitteeseen /blogspot/<blogin polku> (docs/14 §5). Viimeinen sääntö
+ * ohjaa blogin muut sivut (etusivu, tunnisteet, arkistot) uutislistaan; Next.js
+ * käy säännöt läpi järjestyksessä, joten se ei ohita yksittäisiä kirjoituksia.
+ */
+export const blogspotRedirects: Redirect[] = [
+${blogspotLines.join("\n")}
 ];
 `;
 
@@ -603,6 +677,7 @@ Kohdeosoitteita ......... ${destinations.size}
   Säännöistä ............ ${source.rules}
   Manuaalisia ........... ${source.manual}
 Kartoittamatta .......... 0
+Blogspot-kirjoituksia ... ${blogspot.size}
 
 Kirjoitettu: ${OUT_FILE}`);
 }

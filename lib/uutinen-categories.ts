@@ -19,6 +19,8 @@ export const UUTINEN_CATEGORIES: {
   { value: "jalkapallo", label: "Jalkapallo" },
   { value: "ravintola", label: "Ravintola" },
   { value: "blogi", label: "Blogikirjoitus" },
+  { value: "palloveikkaus", label: "Palloveikkaus" },
+  { value: "matkakuvaus", label: "Matkakuvaus" },
 ];
 
 const labelMap = new Map(UUTINEN_CATEGORIES.map((c) => [c.value, c.label]));

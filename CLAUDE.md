@@ -46,7 +46,9 @@ public/                Staattiset tiedostot (favicon, robots, kuvat joita Sanity
 | Generoi Sanity-tyypit | `npm run typegen` |
 | Hae vanha sivusto paikallisesti | `npm run crawl` + `npm run images` → `data/` (gitignoressa) |
 | Koko migraatio → `development` | `npm run migrate:all` (yksittäin `migrate:<tyyppi>`) |
-| Tarkista migraatio | `npm run verify:migration`, `verify:content`, `verify:redirects` |
+| Tarkista migraatio | `npm run verify:migration`, `verify:content`, `verify:redirects`, `verify:blogspot` |
+| Hae Blogspot-blogi paikallisesti | `npm run blogspot:fetch` → `data/blogspot/` (gitignoressa) |
+| Blogi → `development` | `npm run migrate:blogspot` (ensimmäinen kerta) · `npm run sync:blogspot` (vain uudet, säilyttää Studion muokkaukset) |
 | Generoi redirectit | `npm run redirects` |
 | Vie `development` → `production` | `npx sanity dataset export development dev-export.tar.gz` + `npx sanity dataset import dev-export.tar.gz --dataset production --replace` (poista arkisto sen jälkeen, se ei ole gitignoressa) |
 
@@ -110,4 +112,5 @@ Täydellinen työnkulku: `docs/10-agent-workflow.md`.
 | Maalimäärittely ja rinnakkaistoteutus | `docs/11-maali-ja-rinnakkaistoteutus.md` |
 | Sisältömigraatio (maali, tila) | `docs/12-sisaltomigraatio.md` |
 | Otteluohjelma (lähteet, avaimet) | `docs/13-otteluohjelma.md` |
+| Blogspot-migraatio (blogi → uutiset) | `docs/14-blogspot-migraatio.md` |
 | Tyyliopas (lopullinen, HTML) | `docs/design-handoff/` |

@@ -86,7 +86,10 @@ async function main() {
     counts[doc._type] = (counts[doc._type] ?? 0) + 1;
     if (doc.needsReview === true) review[doc._type] = (review[doc._type] ?? 0) + 1;
 
-    if (MIGRATED_TYPES.includes(doc._type) && !doc.legacyUrl) missingLegacy.push(doc._id);
+    // Blogspot-blogista tuoduilla uutisilla ei ole vanhan sivuston osoitetta: alkuperä
+    // on `blogspot`-kentässä, ja niiden ohjaukset tulevat siitä (docs/14).
+    const fromBlogspot = Boolean((doc.blogspot as { id?: string } | undefined)?.id);
+    if (MIGRATED_TYPES.includes(doc._type) && !doc.legacyUrl && !fromBlogspot) missingLegacy.push(doc._id);
 
     walk(doc, doc._id, (value, path) => {
       if (typeof value === "string") {

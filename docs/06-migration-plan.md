@@ -89,7 +89,7 @@ Taulukot on tallennettu muotoon `jalkapalloTilasto.columns/rows`. Sarakeotsikot 
 Sisältökuvat on ladattu `_sanityAsset`-viittauksin, ja Sanity deduplikoi ne sisällön hashilla. Sama kuva voi siksi olla useassa dokumentissa samana assetina. Päätös: tämä on sallittua, kun kuva liittyy kumpaankin, esim. valmentajakuva sekä uutisessa että valmentajataulukossa. Pudotetut kuvat perusteluineen ovat tiedostossa `data/normalized/kuvat-dropped.json` (212 kpl: Wikimedian lippukuvat, hubien koristekuvat, toisteiset paikkamerkit).
 
 ### Blogspot
-Blogspotia ei migroida tässä vaiheessa (docs/12 §0). Otsikkoarkiston 300 Blogspot-linkkiä on jäsennetty tiedostoon `data/normalized/uutiset-otsikkoarkisto.json`, mutta niitä ei ole tuotu Sanityyn. Jos ne halutaan tuoda, aja `npx tsx scripts/import-uutiset.ts --otsikkoarkisto`.
+Blogin kaikki 528 kirjoitusta tuodaan uutisina omalla putkellaan: **docs/14-blogspot-migraatio.md** (`npm run blogspot:fetch` + `npm run migrate:blogspot`). Otsikkoarkiston 300 Blogspot-linkkiä on jäsennetty tiedostoon `data/normalized/uutiset-otsikkoarkisto.json`, mutta **`import-uutiset.ts --otsikkoarkisto` -lippua ei pidä enää käyttää**, koska se loisi linkkityngät samoista kirjoituksista, jotka on nyt tuotu kokonaisina.
 
 ## Ohjaukset
 
