@@ -198,11 +198,10 @@ kävijälle asiallisen ilmoituksen.
 | 3 | Sosiaalinen media | Sivun asetukset → Yhteystiedot | puuttuu |
 | 4 | Hallituksen jäsenet | Hallitus → + | 0 jäsentä |
 | 5 | Säännöt | Sivut → + (polku `klubi/saannot`) | sivua ei ole |
-| 6 | Jäsenmaksu ja liittymisohje | Sivut → + (polku `klubi/liity`) | lomake toimii, ohje puuttuu |
-| 7 | Tulevat tapahtumat | Tapahtumat → + | 0 |
-| 8 | Etusivun kuvat (iso kuva ja Klubista-kuva) | Sivun asetukset → Etusivu | puuttuvat |
-| 9 | Tietosuojaselosteen vahvistus (hallitus) | Sivut → Tietosuojaseloste | luonnos, ks. Mitä tarkistaa |
-| 10 | Kommenttien koodisana | Sivun asetukset → Kommenttien koodisana | ei asetettu |
+| 6 | Tulevat tapahtumat | Tapahtumat → + | 0 |
+| 7 | Etusivun kuvat (iso kuva ja Klubista-kuva) | Sivun asetukset → Etusivu | puuttuvat |
+| 8 | Tietosuojaselosteen vahvistus (hallitus) | Sivut → Tietosuojaseloste | luonnos, ks. Mitä tarkistaa |
+| 9 | Kommenttien koodisana | Sivun asetukset → Kommenttien koodisana | ei asetettu |
 
 ## Tietosuojapyynnöt
 

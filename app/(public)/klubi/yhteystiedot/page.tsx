@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Mail, MapPin, Phone } from "lucide-react";
 import { stegaClean } from "next-sanity";
 
@@ -201,14 +200,6 @@ export default async function YhteystiedotPage() {
             />
           </div>
         )}
-
-        <p className="mt-12 text-muted">
-          Haluatko mukaan toimintaan?{" "}
-          <Link href="/klubi/liity" className="text-accent hover:underline">
-            Lähetä jäsenhakemus
-          </Link>
-          .
-        </p>
       </Container>
     </>
   );

@@ -13,7 +13,12 @@ const nextConfig: NextConfig = {
     ],
   },
   async redirects() {
-    return [...legacyRedirects, ...blogspotRedirects];
+    return [
+      ...legacyRedirects,
+      ...blogspotRedirects,
+      // Klubi ei ota jäsenhakemuksia sivuston kautta; lomakesivu poistettu.
+      { source: "/klubi/liity", destination: "/klubi", permanent: true },
+    ];
   },
 };
 

@@ -39,7 +39,6 @@ jotka on kerätty vuodesta 2001 alkaen.
 - [Hallitus](${siteUrl}/klubi/hallitus): hallituksen kokoonpano
 - [Säännöt](${siteUrl}/klubi/saannot): yhdistyksen säännöt
 - [Palloveikkaus](${siteUrl}/klubi/palloveikkaus): klubin sisäinen ennustuskilpailu
-- [Liity jäseneksi](${siteUrl}/klubi/liity): jäsenhakemus
 - [Yhteystiedot](${siteUrl}/klubi/yhteystiedot)
 
 ## Ajankohtaista

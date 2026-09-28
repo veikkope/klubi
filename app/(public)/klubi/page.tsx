@@ -15,7 +15,6 @@ import {
   CardEyebrow,
   CardTitle,
 } from "@/components/ui/card";
-import { cn } from "@/lib/cn";
 import { klubiNav, rootCrumb } from "@/lib/nav-sections";
 import {
   breadcrumbSchema,
@@ -40,8 +39,6 @@ const FALLBACK_TITLE = "Klubi";
 
 /** Alasivut, joihin hub linkittää. Esittely on tämä sivu itse. */
 const subpages = klubiNav.filter((item) => item.href !== PATH);
-/** Jäsenhakemus nostetaan listasta esiin — se on sivun ainoa toimintakehote. */
-const CTA_HREF = "/klubi/liity";
 
 function getSivu() {
   return sanityFetch<KlubiSivu | null>({
@@ -179,27 +176,19 @@ export default async function KlubiPage() {
             Lisää klubista
           </h2>
           <ul className="mt-6 grid gap-3 sm:grid-cols-2">
-            {subpages.map((item) => {
-              const isCta = item.href === CTA_HREF;
-              return (
-                <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    className={cn(
-                      "flex min-h-11 items-center justify-between gap-3 rounded-xl border px-5 py-3 transition",
-                      isCta
-                        ? "border-accent bg-accent-soft font-medium text-accent hover:border-accent-hover"
-                        : "border-border bg-surface text-foreground hover:border-accent",
-                    )}
-                  >
-                    <span>{item.label}</span>
-                    <span aria-hidden className="text-accent">
-                      →
-                    </span>
-                  </Link>
-                </li>
-              );
-            })}
+            {subpages.map((item) => (
+              <li key={item.href}>
+                <Link
+                  href={item.href}
+                  className="flex min-h-11 items-center justify-between gap-3 rounded-xl border border-border bg-surface px-5 py-3 text-foreground transition hover:border-accent"
+                >
+                  <span>{item.label}</span>
+                  <span aria-hidden className="text-accent">
+                    →
+                  </span>
+                </Link>
+              </li>
+            ))}
           </ul>
         </section>
       </Container>
