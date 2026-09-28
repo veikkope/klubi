@@ -114,5 +114,6 @@ Täydellinen työnkulku: `docs/10-agent-workflow.md`.
 | Sisältömigraatio (maali, tila) | `docs/12-sisaltomigraatio.md` |
 | Otteluohjelma (lähteet, avaimet) | `docs/13-otteluohjelma.md` |
 | Veikkaus ja kommentit | `docs/15-veikkaus-ja-kommentit.md` |
+| Kokonaisauditointi 28.9.2026 (julkaisun tarkistuslista) | `docs/16-kokonaisauditointi.md` |
 | Blogspot-migraatio (blogi → uutiset) | `docs/14-blogspot-migraatio.md` |
 | Tyyliopas (lopullinen, HTML) | `docs/design-handoff/` |
