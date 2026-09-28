@@ -242,7 +242,7 @@ Lisäksi `verify:content` (jokainen uutinen → HTTP 200) ja `verify:redirects`
 
 ## 8. Avoin päätös: kommentit ja veikkaukset
 
-Blogin kommentit eivät ole sivuseikka. **Palloveikkaus ja voittajaveikkaukset
+Suunnitelma: **docs/15-veikkaus-ja-kommentit.md**. Blogin kommentit eivät ole sivuseikka. **Palloveikkaus ja voittajaveikkaukset
 toimivat kommenttien varassa**: jäsenet jättävät veikkauksensa kommenttina
 (esim. "Voittajaveikkaus MM 2026", 9 veikkausta). Uudella sivustolla ei ole
 kommentointia. Siksi blogin ohjausta (§5) ei voi ottaa käyttöön ennen kuin
