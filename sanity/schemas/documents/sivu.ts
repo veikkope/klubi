@@ -11,7 +11,7 @@ import {
 
 /**
  * Yleisen sisältösivun dokumenttityyppi. Yksi `sivu` per polku — slug voi
- * sisältää kauttaviivoja monitasoisille sivuille, esim. `klubi/saannot`.
+ * sisältää kauttaviivoja monitasoisille sivuille, esim. `klubi/historia`.
  *
  * Polkurakenne renderöityy `/[...slug]`-reitissä. Studiossa slug muotoillaan
  * automaattisesti otsikosta, mutta käyttäjä saa muokata sitä.
@@ -34,7 +34,7 @@ const SEGMENT = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 /**
  * Slugify joka säilyttää kauttaviivat hierarkkista polkua varten.
  * Esim. "Klubin säännöt" → "klubin-saannot",
- *      "Klubi/Säännöt" → "klubi/saannot".
+ *      "Klubi/Historia" → "klubi/historia".
  */
 function slugifyPath(input: string): string {
   return input
@@ -88,7 +88,7 @@ export const sivu = defineType({
       title: "Polku (slug)",
       description:
         'URL-osa. Vain pieniä kirjaimia, numeroita ja yhdysmerkkejä. ' +
-        'Käytä "/" alasivuille — esim. "klubi/saannot" → /klubi/saannot.',
+        'Käytä "/" alasivuille — esim. "klubi/historia" → /klubi/historia.',
       type: "slug",
       options: {
         source: "title",

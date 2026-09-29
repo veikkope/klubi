@@ -31,6 +31,8 @@ export interface TilastoDoc {
   slug: string | null;
   tiivistelma: string | null;
   category: string | null;
+  /** Huuhkajat-sivun osio (`lib/huuhkajat-osiot.ts`), vain kategoriassa "huuhkajat". */
+  huuhkajatOsio: string | null;
   intro: PortableTextBlock[] | null;
   columns: StatColumn[] | null;
   rows: StatRow[] | null;
@@ -56,6 +58,7 @@ const tilastoProjection = /* groq */ `
   "slug": slug.current,
   tiivistelma,
   category,
+  huuhkajatOsio,
   intro,
   columns[]{ key, label, type },
   rows[]{ cells[]{ key, value } },
@@ -100,6 +103,60 @@ export const tilastoSlugsByCategoryQuery = defineQuery(/* groq */ `
     && category == $category
     && defined(slug.current)
   ].slug.current
+`);
+
+/** Taulukon otsikkotiedot ilman rivejä — hub-sivun kortteja ja linkkejä varten. */
+export interface TilastoLink {
+  _id: string;
+  _updatedAt: string | null;
+  title: string;
+  slug: string | null;
+  tiivistelma: string | null;
+  huuhkajatOsio: string | null;
+}
+
+const tilastoLinkProjection = /* groq */ `
+  _id,
+  _updatedAt,
+  title,
+  "slug": slug.current,
+  tiivistelma,
+  huuhkajatOsio
+`;
+
+/**
+ * Huuhkajat-hub: maajoukkueen taulukot osioittain ryhmiteltäviksi ja
+ * karsintasarjat linkkeinä. Rivejä ei haeta — hub näyttää vain sisällön.
+ */
+export const huuhkajatHubQuery = defineQuery(/* groq */ `{
+  "taulukot": *[_type == "jalkapalloTilasto" && category == "huuhkajat"]
+    | order(coalesce(jarjestys, 1000) asc, title asc){ ${tilastoLinkProjection} },
+  "karsinnat": *[
+    _type == "jalkapalloTilasto" && category == "karsinta" && defined(slug.current)
+  ] | order(coalesce(jarjestys, 1000) asc, title asc){ ${tilastoLinkProjection} }
+}`);
+
+export interface HuuhkajatHub {
+  taulukot: TilastoLink[];
+  karsinnat: TilastoLink[];
+}
+
+/**
+ * Yhden Huuhkajat-osion taulukot. `$tunnetut` = osioiden arvot ilman
+ * oletusosiota; oletusosioon ("muut") päätyvät myös taulukot, joiden osio
+ * puuttuu tai on tuntematon, jotta mikään taulukko ei katoa sivustolta.
+ */
+export const huuhkajatOsioQuery = defineQuery(/* groq */ `
+  *[
+    _type == "jalkapalloTilasto"
+    && category == "huuhkajat"
+    && select(
+      $osio == $oletus => !(huuhkajatOsio in $tunnetut),
+      huuhkajatOsio == $osio
+    )
+  ] | order(coalesce(jarjestys, 1000) asc, title asc){
+    ${tilastoProjection}
+  }
 `);
 
 /** Koko arkiston yhteenveto: montako taulukkoa per kategoria ja milloin muokattu. */

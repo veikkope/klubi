@@ -164,6 +164,7 @@ Vain `status: "approved"` näytetään julkisesti.
 | title | string | kyllä | Esim. "Suomen FIFA-ranking" |
 | slug | slug | kyllä | |
 | category | string (enum: "fifa-ranking", "champions", "valmentajat", "vuoden-pelaaja", "ballon-dor", "saavutukset", "eurocup", "uefa-cup", "super-cup", "conference-league", "intercontinental", "karsinta") | kyllä | Vaikuttaa sivun renderöintiin |
+| huuhkajatOsio | string (enum `lib/huuhkajat-osiot.ts`: "pelaajatilastot", "huuhkaja-arvostelu", "kansojen-liiga", "avauskokoonpano", "englanti", "muut") | kyllä, kun category = "huuhkajat" | Osiosivu `/jalkapalloarkisto/huuhkajat/[osio]`. Arvo on pysyvä URL-segmentti. Puuttuva/tuntematon → "muut". |
 | intro | portableText | ei | Johdanto |
 | columns | array of objects { key, label, type } | kyllä | Taulukon sarakkeet |
 | rows | array of objects (key-value) | kyllä | Taulukon rivit |

@@ -1,6 +1,8 @@
+import { resolveHuuhkajatOsio } from "./huuhkajat-osiot";
+
 /**
  * Sivupolku-apurit. `sivu`-dokumenttien slug voi sisältää kauttaviivoja
- * (esim. "klubi/saannot"), jolloin polku on /klubi/saannot.
+ * (esim. "klubi/historia"), jolloin polku on /klubi/historia.
  */
 
 /** Yhdistää URL-segmentit yhdeksi slug-stringiksi. */
@@ -31,14 +33,16 @@ export function toHref(slug: string): string {
  * `scripts/generate-redirects.ts` (vanha URL → uusi), `app/sitemap.ts` ja
  * `scripts/verify-content-routes.ts` (jokainen dokumentti renderöityy).
  *
- * Tiedosto ei tuo mitään muuta moduulia, jotta sitä voi käyttää sekä
- * Next.js-sovelluksesta että `tsx`-skripteistä.
+ * Tiedosto tuo vain riippuvuudettomia moduuleja suhteellisella polulla, jotta
+ * sitä voi käyttää sekä Next.js-sovelluksesta että `tsx`-skripteistä.
  */
 export interface RoutableDoc {
   _id: string;
   _type: string;
   slug?: string | null;
   category?: string | null;
+  /** Huuhkajat-tilaston osio (`lib/huuhkajat-osiot.ts`). */
+  huuhkajatOsio?: string | null;
   /** Dokumentti, joka viittaa tähän (arvokisa, pelaaja, toimintamuoto, sivu). */
   parent?: { _type: string; slug?: string | null } | null;
 }
@@ -68,7 +72,6 @@ const TYPE_BASE: Record<string, string> = {
  * `app/(public)/jalkapalloarkisto/eurocupit/competitions.ts`.
  */
 export const TILASTO_CATEGORY_PAGE: Record<string, string> = {
-  huuhkajat: "/jalkapalloarkisto/huuhkajat",
   champions: "/jalkapalloarkisto/mestarit",
   valmentajat: "/jalkapalloarkisto/valmentajat",
   "valmentajien-palkat": "/jalkapalloarkisto/valmentajat",
@@ -87,6 +90,13 @@ export const TILASTO_CATEGORY_PAGE: Record<string, string> = {
   "ulkomaiset-mestarit": "/jalkapalloarkisto/ulkomaiset-mestarit",
   palloliitto: "/jalkapalloarkisto/palloliitto",
 };
+
+export const HUUHKAJAT_PATH = "/jalkapalloarkisto/huuhkajat";
+
+/** Huuhkajat-osion sivu, esim. `/jalkapalloarkisto/huuhkajat/pelaajatilastot`. */
+export function huuhkajatOsioPath(osio: string): string {
+  return `${HUUHKAJAT_PATH}/${osio}`;
+}
 
 /** Kategoriat, joiden jokaisella tilastolla on oma sivu `<polku>/<slug>`. */
 export const TILASTO_CATEGORY_DETAIL: Record<string, string> = {
@@ -118,6 +128,12 @@ export function documentRoute(doc: RoutableDoc): DocumentRoute | null {
   }
 
   const category = doc.category ?? "";
+
+  // Huuhkajat jakautuvat osiosivuille; taulukko on osiosivun ankkuri.
+  if (category === "huuhkajat") {
+    return { path: huuhkajatOsioPath(resolveHuuhkajatOsio(doc.huuhkajatOsio)), anchor: slug };
+  }
+
   const detail = TILASTO_CATEGORY_DETAIL[category];
   if (detail) return { path: `${detail}/${slug}` };
 
@@ -143,6 +159,7 @@ export const routableProjection = /* groq */ `
   _type,
   "slug": slug.current,
   category,
+  huuhkajatOsio,
   "parent": *[
     _type in ["arvokisa", "pelaaja", "klubiToiminta", "sivu"]
     && references(^._id)

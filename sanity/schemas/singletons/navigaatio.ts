@@ -69,7 +69,6 @@ export const navigaatio = defineType({
           children: [
             { label: "Esittely", href: "/klubi" },
             { label: "Hallitus", href: "/klubi/hallitus" },
-            { label: "Säännöt", href: "/klubi/saannot" },
             { label: "Palloveikkaus", href: "/klubi/palloveikkaus" },
             { label: "Yhteystiedot", href: "/klubi/yhteystiedot" },
           ],

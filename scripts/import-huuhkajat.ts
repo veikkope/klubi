@@ -25,6 +25,7 @@ import { createHash } from "node:crypto";
 import { readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
+import { huuhkajatOsioForSlug } from "./lib/huuhkajat-osio";
 import type { Block, CoverageEntry, HuuhkajaTilasto, Kuva } from "./parse-huuhkajat";
 
 const SOURCE = join(process.cwd(), "data", "normalized", "huuhkajat.json");
@@ -123,6 +124,7 @@ function toDocument(t: HuuhkajaTilasto) {
     slug: { _type: "slug", current: t.slug },
     ...(t.tiivistelma ? { tiivistelma: t.tiivistelma } : {}),
     category: t.category,
+    ...(t.category === "huuhkajat" ? { huuhkajatOsio: huuhkajatOsioForSlug(t.slug) } : {}),
     ...(intro.length ? { intro } : {}),
     ...(columns.length ? { columns } : {}),
     ...(rows.length ? { rows } : {}),

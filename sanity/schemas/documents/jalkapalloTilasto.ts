@@ -1,5 +1,6 @@
 import { BarChartIcon } from "@sanity/icons";
 import { defineField, defineType } from "sanity";
+import { HUUHKAJAT_OSIOT } from "../../../lib/huuhkajat-osiot";
 import { seoFields } from "../objects/seoFields";
 import {
   legacyUrlField,
@@ -45,7 +46,7 @@ export const jalkapalloTilasto = defineType({
         list: [
           { title: "FIFA-ranking", value: "fifa-ranking" },
           { title: "Suomen mestarit", value: "champions" },
-          { title: "Huuhkajien ottelut", value: "huuhkajat" },
+          { title: "Huuhkajat (maajoukkueen tilastot)", value: "huuhkajat" },
           { title: "Huuhkajien valmentajat", value: "valmentajat" },
           { title: "Valmentajien palkat", value: "valmentajien-palkat" },
           { title: "Vuoden pelaaja", value: "vuoden-pelaaja" },
@@ -68,6 +69,26 @@ export const jalkapalloTilasto = defineType({
         layout: "dropdown",
       },
       validation: (rule) => rule.required(),
+      group: "perustiedot",
+    }),
+    defineField({
+      name: "huuhkajatOsio",
+      title: "Osio Huuhkajat-sivulla",
+      description:
+        "Minkä otsikon alle taulukko kuuluu. Jokaisella osiolla on oma sivunsa, " +
+        "ja samaan osioon kuuluvat taulukot näytetään yhdessä.",
+      type: "string",
+      options: {
+        list: HUUHKAJAT_OSIOT.map((osio) => ({ title: osio.title, value: osio.value })),
+        layout: "radio",
+      },
+      hidden: ({ document }) => document?.category !== "huuhkajat",
+      validation: (rule) =>
+        rule.custom((value, context) =>
+          context.document?.category === "huuhkajat" && !value
+            ? "Valitse osio, jotta taulukko löytyy oikean otsikon alta."
+            : true,
+        ),
       group: "perustiedot",
     }),
     defineField({
@@ -158,7 +179,7 @@ export const jalkapalloTilasto = defineType({
       name: "jarjestys",
       title: "Järjestysnumero",
       description:
-        "Kun samalla sivulla on useita taulukoita (esim. lohkot A–H), pienempi luku näkyy ylempänä.",
+        "Kun samalla sivulla tai samassa osiossa on useita taulukoita (esim. lohkot A–H), pienempi luku näkyy ylempänä.",
       type: "number",
       validation: (rule) => rule.integer().min(0),
       group: "perustiedot",

@@ -38,7 +38,7 @@ export type KlubiSivu = {
 
 /**
  * Yksittäinen `sivu`-dokumentti polulla. Klubi-osion sivut käyttävät
- * slugeja "klubi", "klubi/saannot" ja "klubi/palloveikkaus".
+ * slugeja "klubi" ja "klubi/palloveikkaus".
  */
 export const klubiSivuQuery = defineQuery(`
   *[_type == "sivu" && slug.current == $slug][0]{

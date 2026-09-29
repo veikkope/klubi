@@ -1,5 +1,6 @@
 import type { Crumb } from "@/components/layout/breadcrumbs";
 import { rootCrumb } from "@/lib/nav-sections";
+import { HUUHKAJAT_PATH } from "@/lib/path";
 import { datasetSchema } from "@/lib/schema-org";
 import type { TilastoDoc, TilastoSummary } from "@/sanity/lib/queries/arkisto";
 
@@ -20,7 +21,9 @@ const arkistoCrumb: Crumb = { label: arkistoTitle, href: arkistoBasePath };
  * on niiden vanhempi sekä navigaatiossa (`arkistoNav`) että murupolussa.
  */
 export const karsinnatBasePath = "/jalkapalloarkisto/karsinnat";
-export const huuhkajatPath = "/jalkapalloarkisto/huuhkajat";
+export const huuhkajatPath = HUUHKAJAT_PATH;
+/** Karsintasarjojen listan ankkuri Huuhkajat-sivulla. */
+export const karsinnatAnchor = "karsinnat";
 
 export function karsintaPath(slug: string): string {
   return `${karsinnatBasePath}/${slug}`;

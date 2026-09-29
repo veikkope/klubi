@@ -74,7 +74,6 @@ async function main() {
       ["Esittely", "/klubi"],
       ["Toiminta", "/klubi/toiminta"],
       ["Hallitus", "/klubi/hallitus"],
-      ["Säännöt", "/klubi/saannot"],
       ["Palloveikkaus", "/klubi/palloveikkaus"],
       ["Yhteystiedot", "/klubi/yhteystiedot"],
     ]),
