@@ -34,7 +34,6 @@ const STATIC_ROUTES: { path: string; priority: number; changeFrequency: Entry["c
   { path: "/klubi", priority: 0.9, changeFrequency: "monthly" },
   { path: "/klubi/toiminta", priority: 0.8, changeFrequency: "monthly" },
   { path: "/klubi/hallitus", priority: 0.7, changeFrequency: "yearly" },
-  { path: "/klubi/saannot", priority: 0.5, changeFrequency: "yearly" },
   { path: "/klubi/palloveikkaus", priority: 0.6, changeFrequency: "monthly" },
   { path: "/klubi/yhteystiedot", priority: 0.8, changeFrequency: "yearly" },
 
@@ -165,6 +164,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: "yearly",
   }));
 
+  // Klubi-osion sivu-dokumenteilla (klubi, klubi/palloveikkaus) on oma
+  // kiinteä reittinsä; sama URL ei saa esiintyä sitemapissa kahdesti.
+  const staticPaths = new Set(STATIC_ROUTES.map((route) => route.path));
+
   // Vain tilastot, joilla on oma sivu (karsinnat, muut koosteet). Listaussivun
   // osiot ja viittaajan sivulla näkyvät taulukot eivät ole omia URL:ejaan.
   const tilastoEntries: Entry[] = tilastot.flatMap((row) => {
@@ -180,9 +183,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ];
   });
 
-  // Klubi-osion sivu-dokumenteilla (klubi, klubi/palloveikkaus) on oma
-  // kiinteä reittinsä; sama URL ei saa esiintyä sitemapissa kahdesti.
-  const staticPaths = new Set(STATIC_ROUTES.map((route) => route.path));
+  // Huuhkajat-osioiden sivut: vain osiot, joissa on taulukoita. Muokkausaika
+  // on osion tuoreimman taulukon muokkausaika.
+  const osioUpdated = new Map<string, string>();
+  for (const row of tilastot) {
+    if (row.category !== "huuhkajat") continue;
+    const route = documentRoute(row);
+    if (!route) continue;
+    const current = osioUpdated.get(route.path) ?? "";
+    osioUpdated.set(route.path, row.updatedAt && row.updatedAt > current ? row.updatedAt : current);
+  }
+  const huuhkajatEntries: Entry[] = [...osioUpdated.entries()].map(([path, updatedAt]) => ({
+    url: absoluteUrl(path),
+    lastModified: updatedAt ? new Date(updatedAt) : undefined,
+    priority: 0.5,
+    changeFrequency: "monthly",
+  }));
   const sivuRows = sivut.filter((row) => row.slug && !staticPaths.has(`/${row.slug}`));
 
   return [
@@ -197,6 +213,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...toEntries(pelaajat, (s) => `/jalkapalloarkisto/pelaajat/${s}`, 0.5, "yearly"),
     ...toEntries(toiminta, (s) => `/klubi/toiminta/${s}`, 0.6, "yearly"),
     ...toEntries(albumit, (s) => `/galleria/${s}`, 0.4, "yearly"),
+    ...huuhkajatEntries,
     ...tilastoEntries,
     ...toEntries(sivuRows, (s) => `/${s}`, 0.5, "monthly"),
   ];
