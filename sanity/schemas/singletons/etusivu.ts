@@ -40,7 +40,7 @@ export const etusivu = defineType({
       name: "heroImage",
       title: "Hero — kuva (valinnainen)",
       description:
-        "Koko heron taustakuva, jonka päällä on yönsininen sävy. Teksti on vasemmalla, joten kuvan tärkein kohta kannattaa olla keskellä tai oikealla. Käytä vaakakuvaa, vähintään 2000 px leveää. Valitse polttopiste (Hotspot), niin kapealla näytöllä rajaus osuu oikeaan kohtaan.",
+        "Koko heron taustakuva omissa väreissään. Tekstin takana on kevyt tummennus, jotta teksti erottuu. Teksti on vasemmalla, joten kuvan tärkein kohta kannattaa olla keskellä tai oikealla. Käytä vaakakuvaa, vähintään 2000 px leveää. Valitse polttopiste (Hotspot), niin kapealla näytöllä rajaus osuu oikeaan kohtaan.",
       type: "imageWithAlt",
       group: "hero",
     }),

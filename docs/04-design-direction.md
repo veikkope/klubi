@@ -102,7 +102,7 @@ Kuvat on generoitu tiedostosta `mark-blue.png` sharp-kirjastolla.
 | Komponentti | Tyyliopas (Sivut v3) | Sijainti |
 |---|---|---|
 | `Header` | Valkoinen, alaviiva, logo: merkki 50 px + teksti 25 px (mobiili 38 + 17). Valikko 16 px / 500, väli 40 px, aktiivinen sininen + 2 px alleviivaus. **Ei CTA-painiketta.** | `components/layout/header.tsx`, `header-client.tsx` |
-| `Hero` | Yönsininen, yläotsake, H1 66 px, ingressi 20 px, kaksi alleviivattua tekstilinkkiä vasemmalla. Kuva koko osion taustana, päällä yönsininen liukuväri (tekstin kohdalla 95 %, oikealla 35 %; mobiilissa tasainen 85 %). | `components/blocks/hero.tsx` |
+| `Hero` | Yönsininen, yläotsake, H1 66 px, ingressi 20 px, kaksi alleviivattua tekstilinkkiä vasemmalla. Kuva koko osion taustana omissa väreissään. Luettavuus: musta liukuväri tekstin takana (75 % → 55 % → 0 % oikealla; mobiilissa tasainen 55 %) ja tekstivarjo. Ilman kuvaa pohja on yönsininen. | `components/blocks/hero.tsx` |
 | `BlockHeading`, `Eyebrow`, `ArrowLink` | Osion otsikkorivi: yläotsake + H2 + "Kaikki … →" -linkki (mobiilissa listan alla) | `components/blocks/block-heading.tsx` |
 | `OtteluohjelmaBlock` + `FixtureList` | Ottelulista 110 px / 1fr / 170 px, merkit "Klubi paikalla" (sininen) ja "Vierasmatka" (sininen reuna); tapahtumat rinnalla | `components/blocks/otteluohjelma-block.tsx`, `components/fixture-list.tsx` |
 | `EventCard` | 60 px päivämääräsarake (päivä serif 34 px + kuukausi), otsikko 21 px, yhden rivin kuvaus. 3 px yläreuna: sininen, juhlatapahtumalla messinki. | `components/event-card.tsx` |
@@ -123,7 +123,7 @@ Kuvat on generoitu tiedostosta `mark-blue.png` sharp-kirjastolla.
 ## Kuvitus
 
 - Aidot valokuvat (klubi-illat, tapahtumat, hallitus, Lahti), ei stockkuvia
-- Etusivun hero: vaakakuva koko osion taustana yönsinisen liukuvärin alla (esim. Huuhkajien katsomo)
+- Etusivun hero: vaakakuva koko osion taustana omissa väreissään, tekstin takana neutraali tummennus (esim. Huuhkajien katsomo)
 - Kuvat Sanityn Asset CDN:stä, näytetään `next/image`:lla, AVIF/WebP automaattisesti
 - **Polttopiste:** kuvakentissä on `hotspot` päällä. `SanityImage` rajaa kuvan CDN:ssä (`fit=crop`) toimittajan valitseman polttopisteen mukaan ja asettaa saman kohdan `object-position`-arvoksi, jolloin myös breakpointissa vaihtuva CSS-mittasuhde rajaa polttopisteen ympäriltä. Anna `width`/`height` kutsujan CSS-mittasuhteessa, ja kyselyissä palauta kuvan `hotspot` ja `crop` (koko kuvaobjekti tai eksplisiittinen projektio).
 - **Stega:** luonnosnäkymän stega-merkit puhdistetaan keskitetysti (`buildMetadata`, `JsonLd`, navigaation hrefit, kategoria- ja ruokatyyppihaut). Uusissa komponenteissa puhdista `stegaClean`illa Sanity-merkkijonot, joita verrataan, käytetään avaimina, id:inä tai URL:eissa — älä pelkkää näytettävää tekstiä.

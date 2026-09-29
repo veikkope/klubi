@@ -9,13 +9,14 @@ import type { EtusivuData } from "@/lib/types";
 /**
  * Etusivun hero (tyyliopas Sivut v3, osio 1).
  *
- * Yönsininen pohja: yläotsake, H1 (Source Serif 66 px / 1.04), ingressi 20 px
- * ja kaksi alleviivattua tekstilinkkiä vasemmassa reunassa.
+ * Yläotsake, H1 (Source Serif 66 px / 1.04), ingressi 20 px ja kaksi
+ * alleviivattua tekstilinkkiä vasemmassa reunassa.
  *
- * Kuva on koko osion taustana. Sen päällä on yönsininen liukuväri, joka on
- * tekstin kohdalla lähes peittävä (tekstin kontrasti AA vaaleallakin kuvalla)
- * ja haalenee oikealle, jotta kuva näkyy. Mobiilissa teksti on koko leveydellä,
- * joten peitto on tasainen. Kuva rajataan toimittajan polttopisteen mukaan.
+ * Kuva täyttää koko osion omissa väreissään. Tekstin luettavuus hoidetaan
+ * neutraalilla (musta, ei sininen) tummennuksella, joka on vahvin tekstin
+ * takana ja häviää oikealle, sekä tekstin varjolla. Mobiilissa teksti on koko
+ * leveydellä, joten tummennus on tasainen. Kuva rajataan toimittajan
+ * polttopisteen mukaan. Ilman kuvaa pohja on yönsininen.
  *
  * Tämä on sivun LCP-elementti: kuva ladataan priority-lipulla. Se on
  * absoluuttisesti sijoitettu, joten latautuminen ei siirrä taittoa.
@@ -40,12 +41,7 @@ export function Hero({ data }: { data: EtusivuData }) {
           />
           <div
             aria-hidden
-            className="absolute inset-0 -z-10 bg-chrome/85 lg:bg-transparent lg:bg-linear-to-r lg:from-chrome/95 lg:from-35% lg:via-chrome/75 lg:via-60% lg:to-chrome/35"
-          />
-          {/* Alareunan häivytys: osio päättyy tasaisesti yönsiniseen. */}
-          <div
-            aria-hidden
-            className="absolute inset-x-0 bottom-0 -z-10 h-24 bg-linear-to-t from-chrome/70 to-transparent"
+            className="absolute inset-0 -z-10 bg-black/55 lg:bg-transparent lg:bg-linear-to-r lg:from-black/75 lg:from-10% lg:via-black/55 lg:via-55% lg:to-transparent lg:to-90%"
           />
         </>
       )}
@@ -56,9 +52,20 @@ export function Hero({ data }: { data: EtusivuData }) {
           hasImage && "min-h-[480px] sm:min-h-[560px] lg:min-h-[640px]",
         )}
       >
-        <div className="flex max-w-3xl flex-col gap-[18px] sm:gap-[26px]">
+        <div
+          className={cn(
+            "flex max-w-3xl flex-col gap-[18px] sm:gap-[26px]",
+            hasImage && "[text-shadow:0_1px_2px_rgb(0_0_0/0.6),0_2px_24px_rgb(0_0_0/0.45)]",
+          )}
+        >
           {data.heroEyebrow && (
-            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-on-chrome-eyebrow sm:text-sm">
+            <p
+              className={cn(
+                "text-xs font-semibold uppercase tracking-[0.12em] sm:text-sm",
+                // Laventeli katoaa kirjavaan kuvaan; kuvan päällä valkoinen.
+                hasImage ? "text-on-chrome" : "text-on-chrome-eyebrow",
+              )}
+            >
               {data.heroEyebrow}
             </p>
           )}
