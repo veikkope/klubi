@@ -9,25 +9,51 @@ import type { EtusivuData } from "@/lib/types";
 /**
  * Etusivun hero (tyyliopas Sivut v3, osio 1).
  *
- * Yönsininen pohja, kaksi saraketta (1,15fr / 1fr, väli 80 px): yläotsake,
- * H1 (Source Serif 66 px / 1.04), ingressi 20 px ja kaksi alleviivattua
- * tekstilinkkiä. Oikealla 4:5 pystykuva (max 560 px), mobiilissa kuva tekstin
- * alla 4:3-muodossa. Ilman kuvaa teksti on yksin.
+ * Yönsininen pohja: yläotsake, H1 (Source Serif 66 px / 1.04), ingressi 20 px
+ * ja kaksi alleviivattua tekstilinkkiä vasemmassa reunassa.
  *
- * Tämä on sivun LCP-elementti: kuva ladataan priority-lipulla ja sen kuvasuhde
- * on kiinteä, joten latautuminen ei siirrä taittoa.
+ * Kuva on koko osion taustana. Sen päällä on yönsininen liukuväri, joka on
+ * tekstin kohdalla lähes peittävä (tekstin kontrasti AA vaaleallakin kuvalla)
+ * ja haalenee oikealle, jotta kuva näkyy. Mobiilissa teksti on koko leveydellä,
+ * joten peitto on tasainen. Kuva rajataan toimittajan polttopisteen mukaan.
+ *
+ * Tämä on sivun LCP-elementti: kuva ladataan priority-lipulla. Se on
+ * absoluuttisesti sijoitettu, joten latautuminen ei siirrä taittoa.
  */
 export function Hero({ data }: { data: EtusivuData }) {
   const ctas = data.heroCtas ?? [];
   const hasImage = Boolean(data.heroImage?.asset);
 
   return (
-    <section className="bg-chrome text-on-chrome">
+    <section className="relative isolate overflow-hidden bg-chrome text-on-chrome">
+      {hasImage && (
+        <>
+          <SanityImage
+            image={data.heroImage!}
+            // Taustakuva: sisältö on tekstissä, ruudunlukija ohittaa kuvan.
+            alt=""
+            width={2400}
+            crop={false}
+            sizes="100vw"
+            className="absolute inset-0 -z-20 h-full w-full object-cover"
+            priority
+          />
+          <div
+            aria-hidden
+            className="absolute inset-0 -z-10 bg-chrome/85 lg:bg-transparent lg:bg-linear-to-r lg:from-chrome/95 lg:from-35% lg:via-chrome/75 lg:via-60% lg:to-chrome/35"
+          />
+          {/* Alareunan häivytys: osio päättyy tasaisesti yönsiniseen. */}
+          <div
+            aria-hidden
+            className="absolute inset-x-0 bottom-0 -z-10 h-24 bg-linear-to-t from-chrome/70 to-transparent"
+          />
+        </>
+      )}
       <Container
         size="wide"
         className={cn(
-          "grid items-center gap-8 pb-10 pt-12 sm:pb-24 sm:pt-28 lg:gap-20",
-          hasImage && "lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]",
+          "flex items-center pb-10 pt-12 sm:pb-24 sm:pt-28",
+          hasImage && "min-h-[480px] sm:min-h-[560px] lg:min-h-[640px]",
         )}
       >
         <div className="flex max-w-3xl flex-col gap-[18px] sm:gap-[26px]">
@@ -66,16 +92,6 @@ export function Hero({ data }: { data: EtusivuData }) {
           )}
         </div>
 
-        {hasImage && (
-          <SanityImage
-            image={data.heroImage!}
-            width={900}
-            height={1125}
-            sizes="(min-width: 1024px) 45vw, 100vw"
-            className="aspect-[4/3] w-full rounded-sm object-cover lg:aspect-[4/5] lg:max-h-[560px]"
-            priority
-          />
-        )}
       </Container>
     </section>
   );

@@ -40,7 +40,7 @@ export const etusivu = defineType({
       name: "heroImage",
       title: "Hero — kuva (valinnainen)",
       description:
-        "Näkyy tekstin oikealla puolella pystykuvana (4:5), mobiilissa tekstin alla. Esim. klubilaiset katsomossa.",
+        "Koko heron taustakuva, jonka päällä on yönsininen sävy. Teksti on vasemmalla, joten kuvan tärkein kohta kannattaa olla keskellä tai oikealla. Käytä vaakakuvaa, vähintään 2000 px leveää. Valitse polttopiste (Hotspot), niin kapealla näytöllä rajaus osuu oikeaan kohtaan.",
       type: "imageWithAlt",
       group: "hero",
     }),

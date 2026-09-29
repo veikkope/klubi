@@ -86,6 +86,8 @@ export function SanityImage({
     if (original) {
       const renderWidth = Math.min(width, original.width);
       const renderHeight = Math.round((original.height / original.width) * renderWidth);
+      // Jos CSS rajaa kuvan (object-cover), polttopiste pysyy näkyvissä.
+      const hotspot = image.hotspot;
       return (
         <Image
           src={urlBuilder.width(renderWidth).fit("max").url()}
@@ -94,6 +96,7 @@ export function SanityImage({
           height={renderHeight}
           sizes={sizes}
           className={className}
+          style={hotspot ? { objectPosition: `${hotspot.x * 100}% ${hotspot.y * 100}%` } : undefined}
           priority={priority}
         />
       );
