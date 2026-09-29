@@ -37,7 +37,6 @@ jotka on kerätty vuodesta 2001 alkaen.
 - [Klubi](${siteUrl}/klubi): yhdistyksen esittely, tarkoitus ja toiminta
 - [Toiminta](${siteUrl}/klubi/toiminta): vuosittain toistuvat tapahtumat — talkoot, vappu, mölkky, vuosikokous, jouluruokailu
 - [Hallitus](${siteUrl}/klubi/hallitus): hallituksen kokoonpano
-- [Säännöt](${siteUrl}/klubi/saannot): yhdistyksen säännöt
 - [Palloveikkaus](${siteUrl}/klubi/palloveikkaus): klubin sisäinen ennustuskilpailu
 - [Yhteystiedot](${siteUrl}/klubi/yhteystiedot)
 

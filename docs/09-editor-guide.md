@@ -128,8 +128,8 @@ poistaa seuroja (kirjoita nimi kuten Veikkausliigan sivuilla ja paina Enter).
 ### Uusi sivu (esim. säännöt)
 
 1. **Sivut** → **+**.
-2. **Otsikko** ja **Polku**. Polku määrää osoitteen: `klubi/saannot` näkyy osoitteessa
-   /klubi/saannot. Osa poluista on varattu (esim. uutiset, ravintolat), ja Studio kertoo
+2. **Otsikko** ja **Polku**. Polku määrää osoitteen: `klubi/historia` näkyy osoitteessa
+   /klubi/historia. Osa poluista on varattu (esim. uutiset, ravintolat), ja Studio kertoo
    niistä.
 3. Ingressi ja sisältö. **Julkaise**.
 
@@ -179,6 +179,22 @@ Arvostelijalta kysytään vain nimi, joka näkyy arvostelun yhteydessä. Sähkö
 Jos ravintolan kaupunkia ei tiedetä (esim. laiva), liitä se maan nimiseen "kaupunkiin"
 (esim. "Ruotsi").
 
+### Huuhkajat-taulukon lisääminen
+
+Huuhkajat-sivu on jaettu aiheisiin, ja jokaisella aiheella on oma sivunsa
+(Pelaajatilastot, Huuhkaja-arvostelu, Kansojen liiga, Paras avauskokoonpano,
+Englannin pääsarjassa).
+
+1. **Jalkapalloarkisto → Tilastot** → **+**.
+2. **Kategoria:** *Huuhkajat (maajoukkueen tilastot)*.
+3. **Osio Huuhkajat-sivulla:** valitse aihe. Ilman valintaa taulukkoa ei voi julkaista.
+4. **Järjestysnumero:** pienempi luku näkyy osion sivulla ylempänä.
+5. **Julkaise**. Uusi osio ilmestyy Huuhkajat-sivulle vasta, kun siinä on taulukko.
+
+Karsintasarjat (kategoria *Karsinta*) ovat omia sivujaan, ja ne listataan
+Huuhkajat-sivun alaosassa uusin ensin. Kansojen liigan kaudet näkyvät samassa
+kohdassa karsintasarjojen alla.
+
 ## Tarkistettavat
 
 Migraatio ei arvannut asioita, joita se ei voinut päätellä varmasti. Se merkitsi
@@ -204,7 +220,6 @@ kävijälle asiallisen ilmoituksen.
 | 2 | Y-tunnus ja IBAN | Sivun asetukset → Yhteystiedot | puuttuu |
 | 3 | Sosiaalinen media | Sivun asetukset → Yhteystiedot | puuttuu |
 | 4 | Hallituksen jäsenet | Hallitus → + | 0 jäsentä |
-| 5 | Säännöt | Sivut → + (polku `klubi/saannot`) | sivua ei ole |
 | 6 | Tulevat tapahtumat | Tapahtumat → + | 0 |
 | 7 | Etusivun kuvat (iso kuva ja Klubista-kuva) | Sivun asetukset → Etusivu | puuttuvat |
 | 8 | Tietosuojaselosteen vahvistus (hallitus) | Sivut → Tietosuojaseloste | luonnos, ks. Mitä tarkistaa |

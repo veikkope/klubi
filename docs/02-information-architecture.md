@@ -27,7 +27,6 @@ Logo viittaa etusivulle `/`. Aktiivinen kohta: sininen teksti + 2 px sininen all
 - Esittely → `/klubi`
 - Toiminta → `/klubi/toiminta`
 - Hallitus → `/klubi/hallitus`
-- Säännöt → `/klubi/saannot`
 - Palloveikkaus → `/klubi/palloveikkaus`
 - Yhteystiedot → `/klubi/yhteystiedot`
 
@@ -39,7 +38,6 @@ Jos alakohde osoittaa pääkohteen sivulle, erillistä "yleisesittely"-linkkiä 
 /                                Etusivu
 ├── /klubi                       Esittely (entinen "Yleistä")
 │   ├── /klubi/hallitus
-│   ├── /klubi/saannot
 │   ├── /klubi/palloveikkaus     Klubin ennustuskilpailu (entinen "Veikkaus")
 │   └── /klubi/yhteystiedot
 ├── /ottelut                     Otteluohjelma (Veikkausliiga + Studion ottelut)
@@ -49,7 +47,9 @@ Jos alakohde osoittaa pääkohteen sivulle, erillistä "yleisesittely"-linkkiä 
 │   └── /uutiset/[slug]
 ├── /uutiset/arkisto             2005–2024 historiallinen blogiarkisto
 ├── /jalkapalloarkisto           Hub (entinen "Historia")
-│   ├── /jalkapalloarkisto/huuhkajat              entinen "Arvostelu"
+│   ├── /jalkapalloarkisto/huuhkajat              entinen "Arvostelu"; hub: aiheet + karsintasarjat
+│   │   └── /jalkapalloarkisto/huuhkajat/[osio]   pelaajatilastot, huuhkaja-arvostelu, kansojen-liiga,
+│   │                                             avauskokoonpano, englanti (lib/huuhkajat-osiot.ts)
 │   ├── /jalkapalloarkisto/mestarit               suomi.htm
 │   ├── /jalkapalloarkisto/valmentajat            suomenvalmentajat.htm
 │   ├── /jalkapalloarkisto/vuoden-pelaajat        vuodenpelaaja.htm + FIFAvuodenpelaaja.htm

@@ -33,7 +33,6 @@ export const klubiNav: SectionNavItem[] = [
   { label: "Esittely", href: "/klubi" },
   { label: "Toiminta", href: "/klubi/toiminta" },
   { label: "Hallitus", href: "/klubi/hallitus" },
-  { label: "Säännöt", href: "/klubi/saannot" },
   { label: "Palloveikkaus", href: "/klubi/palloveikkaus" },
   { label: "Yhteystiedot", href: "/klubi/yhteystiedot" },
 ];

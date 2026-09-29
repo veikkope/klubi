@@ -8,14 +8,14 @@ import type { Redirect } from "next/dist/lib/load-custom-routes";
  * `data/manual-redirects.csv`:hen. Kohteet tulevat ensisijaisesti Sanityn
  * `legacyUrl`-kentistä (ks. scripts/generate-redirects.ts).
  *
- * Lähde: vanhan sivuston täysi crawl (199 osoitetta).
+ * Lähde: vanhan sivuston täysi crawl (200 osoitetta).
  * Säilytä redirectit vähintään 6 kuukautta julkaisun jälkeen.
  *
  * Next.js palauttaa `permanent: true` -ohjaukselle 308:n, jonka hakukoneet
  * käsittelevät kuten 301:n.
  */
 export const legacyRedirects: Redirect[] = [
-  { source: "/arvostelu.htm", destination: "/jalkapalloarkisto/huuhkajat#huuhkaja-arvostelu", permanent: true },
+  { source: "/arvostelu.htm", destination: "/jalkapalloarkisto/huuhkajat/huuhkaja-arvostelu#huuhkaja-arvostelu", permanent: true },
   { source: "/ateenanolympiastadion.htm", destination: "/jalkapalloarkisto/stadionit/ateenanolympiastadion", permanent: true },
   { source: "/blogi2006.htm", destination: "/uutiset/arkisto/2006", permanent: true },
   { source: "/blogi2007q1.htm", destination: "/uutiset/arkisto/2007", permanent: true },
@@ -45,7 +45,7 @@ export const legacyRedirects: Redirect[] = [
   { source: "/EM2020.htm", destination: "/jalkapalloarkisto/arvokisat/em-2020", permanent: true },
   { source: "/EM2024.htm", destination: "/jalkapalloarkisto/arvokisat/em-2024", permanent: true },
   { source: "/emtilasto.htm", destination: "/jalkapalloarkisto/arvokisat#em-kisojen-mitalistit", permanent: true },
-  { source: "/englanninylintasohuuhkajat.htm", destination: "/jalkapalloarkisto/huuhkajat#huuhkajat-englannin-ylimmalla-sarjatasolla", permanent: true },
+  { source: "/englanninylintasohuuhkajat.htm", destination: "/jalkapalloarkisto/huuhkajat/englanti#huuhkajat-englannin-ylimmalla-sarjatasolla", permanent: true },
   { source: "/englanti.htm", destination: "/jalkapalloarkisto/ulkomaiset-mestarit#englannin-seurojen-mestaruudet", permanent: true },
   { source: "/english.htm", destination: "/english", permanent: true },
   { source: "/etusivu.htm", destination: "/", permanent: true },
@@ -59,6 +59,7 @@ export const legacyRedirects: Redirect[] = [
   { source: "/intercontinental.htm", destination: "/jalkapalloarkisto/eurocupit/intercontinental#seurajoukkueiden-mm", permanent: true },
   { source: "/jouluruokailu.htm", destination: "/klubi/toiminta/jouluruokailu", permanent: true },
   { source: "/kansojenliiga.htm", destination: "/jalkapalloarkisto/arvokisat", permanent: true },
+  { source: "/klubi/saannot", destination: "/klubi", permanent: true },
   { source: "/kommentit2005.htm", destination: "/uutiset/arkisto/2005", permanent: true },
   { source: "/kommentit2006.htm", destination: "/uutiset/arkisto/2006", permanent: true },
   { source: "/kommentit2007q1.htm", destination: "/uutiset/arkisto/2007", permanent: true },
@@ -96,7 +97,7 @@ export const legacyRedirects: Redirect[] = [
   { source: "/lupaavia.htm", destination: "/jalkapalloarkisto/lupaavat#lupaavat-1980-1986", permanent: true },
   { source: "/maailmanparhaat.htm", destination: "/jalkapalloarkisto/euroopan-paras#maailman-parhaat-pelaajat", permanent: true },
   { source: "/maanosaliittojencup.htm", destination: "/jalkapalloarkisto/eurocupit/intercontinental#maanosaliittojen-cup", permanent: true },
-  { source: "/maaottelut2004_6.htm", destination: "/jalkapalloarkisto/huuhkajat#suomen-paras-avauskokoonpano-2004-2008", permanent: true },
+  { source: "/maaottelut2004_6.htm", destination: "/jalkapalloarkisto/huuhkajat/avauskokoonpano#suomen-paras-avauskokoonpano-2004-2008", permanent: true },
   { source: "/matkailu.htm", destination: "/klubi/toiminta/matkailu", permanent: true },
   { source: "/MM2010.htm", destination: "/jalkapalloarkisto/arvokisat/mm-2010", permanent: true },
   { source: "/MM2014.htm", destination: "/jalkapalloarkisto/arvokisat/mm-2014", permanent: true },
@@ -119,8 +120,8 @@ export const legacyRedirects: Redirect[] = [
   { source: "/ottelut2022ja2023.htm", destination: "/jalkapalloarkisto/karsinnat/karsinta-em-2024", permanent: true },
   { source: "/ottelut2024ja2025.htm", destination: "/jalkapalloarkisto/karsinnat/karsinta-mm-2026", permanent: true },
   { source: "/ottelut2026ja2027.htm", destination: "/jalkapalloarkisto/karsinnat/karsinta-em-2028", permanent: true },
-  { source: "/pelaajatilasto.htm", destination: "/jalkapalloarkisto/huuhkajat#huuhkajat-pelaajatilasto-a-maaottelut", permanent: true },
-  { source: "/pelaajienottelumaara.htm", destination: "/jalkapalloarkisto/huuhkajat#suomen-paras-avauskokoonpano-2004-2008", permanent: true },
+  { source: "/pelaajatilasto.htm", destination: "/jalkapalloarkisto/huuhkajat/pelaajatilastot#huuhkajat-pelaajatilasto-a-maaottelut", permanent: true },
+  { source: "/pelaajienottelumaara.htm", destination: "/jalkapalloarkisto/huuhkajat/avauskokoonpano#suomen-paras-avauskokoonpano-2004-2008", permanent: true },
   { source: "/pietarikrestovskystadium.htm", destination: "/jalkapalloarkisto/stadionit/pietarikrestovskystadium", permanent: true },
   { source: "/pikkuhuuhkajat.htm", destination: "/jalkapalloarkisto/arvokisat/u21-em-2009", permanent: true },
   { source: "/puheenjohtajat.htm", destination: "/jalkapalloarkisto/palloliitto#palloliiton-puheenjohtajat", permanent: true },
@@ -187,9 +188,9 @@ export const legacyRedirects: Redirect[] = [
   { source: "/stadionturkuveritas.htm", destination: "/jalkapalloarkisto/stadionit/turkuveritas", permanent: true },
   { source: "/stadionventspilslimpiskaissportacenters.htm", destination: "/jalkapalloarkisto/stadionit/ventspilslimpiskaissportacenters", permanent: true },
   { source: "/stadionvorustadium.htm", destination: "/jalkapalloarkisto/stadionit/vorustadium", permanent: true },
-  { source: "/suomen%20paras%20avauskokoonpano.htm", destination: "/jalkapalloarkisto/huuhkajat#suomen-paras-avauskokoonpano-2004-2008", permanent: true },
-  { source: "/suomenika.htm", destination: "/jalkapalloarkisto/huuhkajat#suomen-paras-avauskokoonpano-2004-2008", permanent: true },
-  { source: "/suomenparasavauskokoonpano.htm", destination: "/jalkapalloarkisto/huuhkajat#suomen-paras-avauskokoonpano-2004-2008", permanent: true },
+  { source: "/suomen%20paras%20avauskokoonpano.htm", destination: "/jalkapalloarkisto/huuhkajat/avauskokoonpano#suomen-paras-avauskokoonpano-2004-2008", permanent: true },
+  { source: "/suomenika.htm", destination: "/jalkapalloarkisto/huuhkajat/avauskokoonpano#suomen-paras-avauskokoonpano-2004-2008", permanent: true },
+  { source: "/suomenparasavauskokoonpano.htm", destination: "/jalkapalloarkisto/huuhkajat/avauskokoonpano#suomen-paras-avauskokoonpano-2004-2008", permanent: true },
   { source: "/suomenvalmentajat.htm", destination: "/jalkapalloarkisto/valmentajat#huuhkajien-paavalmentajat", permanent: true },
   { source: "/suomenvalmentajientulot.htm", destination: "/jalkapalloarkisto/valmentajat#valmentajien-palkat", permanent: true },
   { source: "/suomi.htm", destination: "/jalkapalloarkisto/mestarit#suomen-mestarit", permanent: true },

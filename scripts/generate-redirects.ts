@@ -109,6 +109,8 @@ const EXACT: Record<string, string> = {
  */
 const INTERNAL_MOVES: Record<string, string> = {
   yhteystiedot: "/klubi/yhteystiedot",
+  // Säännöt-sivu poistettiin 29.9.2026 turhana; vanha osoite klubin etusivulle.
+  "klubi/saannot": "/klubi",
 };
 
 /** Klubin toimintamuodot: vanha tiedostonimi → uusi slug. */
