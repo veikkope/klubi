@@ -6,13 +6,11 @@ import {
   EnvelopeIcon,
   HomeIcon,
   LemonIcon,
-  LockIcon,
   MenuIcon,
   WarningOutlineIcon,
 } from "@sanity/icons";
 import type { StructureBuilder, StructureResolver } from "sanity/structure";
 
-import { KOMMENTTIKOODI_ID } from "./schemas/singletons/kommenttikoodi";
 
 /**
  * Sanity Studion vasemman valikon järjestys (docs/09).
@@ -62,10 +60,6 @@ export const structure: StructureResolver = (S) =>
                 .title("Sivuston asetukset")
                 .icon(CogIcon)
                 .child(S.document().schemaType("asetukset").documentId("asetukset")),
-              S.listItem()
-                .title("Kommenttien koodisana")
-                .icon(LockIcon)
-                .child(S.document().schemaType("kommenttikoodi").documentId(KOMMENTTIKOODI_ID)),
             ]),
         ),
 

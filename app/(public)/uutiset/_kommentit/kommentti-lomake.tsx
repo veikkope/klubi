@@ -37,7 +37,6 @@ const labelClass = "text-sm font-medium text-foreground";
 
 /** Selaimeen muistettavat kentät (vain tämän kävijän mukavuus, ei tallennusta palvelimelle). */
 const MUISTI_NIMI = "klubi-kommentti-nimi";
-const MUISTI_KOODI = "klubi-kommentti-koodi";
 
 function lueMuisti(key: string): string {
   try {
@@ -66,20 +65,17 @@ export function KommenttiLomake({
   const tyyppi = kommentointi.tyyppi ?? "kommentti";
   const onVeikkaus = tyyppi !== "kommentti";
   const nimiRef = useRef<HTMLInputElement>(null);
-  const koodiRef = useRef<HTMLInputElement>(null);
 
-  // Nimi ja koodisana valmiiksi edellisestä kerrasta.
+  // Nimi valmiiksi edellisestä kerrasta.
   useEffect(() => {
     if (nimiRef.current && !nimiRef.current.value) nimiRef.current.value = lueMuisti(MUISTI_NIMI);
-    if (koodiRef.current && !koodiRef.current.value) koodiRef.current.value = lueMuisti(MUISTI_KOODI);
   }, [state.lahetyksia]);
 
   const muista = () => {
     if (nimiRef.current?.value) kirjoitaMuisti(MUISTI_NIMI, nimiRef.current.value.trim());
-    if (koodiRef.current?.value) kirjoitaMuisti(MUISTI_KOODI, koodiRef.current.value.trim());
   };
 
-  const kentat: KommenttiField[] = ["nimi", ...(onVeikkaus ? (["veikkaus"] as const) : []), "teksti", "koodi"];
+  const kentat: KommenttiField[] = ["nimi", ...(onVeikkaus ? (["veikkaus"] as const) : []), "teksti"];
   if (tyyppi === "voittajaveikkaus" && kommentointi.maalikuningas) kentat.splice(2, 0, "maalikuningas");
   const virheet = kentat.filter((f) => state.fieldErrors[f]);
 
@@ -109,7 +105,7 @@ export function KommenttiLomake({
         )}
       </div>
 
-      {/* key: onnistunut lähetys tyhjentää lomakkeen (nimi ja koodi palautetaan muistista). */}
+      {/* key: onnistunut lähetys tyhjentää lomakkeen (nimi palautetaan muistista). */}
       <form key={state.lahetyksia} action={formAction} onSubmit={muista} noValidate className="space-y-6">
         <input type="hidden" name="uutinen" value={uutinenId} />
 
@@ -159,23 +155,6 @@ export function KommenttiLomake({
             aria-invalid={state.fieldErrors.teksti ? true : undefined}
             aria-describedby={describedBy("teksti", state)}
             className={cn(fieldClass, "resize-y")}
-          />
-        </Field>
-
-        <Field field="koodi" state={state} required hint="Jäsenille kerrottu sana. Kysy sitä sihteeriltä, jos et muista.">
-          <input
-            ref={koodiRef}
-            id={kommenttiFieldId("koodi")}
-            name="koodi"
-            type="text"
-            required
-            maxLength={40}
-            autoComplete="off"
-            autoCapitalize="off"
-            spellCheck={false}
-            aria-invalid={state.fieldErrors.koodi ? true : undefined}
-            aria-describedby={describedBy("koodi", state, true)}
-            className={cn(fieldClass, "sm:max-w-xs")}
           />
         </Field>
 

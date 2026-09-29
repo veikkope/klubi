@@ -46,7 +46,6 @@ voi muuttaa projektin asetuksia tai käyttöoikeuksia. Kehittäjä hoitaa ne.
   - **Navigaatio:** yläpalkin linkit
   - **Yhteystiedot:** osoite, sähköposti, puhelin ja some. Näkyvät footerissa ja yhteystietosivulla
   - **Sivuston asetukset:** logo
-  - **Kommenttien koodisana:** jäsenten yhteinen sana kommentointiin
 - **Tarkistettavat:** migraation merkitsemät dokumentit tyypeittäin (ks. alla)
 - **Uutiset:** tiedotteet ja blogikirjoitukset, myös blogin kaikki 528 kirjoitusta vuodesta 2007
 - **Kommentit ja veikkaukset:** jäsenten viestit uusin ensin sekä piilotetut
@@ -77,9 +76,8 @@ Palloveikkauksen tilanne on tavallinen uutinen. Kirjoita sarjataulukko riveinä:
 
 Jäsenet voivat jättää veikkauksen tai kommentin uutisen alle, ja viesti näkyy heti.
 
-**Ensimmäisellä kerralla:** **Sivun asetukset → Kommenttien koodisana**. Kirjoita sana,
-jonka kerrot jäsenille, ja julkaise. Ilman koodisanaa viestejä ei voi lähettää. Sana ei
-näy sivulla eikä rajapinnassa. Vaihda se, jos alkaa tulla roskaviestejä.
+Kuka tahansa voi kirjoittaa pelkällä nimellään. Asiattomat viestit piilotetaan jälkikäteen
+(ks. alla), ja kommentoinnin voi sulkea uutiselta rastin poistamalla.
 
 **Palloveikkaus (joukkueet järjestykseen):**
 1. Tee uutinen, esim. "Palloveikkaus 2027", ja kirjoita ohjeet tekstiin.
@@ -235,7 +233,6 @@ kävijälle asiallisen ilmoituksen.
 | 6 | Tulevat tapahtumat | Tapahtumat → + | 0 |
 | 7 | Etusivun kuvat (iso kuva ja Klubista-kuva) | Sivun asetukset → Etusivu | puuttuvat |
 | 8 | Tietosuojaselosteen vahvistus (hallitus) | Sivut → Tietosuojaseloste | luonnos, ks. Mitä tarkistaa |
-| 9 | Kommenttien koodisana | Sivun asetukset → Kommenttien koodisana | ei asetettu |
 
 ## Tietosuojapyynnöt
 
