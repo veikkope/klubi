@@ -90,7 +90,7 @@ export function RestaurantCard({
               {/* Pisteiden aria-label kertoo jo tarkan arvon ruudunlukijalle. */}
               <span
                 aria-hidden
-                className="text-[13px] font-semibold tabular-nums text-brass-text sm:text-[15px]"
+                className="font-display text-[15px] font-semibold leading-none tabular-nums text-brass-text sm:text-lg"
               >
                 {formatRating(rating)}
               </span>
