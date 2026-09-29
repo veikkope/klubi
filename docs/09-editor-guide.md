@@ -164,6 +164,18 @@ Kävijöiden lähettämät arvostelut eivät näy sivulla ennen kuin hyväksyt n
 3. **Hyväksy:** paina **Julkaise**. Arvostelu näkyy ravintolan sivulla.
 4. **Hylkää:** valikko **⋯** → **Poista** (Delete).
 
+**Uusi ravintola.** Kävijä voi arvostella myös ravintolan, jota hakemistossa ei vielä ole.
+Silloin listassa lukee **UUSI: ravintolan nimi**, ja arvostelussa näkyy laatikko
+*Kävijän ehdottama uusi ravintola*.
+
+1. Tarkista nimi, kaupunki ja maa. Jos ravintola on jo hakemistossa toisella nimellä,
+   valitse se kohtaan **Ravintola** ja paina **Julkaise**.
+2. Muuten paina alareunan vihreää **Hyväksy ja luo ravintola** → **Vahvista**.
+   Ravintola lisätään hakemistoon ja arvostelu julkaistaan sen sivulle.
+3. Täydennä ravintolan tietoja halutessasi: **Kaikki ravintolat** → ravintola (kuva,
+   osoite, ruokatyyppi) → **Julkaise**.
+4. Jos kaupunki oli uusi, avaa se **Kaupungit**-listasta ja valitse maakunta.
+
 Arvostelijalta kysytään vain nimi, joka näkyy arvostelun yhteydessä. Sähköpostia ei kerätä.
 
 ### Uuden kaupungin lisääminen (ravintolat)

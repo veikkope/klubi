@@ -19,9 +19,9 @@ export const revalidate = 3600;
 const TITLE = "Arvostele ravintola";
 const PATH = "/ravintolat/arvostele";
 const LEAD =
-  "Kävitkö ravintolassa, jonka klubi on arvioinut? Kerro oma kokemuksesi. " +
-  "Luemme jokaisen lähetyksen ennen julkaisua, ja hyväksytty arvostelu näkyy " +
-  "ravintolan omalla sivulla.";
+  "Kerro oma kokemuksesi klubin arvioimasta ravintolasta tai lisää uusi ravintola " +
+  "hakemistoon. Luemme jokaisen arvostelun ennen julkaisua, ja hyväksytty arvostelu " +
+  "näkyy ravintolan omalla sivulla.";
 
 const trail = [
   rootCrumb,
@@ -33,8 +33,8 @@ export async function generateMetadata(): Promise<Metadata> {
   return buildMetadata({
     title: TITLE,
     description:
-      "Lähetä oma arvostelusi Lahden Suomalainen Klubi ry:n ravintolahakemistoon. " +
-      "Arvostelut tarkistetaan ennen julkaisua.",
+      "Arvostele ravintola tai ehdota uutta Lahden Suomalainen Klubi ry:n " +
+      "ravintolahakemistoon. Arvostelut tarkistetaan ennen julkaisua.",
     path: PATH,
   });
 }
@@ -71,6 +71,7 @@ export default async function ArvostelePage({
           title={TITLE}
           lead={LEAD}
           eyebrow="Ravintolat"
+          topic="food"
           breadcrumbs={trail}
         />
 

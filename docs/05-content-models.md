@@ -113,19 +113,18 @@ Listanäkymässä järjestys: `startsAt` desc (tulevat ensin).
 | vierasmatka | boolean | ei | "Vierasmatka"-merkki |
 
 ### 6. `ravintola-kayttaja-arvostelu`
-**Tarkoitus:** Yleisön jättämät arvostelut. Tallennetaan Server Actionilla, isä moderoi Studiossa.
+**Tarkoitus:** Yleisön jättämät arvostelut (`/ravintolat/arvostele`). Server Action tallentaa arvostelun **luonnoksena**. Isä hyväksyy julkaisemalla ja hylkää poistamalla luonnoksen, joten erillistä tilakenttää ei ole.
 
 | Kenttä | Tyyppi | Pakollinen | Kuvaus |
 |---|---|---|---|
-| reviewerName | string | kyllä | Nimi |
-| reviewerEmail | email | kyllä | (ei näytetä julkisesti) |
-| restaurant | reference→ravintola | kyllä | |
+| reviewerName | string | kyllä | Julkaistava nimi (sähköpostia ei kerätä) |
+| restaurant | reference→ravintola | julkaistaessa | Puuttuu, kun kävijä ehdotti uutta ravintolaa |
+| ehdotettuRavintola | object { nimi, kaupunki, maa, lisatieto? } | ei | Kävijän ehdottama ravintola, jota ei ole hakemistossa. Vain luku |
 | stars | number 1–5 | kyllä | |
-| comment | text | kyllä | Kommentti (max 1000 merkkiä) |
-| status | string ("pending"/"approved"/"rejected") | kyllä | Initial: "pending" |
-| submittedAt | datetime | kyllä | Initial: nyt |
+| comment | text | kyllä | 10–1000 merkkiä |
+| submittedAt | datetime | kyllä | Lähetysaika |
 
-Vain `status: "approved"` näytetään julkisesti.
+Vain julkaistut arvostelut näkyvät. Uuden ravintolan arvostelun julkaisu vaatii ravintolan. Studion toiminto **Hyväksy ja luo ravintola** (`sanity/actions/hyvaksy-ja-luo-ravintola.tsx`) etsii kaupungin nimellä tai luo sen, luo ravintolan (nimi, polku, kaupunki, osoite tai verkkosivu), liittää arvostelun ja julkaisee. Jos lomakkeen ehdotus vastaa olemassa olevaa ravintolaa (sama nimi ja kaupunki), arvostelu liitetään siihen jo lähetettäessä.
 
 ### 7. `kaupunki`
 **Tarkoitus:** Ravintoloiden ja stadionien sijaintien luokittelu.

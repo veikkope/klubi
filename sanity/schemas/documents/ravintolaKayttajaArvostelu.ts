@@ -10,6 +10,12 @@ import { defineField, defineType } from "sanity";
  * tilakenttää ei tarvita, joten hyväksyntää ei voi unohtaa julkaisun jälkeen.
  *
  * Arvostelijalta kysytään vain julkaistava nimi (tietojen minimointi, docs/16).
+ *
+ * Kävijä voi arvostella myös ravintolan, jota hakemistossa ei vielä ole. Silloin
+ * `restaurant` puuttuu ja ehdotuksen tiedot ovat `ehdotettuRavintola`-kentässä.
+ * Arvostelua ei voi julkaista ilman ravintolaa: toiminto "Hyväksy ja luo
+ * ravintola" (sanity/actions/hyvaksy-ja-luo-ravintola.tsx) luo ravintolan,
+ * liittää arvostelun siihen ja julkaisee molemmat.
  */
 export const ravintolaKayttajaArvostelu = defineType({
   name: "ravintolaKayttajaArvostelu",
@@ -17,7 +23,8 @@ export const ravintolaKayttajaArvostelu = defineType({
   type: "document",
   icon: CommentIcon,
   description:
-    "Hyväksy arvostelu painamalla Publish. Hylkää poistamalla luonnos (valikko ⋯ → Delete). " +
+    "Hyväksy arvostelu painamalla Julkaise. Jos kävijä ehdotti uutta ravintolaa, paina " +
+    "\"Hyväksy ja luo ravintola\". Hylkää poistamalla luonnos (valikko ⋯ → Poista). " +
     "Julkaistu arvostelu näkyy ravintolan sivulla.",
   fields: [
     defineField({
@@ -28,11 +35,36 @@ export const ravintolaKayttajaArvostelu = defineType({
       validation: (rule) => rule.required().error("Nimi on pakollinen."),
     }),
     defineField({
+      name: "ehdotettuRavintola",
+      title: "Kävijän ehdottama uusi ravintola",
+      description:
+        "Ravintolaa ei ollut hakemistossa. Tarkista tiedot ja paina alareunasta " +
+        "\"Hyväksy ja luo ravintola\": ravintola lisätään hakemistoon ja arvostelu julkaistaan. " +
+        "Voit myös valita alta olemassa olevan ravintolan, jos se löytyy jo toisella nimellä.",
+      type: "object",
+      readOnly: true,
+      hidden: ({ value }) => !value,
+      fields: [
+        defineField({ name: "nimi", title: "Nimi", type: "string" }),
+        defineField({ name: "kaupunki", title: "Kaupunki", type: "string" }),
+        defineField({ name: "maa", title: "Maa", type: "string" }),
+        defineField({ name: "lisatieto", title: "Osoite tai verkkosivu", type: "string" }),
+      ],
+    }),
+    defineField({
       name: "restaurant",
       title: "Ravintola",
       type: "reference",
       to: [{ type: "ravintola" }],
-      validation: (rule) => rule.required().error("Valitse ravintola."),
+      validation: (rule) =>
+        rule.custom((value, context) => {
+          if (value) return true;
+          const ehdotus = (context.document as { ehdotettuRavintola?: { nimi?: string } } | undefined)
+            ?.ehdotettuRavintola;
+          return ehdotus
+            ? `Ravintolaa "${ehdotus.nimi ?? ""}" ei ole vielä hakemistossa. Paina "Hyväksy ja luo ravintola" tai valitse olemassa oleva ravintola.`
+            : "Valitse ravintola.";
+        }),
     }),
     defineField({
       name: "stars",
@@ -60,11 +92,17 @@ export const ravintolaKayttajaArvostelu = defineType({
     { title: "Lähetysaika (uusin ensin)", name: "submittedAtDesc", by: [{ field: "submittedAt", direction: "desc" }] },
   ],
   preview: {
-    select: { name: "reviewerName", restaurant: "restaurant.name", stars: "stars", submittedAt: "submittedAt" },
-    prepare({ name, restaurant, stars, submittedAt }) {
+    select: {
+      name: "reviewerName",
+      restaurant: "restaurant.name",
+      uusi: "ehdotettuRavintola.nimi",
+      stars: "stars",
+      submittedAt: "submittedAt",
+    },
+    prepare({ name, restaurant, uusi, stars, submittedAt }) {
       const pvm = submittedAt ? new Date(submittedAt).toLocaleDateString("fi-FI") : "";
       return {
-        title: `${name ?? "?"} → ${restaurant ?? "?"}`,
+        title: `${name ?? "?"} → ${restaurant ?? (uusi ? `UUSI: ${uusi}` : "?")}`,
         subtitle: [stars ? "★".repeat(stars) : "", pvm].filter(Boolean).join(" · "),
       };
     },

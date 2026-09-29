@@ -6,9 +6,13 @@ import { createClient } from "next-sanity";
 
 import { apiVersion, dataset, hasSanity, projectId } from "@/sanity/env";
 import {
+  COMMENT_MAX,
+  COMMENT_MIN,
   EMPTY_REVIEW_VALUES,
+  normalizeSearch,
   type ReviewField,
   type ReviewFormState,
+  type ReviewValues,
 } from "./form-state";
 
 /**
@@ -19,6 +23,13 @@ import {
  * kyselyille, joten moderoimaton teksti ei päädy sivulle eikä rajapintaan.
  * Sihteeri hyväksyy arvostelun julkaisemalla sen Studiossa (Publish) tai
  * hylkää poistamalla luonnoksen.
+ *
+ * Ravintola on joko hakemistosta valittu (viittaus) tai kävijän ehdottama uusi
+ * ravintola (`ehdotettuRavintola`, ei viittausta). Uuden ravintolan arvostelua
+ * ei voi julkaista ennen kuin sihteeri luo ravintolan: Studion toiminto
+ * "Hyväksy ja luo ravintola" tekee sen yhdellä painalluksella
+ * (sanity/actions/hyvaksy-ja-luo-ravintola.tsx). Jos ehdotettu ravintola on jo
+ * hakemistossa (sama nimi ja kaupunki), arvostelu liitetään siihen suoraan.
  *
  * Tietojen minimointi (GDPR art. 5): arvostelijalta kysytään vain julkaistava
  * nimi. Sähköpostia ei kerätä, koska sille ei ole välttämätöntä käyttötarkoitusta.
@@ -42,12 +53,18 @@ export async function submitReview(
   _prev: ReviewFormState,
   formData: FormData,
 ): Promise<ReviewFormState> {
-  const values: Record<ReviewField, string> = {
+  const values: ReviewValues = {
     ravintola: text(formData, "ravintola"),
+    uusi: text(formData, "uusi") === "1" ? "1" : "",
+    uusiNimi: text(formData, "uusiNimi"),
+    uusiKaupunki: text(formData, "uusiKaupunki"),
+    uusiMaa: text(formData, "uusiMaa"),
+    uusiLisatieto: text(formData, "uusiLisatieto"),
     nimi: text(formData, "nimi"),
     tahdet: text(formData, "tahdet"),
     kommentti: text(formData, "kommentti"),
   };
+  const isNew = values.uusi === "1";
 
   // Hunajapurkki: kenttä on piilotettu ihmisiltä, joten sen täyttää käytännössä
   // vain botti. Lähetys hylätään hiljaisesti — bottia ei kannata opettaa
@@ -55,7 +72,7 @@ export async function submitReview(
   if (text(formData, "verkkosivu") !== "") {
     return {
       status: "success",
-      message: "Kiitos! Arvostelusi on vastaanotettu ja odottaa hyväksyntää.",
+      message: "Tarkistamme sen ennen julkaisua.",
       fieldErrors: {},
       values: EMPTY_REVIEW_VALUES,
     };
@@ -63,8 +80,27 @@ export async function submitReview(
 
   const fieldErrors: Partial<Record<ReviewField, string>> = {};
 
-  if (!DOCUMENT_ID.test(values.ravintola)) {
-    fieldErrors.ravintola = "Valitse ravintola listasta.";
+  if (isNew) {
+    if (values.uusiNimi.length < 2) {
+      fieldErrors.uusiNimi = "Kirjoita ravintolan nimi.";
+    } else if (values.uusiNimi.length > 100) {
+      fieldErrors.uusiNimi = "Nimi saa olla enintään 100 merkkiä.";
+    }
+    if (values.uusiKaupunki.length < 2) {
+      fieldErrors.uusiKaupunki = "Kirjoita kaupunki, jossa ravintola on.";
+    } else if (values.uusiKaupunki.length > 60) {
+      fieldErrors.uusiKaupunki = "Kaupunki saa olla enintään 60 merkkiä.";
+    }
+    if (values.uusiMaa.length < 2) {
+      fieldErrors.uusiMaa = "Kirjoita maa, esim. Suomi.";
+    } else if (values.uusiMaa.length > 60) {
+      fieldErrors.uusiMaa = "Maa saa olla enintään 60 merkkiä.";
+    }
+    if (values.uusiLisatieto.length > 200) {
+      fieldErrors.uusiLisatieto = "Lisätieto saa olla enintään 200 merkkiä.";
+    }
+  } else if (!DOCUMENT_ID.test(values.ravintola)) {
+    fieldErrors.ravintola = "Hae ravintola ja valitse se listasta, tai lisää uusi ravintola.";
   }
 
   if (values.nimi.length < 2) {
@@ -78,10 +114,10 @@ export async function submitReview(
     fieldErrors.tahdet = "Valitse arvosana yhdestä viiteen tähteen.";
   }
 
-  if (values.kommentti.length < 10) {
-    fieldErrors.kommentti = "Kerro kokemuksestasi vähintään 10 merkillä.";
-  } else if (values.kommentti.length > 1000) {
-    fieldErrors.kommentti = "Arvostelu saa olla enintään 1000 merkkiä.";
+  if (values.kommentti.length < COMMENT_MIN) {
+    fieldErrors.kommentti = `Kerro kokemuksestasi vähintään ${COMMENT_MIN} merkillä.`;
+  } else if (values.kommentti.length > COMMENT_MAX) {
+    fieldErrors.kommentti = `Arvostelu saa olla enintään ${COMMENT_MAX} merkkiä.`;
   }
 
   if (Object.keys(fieldErrors).length > 0) {
@@ -127,29 +163,56 @@ export async function submitReview(
     perspective: "published",
   });
 
+  let restaurantName: string;
+  let restaurantId: string | null = null;
   try {
-    // Varmistetaan että viitattu ravintola on olemassa — muuten
-    // moderointijonoon syntyy rikkinäisiä viittauksia.
-    const exists = await writeClient.fetch<string | null>(
-      /* groq */ `*[_type == "ravintola" && _id == $id][0]._id`,
-      { id: values.ravintola },
-    );
 
-    if (!exists) {
-      return {
-        status: "error",
-        message: "Lomakkeessa on puutteita. Korjaa alla merkityt kohdat.",
-        fieldErrors: { ravintola: "Valittua ravintolaa ei löytynyt." },
-        values,
-      };
+    if (isNew) {
+      // Onko ehdotettu ravintola jo hakemistossa? Liitetään silloin suoraan.
+      const all = await writeClient.fetch<{ _id: string; name: string; city: string | null }[]>(
+        /* groq */ `*[_type == "ravintola"]{ _id, name, "city": city->name }`,
+      );
+      const name = normalizeSearch(values.uusiNimi);
+      const city = normalizeSearch(values.uusiKaupunki);
+      const match = all.find(
+        (r) => normalizeSearch(r.name) === name && normalizeSearch(r.city ?? "") === city,
+      );
+      restaurantId = match?._id ?? null;
+      restaurantName = match?.name ?? values.uusiNimi;
+    } else {
+      // Varmistetaan että viitattu ravintola on olemassa — muuten
+      // moderointijonoon syntyy rikkinäisiä viittauksia.
+      const found = await writeClient.fetch<{ _id: string; name: string } | null>(
+        /* groq */ `*[_type == "ravintola" && _id == $id][0]{ _id, name }`,
+        { id: values.ravintola },
+      );
+      if (!found) {
+        return {
+          status: "error",
+          message: "Lomakkeessa on puutteita. Korjaa alla merkityt kohdat.",
+          fieldErrors: { ravintola: "Valittua ravintolaa ei löytynyt. Hae se uudelleen." },
+          values,
+        };
+      }
+      restaurantId = found._id;
+      restaurantName = found.name;
     }
 
-    await writeClient.create({
+    await writeClient.create<Record<string, unknown>>({
       // Luonnos: ei näy julkisesti ennen kuin sihteeri julkaisee sen Studiossa.
       _id: `drafts.${randomUUID()}`,
       _type: "ravintolaKayttajaArvostelu",
       reviewerName: values.nimi,
-      restaurant: { _type: "reference", _ref: values.ravintola },
+      ...(restaurantId
+        ? { restaurant: { _type: "reference", _ref: restaurantId } }
+        : {
+            ehdotettuRavintola: {
+              nimi: values.uusiNimi,
+              kaupunki: values.uusiKaupunki,
+              maa: values.uusiMaa,
+              ...(values.uusiLisatieto ? { lisatieto: values.uusiLisatieto } : {}),
+            },
+          }),
       stars,
       comment: values.kommentti,
       submittedAt: new Date().toISOString(),
@@ -168,10 +231,12 @@ export async function submitReview(
 
   return {
     status: "success",
-    message:
-      "Kiitos! Arvostelusi on vastaanotettu ja odottaa hyväksyntää. Julkaisemme " +
-      "sen tarkistuksen jälkeen ravintolan omalla sivulla.",
+    message: !restaurantId
+      ? "Tarkistamme sen ja lisäämme ravintolan hakemistoon. Hyväksytty arvostelu " +
+        "näkyy ravintolan omalla sivulla."
+      : "Tarkistamme sen, ja hyväksytty arvostelu näkyy ravintolan omalla sivulla.",
     fieldErrors: {},
     values: EMPTY_REVIEW_VALUES,
+    restaurantName,
   };
 }

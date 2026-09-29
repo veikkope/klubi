@@ -5,22 +5,38 @@
  * sellainen tiedosto saa viedä muuta kuin asynkronisia funktioita. Sekä
  * palvelintoiminto että lomakekomponentti lukevat nämä täältä, jolloin
  * kenttänimet ja virheavaimet ovat yhdessä paikassa.
+ *
+ * Arvosteltava ravintola on joko hakemistosta valittu (`ravintola` = id) tai
+ * kävijän ehdottama uusi ravintola (`uusi` = "1" ja `uusi*`-kentät).
  */
 
 export const REVIEW_FIELDS = [
   "ravintola",
-  "nimi",
+  "uusiNimi",
+  "uusiKaupunki",
+  "uusiMaa",
+  "uusiLisatieto",
   "tahdet",
   "kommentti",
+  "nimi",
 ] as const;
 
 export type ReviewField = (typeof REVIEW_FIELDS)[number];
 
 export const REVIEW_FIELD_LABELS: Record<ReviewField, string> = {
   ravintola: "Ravintola",
-  nimi: "Nimi",
+  uusiNimi: "Ravintolan nimi",
+  uusiKaupunki: "Kaupunki",
+  uusiMaa: "Maa",
+  uusiLisatieto: "Osoite tai verkkosivu",
   tahdet: "Arvosana",
   kommentti: "Arvostelu",
+  nimi: "Nimesi",
+};
+
+export type ReviewValues = Record<ReviewField, string> & {
+  /** "1", kun kävijä ehdottaa uutta ravintolaa. */
+  uusi: string;
 };
 
 export type ReviewFormState = {
@@ -29,14 +45,21 @@ export type ReviewFormState = {
   message: string | null;
   fieldErrors: Partial<Record<ReviewField, string>>;
   /** Syötetyt arvot, jotta käyttäjän ei tarvitse kirjoittaa niitä uudelleen. */
-  values: Record<ReviewField, string>;
+  values: ReviewValues;
+  /** Onnistuneen lähetyksen ravintola kiitosviestiä varten. */
+  restaurantName?: string;
 };
 
-export const EMPTY_REVIEW_VALUES: Record<ReviewField, string> = {
+export const EMPTY_REVIEW_VALUES: ReviewValues = {
   ravintola: "",
-  nimi: "",
+  uusi: "",
+  uusiNimi: "",
+  uusiKaupunki: "",
+  uusiMaa: "Suomi",
+  uusiLisatieto: "",
   tahdet: "",
   kommentti: "",
+  nimi: "",
 };
 
 export const INITIAL_REVIEW_STATE: ReviewFormState = {
@@ -46,6 +69,9 @@ export const INITIAL_REVIEW_STATE: ReviewFormState = {
   values: EMPTY_REVIEW_VALUES,
 };
 
+export const COMMENT_MIN = 10;
+export const COMMENT_MAX = 1000;
+
 /** Lomakekentän id — sama sekä `<label for>`:ssä että virhelinkissä. */
 export function reviewFieldId(field: ReviewField): string {
   return `arvostelu-${field}`;
@@ -53,4 +79,18 @@ export function reviewFieldId(field: ReviewField): string {
 
 export function reviewErrorId(field: ReviewField): string {
   return `arvostelu-${field}-virhe`;
+}
+
+/**
+ * Hakuvertailun normalisointi: pienet kirjaimet, ei diakriittejä eikä
+ * välimerkkejä ("Hämeenlinna" löytyy haulla "hameenlinna", "Café" haulla "cafe").
+ * Käytetään sekä haussa että palvelimella kaksoiskappaleiden tunnistamisessa.
+ */
+export function normalizeSearch(value: string): string {
+  return value
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .toLocaleLowerCase("fi-FI")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
 }

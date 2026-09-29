@@ -8,6 +8,7 @@ import { apiVersion, dataset, projectId } from "./sanity/env";
 import { schemaTypes, singletonTypes } from "./sanity/schemas";
 import { structure } from "./sanity/structure";
 import { locations } from "./sanity/presentation";
+import { HyvaksyJaLuoRavintola } from "./sanity/actions/hyvaksy-ja-luo-ravintola";
 
 export default defineConfig({
   name: "klubi",
@@ -23,6 +24,10 @@ export default defineConfig({
   },
   document: {
     actions: (input, context) => {
+      if (context.schemaType === "ravintolaKayttajaArvostelu") {
+        // Ensisijainen toiminto, kun kävijä ehdotti uutta ravintolaa.
+        return [HyvaksyJaLuoRavintola, ...input];
+      }
       if (singletonTypes.has(context.schemaType)) {
         return input.filter(
           ({ action }) => action !== "duplicate" && action !== "delete",

@@ -558,6 +558,12 @@ export type RavintolaKayttajaArvostelu = {
   _updatedAt: string;
   _rev: string;
   reviewerName?: string;
+  ehdotettuRavintola?: {
+    nimi?: string;
+    kaupunki?: string;
+    maa?: string;
+    lisatieto?: string;
+  };
   restaurant?: RavintolaReference;
   stars?: number;
   comment?: string;
