@@ -556,7 +556,9 @@ export type RavintolaKayttajaArvostelu = {
     lisatieto?: string;
   };
   restaurant?: RavintolaReference;
-  stars?: number;
+  ratingFood?: number;
+  ratingPrice?: number;
+  ratingAtmosphere?: number;
   comment?: string;
   submittedAt?: string;
 };
@@ -2239,10 +2241,10 @@ export type RavintolaBySlugQueryResult = {
   userReviews: Array<{
     _id: string;
     reviewerName: string | null;
-    ratingFood: null;
-    ratingPrice: null;
-    ratingAtmosphere: null;
-    rating: null;
+    ratingFood: number | null;
+    ratingPrice: number | null;
+    ratingAtmosphere: number | null;
+    rating: number | null;
     comment: string | null;
     submittedAt: string | null;
   }>;

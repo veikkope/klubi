@@ -82,9 +82,13 @@ export const INITIAL_REVIEW_STATE: ReviewFormState = {
  */
 export const RATING_FIELDS = [
   { field: "ruoka", schemaField: "ratingFood", hint: "Maku, laatu ja annokset" },
-  { field: "hinta", schemaField: "ratingPrice", hint: "Vastine rahalle: 5 = erinomainen hinta-laatusuhde" },
+  { field: "hinta", schemaField: "ratingPrice", hint: "Vastine rahalle: 5,0 = erinomainen hinta-laatusuhde" },
   { field: "viihtyvyys", schemaField: "ratingAtmosphere", hint: "Tunnelma, palvelu ja miljöö" },
 ] as const satisfies readonly { field: ReviewField; schemaField: string; hint: string }[];
+
+/** Osa-alueen arvosana 1,0–5,0 yhden desimaalin tarkkuudella. */
+export const RATING_MIN = 1;
+export const RATING_MAX = 5;
 
 export const COMMENT_MIN = 10;
 export const COMMENT_MAX = 1000;

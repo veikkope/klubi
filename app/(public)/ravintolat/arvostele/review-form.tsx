@@ -12,6 +12,8 @@ import {
   COMMENT_MIN,
   INITIAL_REVIEW_STATE,
   RATING_FIELDS,
+  RATING_MAX,
+  RATING_MIN,
   REVIEW_FIELDS,
   REVIEW_FIELD_LABELS,
   reviewErrorId,
@@ -32,8 +34,8 @@ import { RestaurantPicker } from "./restaurant-picker";
  * - Jokainen vaihe on `fieldset` + `legend`.
  * - Epäonnistuneen lähetyksen jälkeen fokus siirtyy virheyhteenvetoon, jonka
  *   linkit vievät suoraan virheelliseen kenttään.
- * - Tähdet ovat radiopainikkeita: nuolinäppäimet vaihtavat arvosanaa. Jokainen
- *   osa-alue (ruoka, hinta, viihtyvyys) on oma ryhmänsä.
+ * - Osa-alueiden arvosanat (1,0–5,0) annetaan liukusäätimellä tai numerokentällä;
+ *   säädin toimii nuolinäppäimillä ja kertoo arvon ruudunlukijalle.
  * - Merkkilaskuri kerrotaan ruudunlukijalle vasta, kun raja on lähellä.
  */
 
@@ -42,14 +44,6 @@ function ids(...values: (string | false | undefined)[]): string | undefined {
   const list = values.filter(Boolean);
   return list.length ? list.join(" ") : undefined;
 }
-
-const STARS = [
-  { value: 1, label: "Huono" },
-  { value: 2, label: "Välttävä" },
-  { value: 3, label: "Hyvä" },
-  { value: 4, label: "Erittäin hyvä" },
-  { value: 5, label: "Erinomainen" },
-];
 
 export function ReviewForm({
   restaurants,
@@ -229,9 +223,22 @@ function Step({ number, title, children }: { number: number; title: string; chil
   );
 }
 
+/** 3.25 → "3,3". */
+function formatScore(value: number): string {
+  return value.toFixed(1).replace(".", ",");
+}
+
+/** "3,3" tai "3.3" → 3.3; muuten null. Sama sääntö kuin palvelimella (actions.ts). */
+function parseScore(text: string): number | null {
+  const value = Number(text.trim().replace(",", "."));
+  if (!text.trim() || !Number.isFinite(value) || value < RATING_MIN || value > RATING_MAX) return null;
+  return Math.round(value * 10) / 10;
+}
+
 /**
- * Arvosanat kolmesta osa-alueesta (ruoka, hinta, viihtyvyys) kuten klubin
- * omissa arvioissa. Kokonaisarvosana on keskiarvo, ja se näytetään heti.
+ * Arvosanat kolmesta osa-alueesta (ruoka, hinta, viihtyvyys) yhden desimaalin
+ * tarkkuudella kuten klubin omissa arvioissa. Kokonaisarvosana on keskiarvo,
+ * ja se näytetään heti.
  */
 function RatingsField({
   values,
@@ -240,10 +247,10 @@ function RatingsField({
   values: ReviewFormState["values"];
   errors: ReviewFormState["fieldErrors"];
 }) {
-  const [scores, setScores] = useState<Record<string, number>>(() =>
-    Object.fromEntries(RATING_FIELDS.map(({ field }) => [field, Number(values[field]) || 0])),
+  const [scores, setScores] = useState<Record<string, number | null>>(() =>
+    Object.fromEntries(RATING_FIELDS.map(({ field }) => [field, parseScore(values[field])])),
   );
-  const given = RATING_FIELDS.map(({ field }) => scores[field]).filter((v) => v > 0);
+  const given = RATING_FIELDS.map(({ field }) => scores[field]).filter((v): v is number => v !== null);
   const average = given.length === RATING_FIELDS.length ? given.reduce((a, b) => a + b, 0) / given.length : null;
 
   return (
@@ -253,16 +260,17 @@ function RatingsField({
         <RequiredMark />
       </p>
       <p className="mt-1 text-sm text-muted">
-        Arvioi kolme osa-aluetta kuten klubin arvioissa. Kokonaisarvosana on niiden keskiarvo.
+        Arvioi kolme osa-aluetta asteikolla 1,0–5,0 kuten klubin arvioissa. Vedä säädintä tai
+        kirjoita arvosana, esim. 3,3. Kokonaisarvosana on osa-alueiden keskiarvo.
       </p>
       <div className="mt-3 flex flex-col divide-y divide-border rounded-sm border border-border bg-background">
         {RATING_FIELDS.map(({ field, hint }) => (
-          <StarRow
+          <ScoreRow
             key={field}
             field={field}
             hint={hint}
             error={errors[field]}
-            value={scores[field]}
+            defaultText={values[field]}
             onChange={(v) => setScores((prev) => ({ ...prev, [field]: v }))}
           />
         ))}
@@ -273,7 +281,7 @@ function RatingsField({
               <span className="font-sans text-sm font-normal text-muted">Anna kaikki kolme arvosanaa</span>
             ) : (
               <>
-                {average.toFixed(1).replace(".", ",")}
+                {formatScore(average)}
                 <span className="font-sans text-sm font-normal text-muted"> / 5</span>
               </>
             )}
@@ -284,90 +292,103 @@ function RatingsField({
   );
 }
 
-function StarRow({
+/**
+ * Yksi osa-alue: liukusäädin (1,0–5,0, askel 0,1) ja numerokenttä rinnakkain.
+ * Säädin toimii nuolinäppäimillä (0,1) ja Page Up/Down -näppäimillä (1,0).
+ * Lomakkeelle lähtee numerokentän arvo, jonka voi kirjoittaa pilkulla tai
+ * pisteellä. Ennen ensimmäistä valintaa säädin on haalea eikä arvoa lähetetä,
+ * jotta keskikohtaa ei tallenneta vahingossa.
+ */
+function ScoreRow({
   field,
   hint,
   error,
-  value,
+  defaultText,
   onChange,
 }: {
   field: ReviewField;
   hint: string;
   error?: string;
-  value: number;
-  onChange: (value: number) => void;
+  defaultText: string;
+  onChange: (value: number | null) => void;
 }) {
-  const [hover, setHover] = useState(0);
-  const shown = hover || value;
+  const [text, setText] = useState(() => {
+    const v = parseScore(defaultText);
+    return v === null ? defaultText : formatScore(v);
+  });
+  const value = parseScore(text);
   const label = REVIEW_FIELD_LABELS[field];
+  const nameId = `${reviewFieldId(field)}-nimi`;
+  const hintId = `${reviewFieldId(field)}-ohje`;
+  const invalidText = text.trim() !== "" && value === null;
+
+  function set(next: string) {
+    setText(next);
+    onChange(parseScore(next));
+  }
 
   return (
-    <div
-      // Virheyhteenvedon linkin kohde.
-      id={reviewFieldId(field)}
-      role="radiogroup"
-      aria-labelledby={`${reviewFieldId(field)}-nimi`}
-      aria-required
-      aria-invalid={error ? true : undefined}
-      aria-describedby={ids(`${reviewFieldId(field)}-ohje`, error && reviewErrorId(field))}
-      className="px-4 py-3 sm:px-5"
-    >
-      <div className="grid items-center gap-x-4 gap-y-1 sm:grid-cols-[13rem_auto_1fr]">
+    <div className="px-4 py-3.5 sm:px-5">
+      <div className="grid grid-cols-[1fr_auto] items-center gap-x-4 gap-y-2 sm:grid-cols-[13rem_1fr_auto]">
         <div>
-          <p id={`${reviewFieldId(field)}-nimi`} className="text-[15px] font-semibold text-foreground">
+          <p id={nameId} className="text-[15px] font-semibold text-foreground">
             {label}
           </p>
-          <p id={`${reviewFieldId(field)}-ohje`} className="text-[13px] leading-snug text-muted">
+          <p id={hintId} className="text-[13px] leading-snug text-muted">
             {hint}
           </p>
         </div>
-        <div className="-ml-1.5 flex" onMouseLeave={() => setHover(0)}>
-          {STARS.map((star) => {
-            const id = `${reviewFieldId(field)}-${star.value}`;
-            return (
-              <span key={star.value} className="inline-flex">
-                <input
-                  id={id}
-                  type="radio"
-                  name={field}
-                  value={star.value}
-                  required
-                  defaultChecked={value === star.value}
-                  onChange={() => onChange(star.value)}
-                  className="peer sr-only"
-                />
-                <label
-                  htmlFor={id}
-                  onMouseEnter={() => setHover(star.value)}
-                  className="grid size-11 cursor-pointer place-items-center rounded-sm peer-focus-visible:ring-2 peer-focus-visible:ring-ring"
-                >
-                  <svg
-                    aria-hidden
-                    viewBox="0 0 24 24"
-                    className={cn(
-                      "size-8 transition-transform duration-100 motion-reduce:transition-none",
-                      star.value <= shown ? "fill-brass stroke-brass" : "fill-transparent stroke-muted-soft",
-                      hover === star.value && "scale-110",
-                    )}
-                    strokeWidth={1.5}
-                  >
-                    <path
-                      strokeLinejoin="round"
-                      d="M12 2.8l2.8 5.8 6.3.9-4.6 4.4 1.1 6.3L12 17.2l-5.6 3 1.1-6.3L2.9 9.5l6.3-.9L12 2.8z"
-                    />
-                  </svg>
-                  <span className="sr-only">
-                    {label} {star.value} / 5 – {star.label}
-                  </span>
-                </label>
-              </span>
-            );
-          })}
+        <div className="col-span-2 row-start-2 flex flex-col sm:col-span-1 sm:row-start-auto">
+          <input
+            type="range"
+            min={RATING_MIN}
+            max={RATING_MAX}
+            step={0.1}
+            value={value ?? 3}
+            onChange={(e) => set(formatScore(Number(e.target.value)))}
+            aria-labelledby={nameId}
+            aria-describedby={hintId}
+            aria-valuetext={value === null ? "Ei arvioitu" : `${formatScore(value)} / 5`}
+            className={cn(
+              "h-11 w-full cursor-pointer accent-brass",
+              value === null && "opacity-40 grayscale",
+            )}
+          />
+          <div aria-hidden className="-mt-1.5 flex justify-between px-0.5 text-xs tabular-nums text-muted-soft">
+            {[1, 2, 3, 4, 5].map((n) => (
+              <span key={n}>{n}</span>
+            ))}
+          </div>
         </div>
-        <p aria-hidden className="text-sm font-semibold text-brass-text max-sm:hidden">
-          {shown ? `${shown} · ${STARS[shown - 1].label}` : ""}
-        </p>
+        <div className="col-start-2 row-start-1 flex items-baseline gap-1.5 sm:col-start-3">
+          <input
+            // Virheyhteenvedon linkin kohde; lomakkeelle lähtevä arvo.
+            id={reviewFieldId(field)}
+            name={field}
+            type="text"
+            inputMode="decimal"
+            autoComplete="off"
+            maxLength={4}
+            placeholder="–"
+            value={text}
+            onChange={(e) => set(e.target.value)}
+            onBlur={() => value !== null && set(formatScore(value))}
+            aria-label={`${label}, arvosana 1,0–5,0`}
+            aria-invalid={error || invalidText ? true : undefined}
+            aria-describedby={ids(hintId, error && reviewErrorId(field), invalidText && `${reviewFieldId(field)}-muoto`)}
+            className={cn(
+              fieldClass,
+              "w-[4.5rem] text-center font-display text-xl font-semibold tabular-nums text-brass-text",
+            )}
+          />
+          <span aria-hidden className="text-sm text-muted">/ 5</span>
+        </div>
       </div>
+      {invalidText && !error && (
+        <p id={`${reviewFieldId(field)}-muoto`} className="mt-1.5 text-sm text-warning">
+          Kirjoita luku väliltä 1,0–5,0, esim. 3,3.
+        </p>
+      )}
       <FieldMessages field={field} error={error} />
     </div>
   );

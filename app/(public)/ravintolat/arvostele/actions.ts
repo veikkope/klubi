@@ -11,6 +11,8 @@ import {
   EMPTY_REVIEW_VALUES,
   normalizeSearch,
   RATING_FIELDS,
+  RATING_MAX,
+  RATING_MIN,
   REVIEW_FIELD_LABELS,
   type ReviewField,
   type ReviewFormState,
@@ -115,11 +117,13 @@ export async function submitReview(
 
   const ratings: Record<string, number> = {};
   for (const { field, schemaField } of RATING_FIELDS) {
-    const value = Number.parseInt(values[field], 10);
-    if (!Number.isInteger(value) || value < 1 || value > 5) {
-      fieldErrors[field] = `Anna osa-alueelle ${REVIEW_FIELD_LABELS[field].toLocaleLowerCase("fi-FI")} 1–5 tähteä.`;
+    // Pilkku tai piste, yksi desimaali (pyöristetään): "3,3" → 3.3.
+    const raw = values[field].replace(",", ".");
+    const value = raw ? Number(raw) : Number.NaN;
+    if (!Number.isFinite(value) || value < RATING_MIN || value > RATING_MAX) {
+      fieldErrors[field] = `Anna osa-alueelle ${REVIEW_FIELD_LABELS[field].toLocaleLowerCase("fi-FI")} arvosana väliltä 1,0–5,0.`;
     } else {
-      ratings[schemaField] = value;
+      ratings[schemaField] = Math.round(value * 10) / 10;
     }
   }
 

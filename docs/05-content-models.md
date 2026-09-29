@@ -120,7 +120,7 @@ Listanäkymässä järjestys: `startsAt` desc (tulevat ensin).
 | reviewerName | string | kyllä | Julkaistava nimi (sähköpostia ei kerätä) |
 | restaurant | reference→ravintola | julkaistaessa | Puuttuu, kun kävijä ehdotti uutta ravintolaa |
 | ehdotettuRavintola | object { nimi, kaupunki, maa, lisatieto? } | ei | Kävijän ehdottama ravintola, jota ei ole hakemistossa. Vain luku |
-| ratingFood, ratingPrice, ratingAtmosphere | number 1–5 (kokonaisluku) | kyllä | Ruoka, hinta, viihtyvyys kuten klubin arvioissa. Kokonaisarvosana on keskiarvo, ja se lasketaan kyselyssä (`math::avg`) |
+| ratingFood, ratingPrice, ratingAtmosphere | number 1,0–5,0 (yksi desimaali) | kyllä | Ruoka, hinta, viihtyvyys kuten klubin arvioissa. Kokonaisarvosana on keskiarvo, ja se lasketaan kyselyssä (`math::avg`) |
 | comment | text | kyllä | 10–1000 merkkiä |
 | submittedAt | datetime | kyllä | Lähetysaika |
 

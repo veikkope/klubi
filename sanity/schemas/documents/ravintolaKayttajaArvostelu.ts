@@ -70,16 +70,17 @@ export const ravintolaKayttajaArvostelu = defineType({
     // Kokonaisarvosana on keskiarvo, ja se lasketaan kyselyssä.
     ...(
       [
-        ["ratingFood", "Ruoka (1–5)"],
-        ["ratingPrice", "Hinta (1–5)"],
-        ["ratingAtmosphere", "Viihtyvyys (1–5)"],
+        ["ratingFood", "Ruoka (1,0–5,0)"],
+        ["ratingPrice", "Hinta (1,0–5,0)"],
+        ["ratingAtmosphere", "Viihtyvyys (1,0–5,0)"],
       ] as const
     ).map(([name, title]) =>
       defineField({
         name,
         title,
         type: "number",
-        validation: (rule) => rule.required().integer().min(1).max(5).error("Arvosana on 1–5 tähteä."),
+        validation: (rule) =>
+          rule.required().min(1).max(5).precision(1).error("Arvosana on 1,0–5,0 yhden desimaalin tarkkuudella."),
       }),
     ),
     defineField({

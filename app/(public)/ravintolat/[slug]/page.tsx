@@ -295,7 +295,7 @@ export default async function RavintolaPage({ params }: PageProps) {
                     {subRatings(review).length > 0 && (
                       <p className="mt-2 text-sm text-muted">
                         {subRatings(review)
-                          .map((part) => `${part.label} ${part.value}`)
+                          .map((part) => `${part.label} ${formatRating(part.value)}`)
                           .join(" · ")}
                       </p>
                     )}
