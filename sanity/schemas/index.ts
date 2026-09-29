@@ -23,14 +23,12 @@ import { yhteystiedot } from "./singletons/yhteystiedot";
 import { navigaatio } from "./singletons/navigaatio";
 import { asetukset } from "./singletons/asetukset";
 import { etusivu } from "./singletons/etusivu";
-import { kommenttikoodi } from "./singletons/kommenttikoodi";
 
 export const singletonTypes = new Set([
   "yhteystiedot",
   "navigaatio",
   "asetukset",
   "etusivu",
-  "kommenttikoodi",
 ]);
 
 export const schemaTypes: SchemaTypeDefinition[] = [
@@ -55,5 +53,4 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   navigaatio,
   asetukset,
   etusivu,
-  kommenttikoodi,
 ];

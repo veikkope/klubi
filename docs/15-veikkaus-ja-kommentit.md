@@ -8,6 +8,10 @@
 > Laadittu 2026-09-28. Päätökset (käyttäjä 2026-09-28): kommentit **ja**
 > veikkauslomake, suojana **klubin yhteinen koodisana**, vanhoista kommenteista
 > tuodaan **veikkauskirjoitusten** kommentit.
+>
+> **Muutos 2026-09-30 (käyttäjä):** koodisana poistettiin kokonaan. Lomakkeessa on
+> vain nimi, veikkaus ja kommentti. Suojana ovat piilokenttä, tulvasuoja ja isän
+> jälkimoderointi. Alla olevat koodisanaa koskevat kohdat on päivitetty.
 
 ---
 
@@ -45,7 +49,6 @@ isän ei tarvitse tulkita vapaata tekstiä ("Kups", "KuPS", "Kuopion PS").
 │ 2.  [ KuPS           ▾ ]  ↑ ↓           (12 riviä, joukkueet isän syöttämästä    │
 │ …                                        listasta; sama joukkue ei kahdesti)     │
 │ Kommentti (vapaaehtoinen) [                                   ]                  │
-│ Klubin koodisana [ ●●●●●● ]                                                      │
 │                                                   [ Lähetä veikkaus ]            │
 └──────────────────────────────────────────────────────────────────────────────────┘
 Veikkaukset (9)
@@ -54,11 +57,11 @@ Veikkaukset (9)
 ```
 
 - Lähetyksen jälkeen veikkaus näkyy **heti** listassa, eikä sivua tarvitse ladata uudelleen.
-- Nimi ja koodisana muistetaan selaimessa, joten seuraavalla kerralla ne ovat valmiina.
+- Nimi muistetaan selaimessa, joten seuraavalla kerralla se on valmiina.
 - Sulkeutumisajan jälkeen lomakkeen tilalla lukee "Veikkaus on sulkeutunut", ja
   veikkaukset näkyvät edelleen.
 - Tavallisessa uutisessa (esim. "Suomen paras avaus", kesäjuhla) on sama lomake
-  ilman veikkausosaa: nimi, kommentti ja koodisana.
+  ilman veikkausosaa: nimi ja kommentti.
 - Kommentointi on käytössä vain niissä uutisissa, joissa isä on sen kytkenyt päälle.
 
 **Isä** (Studio):
@@ -68,7 +71,6 @@ Veikkaukset (9)
 2. Voittajaveikkaus: tyyppi **Voittajaveikkaus**, sijoituksia 4, "Kysy maalikuningas" ✓.
 3. Valikossa **Kommentit** näkyvät uusimmat ensin. Asiattoman viestin saa piiloon
    valinnalla "Piilota", eikä mitään tarvitse poistaa.
-4. Koodisanan vaihto: **Sivun asetukset → Kommenttien koodisana**.
 
 ---
 
@@ -102,14 +104,11 @@ Veikkaukset (9)
 Rakenteinen `jarjestys` mahdollistaa vaiheen 2 automaattisen pistelaskun ilman,
 että vaiheen 1 dataa tarvitsee muuttaa.
 
-### 3.3 Koodisana
+### 3.3 Koodisana (poistettu 2026-09-30)
 
-Datasetti on **julkinen**: jokainen tavallinen dokumentti on luettavissa API:sta.
-Koodisana tallennetaan siksi dokumenttiin, jonka id sisältää pisteen
-(`secrets.kommenttikoodi`). Sanity ei palauta tällaisia dokumentteja
-kirjautumattomille pyynnöille. Palvelin lukee sen tokenilla. Studiossa se on
-**Sivun asetukset → Kommenttien koodisana**.
-*Toteutuksessa varmistetaan testillä, ettei dokumentti näy julkisessa API:ssa.*
+Alun perin lähetys vaati klubin yhteisen koodisanan (`secrets.kommenttikoodi`).
+Ominaisuus poistettiin käyttäjän päätöksellä: skeema, Studion valikko ja lomakkeen
+kenttä on poistettu. Suojana ovat piilokenttä, tulvasuoja ja jälkimoderointi.
 
 ---
 
@@ -121,7 +120,6 @@ vain palvelimella.
 
 1. **Lähetys** (`app/(public)/uutiset/[slug]/kommentti-actions.ts`):
    - piilokenttä (hunajapurkki) → hiljainen hylkäys
-   - koodisanan vertailu (kirjainkoko ja reunavälit ohitetaan, vakioaikainen vertailu)
    - kommentointi päällä, `sulkeutuu` ei ohitettu
    - veikkauksen arvot sallittujen listasta, ei tuplia, kaikki sijat täytetty
    - tulvasuoja: sama nimi samaan uutiseen korkeintaan kerran 30 sekunnissa
@@ -132,7 +130,7 @@ vain palvelimella.
    ei pelkkää vedä ja pudota. Virheet kentän vieressä, `aria-live`-tilaviesti.
    Toimii ilman JavaScriptiä (Server Action + progressive enhancement).
 4. **Studio**: `kommentti` omaan valikkoon (uusin ensin, suodatus uutisen mukaan),
-   uutisen esikatseluun kommenttimäärä, koodisana-singleton Sivun asetuksiin.
+   uutisen esikatseluun kommenttimäärä.
 5. **Webhook**: `app/api/revalidate` tunnistaa `kommentti`-tyypin (isän piilotus
    näkyy heti).
 
@@ -169,15 +167,14 @@ avoin palsta) jäävät paikalliseen arkistoon.
 
 | Vaihe | Sisältö | Arvio |
 |---|---|---|
-| **1** | Skeemat (§3), lomake ja lista (§4), Studio, koodisana, vanhojen veikkauskommenttien tuonti (§5), editorin ohje (docs/09) | 1 sprintti |
+| **1** | Skeemat (§3), lomake ja lista (§4), Studio, vanhojen veikkauskommenttien tuonti (§5), editorin ohje (docs/09) | 1 sprintti |
 | **1b** | Blogin ohjaus käyttöön (docs/14 §6): viimeinen `sync:blogspot`, teemaan ohjausskripti | vaiheen 1 julkaisun jälkeen, kun isä on kokeillut |
 | 2 (myöhemmin) | Automaattinen palloveikkauksen tilanne: sarjataulukko Veikkausliigan tuloksista (docs/13 syöte), pisteet = sijoituserojen summa. Isä ei enää laske käsin. | erillinen päätös |
 
 **Hyväksymiskriteerit (vaihe 1):**
 - Jäsen jättää palloveikkauksen puhelimella alle minuutissa, ja se näkyy heti sivulla.
-- Väärä koodisana, suljettu veikkaus, puuttuva sija tai sama joukkue kahdesti → selkeä
+- Suljettu veikkaus, puuttuva sija tai sama joukkue kahdesti → selkeä
   suomenkielinen virhe kentän vieressä, eikä mitään tallennu.
-- Koodisana ei näy julkisesta API:sta (testi).
 - Isä piilottaa kommentin Studiossa → poistuu sivulta minuutissa.
 - Vanhat veikkauskommentit näkyvät omien kirjoitustensa alla.
 - type-check, lint, build puhtaat; saavutettavuus (näppäimistö, ruudunlukija) tarkistettu.
@@ -188,8 +185,7 @@ avoin palsta) jäävät paikalliseen arkistoon.
 
 | | |
 |---|---|
-| Skeemat | `kommentti`, `uutinen.kommentointi`, singleton `kommenttikoodi` (id `secrets.kommenttikoodi`) |
-| Koodisanan piilotus | ✅ testattu: kirjautumaton kysely id:llä, tyypillä ja raw-perspektiivillä → ei tulosta; tokenilla näkyy |
+| Skeemat | `kommentti`, `uutinen.kommentointi` (koodisana-singleton poistettu 2026-09-30) |
 | Lomake | `app/(public)/uutiset/_kommentit/`: Server Action, validointi `validointi.ts`, lomake `kommentti-lomake.tsx`, lista `kommentit-osio.tsx` |
 | Välimuisti | lista haetaan ohi CDN:n tagilla `kommentit:<uutisen id>`; lähetyksen jälkeen `updateTag` → näkyy lähettäjälle heti. Webhook tyhjentää tagin `kommentti` (piilotus näkyy heti), ilman webhookia 60 s |
 | Yksikkötestit | `npm run test:kommentit` 12/12 |
@@ -197,4 +193,4 @@ avoin palsta) jäävät paikalliseen arkistoon.
 | Vanhat kommentit | 502 / 2 140 tuotu (124 veikkauskirjoitusta), `kommentti-blogspot-<id>`, tuonti `--missing` |
 | Korjattu samalla | `lib/format.ts`: päivämäärät ja kellonajat Suomen aikaan. Vercel toimii UTC-ajassa, joten tapahtumien kellonajat olisivat näkyneet 2–3 h väärin |
 | Ei testattu | ulkoasu ja näppäimistökäyttö selaimessa (selainlaajennus ei ollut käytettävissä). Tarkistettava käsin ennen julkaisua: puhelin, ↑/↓-napit, ruudunlukijan ilmoitus siirrosta |
-| Käyttöönotto | isä asettaa koodisanan Studiossa julkaisun jälkeen (docs/09) |
+| Käyttöönotto | isä kytkee kommentoinnin uutiselle Studiossa (docs/09) |

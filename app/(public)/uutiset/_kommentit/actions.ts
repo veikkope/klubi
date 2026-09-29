@@ -3,7 +3,6 @@
 import { updateTag } from "next/cache";
 import { createClient } from "next-sanity";
 
-import { KOMMENTTIKOODI_ID } from "@/sanity/schemas/singletons/kommenttikoodi";
 import { apiVersion, dataset, hasSanity, projectId } from "@/sanity/env";
 import {
   INITIAL_KOMMENTTI_STATE,
@@ -12,15 +11,14 @@ import {
   type KommenttiFormState,
   type Kommentointi,
 } from "./form-state";
-import { jarjestysLomakkeelta, koodiTasmaa, siisti, validoi } from "./validointi";
+import { jarjestysLomakkeelta, siisti, validoi } from "./validointi";
 
 /**
  * Jäsenen kommentin tai veikkauksen vastaanotto (docs/15 §4).
  *
  * Toisin kuin ravintola-arvostelut, kommentti julkaistaan heti, kuten blogissa
- * ennen. Suojana on klubin yhteinen koodisana (`secrets.kommenttikoodi`, ei
- * luettavissa julkisesta API:sta), piilokenttä ja tulvasuoja. Isä piilottaa
- * asiattomat viestit Studiossa jälkikäteen.
+ * ennen. Suojana on piilokenttä ja tulvasuoja. Isä piilottaa asiattomat
+ * viestit Studiossa jälkikäteen.
  *
  * Validointi tehdään kokonaan palvelimella: lomakkeen voi lähettää ilman selainta.
  */
@@ -43,7 +41,6 @@ export async function lahetaKommentti(
   const uutinenId = text(formData, "uutinen");
   const nimi = siisti(text(formData, "nimi"));
   const teksti = siisti(text(formData, "teksti")).replace(/\n{3,}/g, "\n\n");
-  const koodi = text(formData, "koodi");
   const kentat: Record<string, string> = {};
   for (const [key, value] of formData.entries()) {
     if (typeof value === "string" && /^(sija-\d+|paikka-\d+|maalikuningas)$/.test(key)) kentat[key] = value;
@@ -78,19 +75,16 @@ export async function lahetaKommentti(
 
   let tila: {
     uutinen: { _id: string; kommentointi: Kommentointi | null } | null;
-    koodi: string | null;
     tuore: string | null;
   };
   try {
     tila = await client.fetch(
       /* groq */ `{
         "uutinen": *[_type == "uutinen" && _id == $id][0]{ _id, kommentointi },
-        "koodi": *[_id == $koodiId][0].koodi,
         "tuore": *[_type == "kommentti" && uutinen._ref == $id && lower(nimi) == lower($nimi) && lahetetty > $raja][0]._id
       }`,
       {
         id: uutinenId,
-        koodiId: KOMMENTTIKOODI_ID,
         nimi,
         raja: new Date(Date.now() - TULVASUOJA_MS).toISOString(),
       },
@@ -103,15 +97,9 @@ export async function lahetaKommentti(
   const kommentointi = tila.uutinen?.kommentointi;
   if (!tila.uutinen || !kommentointi?.kaytossa) return fail("Tähän uutiseen ei voi kommentoida.");
   if (!kommentointiAuki(kommentointi)) return fail("Veikkaus on sulkeutunut. Uusia viestejä ei enää oteta vastaan.");
-  if (!tila.koodi) {
-    return fail(`Kommentointi ei ole vielä käytössä: koodisanaa ei ole asetettu. Ilmoitathan asiasta osoitteeseen ${SUPPORT_EMAIL}.`);
-  }
 
-  const tulos = validoi(kommentointi, { nimi, teksti, koodi, kentat });
+  const tulos = validoi(kommentointi, { nimi, teksti, kentat });
   values.jarjestys = tulos.jarjestys.length ? tulos.jarjestys : jarjestysLomakkeelta(kommentointi, kentat);
-  if (!tulos.fieldErrors.koodi && koodi && !koodiTasmaa(koodi, tila.koodi)) {
-    tulos.fieldErrors.koodi = "Koodisana ei ole oikein. Kysy sitä klubin sihteeriltä.";
-  }
   if (Object.keys(tulos.fieldErrors).length > 0) {
     return fail("Lomakkeessa on puutteita. Korjaa alla merkityt kohdat.", tulos.fieldErrors);
   }

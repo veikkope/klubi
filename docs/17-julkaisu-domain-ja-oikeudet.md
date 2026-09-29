@@ -26,7 +26,7 @@ kaikilla vain tarvittavat oikeudet.**
 2. Isä hyväksyy kutsun sähköpostista ja kirjautuu **omalla Google-tilillään tai
    sähköpostillaan**. Yhteistunnuksia ei käytetä, jotta versiohistoriasta näkyy, kuka muutti mitä.
 3. Suositus: isän Google-tilille kaksivaiheinen tunnistautuminen.
-4. Ensimmäinen kirjautuminen yhdessä: Studio (osoite docs/09), koodisanan asetus,
+4. Ensimmäinen kirjautuminen yhdessä: Studio (osoite docs/09),
    yksi testijulkaisu ja **Tarkistettavat**-listan läpikäynti.
 
 ✅ Tehty 28.9.2026: CORS sallii Studion osoitteista `https://klubi-blond.vercel.app`,
@@ -177,7 +177,7 @@ riippuvainen web-muutoksesta C2:n jälkeen.
 | 8 | Vercel: `SANITY_API_READ_TOKEN`, `SANITY_REVALIDATE_SECRET` → redeploy | kehittäjä | ✅ 28.9. |
 | 9 | Tokenit: "Vercel – lomakkeet" ja "Vercel – esikatselu", migraatiotokenien poisto | kehittäjä | ✅ 28.9. (lomake testattu tuotannossa) |
 | 10 | Isän kutsu (Editor) ja perehdytys | kehittäjä + isä | kutsu lähetetty 28.9., perehdytys ☐ |
-| 11 | Koodisana ja perustiedot Studiossa (docs/09 "Täytä itse") | isä + hallitus | ☐ |
+| 11 | Perustiedot Studiossa (docs/09 "Täytä itse") | isä + hallitus | ☐ |
 | 12 | Tietosuojaselosteen vahvistus | hallitus | ☐ |
 | 13 | Jäsenhakemukset poistettu (ei Resendiä) | kehittäjä | ✅ 28.9. koodi · tietosuojaselosteen patch ☐ |
 | 14 | DNS C1–C4 | kehittäjä + int2000 | ☐ |

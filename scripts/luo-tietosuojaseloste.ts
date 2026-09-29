@@ -38,7 +38,7 @@ const SISALTO: Rivi[] = [
   { tyyli: "h3", teksti: "Palvelimen lokitiedot" },
   { lista: true, teksti: "Sivuston palvelin tallentaa teknisiä lokitietoja, kuten IP-osoitteen ja pyynnön ajankohdan, tietoturvan ja vianetsinnän vuoksi (oikeutettu etu, GDPR 6 art. 1 f). Lokit säilyvät lyhyen ajan palveluntarjoajan käytännön mukaan." },
   { tyyli: "h2", teksti: "Evästeet ja selaimen tallennus" },
-  { teksti: "Sivusto ei käytä seuranta-, analytiikka- eikä mainosevästeitä. Kommenttilomake voi muistaa antamasi nimen ja klubin koodisanan omassa selaimessasi, jotta niitä ei tarvitse kirjoittaa uudelleen. Tieto ei lähde selaimesta, ja sen voi poistaa tyhjentämällä selaimen sivustotiedot." },
+  { teksti: "Sivusto ei käytä seuranta-, analytiikka- eikä mainosevästeitä. Kommenttilomake voi muistaa antamasi nimen omassa selaimessasi, jotta sitä ei tarvitse kirjoittaa uudelleen. Tieto ei lähde selaimesta, ja sen voi poistaa tyhjentämällä selaimen sivustotiedot." },
   { tyyli: "h2", teksti: "Kenelle tietoja luovutetaan" },
   { teksti: "Tietoja ei myydä eikä luovuteta markkinointiin. Sivuston toteuttamiseen käytämme seuraavia palveluntarjoajia, jotka käsittelevät tietoja lukuumme:" },
   { lista: true, teksti: "Vercel Inc. (sivuston palvelin, Yhdysvallat)" },

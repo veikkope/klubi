@@ -4,12 +4,10 @@
  * (`scripts/test-kommentit.ts`).
  *
  * Lomakkeen kentät:
- *  - `nimi`, `teksti`, `koodi`
+ *  - `nimi`, `teksti`
  *  - sarjajärjestys: `sija-<i>` = joukkueen `vaihtoehdot[i]` sijoitus (1…N)
  *  - voittajaveikkaus: `paikka-<p>` = sijan p (1…k) joukkue, `maalikuningas`
  */
-import { createHash, timingSafeEqual } from "node:crypto";
-
 import {
   NIMI_MAX,
   TEKSTI_MAX,
@@ -22,7 +20,6 @@ import {
 export interface KommenttiInput {
   nimi: string;
   teksti: string;
-  koodi: string;
   /** Lomakkeen raakakentät (`sija-*`, `paikka-*`, `maalikuningas`). */
   kentat: Record<string, string>;
 }
@@ -40,12 +37,6 @@ export function siisti(value: string): string {
     .replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f​-‏⁠﻿]/g, "")
     .replace(/[^\S\n]+/g, " ")
     .trim();
-}
-
-/** Koodisanan vertailu: kirjainkoko ja reunavälit ohitetaan, vakioaikainen. */
-export function koodiTasmaa(annettu: string, oikea: string): boolean {
-  const hash = (s: string) => createHash("sha256").update(s.trim().toLocaleLowerCase("fi")).digest();
-  return timingSafeEqual(hash(annettu), hash(oikea));
 }
 
 /**
@@ -80,8 +71,6 @@ export function validoi(k: Kommentointi, input: KommenttiInput): ValidointiTulos
   } else if (tyyppi === "kommentti" && input.teksti.length < 2) {
     fieldErrors.teksti = "Kirjoita kommentti.";
   }
-
-  if (!input.koodi) fieldErrors.koodi = "Kirjoita klubin koodisana.";
 
   let jarjestys: string[] = [];
   let maalikuningas = "";

@@ -15,15 +15,6 @@
 export declare const internalGroqTypeReferenceTo: unique symbol;
 
 // Source: sanity/extract.json
-export type Kommenttikoodi = {
-  _id: string;
-  _type: "kommenttikoodi";
-  _createdAt: string;
-  _updatedAt: string;
-  _rev: string;
-  koodi?: string;
-};
-
 export type KaupunkiReference = {
   _ref: string;
   _type: "reference";
@@ -565,9 +556,7 @@ export type RavintolaKayttajaArvostelu = {
     lisatieto?: string;
   };
   restaurant?: RavintolaReference;
-  ratingFood?: number;
-  ratingPrice?: number;
-  ratingAtmosphere?: number;
+  stars?: number;
   comment?: string;
   submittedAt?: string;
 };
@@ -871,7 +860,6 @@ export type SanityImageAsset = {
 };
 
 export type AllSanitySchemaTypes =
-  | Kommenttikoodi
   | KaupunkiReference
   | Etusivu
   | SanityImageAssetReference
@@ -2251,10 +2239,10 @@ export type RavintolaBySlugQueryResult = {
   userReviews: Array<{
     _id: string;
     reviewerName: string | null;
-    ratingFood: number | null;
-    ratingPrice: number | null;
-    ratingAtmosphere: number | null;
-    rating: number | null;
+    ratingFood: null;
+    ratingPrice: null;
+    ratingAtmosphere: null;
+    rating: null;
     comment: string | null;
     submittedAt: string | null;
   }>;

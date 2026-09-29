@@ -10,14 +10,13 @@ import type { Kommentointi } from "@/lib/types";
 
 export type { KommenttiItem, Kommentointi, KommentointiTyyppi } from "@/lib/types";
 
-export type KommenttiField = "nimi" | "teksti" | "veikkaus" | "maalikuningas" | "koodi";
+export type KommenttiField = "nimi" | "teksti" | "veikkaus" | "maalikuningas";
 
 export const KOMMENTTI_FIELD_LABELS: Record<KommenttiField, string> = {
   nimi: "Nimi",
   teksti: "Kommentti",
   veikkaus: "Veikkaus",
   maalikuningas: "Maalikuningas",
-  koodi: "Klubin koodisana",
 };
 
 export const NIMI_MAX = 40;

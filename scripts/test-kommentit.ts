@@ -10,13 +10,13 @@
 import assert from "node:assert/strict";
 
 import { kommentointiAuki, type Kommentointi } from "../app/(public)/uutiset/_kommentit/form-state";
-import { jarjestysLomakkeelta, koodiTasmaa, siisti, validoi } from "../app/(public)/uutiset/_kommentit/validointi";
+import { jarjestysLomakkeelta, siisti, validoi } from "../app/(public)/uutiset/_kommentit/validointi";
 
 const joukkueet = ["HJK", "KuPS", "Ilves", "FC Lahti"];
 const sarja: Kommentointi = { kaytossa: true, tyyppi: "sarjajarjestys", vaihtoehdot: joukkueet };
 const voittaja: Kommentointi = { kaytossa: true, tyyppi: "voittajaveikkaus", sijoituksia: 3, maalikuningas: true };
 const kommentti: Kommentointi = { kaytossa: true, tyyppi: "kommentti" };
-const perus = { nimi: "Ilpo", teksti: "", koodi: "x" };
+const perus = { nimi: "Ilpo", teksti: "" };
 
 let ok = 0;
 function test(nimi: string, fn: () => void) {
@@ -71,16 +71,9 @@ test("kommentti: teksti pakollinen, veikkauksessa vapaaehtoinen", () => {
   assert.equal(validoi(kommentti, { ...perus, teksti: "Hyvä peli!", kentat: {} }).fieldErrors.teksti, undefined);
 });
 
-test("nimi 2–40 merkkiä, koodi pakollinen", () => {
+test("nimi 2–40 merkkiä", () => {
   assert.ok(validoi(kommentti, { ...perus, nimi: "I", teksti: "ok ok", kentat: {} }).fieldErrors.nimi);
   assert.ok(validoi(kommentti, { ...perus, nimi: "x".repeat(41), teksti: "ok ok", kentat: {} }).fieldErrors.nimi);
-  assert.ok(validoi(kommentti, { ...perus, koodi: "", teksti: "ok ok", kentat: {} }).fieldErrors.koodi);
-});
-
-test("koodisana: kirjainkoko ja reunavälit ohitetaan", () => {
-  assert.ok(koodiTasmaa("  PALLO ", "pallo"));
-  assert.ok(koodiTasmaa("Äijä", "äijä"));
-  assert.ok(!koodiTasmaa("pallo2", "pallo"));
 });
 
 test("siisti: ohjausmerkit ja tuplavälit pois, rivinvaihdot säilyvät", () => {
