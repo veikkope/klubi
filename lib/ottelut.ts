@@ -229,9 +229,20 @@ async function fetchExternal(): Promise<Ottelu[]> {
   }
 }
 
-export async function getTulevatOttelut(limit: number): Promise<Ottelu[]> {
+type Options = {
+  /**
+   * Vain Huuhkajien ottelut (etusivun oletus). Ulkoiset syötteet kattavat vain
+   * seurajoukkueet, joten niitä ei silloin haeta lainkaan.
+   */
+  vainMaajoukkue?: boolean;
+};
+
+export async function getTulevatOttelut(
+  limit: number,
+  { vainMaajoukkue = false }: Options = {},
+): Promise<Ottelu[]> {
   const [external, manual] = await Promise.all([
-    fetchExternal(),
+    vainMaajoukkue ? Promise.resolve([]) : fetchExternal(),
     sanityFetch<SanityOttelu[]>({
       query: tulevatOttelutQuery,
       tags: ["ottelu"],
@@ -279,7 +290,7 @@ export async function getTulevatOttelut(limit: number): Promise<Ottelu[]> {
       // Klubi on paikalla jokaisessa Huuhkajien kotiottelussa.
       return { ...o, maajoukkue, klubiPaikalla: o.klubiPaikalla || isHuuhkajat(o.koti) };
     })
-    .filter((o) => new Date(o.aika).getTime() >= cutoff)
+    .filter((o) => new Date(o.aika).getTime() >= cutoff && (!vainMaajoukkue || o.maajoukkue))
     .sort((a, b) => a.aika.localeCompare(b.aika))
     .slice(0, limit);
 }

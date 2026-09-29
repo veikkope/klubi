@@ -135,6 +135,22 @@ export const etusivu = defineType({
           fields: [
             { name: "ottelutHeading", title: "Otteluiden otsikko", type: "string", initialValue: "Tulevat ottelut" },
             { name: "ottelutCount", title: "Otteluiden määrä", type: "number", initialValue: 4, validation: (r) => r.min(1).max(10) },
+            {
+              name: "vainMaajoukkue",
+              title: "Näytä vain Huuhkajien ottelut",
+              description:
+                "Päällä: listassa vain miesten maajoukkueen ottelut (Suomi). Pois: myös Veikkausliiga ja muut Ottelut-osion ottelut. Koskee vain etusivua; /ottelut-sivulla näkyy aina koko ohjelma.",
+              type: "boolean",
+              initialValue: true,
+            },
+            {
+              name: "laskuri",
+              title: "Näytä laskuri seuraavaan Huuhkajien otteluun",
+              description:
+                "Laskuri lasketaan automaattisesti Ottelut-osion seuraavasta Suomen ottelusta. Jos ottelua ei ole tiedossa, laskuria ei näytetä.",
+              type: "boolean",
+              initialValue: true,
+            },
             { name: "tapahtumatHeading", title: "Tapahtumien otsikko", type: "string", initialValue: "Nähdään" },
             { name: "tapahtumatCount", title: "Tapahtumien määrä", type: "number", initialValue: 3, validation: (r) => r.min(1).max(6) },
           ],

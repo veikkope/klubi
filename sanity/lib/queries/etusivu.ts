@@ -40,6 +40,8 @@ export const etusivuQuery = defineQuery(`
       count,
       ottelutHeading,
       ottelutCount,
+      vainMaajoukkue,
+      laskuri,
       tapahtumatHeading,
       tapahtumatCount,
       body,

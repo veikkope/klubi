@@ -63,6 +63,8 @@ export type Etusivu = {
     | {
         ottelutHeading?: string;
         ottelutCount?: number;
+        vainMaajoukkue?: boolean;
+        laskuri?: boolean;
         tapahtumatHeading?: string;
         tapahtumatCount?: number;
         _type: "otteluohjelma";
@@ -1504,7 +1506,7 @@ export type ArkistoSummaryQueryResult = Array<{
 
 // Source: sanity/lib/queries/etusivu.ts
 // Variable: etusivuQuery
-// Query: *[_type == "etusivu"][0]{    heroEyebrow,    heroTitle,    heroDescription,    heroImage,    heroCtas[]{ label, href, primary },    seuraavaOttelu{ ottelu, kilpailu, aika },    blocks[]{      _type,      _key,      eyebrow,      heading,      count,      ottelutHeading,      ottelutCount,      tapahtumatHeading,      tapahtumatCount,      body,      image,      ctaLabel,      ctaHref,      "city": city->{ "_ref": _id, name }    }  }
+// Query: *[_type == "etusivu"][0]{    heroEyebrow,    heroTitle,    heroDescription,    heroImage,    heroCtas[]{ label, href, primary },    seuraavaOttelu{ ottelu, kilpailu, aika },    blocks[]{      _type,      _key,      eyebrow,      heading,      count,      ottelutHeading,      ottelutCount,      vainMaajoukkue,      laskuri,      tapahtumatHeading,      tapahtumatCount,      body,      image,      ctaLabel,      ctaHref,      "city": city->{ "_ref": _id, name }    }  }
 export type EtusivuQueryResult = {
   heroEyebrow: string | null;
   heroTitle: string | null;
@@ -1529,6 +1531,8 @@ export type EtusivuQueryResult = {
         count: null;
         ottelutHeading: null;
         ottelutCount: null;
+        vainMaajoukkue: null;
+        laskuri: null;
         tapahtumatHeading: null;
         tapahtumatCount: null;
         body: string | null;
@@ -1545,6 +1549,8 @@ export type EtusivuQueryResult = {
         count: null;
         ottelutHeading: null;
         ottelutCount: null;
+        vainMaajoukkue: null;
+        laskuri: null;
         tapahtumatHeading: null;
         tapahtumatCount: null;
         body: PortableText | null;
@@ -1561,6 +1567,8 @@ export type EtusivuQueryResult = {
         count: number | null;
         ottelutHeading: null;
         ottelutCount: null;
+        vainMaajoukkue: null;
+        laskuri: null;
         tapahtumatHeading: null;
         tapahtumatCount: null;
         body: null;
@@ -1577,6 +1585,8 @@ export type EtusivuQueryResult = {
         count: null;
         ottelutHeading: null;
         ottelutCount: null;
+        vainMaajoukkue: null;
+        laskuri: null;
         tapahtumatHeading: null;
         tapahtumatCount: null;
         body: string | null;
@@ -1593,6 +1603,8 @@ export type EtusivuQueryResult = {
         count: null;
         ottelutHeading: string | null;
         ottelutCount: number | null;
+        vainMaajoukkue: boolean | null;
+        laskuri: boolean | null;
         tapahtumatHeading: string | null;
         tapahtumatCount: number | null;
         body: null;
@@ -1609,6 +1621,8 @@ export type EtusivuQueryResult = {
         count: number | null;
         ottelutHeading: null;
         ottelutCount: null;
+        vainMaajoukkue: null;
+        laskuri: null;
         tapahtumatHeading: null;
         tapahtumatCount: null;
         body: null;
@@ -1628,6 +1642,8 @@ export type EtusivuQueryResult = {
         count: number | null;
         ottelutHeading: null;
         ottelutCount: null;
+        vainMaajoukkue: null;
+        laskuri: null;
         tapahtumatHeading: null;
         tapahtumatCount: null;
         body: null;
@@ -1644,6 +1660,8 @@ export type EtusivuQueryResult = {
         count: number | null;
         ottelutHeading: null;
         ottelutCount: null;
+        vainMaajoukkue: null;
+        laskuri: null;
         tapahtumatHeading: null;
         tapahtumatCount: null;
         body: null;
@@ -2377,7 +2395,7 @@ declare module "@sanity/client" {
     '\n  *[\n    _type == "jalkapalloTilasto"\n    && category == $category\n    && slug.current == $slug\n  ][0]{\n    \n  _id,\n  _updatedAt,\n  title,\n  "slug": slug.current,\n  tiivistelma,\n  category,\n  intro,\n  columns[]{ key, label, type },\n  rows[]{ cells[]{ key, value } },\n  lisatiedot,\n  kuvat[]{ _key, alt, caption, asset, hotspot, crop },\n  paivitetty,\n  jarjestys,\n  "sources": coalesce(sources, [])\n\n  }\n': TilastoBySlugQueryResult;
     '\n  *[\n    _type == "jalkapalloTilasto"\n    && category == $category\n    && defined(slug.current)\n  ].slug.current\n': TilastoSlugsByCategoryQueryResult;
     '\n  *[_type == "jalkapalloTilasto" && defined(category)]{\n    category,\n    "updatedAt": _updatedAt\n  }\n': ArkistoSummaryQueryResult;
-    '\n  *[_type == "etusivu"][0]{\n    heroEyebrow,\n    heroTitle,\n    heroDescription,\n    heroImage,\n    heroCtas[]{ label, href, primary },\n    seuraavaOttelu{ ottelu, kilpailu, aika },\n    blocks[]{\n      _type,\n      _key,\n      eyebrow,\n      heading,\n      count,\n      ottelutHeading,\n      ottelutCount,\n      tapahtumatHeading,\n      tapahtumatCount,\n      body,\n      image,\n      ctaLabel,\n      ctaHref,\n      "city": city->{ "_ref": _id, name }\n    }\n  }\n': EtusivuQueryResult;
+    '\n  *[_type == "etusivu"][0]{\n    heroEyebrow,\n    heroTitle,\n    heroDescription,\n    heroImage,\n    heroCtas[]{ label, href, primary },\n    seuraavaOttelu{ ottelu, kilpailu, aika },\n    blocks[]{\n      _type,\n      _key,\n      eyebrow,\n      heading,\n      count,\n      ottelutHeading,\n      ottelutCount,\n      vainMaajoukkue,\n      laskuri,\n      tapahtumatHeading,\n      tapahtumatCount,\n      body,\n      image,\n      ctaLabel,\n      ctaHref,\n      "city": city->{ "_ref": _id, name }\n    }\n  }\n': EtusivuQueryResult;
     '\n  *[_type == "ravintola" && defined(slug.current) && closed != true\n    && ($cityId == null || city._ref == $cityId)\n    && coalesce(ratingOverall, stars, 0) > 0]\n    | order(coalesce(ratingOverall, stars, 0) desc, name asc)[0...$count]{\n    _id,\n    name,\n    "slug": slug.current,\n    "city": city->{ name, "slug": slug.current },\n    stars,\n    ratingOverall,\n    priceLevel,\n    cuisine,\n    tuomio,\n    stadionHuomio,\n    "image": images[0]\n  }\n': EtusivuRavintolatQueryResult;
     '\n  {\n    "arvokisat": count(*[_type == "arvokisa" && defined(slug.current)]),\n    "pelaajat": count(*[_type == "pelaaja" && defined(slug.current)]),\n    "stadionit": count(*[_type == "stadion" && defined(slug.current)]),\n    "tilastot": count(*[_type == "jalkapalloTilasto" && defined(slug.current)]),\n    "fifa": *[_type == "jalkapalloTilasto" && category == "fifa-ranking"\n      && defined(slug.current)] | order(_updatedAt desc)[0]{\n      title,\n      "slug": slug.current,\n      _updatedAt,\n      columns[]{ key, label, type },\n      "rows": rows[0...5]{ cells[]{ key, value } }\n    }\n  }\n': EtusivuArkistoQueryResult;
     '\n  *[_type == "galleriaAlbumi" && defined(slug.current)]\n    | order(date desc){\n    _id,\n    title,\n    "slug": slug.current,\n    date,\n    tiivistelma,\n    coverImage,\n    "imageCount": count(images)\n  }\n': GalleriaAlbumitQueryResult;

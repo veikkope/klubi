@@ -57,6 +57,8 @@ export type EtusivuBlock =
       _key: string;
       ottelutHeading?: string;
       ottelutCount?: number;
+      vainMaajoukkue?: boolean;
+      laskuri?: boolean;
       tapahtumatHeading?: string;
       tapahtumatCount?: number;
     }
