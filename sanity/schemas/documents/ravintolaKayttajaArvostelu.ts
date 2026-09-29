@@ -66,12 +66,22 @@ export const ravintolaKayttajaArvostelu = defineType({
             : "Valitse ravintola.";
         }),
     }),
-    defineField({
-      name: "stars",
-      title: "Tähdet (1–5)",
-      type: "number",
-      validation: (rule) => rule.required().integer().min(1).max(5).error("Arvosana on 1–5 tähteä."),
-    }),
+    // Arvosana kolmesta osa-alueesta kuten klubin arvioissa (ravintola.ratingFood jne.).
+    // Kokonaisarvosana on keskiarvo, ja se lasketaan kyselyssä.
+    ...(
+      [
+        ["ratingFood", "Ruoka (1–5)"],
+        ["ratingPrice", "Hinta (1–5)"],
+        ["ratingAtmosphere", "Viihtyvyys (1–5)"],
+      ] as const
+    ).map(([name, title]) =>
+      defineField({
+        name,
+        title,
+        type: "number",
+        validation: (rule) => rule.required().integer().min(1).max(5).error("Arvosana on 1–5 tähteä."),
+      }),
+    ),
     defineField({
       name: "comment",
       title: "Arvostelu",
@@ -96,14 +106,18 @@ export const ravintolaKayttajaArvostelu = defineType({
       name: "reviewerName",
       restaurant: "restaurant.name",
       uusi: "ehdotettuRavintola.nimi",
-      stars: "stars",
+      food: "ratingFood",
+      price: "ratingPrice",
+      atmosphere: "ratingAtmosphere",
       submittedAt: "submittedAt",
     },
-    prepare({ name, restaurant, uusi, stars, submittedAt }) {
+    prepare({ name, restaurant, uusi, food, price, atmosphere, submittedAt }) {
       const pvm = submittedAt ? new Date(submittedAt).toLocaleDateString("fi-FI") : "";
+      const osat = [food, price, atmosphere].filter((v): v is number => typeof v === "number");
+      const ka = osat.length === 3 ? `★ ${((food + price + atmosphere) / 3).toFixed(1).replace(".", ",")}` : "";
       return {
         title: `${name ?? "?"} → ${restaurant ?? (uusi ? `UUSI: ${uusi}` : "?")}`,
-        subtitle: [stars ? "★".repeat(stars) : "", pvm].filter(Boolean).join(" · "),
+        subtitle: [ka, pvm].filter(Boolean).join(" · "),
       };
     },
   },

@@ -10,6 +10,8 @@ import {
   COMMENT_MIN,
   EMPTY_REVIEW_VALUES,
   normalizeSearch,
+  RATING_FIELDS,
+  REVIEW_FIELD_LABELS,
   type ReviewField,
   type ReviewFormState,
   type ReviewValues,
@@ -61,7 +63,9 @@ export async function submitReview(
     uusiMaa: text(formData, "uusiMaa"),
     uusiLisatieto: text(formData, "uusiLisatieto"),
     nimi: text(formData, "nimi"),
-    tahdet: text(formData, "tahdet"),
+    ruoka: text(formData, "ruoka"),
+    hinta: text(formData, "hinta"),
+    viihtyvyys: text(formData, "viihtyvyys"),
     kommentti: text(formData, "kommentti"),
   };
   const isNew = values.uusi === "1";
@@ -109,9 +113,14 @@ export async function submitReview(
     fieldErrors.nimi = "Nimi saa olla enintään 80 merkkiä.";
   }
 
-  const stars = Number.parseInt(values.tahdet, 10);
-  if (!Number.isInteger(stars) || stars < 1 || stars > 5) {
-    fieldErrors.tahdet = "Valitse arvosana yhdestä viiteen tähteen.";
+  const ratings: Record<string, number> = {};
+  for (const { field, schemaField } of RATING_FIELDS) {
+    const value = Number.parseInt(values[field], 10);
+    if (!Number.isInteger(value) || value < 1 || value > 5) {
+      fieldErrors[field] = `Anna osa-alueelle ${REVIEW_FIELD_LABELS[field].toLocaleLowerCase("fi-FI")} 1–5 tähteä.`;
+    } else {
+      ratings[schemaField] = value;
+    }
   }
 
   if (values.kommentti.length < COMMENT_MIN) {
@@ -213,7 +222,7 @@ export async function submitReview(
               ...(values.uusiLisatieto ? { lisatieto: values.uusiLisatieto } : {}),
             },
           }),
-      stars,
+      ...ratings,
       comment: values.kommentti,
       submittedAt: new Date().toISOString(),
     });

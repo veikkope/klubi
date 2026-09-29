@@ -11,10 +11,12 @@ import {
   COMMENT_MAX,
   COMMENT_MIN,
   INITIAL_REVIEW_STATE,
+  RATING_FIELDS,
   REVIEW_FIELDS,
   REVIEW_FIELD_LABELS,
   reviewErrorId,
   reviewFieldId,
+  type ReviewField,
   type ReviewFormState,
 } from "./form-state";
 import { FieldMessages, fieldClass, labelClass, RequiredMark } from "./form-ui";
@@ -30,7 +32,8 @@ import { RestaurantPicker } from "./restaurant-picker";
  * - Jokainen vaihe on `fieldset` + `legend`.
  * - Epäonnistuneen lähetyksen jälkeen fokus siirtyy virheyhteenvetoon, jonka
  *   linkit vievät suoraan virheelliseen kenttään.
- * - Tähdet ovat radiopainikkeita: nuolinäppäimet vaihtavat arvosanaa.
+ * - Tähdet ovat radiopainikkeita: nuolinäppäimet vaihtavat arvosanaa. Jokainen
+ *   osa-alue (ruoka, hinta, viihtyvyys) on oma ryhmänsä.
  * - Merkkilaskuri kerrotaan ruudunlukijalle vasta, kun raja on lähellä.
  */
 
@@ -148,7 +151,7 @@ export function ReviewForm({
 
       <Step number={2} title="Millainen kokemus oli?">
         <div className="flex flex-col gap-6">
-          <StarField error={state.fieldErrors.tahdet} defaultValue={state.values.tahdet} />
+          <RatingsField values={state.values} errors={state.fieldErrors} />
           <CommentField error={state.fieldErrors.kommentti} defaultValue={state.values.kommentti} />
         </div>
       </Step>
@@ -226,48 +229,123 @@ function Step({ number, title, children }: { number: number; title: string; chil
   );
 }
 
-function StarField({ error, defaultValue }: { error?: string; defaultValue: string }) {
-  const [value, setValue] = useState(Number(defaultValue) || 0);
-  const [hover, setHover] = useState(0);
-  const shown = hover || value;
+/**
+ * Arvosanat kolmesta osa-alueesta (ruoka, hinta, viihtyvyys) kuten klubin
+ * omissa arvioissa. Kokonaisarvosana on keskiarvo, ja se näytetään heti.
+ */
+function RatingsField({
+  values,
+  errors,
+}: {
+  values: ReviewFormState["values"];
+  errors: ReviewFormState["fieldErrors"];
+}) {
+  const [scores, setScores] = useState<Record<string, number>>(() =>
+    Object.fromEntries(RATING_FIELDS.map(({ field }) => [field, Number(values[field]) || 0])),
+  );
+  const given = RATING_FIELDS.map(({ field }) => scores[field]).filter((v) => v > 0);
+  const average = given.length === RATING_FIELDS.length ? given.reduce((a, b) => a + b, 0) / given.length : null;
 
   return (
-    <fieldset
-      // Virheyhteenvedon linkin kohde.
-      id={reviewFieldId("tahdet")}
-      aria-invalid={error ? true : undefined}
-      aria-describedby={error ? reviewErrorId("tahdet") : undefined}
-    >
-      <legend className={labelClass}>
-        Kokonaisarvosana
+    <div className="flex flex-col">
+      <p className={labelClass}>
+        Arvosanat
         <RequiredMark />
-      </legend>
-      <div className="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-2">
-        <div className="flex" onMouseLeave={() => setHover(0)}>
+      </p>
+      <p className="mt-1 text-sm text-muted">
+        Arvioi kolme osa-aluetta kuten klubin arvioissa. Kokonaisarvosana on niiden keskiarvo.
+      </p>
+      <div className="mt-3 flex flex-col divide-y divide-border rounded-sm border border-border bg-background">
+        {RATING_FIELDS.map(({ field, hint }) => (
+          <StarRow
+            key={field}
+            field={field}
+            hint={hint}
+            error={errors[field]}
+            value={scores[field]}
+            onChange={(v) => setScores((prev) => ({ ...prev, [field]: v }))}
+          />
+        ))}
+        <div className="flex items-center justify-between gap-4 bg-brass-tint/60 px-4 py-3.5 sm:px-5">
+          <span className="text-[15px] font-semibold text-foreground">Kokonaisarvosana</span>
+          <span aria-live="polite" className="font-display text-2xl font-semibold tabular-nums text-brass-text">
+            {average === null ? (
+              <span className="font-sans text-sm font-normal text-muted">Anna kaikki kolme arvosanaa</span>
+            ) : (
+              <>
+                {average.toFixed(1).replace(".", ",")}
+                <span className="font-sans text-sm font-normal text-muted"> / 5</span>
+              </>
+            )}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function StarRow({
+  field,
+  hint,
+  error,
+  value,
+  onChange,
+}: {
+  field: ReviewField;
+  hint: string;
+  error?: string;
+  value: number;
+  onChange: (value: number) => void;
+}) {
+  const [hover, setHover] = useState(0);
+  const shown = hover || value;
+  const label = REVIEW_FIELD_LABELS[field];
+
+  return (
+    <div
+      // Virheyhteenvedon linkin kohde.
+      id={reviewFieldId(field)}
+      role="radiogroup"
+      aria-labelledby={`${reviewFieldId(field)}-nimi`}
+      aria-required
+      aria-invalid={error ? true : undefined}
+      aria-describedby={ids(`${reviewFieldId(field)}-ohje`, error && reviewErrorId(field))}
+      className="px-4 py-3 sm:px-5"
+    >
+      <div className="grid items-center gap-x-4 gap-y-1 sm:grid-cols-[13rem_auto_1fr]">
+        <div>
+          <p id={`${reviewFieldId(field)}-nimi`} className="text-[15px] font-semibold text-foreground">
+            {label}
+          </p>
+          <p id={`${reviewFieldId(field)}-ohje`} className="text-[13px] leading-snug text-muted">
+            {hint}
+          </p>
+        </div>
+        <div className="-ml-1.5 flex" onMouseLeave={() => setHover(0)}>
           {STARS.map((star) => {
-            const id = `${reviewFieldId("tahdet")}-${star.value}`;
+            const id = `${reviewFieldId(field)}-${star.value}`;
             return (
               <span key={star.value} className="inline-flex">
                 <input
                   id={id}
                   type="radio"
-                  name="tahdet"
+                  name={field}
                   value={star.value}
                   required
                   defaultChecked={value === star.value}
-                  onChange={() => setValue(star.value)}
+                  onChange={() => onChange(star.value)}
                   className="peer sr-only"
                 />
                 <label
                   htmlFor={id}
                   onMouseEnter={() => setHover(star.value)}
-                  className="grid size-12 cursor-pointer place-items-center rounded-sm peer-focus-visible:ring-2 peer-focus-visible:ring-ring"
+                  className="grid size-11 cursor-pointer place-items-center rounded-sm peer-focus-visible:ring-2 peer-focus-visible:ring-ring"
                 >
                   <svg
                     aria-hidden
                     viewBox="0 0 24 24"
                     className={cn(
-                      "size-9 transition-transform duration-100 motion-reduce:transition-none",
+                      "size-8 transition-transform duration-100 motion-reduce:transition-none",
                       star.value <= shown ? "fill-brass stroke-brass" : "fill-transparent stroke-muted-soft",
                       hover === star.value && "scale-110",
                     )}
@@ -279,19 +357,19 @@ function StarField({ error, defaultValue }: { error?: string; defaultValue: stri
                     />
                   </svg>
                   <span className="sr-only">
-                    {star.value} / 5 – {star.label}
+                    {label} {star.value} / 5 – {star.label}
                   </span>
                 </label>
               </span>
             );
           })}
         </div>
-        <p aria-hidden className="min-w-32 text-[15px] font-semibold text-brass-text">
-          {shown ? `${shown} / 5 · ${STARS[shown - 1].label}` : <span className="font-normal text-muted">Valitse tähdet</span>}
+        <p aria-hidden className="text-sm font-semibold text-brass-text max-sm:hidden">
+          {shown ? `${shown} · ${STARS[shown - 1].label}` : ""}
         </p>
       </div>
-      <FieldMessages field="tahdet" error={error} />
-    </fieldset>
+      <FieldMessages field={field} error={error} />
+    </div>
   );
 }
 

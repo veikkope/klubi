@@ -283,8 +283,22 @@ export default async function RavintolaPage({ params }: PageProps) {
                           <p className="text-sm text-muted-soft">{formatDate(review.submittedAt)}</p>
                         )}
                       </div>
-                      {typeof review.stars === "number" && <RatingDots value={review.stars} />}
+                      {typeof review.rating === "number" && (
+                        <span className="inline-flex items-center gap-2.5">
+                          <RatingDots value={review.rating} />
+                          <span aria-hidden className="font-display text-lg font-semibold tabular-nums text-brass-text">
+                            {formatRating(review.rating)}
+                          </span>
+                        </span>
+                      )}
                     </div>
+                    {subRatings(review).length > 0 && (
+                      <p className="mt-2 text-sm text-muted">
+                        {subRatings(review)
+                          .map((part) => `${part.label} ${part.value}`)
+                          .join(" · ")}
+                      </p>
+                    )}
                     {review.comment && (
                       <p className="mt-3 whitespace-pre-line text-base leading-relaxed text-foreground">
                         {review.comment}

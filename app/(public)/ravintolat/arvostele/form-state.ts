@@ -16,7 +16,9 @@ export const REVIEW_FIELDS = [
   "uusiKaupunki",
   "uusiMaa",
   "uusiLisatieto",
-  "tahdet",
+  "ruoka",
+  "hinta",
+  "viihtyvyys",
   "kommentti",
   "nimi",
 ] as const;
@@ -29,7 +31,9 @@ export const REVIEW_FIELD_LABELS: Record<ReviewField, string> = {
   uusiKaupunki: "Kaupunki",
   uusiMaa: "Maa",
   uusiLisatieto: "Osoite tai verkkosivu",
-  tahdet: "Arvosana",
+  ruoka: "Ruoka",
+  hinta: "Hinta",
+  viihtyvyys: "Viihtyvyys",
   kommentti: "Arvostelu",
   nimi: "Nimesi",
 };
@@ -57,7 +61,9 @@ export const EMPTY_REVIEW_VALUES: ReviewValues = {
   uusiKaupunki: "",
   uusiMaa: "Suomi",
   uusiLisatieto: "",
-  tahdet: "",
+  ruoka: "",
+  hinta: "",
+  viihtyvyys: "",
   kommentti: "",
   nimi: "",
 };
@@ -68,6 +74,17 @@ export const INITIAL_REVIEW_STATE: ReviewFormState = {
   fieldErrors: {},
   values: EMPTY_REVIEW_VALUES,
 };
+
+/**
+ * Arvosana annetaan kolmesta osa-alueesta kuten klubin omissa arvioissa.
+ * Kokonaisarvosana on niiden keskiarvo (lasketaan kyselyssä, ei tallenneta).
+ * `schemaField` on vastaava kenttä Sanityn `ravintolaKayttajaArvostelu`-tyypissä.
+ */
+export const RATING_FIELDS = [
+  { field: "ruoka", schemaField: "ratingFood", hint: "Maku, laatu ja annokset" },
+  { field: "hinta", schemaField: "ratingPrice", hint: "Vastine rahalle: 5 = erinomainen hinta-laatusuhde" },
+  { field: "viihtyvyys", schemaField: "ratingAtmosphere", hint: "Tunnelma, palvelu ja miljöö" },
+] as const satisfies readonly { field: ReviewField; schemaField: string; hint: string }[];
 
 export const COMMENT_MIN = 10;
 export const COMMENT_MAX = 1000;

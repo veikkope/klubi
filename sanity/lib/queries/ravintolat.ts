@@ -77,7 +77,11 @@ export type RavintolaDetail = RavintolaCardData & {
 export type RavintolaUserReview = {
   _id: string;
   reviewerName?: string | null;
-  stars?: number | null;
+  /** Osa-alueiden keskiarvo 1–5. */
+  rating?: number | null;
+  ratingFood?: number | null;
+  ratingPrice?: number | null;
+  ratingAtmosphere?: number | null;
   comment?: string | null;
   submittedAt?: string | null;
 };
@@ -344,7 +348,10 @@ export const ravintolaBySlugQuery = defineQuery(`
       | order(submittedAt desc){
         _id,
         reviewerName,
-        stars,
+        ratingFood,
+        ratingPrice,
+        ratingAtmosphere,
+        "rating": math::avg([ratingFood, ratingPrice, ratingAtmosphere]),
         comment,
         submittedAt
       },
