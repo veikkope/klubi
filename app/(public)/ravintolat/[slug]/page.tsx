@@ -10,6 +10,7 @@ import { LinkButton } from "@/components/ui/button";
 import { RatingDots } from "@/components/ui/rating-dots";
 import { JsonLd } from "@/components/seo/json-ld";
 import { SanityImage } from "@/components/sanity-image";
+import { FramedImage } from "@/components/framed-image";
 import { PortableText } from "@/components/portable-text";
 import { AlbumGrid } from "@/components/gallery/album-grid";
 import {
@@ -190,12 +191,12 @@ export default async function RavintolaPage({ params }: PageProps) {
 
       {hero && (
         <Container size="wide" className="max-sm:px-0">
-          <SanityImage
+          {/* Kuva kokonaan: 21:9-rajaus leikkasi ihmisiä pois vanhoista kuvista. */}
+          <FramedImage
             image={hero}
             width={1920}
-            height={823}
             sizes="(min-width: 1440px) 1280px, 100vw"
-            className="aspect-[4/3] w-full object-cover sm:aspect-[21/9] sm:rounded-sm"
+            className="aspect-[4/3] w-full sm:aspect-[2/1] sm:rounded-sm"
             priority
           />
         </Container>

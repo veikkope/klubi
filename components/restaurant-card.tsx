@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { FramedImage } from "@/components/framed-image";
 import { RatingDots } from "@/components/ui/rating-dots";
 import { SanityImage } from "@/components/sanity-image";
 import { cn } from "@/lib/cn";
@@ -70,13 +71,22 @@ export function RestaurantCard({
       )}
     >
       {r.image?.asset ? (
-        <SanityImage
-          image={r.image}
-          width={640}
-          height={480}
-          sizes="(min-width: 1024px) 420px, (min-width: 640px) 45vw, 80px"
-          className="aspect-square w-full rounded-sm object-cover sm:aspect-[4/3] sm:rounded-none"
-        />
+        <>
+          {/* Mobiilin 80 px pikkukuva rajataan neliöksi; isossa kortissa kuva näkyy kokonaan. */}
+          <SanityImage
+            image={r.image}
+            width={160}
+            height={160}
+            sizes="80px"
+            className="aspect-square w-full rounded-sm object-cover sm:hidden"
+          />
+          <FramedImage
+            image={r.image}
+            width={840}
+            sizes="(min-width: 1024px) 420px, 45vw"
+            className="aspect-[4/3] w-full max-sm:hidden"
+          />
+        </>
       ) : (
         <span aria-hidden className="aspect-square w-full rounded-sm bg-brass-tint sm:hidden" />
       )}
