@@ -111,10 +111,12 @@ ottelut, joihin klubi lähtee.
 3. Valinnaiset: kilpailu, stadion, **Klubi paikalla** tai **Vierasmatka**.
 4. **Julkaise**.
 
-Etusivulla näkyvät vain Huuhkajien ottelut, ja niiden yläpuolella on laskuri
-seuraavaan otteluun. Laskuri päivittyy itsestään, kun lisäät ottelun, eikä sitä
-tarvitse muuttaa erikseen. Valinnat löytyvät kohdasta **Etusivu → Otteluohjelma ja
-tapahtumat**: **Näytä vain Huuhkajien ottelut** ja **Näytä laskuri**.
+Etusivulla näkyvät Huuhkajien ja FC Lahden ottelut, ja niiden yläpuolella on
+laskuri seuraavaan Huuhkajien otteluun. Laskuri päivittyy itsestään, kun lisäät
+ottelun, eikä sitä tarvitse muuttaa erikseen. FC Lahden ottelut tulevat
+automaattisesti. Valinnat löytyvät kohdasta **Etusivu → Otteluohjelma ja
+tapahtumat**. Kohtaan **Näytä myös näiden seurojen ottelut** voit lisätä tai
+poistaa seuroja (kirjoita nimi kuten Veikkausliigan sivuilla ja paina Enter).
 
 ### Tapahtuman lisääminen
 

@@ -11,8 +11,10 @@ import type { TapahtumaCard } from "@/lib/types";
 type Props = {
   ottelutHeading?: string;
   ottelutCount?: number;
-  /** Vain Huuhkajien ottelut. Oletuksena päällä (myös vanhoissa lohkoissa). */
+  /** Rajaa Huuhkajiin ja `seurat`-listan seuroihin. Oletuksena päällä (myös vanhoissa lohkoissa). */
   vainMaajoukkue?: boolean;
+  /** Rajauksen lisäksi näytettävät seurat, esim. ["FC Lahti"]. */
+  seurat?: string[];
   /** Laskuri seuraavaan Huuhkajien otteluun. Oletuksena päällä. */
   laskuri?: boolean;
   tapahtumatHeading?: string;
@@ -28,21 +30,24 @@ type Props = {
  *
  * Ottelupuolen yläreunassa on laskuri seuraavaan Huuhkajien otteluun. Se
  * lasketaan samoista Studion otteluista kuin lista, joten erillistä
- * ylläpitoa ei ole. Etusivu näyttää oletuksena vain Huuhkajien ottelut;
- * /ottelut-sivulla näkyy aina koko ohjelma.
+ * ylläpitoa ei ole. Etusivu näyttää oletuksena Huuhkajien ja Studiossa
+ * valittujen seurojen (esim. FC Lahti) ottelut; /ottelut-sivulla näkyy aina
+ * koko ohjelma.
  */
 export async function OtteluohjelmaBlock({
   ottelutHeading = "Tulevat ottelut",
   ottelutCount = 4,
   vainMaajoukkue = true,
+  seurat = [],
   laskuri = true,
   tapahtumatHeading = "Nähdään",
   tapahtumatCount = 3,
 }: Props) {
+  const vainHuuhkajat = vainMaajoukkue && seurat.length === 0;
   const [ottelut, huuhkajat, tapahtumat] = await Promise.all([
-    getTulevatOttelut(ottelutCount, { vainMaajoukkue }),
-    // Laskurin ottelu. Kun lista on jo rajattu Huuhkajiin, se on listan ensimmäinen.
-    laskuri && !vainMaajoukkue
+    getTulevatOttelut(ottelutCount, { vainMaajoukkue, seurat }),
+    // Laskurin ottelu. Kun lista on rajattu pelkkiin Huuhkajiin, se on listan ensimmäinen.
+    laskuri && !vainHuuhkajat
       ? getTulevatOttelut(1, { vainMaajoukkue: true })
       : Promise.resolve(null),
     sanityFetch<TapahtumaCard[]>({

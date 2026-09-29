@@ -58,6 +58,7 @@ export type EtusivuBlock =
       ottelutHeading?: string;
       ottelutCount?: number;
       vainMaajoukkue?: boolean;
+      seurat?: string[];
       laskuri?: boolean;
       tapahtumatHeading?: string;
       tapahtumatCount?: number;
