@@ -47,7 +47,7 @@ export function subRatings(r: {
  * Arviokortti (tyyliopas Sivut v3: "Ravintola-arviot").
  *
  * Tietokoneella pystykortti: 4:3 kuva, 3 px messinkinen yläreuna, arvosana-
- * pisteet + kaupunki · hintataso, nimi (serif 24 px), yhden rivin tuomio ja
+ * pisteet ja arvosana numerona (esim. "4,2") + kaupunki · hintataso, nimi (serif 24 px), yhden rivin tuomio ja
  * valinnainen tagi. Mobiilissa vaakakortti 80 px pikkukuvalla. Messinki on
  * ruoan ja ravintoloiden kategoriaväri.
  */
@@ -84,10 +84,17 @@ export function RestaurantCard({
       <div className="flex min-w-0 flex-col gap-1.5 sm:flex-1 sm:gap-2.5 sm:border-t-[3px] sm:border-t-brass sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
           {rating !== null && (
-            <>
+            <span className="inline-flex items-center gap-2 sm:gap-2.5">
               <RatingDots value={rating} size="sm" className="sm:hidden" />
               <RatingDots value={rating} size="lg" className="max-sm:hidden" />
-            </>
+              {/* Pisteiden aria-label kertoo jo tarkan arvon ruudunlukijalle. */}
+              <span
+                aria-hidden
+                className="text-[13px] font-semibold tabular-nums text-brass-text sm:text-[15px]"
+              >
+                {formatRating(rating)}
+              </span>
+            </span>
           )}
           {meta && <span className="hidden text-sm text-muted-soft sm:inline">{meta}</span>}
         </div>
