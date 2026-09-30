@@ -233,7 +233,7 @@ Eri osa-alueiden päällekkäiset löydökset on yhdistetty. Tunnukset ovat haka
 - ✅ *Korjattu 30.9.2026. fokussäännöt `@layer base`:en; tummilla pinnoilla `--ring` on valkoinen (15,8:1).* Globals.css:n kerrostamattomat fokussäännöt ohittavat komponenttien fokustyylit, ja rengas näkyy tummilla pinnoilla huonosti (1,8:1). [saavutettavuus-3]
 
 ### Tekninen kestävyys ja kustannukset
-- `sanityFetch` nielee virheet varadataan, joten Sanityn katkos voi tallentaa välimuistiin tyhjiä tai 404-sivuja, ja build voi "onnistua" tyhjänä. [suorituskyky-6]
+- ✅ *Korjattu 30.9.2026: virhe heitetään eteenpäin. ISR tarjoaa silloin viimeisimmän onnistuneen sivun, build kaatuu (Vercel pitää edellisen version) ja välimuistissa olematon sivu näyttää virhesivun (500), ei 404:ää. Testattu olemattomalla datasetillä. Ulkoinen otteluohjelma (lib/ottelut.ts) jää tarkoituksella vikasietoiseksi.* `sanityFetch` nielee virheet varadataan, joten Sanityn katkos voi tallentaa välimuistiin tyhjiä tai 404-sivuja, ja build voi "onnistua" tyhjänä. [suorituskyky-6]
 - ✅ *Korjattu 30.9.2026: `lib/sanity-image-loader.ts` (next/image → Sanityn CDN, rajaus ja polttopiste säilyvät, ei suurennusta). Brändikuvat pienennetty valmiiksi (`npm run brandikuvat`, ~57 kt → 5 kt). `/_next/image` ei ole enää käytössä.* Kaikki kuvat kulkevat Vercelin Image Optimizationin kautta (1700 kuvaa, 1,05 GB), mikä on kiintiöriski Hobby-tasolla. Ratkaisuksi otetaan käyttöön Sanityn CDN-loader. [suorituskyky-8]
 - Varmuuskopiointia ei ole. Lisätään `npm run backup` ja ajastus. [julkaisu-7]
 - CLAUDE.md:n `--replace`-vienti ylikirjoittaisi isän muutokset. [julkaisu-6] Tämä korjataan jo tarkistuslistan kohdassa 16.
