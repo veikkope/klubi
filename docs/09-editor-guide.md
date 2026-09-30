@@ -78,6 +78,35 @@ Uutissivulla on **haku**. Julkaistu uutinen löytyy haulla heti, eikä sinun tar
 tehdä mitään. Hyvä otsikko ja lyhenne auttavat, koska otsikko-osumat nousevat
 tuloksissa ylimmäksi.
 
+### Tunnisteet uutiselle
+
+Tunnisteet ovat uutisen aiheita, kuten blogin "labels": joukkue, paikka tai henkilö,
+esim. *Huuhkajat*, *Olympiastadion*, *Teemu Pukki*. Jokaisesta tunnisteesta tulee oma sivu,
+jolla on kaikki sen uutiset (osoite **/uutiset/tunniste/huuhkajat**). Kaikki tunnisteet
+ovat hakemistossa **/uutiset/tunnisteet**.
+
+1. Uutisen **Sisältö**-välilehdellä kenttä **Tunnisteet**.
+2. Kirjoita pari ensimmäistä kirjainta. Kentän alle tulee lista jo käytetyistä
+   tunnisteista ja niiden uutismäärä (esim. *Huuhkajat · 117 uutista*).
+3. **Valitse listalta**, jos tunniste on jo olemassa. Näin sama aihe pysyy yhdellä sivulla.
+   Uusi tunniste lisätään kirjoittamalla se ja painamalla **Enter**.
+4. Lisätyt tunnisteet näkyvät kentän yläpuolella. **×** tunnisteen vieressä poistaa sen.
+5. **Julkaise**.
+
+Hyvä tietää:
+- Kirjainkoolla ei ole väliä. Jos kirjoitat *huuhkajat*, Studio lisää sen vakiintuneessa
+  muodossa *Huuhkajat* ja kertoo siitä kentän alla.
+- Saman tunnisteen voi lisätä vain kerran. Jos se on jo uutisessa, kentän alle tulee
+  siitä maininta.
+- Useamman tunnisteen voi kirjoittaa kerralla pilkuilla erotettuina: *Lahti, Olympiastadion*.
+- Kentän alla olevat **Suosituimmat**-painikkeet lisäävät yleisimmän tunnisteen yhdellä
+  klikkauksella.
+- Tunnisteita voi olla enintään 30 per uutinen.
+
+> **SEO**-välilehden **Blogin tunnisteet** on vain tallenne vanhan blogin tunnisteista.
+> Sen muokkaaminen ei muuta sivustoa. Sivustolla näkyvät tunnisteet muokataan
+> **Sisältö**-välilehden kentässä **Tunnisteet**.
+
 ### Veikkaus tai kommentit uutisen alle
 
 Jäsenet voivat jättää veikkauksen tai kommentin uutisen alle, ja viesti näkyy heti.

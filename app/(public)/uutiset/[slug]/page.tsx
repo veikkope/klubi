@@ -8,6 +8,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { NewsCard } from "@/components/news-card";
 import { PortableText } from "@/components/portable-text";
 import { SanityImage } from "@/components/sanity-image";
+import { UutisenTunnisteet } from "@/components/tunnistelista";
 import { JsonLd } from "@/components/seo/json-ld";
 import { formatDate } from "@/lib/format";
 import { rootCrumb } from "@/lib/nav-sections";
@@ -231,6 +232,8 @@ export default async function UutinenPage({
 
       <Container size="narrow" className="py-16">
         <PortableText value={news.body} />
+
+        <UutisenTunnisteet tunnisteet={news.tunnisteet} className="mt-10" />
 
         {(lahde || news.ulkoinenLinkki) && (
           <dl className="mt-10 space-y-1 border-t border-border pt-6 text-sm text-muted">

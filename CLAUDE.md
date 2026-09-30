@@ -63,6 +63,8 @@ public/                Staattiset tiedostot (favicon, robots, kuvat joita Sanity
 | Varmuuskopio productionista | `npm run backup` → `varmuuskopiot/` (gitignoressa, kuvineen). Aina ennen isompaa muutosta. Lisäksi automaattinen viikkokopio Studioon (`/api/varmuuskopio`, docs/17 §D) |
 | Testaa varmuuskopion säännöt | `npm run test:varmuuskopio` |
 | Testaa uutishaun hakusanat | `npm run test:haku` |
+| Testaa uutisten tunnisteet | `npm run test:tunnisteet` |
+| Blogin tunnisteet muokattavaan kenttään (kuivaharjoitus; `-- --vie` kirjoittaa, `-- --production` productioniin varmuuskopion kanssa) | `npm run patch:tunnisteet` (docs/14 §3.1) |
 
 **Datasetit:** migraatiot ja kehitys kirjoittavat aina `development`-datasettiin (`.env.local`). `production` on isän ylläpitämä tuotantodata, jota Vercel käyttää: sinne viedään vain puuttuvia dokumentteja (`--missing`) tai dokumenttikohtaisia patcheja, ja aina varmuuskopion jälkeen. Jos sisältö näyttää puuttuvan, tarkista ensin `NEXT_PUBLIC_SANITY_PROJECT_ID` ja `NEXT_PUBLIC_SANITY_DATASET`. Migraation sopimus ja tila: `docs/12-sisaltomigraatio.md`.
 

@@ -9,6 +9,8 @@ import {
   type SitemapTilastoRow,
 } from "@/sanity/lib/queries/sitemap";
 import { documentRoute } from "@/lib/path";
+import { TUNNISTE_INDEKSOI_VAHINTAAN, tunnisteSlug } from "@/lib/tunnisteet";
+import { uutisetTunnisteetQuery, type TunnisteRivi } from "@/sanity/lib/queries/uutiset";
 import { absoluteUrl } from "@/lib/site";
 
 /**
@@ -41,6 +43,7 @@ const STATIC_ROUTES: { path: string; priority: number; changeFrequency: Entry["c
   { path: "/ottelut", priority: 0.8, changeFrequency: "daily" },
   { path: "/uutiset", priority: 0.9, changeFrequency: "daily" },
   { path: "/uutiset/arkisto", priority: 0.5, changeFrequency: "monthly" },
+  { path: "/uutiset/tunnisteet", priority: 0.4, changeFrequency: "weekly" },
 
   { path: "/ravintolat", priority: 0.8, changeFrequency: "weekly" },
   { path: "/ravintolat/arvostele", priority: 0.4, changeFrequency: "yearly" },
@@ -112,6 +115,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     albumit,
     sivut,
     arkistoRows,
+    tunnisteRivit,
   ] = await Promise.all([
     rowsFor("uutinen"),
     rowsFor("tapahtuma"),
@@ -129,6 +133,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     rowsFor("sivu"),
     sanityFetch<SitemapRow[]>({
       query: sitemapArchiveYearsQuery,
+      tags: ["uutinen"],
+      fallback: [],
+    }),
+    sanityFetch<TunnisteRivi[]>({
+      query: uutisetTunnisteetQuery,
       tags: ["uutinen"],
       fallback: [],
     }),
@@ -163,6 +172,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.3,
     changeFrequency: "yearly",
   }));
+
+  // Tunnistesivut: harvinaiset tunnisteet ovat noindex (lib/tunnisteet.ts). Muokkausaika on
+  // tunnisteen tuoreimman uutisen muokkausaika.
+  const tunnisteet = new Map<string, { maara: number; paivitetty: string }>();
+  for (const rivi of tunnisteRivit) {
+    for (const slug of new Set(rivi.tunnisteet.map(tunnisteSlug).filter(Boolean))) {
+      const nyt = tunnisteet.get(slug) ?? { maara: 0, paivitetty: "" };
+      nyt.maara += 1;
+      if (rivi.paivitetty > nyt.paivitetty) nyt.paivitetty = rivi.paivitetty;
+      tunnisteet.set(slug, nyt);
+    }
+  }
+  const tunnisteEntries: Entry[] = [...tunnisteet.entries()]
+    .filter(([, { maara }]) => maara >= TUNNISTE_INDEKSOI_VAHINTAAN)
+    .map(([slug, { paivitetty }]) => ({
+      url: absoluteUrl(`/uutiset/tunniste/${slug}`),
+      lastModified: paivitetty ? new Date(paivitetty) : undefined,
+      priority: 0.3,
+      changeFrequency: "monthly",
+    }));
 
   // Klubi-osion sivu-dokumenteilla (klubi, klubi/palloveikkaus) on oma
   // kiinteä reittinsä; sama URL ei saa esiintyä sitemapissa kahdesti.
@@ -205,6 +234,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...staticEntries,
     ...eurocupEntries,
     ...arkistoEntries,
+    ...tunnisteEntries,
     ...toEntries(uutiset, (s) => `/uutiset/${s}`, 0.7, "monthly"),
     ...toEntries(tapahtumat, (s) => `/tapahtumat/${s}`, 0.7, "weekly"),
     ...toEntries(ravintolat, (s) => `/ravintolat/${s}`, 0.6, "yearly"),
