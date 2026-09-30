@@ -113,7 +113,7 @@ async function main() {
   console.log(`\n2/3 Vienti → ${DATASET} (--missing)`);
   writeFileSync(VALIAIKAINEN, vietavat.map((d) => JSON.stringify(d)).join("\n") + "\n");
   try {
-    const status = aja("npx", ["sanity", "dataset", "import", VALIAIKAINEN, DATASET, "--missing"], {
+    const status = aja("npx", ["sanity", "dataset", "import", VALIAIKAINEN, "--dataset", DATASET, "--missing"], {
       ...process.env,
       SANITY_AUTH_TOKEN: token,
     });
@@ -123,7 +123,14 @@ async function main() {
   }
 
   console.log("\n3/3 Tarkistus");
-  const loytyi = await client.fetch<number>(`count(*[_id in $idt])`, { idt: vietavat.map((d) => d._id) });
+  // Kyselyindeksi päivittyy kirjoituksen jälkeen viiveellä (sekunteja):
+  // yritetään uudelleen ennen kuin vienti todetaan epäonnistuneeksi.
+  let loytyi = 0;
+  for (let yritys = 1; yritys <= 10; yritys += 1) {
+    loytyi = await client.fetch<number>(`count(*[_id in $idt])`, { idt: vietavat.map((d) => d._id) });
+    if (loytyi === vietavat.length) break;
+    await new Promise((valmis) => setTimeout(valmis, 2000));
+  }
   if (loytyi !== vietavat.length) {
     console.error(`Productionissa ${loytyi}/${vietavat.length} viedystä dokumentista. Tarkista vienti.`);
     process.exit(1);
