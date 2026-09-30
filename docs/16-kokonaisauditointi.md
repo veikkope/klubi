@@ -82,7 +82,7 @@
 | Tietoturva ja tietosuoja | lähes valmis | Arvostelijoiden sähköpostit päätyisivät julkiseen API:in ja tietosuojaseloste puuttuu. Salaisuuksien käsittely on kunnossa. | ✅ Korjattu. ☐ Hallitus vahvistaa tietosuojaselosteen. |
 | CMS ja isän käytettävyys | **keskeneräinen** | Studio ei toimi tuotannossa (CORS). Kolme sisältötyyppiä puuttuu valikosta, tarkistusjonolla ei ole näkymää ja isän opas on virheellinen. | ✅ CORS, valikko, opas, taulukkoeditori, Studio-parannukset. ☐ Perehdytys. |
 | Visuaalinen ilme, UX ja linkit | lähes valmis | 0 rikkinäistä linkkiä. Etusivulta puuttuvat hero- ja Klubista-kuvat, Tapahtumat on tyhjä ja ruokatyyppisuodatin on tyhjä. | ☐ Kuvat ja tapahtumat (isä). ✅ Ruokatyyppisuodatin poistettu. ☐ Uutishaku. |
-| Julkaisuvalmius ja ylläpito | **keskeneräinen** | Kolme estettä ennen domainin siirtoa: MX, CORS ja webhook. Varmuuskopiointia ei ole, ja CLAUDE.md:n `--replace`-vienti on riski. | ✅ CORS, webhook, varmuuskopio, `--replace` korjattu. ☐ MX/DNS-siirto, ☐ varmuuskopioiden ajastus. |
+| Julkaisuvalmius ja ylläpito | **keskeneräinen** | Kolme estettä ennen domainin siirtoa: MX, CORS ja webhook. Varmuuskopiointia ei ole, ja CLAUDE.md:n `--replace`-vienti on riski. | ✅ CORS, webhook, varmuuskopio, `--replace` korjattu. ☐ MX/DNS-siirto. ✅ Varmuuskopiot ajastettu (CRON_SECRET ☐). |
 
 ---
 
@@ -237,7 +237,7 @@ Eri osa-alueiden päällekkäiset löydökset on yhdistetty. Tunnukset ovat haka
 ### Tekninen kestävyys ja kustannukset
 - ✅ *Korjattu 30.9.2026: virhe heitetään eteenpäin. ISR tarjoaa silloin viimeisimmän onnistuneen sivun, build kaatuu (Vercel pitää edellisen version) ja välimuistissa olematon sivu näyttää virhesivun (500), ei 404:ää. Testattu olemattomalla datasetillä. Ulkoinen otteluohjelma (lib/ottelut.ts) jää tarkoituksella vikasietoiseksi.* `sanityFetch` nielee virheet varadataan, joten Sanityn katkos voi tallentaa välimuistiin tyhjiä tai 404-sivuja, ja build voi "onnistua" tyhjänä. [suorituskyky-6]
 - ✅ *Korjattu 30.9.2026: `lib/sanity-image-loader.ts` (next/image → Sanityn CDN, rajaus ja polttopiste säilyvät, ei suurennusta). Brändikuvat pienennetty valmiiksi (`npm run brandikuvat`, ~57 kt → 5 kt). `/_next/image` ei ole enää käytössä.* Kaikki kuvat kulkevat Vercelin Image Optimizationin kautta (1700 kuvaa, 1,05 GB), mikä on kiintiöriski Hobby-tasolla. Ratkaisuksi otetaan käyttöön Sanityn CDN-loader. [suorituskyky-8]
-- ◐ *30.9.: `npm run backup` käytössä, ajastus puuttuu.* Varmuuskopiointia ei ole. Lisätään `npm run backup` ja ajastus. [julkaisu-7]
+- ✅ *Korjattu 30.9.: viikoittainen automaattinen kopio Studioon (Vercel Cron, docs/17 §D), `CRON_SECRET` asetettava Verceliin.* Varmuuskopiointia ei ole. Lisätään `npm run backup` ja ajastus. [julkaisu-7]
 - ✅ *Korjattu 28.9.* CLAUDE.md:n `--replace`-vienti ylikirjoittaisi isän muutokset. [julkaisu-6] Tämä korjataan jo tarkistuslistan kohdassa 16.
 
 ### Sisältö ja blogi

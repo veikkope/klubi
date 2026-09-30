@@ -2,6 +2,7 @@ import {
   ArchiveIcon,
   CommentIcon,
   ControlsIcon,
+  DatabaseIcon,
   EnvelopeIcon,
   HomeIcon,
   LemonIcon,
@@ -59,6 +60,16 @@ export const structure: StructureResolver = (S) =>
                 .title("Yhteystiedot")
                 .icon(EnvelopeIcon)
                 .child(S.document().schemaType("yhteystiedot").documentId("yhteystiedot")),
+              S.listItem()
+                .title("Varmuuskopiot")
+                .icon(DatabaseIcon)
+                .child(
+                  S.documentTypeList("varmuuskopio")
+                    .title("Varmuuskopiot (viikoittain, automaattinen)")
+                    .defaultOrdering([{ field: "paiva", direction: "desc" }])
+                    .initialValueTemplates([])
+                    .menuItems([]),
+                ),
             ]),
         ),
 

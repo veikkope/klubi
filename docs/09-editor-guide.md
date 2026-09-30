@@ -36,7 +36,9 @@ voi muuttaa projektin asetuksia tai käyttöoikeuksia. Kehittäjä hoitaa ne.
 - **Esikatselu:** yläpalkin **Esikatselu** näyttää sivun luonnoksineen. Dokumentin
   yläosassa on myös linkki sivulle, jolla sisältö näkyy.
 - **Versiohistoria:** oikean yläkulman kellokuvakkeesta näet aiemmat versiot ja voit
-  palauttaa niistä minkä tahansa. Kokeile rohkeasti.
+  palauttaa niistä minkä tahansa. **Historia säilyy vain 3 päivää** (Sanityn ilmainen
+  taso). Jos huomaat virheen myöhemmin, kerro kehittäjälle: sisältö palautetaan
+  viikoittaisesta varmuuskopiosta (ks. Varmuuskopiot).
 - **Pakolliset kentät** näkyvät punaisella. Julkaisu onnistuu vasta, kun ne on täytetty.
 
 ## Studion valikko
@@ -45,6 +47,7 @@ voi muuttaa projektin asetuksia tai käyttöoikeuksia. Kehittäjä hoitaa ne.
   - **Etusivu:** etusivun iso otsikko, kuva ja lohkot
   - **Navigaatio:** yläpalkin linkit
   - **Yhteystiedot:** osoite, sähköposti, puhelin ja some. Näkyvät footerissa ja yhteystietosivulla
+  - **Varmuuskopiot:** automaattiset viikkokopiot (ks. alla). Sinun ei tarvitse tehdä niille mitään.
 - **Tarkistettavat:** migraation merkitsemät dokumentit tyypeittäin (ks. alla)
 - **Uutiset:** tiedotteet ja blogikirjoitukset, myös blogin kaikki 528 kirjoitusta vuodesta 2007
 - **Kommentit ja veikkaukset:** jäsenten viestit uusin ensin sekä piilotetut
@@ -315,8 +318,21 @@ Jos joku pyytää poistamaan tietonsa (kommentti, veikkaus tai arvostelu kuvinee
   kehittäjälle, joka tekee ohjauksen.
 - **Älä muuta** kenttiä **Vanha osoite** tai **Alkuperäinen Blogspot-kirjoitus**. Vanhat linkit ohjautuvat niiden varassa.
 
+## Varmuuskopiot
+
+Sivusto tekee joka maanantaiyö automaattisesti varmuuskopion kaikesta julkaistusta
+sisällöstä (tekstit ja tiedot). Kopiot näkyvät kohdassa **Sivun asetukset →
+Varmuuskopiot**, ja 12 uusinta säilyy (noin kolme kuukautta).
+
+- Sinun ei tarvitse tehdä mitään. Kopioita ei voi muokata eikä poistaa käsin.
+- Halutessasi voit ladata kopion talteen klubin omaan pilveen: avaa kopio →
+  tiedostokentän **⋯** → **Lataa**. Esimerkiksi kerran kuussa riittää.
+- Kuvat eivät ole kopiossa: ne säilyvät Sanityssa, ja kehittäjä ottaa kuvista
+  erillisen kopion isompien muutosten yhteydessä.
+- Palautuksen tekee kehittäjä.
+
 ## Tuki
 
-Jos et tiedä, miten jokin tehdään, ota yhteyttä kehittäjään. Kaikki muutokset ovat
-palautettavissa versiohistoriasta, ja kehittäjä ottaa sivustosta myös säännölliset
-varmuuskopiot (docs/17).
+Jos et tiedä, miten jokin tehdään, ota yhteyttä kehittäjään. Tuoreet muutokset
+(3 päivää) voit perua itse versiohistoriasta, vanhemmat kehittäjä palauttaa
+varmuuskopiosta.

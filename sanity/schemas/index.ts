@@ -19,6 +19,7 @@ import { klubiToiminta } from "./documents/klubiToiminta";
 import { arvokisa } from "./documents/arvokisa";
 import { pelaaja } from "./documents/pelaaja";
 import { kommentti } from "./documents/kommentti";
+import { varmuuskopio } from "./documents/varmuuskopio";
 
 import { yhteystiedot } from "./singletons/yhteystiedot";
 import { navigaatio } from "./singletons/navigaatio";
@@ -51,6 +52,7 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   arvokisa,
   pelaaja,
   kommentti,
+  varmuuskopio,
   yhteystiedot,
   navigaatio,
   asetukset,

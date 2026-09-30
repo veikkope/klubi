@@ -237,6 +237,28 @@ export type Geopoint = {
   alt?: number;
 };
 
+export type SanityFileAssetReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "sanity.fileAsset";
+};
+
+export type Varmuuskopio = {
+  _id: string;
+  _type: "varmuuskopio";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  paiva?: string;
+  tiedosto?: {
+    asset?: SanityFileAssetReference;
+    media?: unknown;
+    _type: "file";
+  };
+  dokumentteja?: number;
+};
+
 export type UutinenReference = {
   _ref: string;
   _type: "reference";
@@ -884,6 +906,8 @@ export type AllSanitySchemaTypes =
   | Navigaatio
   | Yhteystiedot
   | Geopoint
+  | SanityFileAssetReference
+  | Varmuuskopio
   | UutinenReference
   | Kommentti
   | JalkapalloTilastoReference
