@@ -72,17 +72,17 @@
 
 ## 2. Kokonaistila
 
-| Osa-alue | Arvosana | Tärkein havainto |
-|---|---|---|
-| Sisällön kattavuus (vanha sivusto) | lähes valmis | Migraatio on kattava (198/198, 308/308, 498/498). Nonni puuttuu, 29.9. ottelun aika on väärin ja perustiedot ovat tyhjiä. |
-| Blogi, veikkaus ja kommentit | lähes valmis | 528/528 kirjoitusta ja 502 kommenttia oikein. Kommentointi ei ole vielä päällä missään uutisessa, eikä `sync:blogspot` kirjoita productioniin. |
-| Ohjaukset ja SEO/GEO | lähes valmis | Sitemap, canonicalit ja JSON-LD ovat kunnossa. Kaikki osoittaa www-domainiin, jossa vanha Apache vastaa yhä. MX-riski domainin siirrossa. |
-| Saavutettavuus (WCAG 2.1 AA) | lähes valmis | Perusta on hyvä. Lomakekenttien reunat (1,1:1), pelkällä värillä erottuvat linkit ja tummien pintojen fokusrengas eivät täytä AA-tasoa. |
-| Suorituskyky ja tekninen laatu | lähes valmis | Next.js 16.2.6:ssa on haavoittuvuuksia, 404-sivu on oletussivu, webhook palauttaa 501 ja sanityFetch nielee virheet. |
-| Tietoturva ja tietosuoja | lähes valmis | Arvostelijoiden sähköpostit päätyisivät julkiseen API:in ja tietosuojaseloste puuttuu. Salaisuuksien käsittely on kunnossa. |
-| CMS ja isän käytettävyys | **keskeneräinen** | Studio ei toimi tuotannossa (CORS). Kolme sisältötyyppiä puuttuu valikosta, tarkistusjonolla ei ole näkymää ja isän opas on virheellinen. |
-| Visuaalinen ilme, UX ja linkit | lähes valmis | 0 rikkinäistä linkkiä. Etusivulta puuttuvat hero- ja Klubista-kuvat, Tapahtumat on tyhjä ja ruokatyyppisuodatin on tyhjä. |
-| Julkaisuvalmius ja ylläpito | **keskeneräinen** | Kolme estettä ennen domainin siirtoa: MX, CORS ja webhook. Varmuuskopiointia ei ole, ja CLAUDE.md:n `--replace`-vienti on riski. |
+| Osa-alue | Arvosana | Tärkein havainto | Tila 30.9.2026 |
+|---|---|---|---|
+| Sisällön kattavuus (vanha sivusto) | lähes valmis | Migraatio on kattava (198/198, 308/308, 498/498). Nonni puuttuu, 29.9. ottelun aika on väärin ja perustiedot ovat tyhjiä. | Ottelun aika ei ollut virhe. ☐ Nonni ja jäädytys, ☐ perustiedot (isä). |
+| Blogi, veikkaus ja kommentit | lähes valmis | 528/528 kirjoitusta ja 502 kommenttia oikein. Kommentointi ei ole vielä päällä missään uutisessa, eikä `sync:blogspot` kirjoita productioniin. | ✅ 529/529 productionissa, tuotantopolku `sync:blogspot:production`. Kommentit käytössä ilman koodisanaa. |
+| Ohjaukset ja SEO/GEO | lähes valmis | Sitemap, canonicalit ja JSON-LD ovat kunnossa. Kaikki osoittaa www-domainiin, jossa vanha Apache vastaa yhä. MX-riski domainin siirrossa. | ✅ Vercel-osoitteet noindex. ☐ Domainin siirto (docs/17 §C). |
+| Saavutettavuus (WCAG 2.1 AA) | lähes valmis | Perusta on hyvä. Lomakekenttien reunat (1,1:1), pelkällä värillä erottuvat linkit ja tummien pintojen fokusrengas eivät täytä AA-tasoa. | ✅ Korjattu 30.9., axe-testi 48 sivua. Jäljellä korttilinkkien nimet ja Nextin 404-bugi. |
+| Suorituskyky ja tekninen laatu | lähes valmis | Next.js 16.2.6:ssa on haavoittuvuuksia, 404-sivu on oletussivu, webhook palauttaa 501 ja sanityFetch nielee virheet. | ✅ Next 16.3.7, oma 404, webhook, sanityFetch heittää virheen, kuvat Sanityn CDN:stä. |
+| Tietoturva ja tietosuoja | lähes valmis | Arvostelijoiden sähköpostit päätyisivät julkiseen API:in ja tietosuojaseloste puuttuu. Salaisuuksien käsittely on kunnossa. | ✅ Korjattu. ☐ Hallitus vahvistaa tietosuojaselosteen. |
+| CMS ja isän käytettävyys | **keskeneräinen** | Studio ei toimi tuotannossa (CORS). Kolme sisältötyyppiä puuttuu valikosta, tarkistusjonolla ei ole näkymää ja isän opas on virheellinen. | ✅ CORS, valikko, opas, taulukkoeditori, Studio-parannukset. ☐ Perehdytys. |
+| Visuaalinen ilme, UX ja linkit | lähes valmis | 0 rikkinäistä linkkiä. Etusivulta puuttuvat hero- ja Klubista-kuvat, Tapahtumat on tyhjä ja ruokatyyppisuodatin on tyhjä. | ☐ Kuvat ja tapahtumat (isä). ☐ Ruokatyyppisuodatin, uutishaku. |
+| Julkaisuvalmius ja ylläpito | **keskeneräinen** | Kolme estettä ennen domainin siirtoa: MX, CORS ja webhook. Varmuuskopiointia ei ole, ja CLAUDE.md:n `--replace`-vienti on riski. | ✅ CORS, webhook, varmuuskopio, `--replace` korjattu. ☐ MX/DNS-siirto, ☐ varmuuskopioiden ajastus. |
 
 ---
 
@@ -177,27 +177,29 @@ Eri osa-alueiden päällekkäiset löydökset on yhdistetty. Tunnukset ovat haka
 
 ## 4. Julkaisun tarkistuslista (järjestyksessä)
 
+> Tila päivitetty 30.9.2026. Kohdan alussa tila, sen jälkeen alkuperäinen tehtävä.
+
 ### A. Heti (tällä viikolla)
-1. ☐ **29.9. ottelun kellonaika** tarkistetaan ja korjataan (este 4).
-2. ☐ **Sanity CORS**: lisätään klubi-blond, www ja apex credentials-valinnalla. Isä kutsutaan Editoriksi ja kirjautuminen testataan (este 2).
-3. ☐ **Vercel-ympäristömuuttujat**: lisätään `SANITY_API_READ_TOKEN` ja `SANITY_REVALIDATE_SECRET`, luodaan webhook osoitteeseen klubi-blond.vercel.app, tarkistetaan 200-vastaus webhookin lokista ja tehdään redeploy (esteet 8 ja 9). Samalla varmistetaan, että `SANITY_API_WRITE_TOKEN` on olemassa ja rajattu.
-4. ☐ **Next.js 16.3.6** ja `npm audit fix`, sen jälkeen type-check, lint, build ja deploy (este 6).
-5. ☐ **Arvostelulomake**: sähköpostin tallennus korjataan tai lomake piilotetaan (este 3).
+1. ✅ Ei virhe (19.00 oikein, vahvistettu 28.9.). — **29.9. ottelun kellonaika** tarkistetaan ja korjataan (este 4).
+2. ✅ CORS 28.9., isän kutsu lähetetty. ☐ Isän ensimmäinen kirjautuminen testataan perehdytyksessä. — **Sanity CORS**: lisätään klubi-blond, www ja apex credentials-valinnalla. Isä kutsutaan Editoriksi ja kirjautuminen testataan (este 2).
+3. ✅ 28.9. — **Vercel-ympäristömuuttujat**: lisätään `SANITY_API_READ_TOKEN` ja `SANITY_REVALIDATE_SECRET`, luodaan webhook osoitteeseen klubi-blond.vercel.app, tarkistetaan 200-vastaus webhookin lokista ja tehdään redeploy (esteet 8 ja 9). Samalla varmistetaan, että `SANITY_API_WRITE_TOKEN` on olemassa ja rajattu.
+4. ✅ Nyt 16.3.7 (30.9.). — **Next.js 16.3.6** ja `npm audit fix`, sen jälkeen type-check, lint, build ja deploy (este 6).
+5. ✅ 28.9. (ei sähköpostia, luonnoksena). — **Arvostelulomake**: sähköpostin tallennus korjataan tai lomake piilotetaan (este 3).
 
 ### B. Ennen domainin siirtoa
-6. ☐ **Tietosuojaseloste** julkaistaan ja linkitetään footeriin ja lomakkeisiin (este 5).
-7. ☐ **Oma 404- ja virhesivu** suomeksi (este 7).
-8. ☐ **Studion rakenne**: puuttuvat tyypit, Tarkistettavat-lista ja syykenttä (esteet 11 ja 12). Lisäksi suomenkielinen Studio `@sanity/locale-fi-fi` ja Vision piilotetaan isältä.
-9. ☐ **Isän opas** päivitetään ja isän kanssa pidetään koulutuskerta (este 13). Isä käy läpi 75 tarkistettavaa dokumenttia.
-10. ☐ **Perustiedot** täytetään Studiossa, tai tyhjät sivut piilotetaan valikosta ja merkitään noindexillä (este 10).
-11. ☐ **info@-osoite**: hallitus vahvistaa, että postilaatikko on olemassa ja sitä luetaan. Osoite tallennetaan yhteystiedot-singletoniin, ja koodi lukee sen sieltä.
-12. ☐ **Jäsenhakemukset**: hallitus päättää vastaanottajan. Otetaan Resend käyttöön (DKIM-tietue Wepardin DNS:ään ja muuttujat Verceliin) ja lähetetään oma testihakemus, tai päätetään, että lomake ohjaa sähköpostiin.
-13. ☐ **Kommentit**: isä asettaa koodisanan (sitä ei ole tällä hetkellä, `secrets.kommenttikoodi` puuttuu). Tehdään yksi hyväksymistesti tuotannossa piilotetulla testiuutisella.
-14. ☐ **Sisällön jäädytyspäivä** sovitaan isän kanssa. Sen jälkeen muutoksia tehdään vain Studioon. Nonni lisätään. Last-Modified-tarkistus ajetaan uudelleen kaikille 198 URL:lle ja erot synkataan.
-15. ☐ **Blogin viimeinen synkronointi productioniin**: tehdään dokumentoitu `--missing`-polku, koska nykyinen `sync:blogspot` kirjoittaa vain developmentiin. Lopuksi ajetaan `SANITY_VERIFY_DATASET=production npm run verify:blogspot`.
-16. ☐ **CLAUDE.md:n dataset-käytäntö** korjataan: ei enää `--replace`-vientiä dev → prod, kun isä muokkaa productionia. **Ensimmäinen varmuuskopio productionista** otetaan.
-17. ☐ **klubi-blond.vercel.app** merkitään noindexillä (`X-Robots-Tag` host-ehdolla).
-18. ☐ Tarkistukset preview-osoitetta vastaan: type-check, lint, verify:content ja verify:redirects. **Vanhasta sivustosta otetaan varmuuskopio** (Wepardi: tiedostot ja posti).
+6. ✅ 28.9. ☐ Hallitus vahvistaa sisällön (Studiossa "Vaatii tarkistuksen"). — **Tietosuojaseloste** julkaistaan ja linkitetään footeriin ja lomakkeisiin (este 5).
+7. ✅ 28.9. Huom.: Next 16.3 -bugi (issue #99287), 404-sivun sisältö renderöityy vasta selaimessa. — **Oma 404- ja virhesivu** suomeksi (este 7).
+8. ✅ 28.9. — **Studion rakenne**: puuttuvat tyypit, Tarkistettavat-lista ja syykenttä (esteet 11 ja 12). Lisäksi suomenkielinen Studio `@sanity/locale-fi-fi` ja Vision piilotetaan isältä.
+9. ✅ Opas päivitetty 30.9. (taulukkoeditori, galleria, joukkue-ehdotukset, sisällön kieli). ☐ Koulutuskerta. ☐ Isä käy läpi 76 tarkistettavaa. — **Isän opas** päivitetään ja isän kanssa pidetään koulutuskerta (este 13). Isä käy läpi 75 tarkistettavaa dokumenttia.
+10. ☐ Isä ja hallitus (tilanne 30.9.: yhteystiedoissa vain kaupunki, hallitus 0, tapahtumat 0). — **Perustiedot** täytetään Studiossa, tai tyhjät sivut piilotetaan valikosta ja merkitään noindexillä (este 10).
+11. ✅ Koodi lukee osoitteen Yhteystiedoista (30.9.). ☐ Hallitus vahvistaa postilaatikon ja osoite tallennetaan Studioon (nyt tyhjä: sähköposti ei näy sivustolla). — **info@-osoite**: hallitus vahvistaa, että postilaatikko on olemassa ja sitä luetaan. Osoite tallennetaan yhteystiedot-singletoniin, ja koodi lukee sen sieltä.
+12. ✅ Ratkaistu 28.9.: sivusto ei ota jäsenhakemuksia vastaan (ei Resendiä), maininta poistettu tietosuojaselosteesta. — **Jäsenhakemukset**: hallitus päättää vastaanottajan. Otetaan Resend käyttöön (DKIM-tietue Wepardin DNS:ään ja muuttujat Verceliin) ja lähetetään oma testihakemus, tai päätetään, että lomake ohjaa sähköpostiin.
+13. ✅ Ratkaistu: koodisana poistettu kokonaan, kommentit julkaistaan heti ja isä piilottaa asiattomat. — **Kommentit**: isä asettaa koodisanan (sitä ei ole tällä hetkellä, `secrets.kommenttikoodi` puuttuu). Tehdään yksi hyväksymistesti tuotannossa piilotetulla testiuutisella.
+14. ☐ Sovitaan isän kanssa. — **Sisällön jäädytyspäivä** sovitaan isän kanssa. Sen jälkeen muutoksia tehdään vain Studioon. Nonni lisätään. Last-Modified-tarkistus ajetaan uudelleen kaikille 198 URL:lle ja erot synkataan.
+15. ✅ Polku valmis 30.9. (`npm run sync:blogspot:production`), 529/529 productionissa. ☐ Viimeinen ajo jäädytyspäivänä. — **Blogin viimeinen synkronointi productioniin**: tehdään dokumentoitu `--missing`-polku, koska nykyinen `sync:blogspot` kirjoittaa vain developmentiin. Lopuksi ajetaan `SANITY_VERIFY_DATASET=production npm run verify:blogspot`.
+16. ✅ 28.9. (varmuuskopiot 28.9. ja 30.9.). — **CLAUDE.md:n dataset-käytäntö** korjataan: ei enää `--replace`-vientiä dev → prod, kun isä muokkaa productionia. **Ensimmäinen varmuuskopio productionista** otetaan.
+17. ✅ 30.9.: kaikki `*.vercel.app`-osoitteet `X-Robots-Tag: noindex, nofollow` (next.config.ts). — **klubi-blond.vercel.app** merkitään noindexillä (`X-Robots-Tag` host-ehdolla).
+18. ◐ 30.9.: verify:redirects (0 rikki) ja saavutettavuustesti (48 sivua) ajettu. ☐ verify:content preview-osoitetta vastaan. ☐ Vanhan sivuston varmuuskopio (Wepardi). — Tarkistukset preview-osoitetta vastaan: type-check, lint, verify:content ja verify:redirects. **Vanhasta sivustosta otetaan varmuuskopio** (Wepardi: tiedostot ja posti).
 
 ### C. Domainin siirtopäivä
 19. ☐ **Vuorokautta ennen**: DNS-tietueiden TTL lasketaan 300 sekuntiin.
@@ -235,8 +237,8 @@ Eri osa-alueiden päällekkäiset löydökset on yhdistetty. Tunnukset ovat haka
 ### Tekninen kestävyys ja kustannukset
 - ✅ *Korjattu 30.9.2026: virhe heitetään eteenpäin. ISR tarjoaa silloin viimeisimmän onnistuneen sivun, build kaatuu (Vercel pitää edellisen version) ja välimuistissa olematon sivu näyttää virhesivun (500), ei 404:ää. Testattu olemattomalla datasetillä. Ulkoinen otteluohjelma (lib/ottelut.ts) jää tarkoituksella vikasietoiseksi.* `sanityFetch` nielee virheet varadataan, joten Sanityn katkos voi tallentaa välimuistiin tyhjiä tai 404-sivuja, ja build voi "onnistua" tyhjänä. [suorituskyky-6]
 - ✅ *Korjattu 30.9.2026: `lib/sanity-image-loader.ts` (next/image → Sanityn CDN, rajaus ja polttopiste säilyvät, ei suurennusta). Brändikuvat pienennetty valmiiksi (`npm run brandikuvat`, ~57 kt → 5 kt). `/_next/image` ei ole enää käytössä.* Kaikki kuvat kulkevat Vercelin Image Optimizationin kautta (1700 kuvaa, 1,05 GB), mikä on kiintiöriski Hobby-tasolla. Ratkaisuksi otetaan käyttöön Sanityn CDN-loader. [suorituskyky-8]
-- Varmuuskopiointia ei ole. Lisätään `npm run backup` ja ajastus. [julkaisu-7]
-- CLAUDE.md:n `--replace`-vienti ylikirjoittaisi isän muutokset. [julkaisu-6] Tämä korjataan jo tarkistuslistan kohdassa 16.
+- ◐ *30.9.: `npm run backup` käytössä, ajastus puuttuu.* Varmuuskopiointia ei ole. Lisätään `npm run backup` ja ajastus. [julkaisu-7]
+- ✅ *Korjattu 28.9.* CLAUDE.md:n `--replace`-vienti ylikirjoittaisi isän muutokset. [julkaisu-6] Tämä korjataan jo tarkistuslistan kohdassa 16.
 
 ### Sisältö ja blogi
 - Nonni-ravintola ja sisällön jäädytys. [sisalto-1]
@@ -251,7 +253,7 @@ Eri osa-alueiden päällekkäiset löydökset on yhdistetty. Tunnukset ovat haka
 - 750 uutisessa ei ole hakua, ja 50 uutiselta puuttuu kategoria. [ux-8]
 
 ### Ylläpito
-- Jäsenhakemuksen sähköpostilähetys (Resend) ei ole käytössä. Vercelin tilaa ei voitu todentaa. [julkaisu-4]
+- ✅ *Ratkaistu 28.9.: jäsenhakemuksia ei oteta vastaan sivuston kautta.* Jäsenhakemuksen sähköpostilähetys (Resend) ei ole käytössä. Vercelin tilaa ei voitu todentaa. [julkaisu-4]
 
 ---
 
