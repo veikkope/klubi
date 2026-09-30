@@ -144,7 +144,8 @@ voi lisätä tunnisteita myös uusiin uutisiin, ja blogin alkuperäinen lista s�
 - **Production:** `npm run patch:tunnisteet -- --production` (kuivaharjoitus), sitten
   `-- --production --vie` (varmuuskopio ensin). **Aja vasta, kun kentän sisältävä
   Studio on julkaistu Verceliin**, muuten vanha Studio näyttää kentän tuntemattomana.
-  Ennen ajoa tunnistesivut ovat productionissa tyhjiä (404) ja uutisilla ei näy tunnisteita.
+  Production täytetty 30.9.2026 julkaisun jälkeen (525 uutista, varmuuskopio
+  `varmuuskopiot/production-2026-09-30.tar.gz`).
 - **Sivut:** `/uutiset/tunniste/<slug>` (uutiset uusin ensin, liittyvät tunnisteet),
   `/uutiset/tunnisteet` (suosituimmat + A–Ö). Slug tulee `lib/slugify.ts`:stä, ja saman
   slugin kirjoitusasut ("Huuhkajat"/"huuhkajat") ovat sama tunniste. Ei-kanoninen
