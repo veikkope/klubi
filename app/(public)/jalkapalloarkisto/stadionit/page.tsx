@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { stegaClean } from "next-sanity";
 
-import { SanityImage } from "@/components/sanity-image";
+import { FramedImage } from "@/components/framed-image";
 import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
 import { SectionNav } from "@/components/layout/section-nav";
@@ -187,12 +187,11 @@ function StadionListCard({
     >
       {stadion.kuva?.asset && (
         <div className="aspect-[3/2] w-full overflow-hidden bg-surface-strong">
-          <SanityImage
+          <FramedImage
             image={stadion.kuva}
             width={800}
-            height={533}
             sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw"
-            className="h-full w-full object-cover"
+            className="h-full w-full"
           />
         </div>
       )}

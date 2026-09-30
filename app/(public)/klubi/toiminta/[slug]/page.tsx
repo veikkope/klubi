@@ -7,7 +7,7 @@ import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
 import { SectionNav } from "@/components/layout/section-nav";
 import { PortableText } from "@/components/portable-text";
-import { SanityImage } from "@/components/sanity-image";
+import { FramedImage } from "@/components/framed-image";
 import { JsonLd } from "@/components/seo/json-ld";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/format";
@@ -155,13 +155,12 @@ export default async function ToimintaDetailPage({
               {kuvat.map((kuva, index) => (
                 <li key={`${kuva?.asset?._ref ?? "kuva"}-${index}`}>
                   <figure>
-                    <SanityImage
+                    <FramedImage
                       image={kuva}
                       kuvateksti={kuva?.caption}
                       width={900}
-                      height={600}
                       sizes="(min-width: 1024px) 320px, (min-width: 640px) 45vw, 90vw"
-                      className="h-56 w-full rounded-xl object-cover"
+                      className="h-56 w-full rounded-xl"
                     />
                     {kuva?.caption && (
                       <figcaption className="mt-2 text-sm text-muted">
@@ -247,13 +246,12 @@ export default async function ToimintaDetailPage({
                           {vuosiKuvat.map((kuva, kuvaIndex) => (
                             <li key={`${kuva?.asset?._ref ?? "kuva"}-${kuvaIndex}`}>
                               <figure>
-                                <SanityImage
+                                <FramedImage
                                   image={kuva}
                                   kuvateksti={kuva?.caption}
                                   width={800}
-                                  height={533}
                                   sizes="(min-width: 1024px) 300px, (min-width: 640px) 45vw, 90vw"
-                                  className="h-44 w-full rounded-xl object-cover"
+                                  className="h-44 w-full rounded-xl"
                                 />
                                 {kuva?.caption && (
                                   <figcaption className="mt-2 text-sm text-muted">

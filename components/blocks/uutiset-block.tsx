@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { Container } from "@/components/layout/container";
 import { ArrowLink, BlockHeading } from "@/components/blocks/block-heading";
-import { SanityImage } from "@/components/sanity-image";
+import { FramedImage } from "@/components/framed-image";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import { recentUutisetQuery } from "@/sanity/lib/queries";
 import { cn } from "@/lib/cn";
@@ -70,12 +70,11 @@ export async function UutisetBlock({ eyebrow, heading, count = 4 }: Props) {
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:gap-14">
           <article className="flex flex-col gap-3.5 sm:gap-[18px]">
             {featured.coverImage?.asset && (
-              <SanityImage
+              <FramedImage
                 image={featured.coverImage}
-                width={960}
-                height={600}
+                width={1520}
                 sizes="(min-width: 1024px) 760px, 100vw"
-                className="aspect-[3/2] w-full rounded-sm object-cover sm:aspect-[16/10]"
+                className="aspect-[3/2] w-full rounded-sm sm:aspect-[16/10]"
               />
             )}
             <Meta news={featured} />

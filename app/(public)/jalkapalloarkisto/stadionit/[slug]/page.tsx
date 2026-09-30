@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { PortableText } from "@/components/portable-text";
-import { SanityImage } from "@/components/sanity-image";
+import { FramedImage } from "@/components/framed-image";
 import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
 import { SectionNav } from "@/components/layout/section-nav";
@@ -177,13 +177,12 @@ export default async function StadionPage({
 
       {paakuva?.asset && (
         <figure className="mt-10 overflow-hidden rounded-2xl">
-          <SanityImage
+          <FramedImage
             image={paakuva}
             kuvateksti={paakuva?.caption}
             width={1600}
-            height={900}
             sizes="(min-width: 1024px) 1024px, 100vw"
-            className="h-auto w-full object-cover"
+            className="aspect-[16/9] w-full"
             priority
           />
           {paakuva.caption && (
@@ -236,13 +235,12 @@ export default async function StadionPage({
             {lisakuvat.map((kuva, index) => (
               <li key={kuva?._key ?? index}>
                 <figure>
-                  <SanityImage
+                  <FramedImage
                     image={kuva}
                     kuvateksti={kuva?.caption}
                     width={800}
-                    height={600}
                     sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw"
-                    className="h-auto w-full rounded-2xl object-cover"
+                    className="aspect-[4/3] w-full rounded-2xl"
                   />
                   {kuva?.caption && (
                     <figcaption className="mt-2 text-sm text-muted">

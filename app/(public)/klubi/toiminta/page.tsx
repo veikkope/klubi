@@ -6,7 +6,7 @@ import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
 import { SectionNav } from "@/components/layout/section-nav";
 import { PortableText } from "@/components/portable-text";
-import { SanityImage } from "@/components/sanity-image";
+import { FramedImage } from "@/components/framed-image";
 import { JsonLd } from "@/components/seo/json-ld";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardArrow, CardBody, CardTitle } from "@/components/ui/card";
@@ -106,12 +106,11 @@ export default async function ToimintaPage() {
               <li key={toiminta._id}>
                 <Card href={`/klubi/toiminta/${toiminta.slug}`} className="h-full">
                   {toiminta.kuva?.asset && (
-                    <SanityImage
+                    <FramedImage
                       image={toiminta.kuva}
                       width={800}
-                      height={500}
                       sizes="(min-width: 1024px) 320px, (min-width: 640px) 45vw, 90vw"
-                      className="mb-4 h-44 w-full rounded-xl object-cover"
+                      className="mb-4 h-44 w-full rounded-xl"
                     />
                   )}
                   <CardTitle as="h2">{toiminta.title}</CardTitle>

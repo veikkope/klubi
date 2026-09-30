@@ -6,7 +6,7 @@ import {
   CardBody,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { SanityImage } from "@/components/sanity-image";
+import { FramedImage } from "@/components/framed-image";
 import { formatDate } from "@/lib/format";
 import { categoryLabel } from "@/lib/uutinen-categories";
 import type { UutinenCard } from "@/lib/types";
@@ -24,16 +24,11 @@ export function NewsCard({ news, feature = false, priority = false }: Props) {
     <Card href={`/uutiset/${news.slug}`} className="w-full">
       {news.coverImage?.asset && (
         <div className="-m-6 mb-4 overflow-hidden rounded-t-2xl">
-          <SanityImage
+          <FramedImage
             image={news.coverImage}
-            width={600}
-            height={360}
+            width={760}
             sizes="(min-width: 1024px) 380px, (min-width: 640px) 45vw, 100vw"
-            className={
-              feature
-                ? "h-52 w-full object-cover"
-                : "h-44 w-full object-cover"
-            }
+            className={feature ? "h-52 w-full" : "h-44 w-full"}
             priority={priority}
           />
         </div>

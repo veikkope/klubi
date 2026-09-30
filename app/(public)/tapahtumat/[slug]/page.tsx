@@ -7,7 +7,7 @@ import { stegaClean } from "next-sanity";
 import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
 import { PortableText } from "@/components/portable-text";
-import { SanityImage } from "@/components/sanity-image";
+import { FramedImage } from "@/components/framed-image";
 import { JsonLd } from "@/components/seo/json-ld";
 import { LinkButton } from "@/components/ui/button";
 import { formatEventRange } from "@/lib/format";
@@ -172,12 +172,11 @@ export default async function TapahtumaPage({
       {event.image?.asset && (
         <Container size="wide" className="mt-12">
           <div className="overflow-hidden rounded-2xl">
-            <SanityImage
+            <FramedImage
               image={event.image}
               width={1600}
-              height={900}
               sizes="(min-width: 1280px) 1152px, 100vw"
-              className="h-auto w-full object-cover"
+              className="aspect-[16/9] w-full"
               priority
             />
           </div>

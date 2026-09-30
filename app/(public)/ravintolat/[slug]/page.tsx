@@ -9,7 +9,6 @@ import { Eyebrow } from "@/components/blocks/block-heading";
 import { LinkButton } from "@/components/ui/button";
 import { RatingDots } from "@/components/ui/rating-dots";
 import { JsonLd } from "@/components/seo/json-ld";
-import { SanityImage } from "@/components/sanity-image";
 import { FramedImage } from "@/components/framed-image";
 import { PortableText } from "@/components/portable-text";
 import { AlbumGrid } from "@/components/gallery/album-grid";
@@ -230,13 +229,12 @@ export default async function RavintolaPage({ params }: PageProps) {
           {pairImages.length > 0 && (
             <div className="my-3 grid grid-cols-2 gap-4">
               {pairImages.map((image, i) => (
-                <SanityImage
+                <FramedImage
                   key={image?._key ?? i}
                   image={image}
-                  width={600}
-                  height={600}
+                  width={680}
                   sizes="(min-width: 1024px) 340px, 50vw"
-                  className="aspect-square w-full rounded-sm object-cover"
+                  className="aspect-square w-full rounded-sm"
                 />
               ))}
             </div>
@@ -331,12 +329,11 @@ export default async function RavintolaPage({ params }: PageProps) {
                   <li key={item._id}>
                     <Link href={`/ravintolat/${item.slug}`} className="group flex flex-col gap-3 no-underline">
                       {item.image?.asset ? (
-                        <SanityImage
+                        <FramedImage
                           image={item.image}
                           width={600}
-                          height={400}
                           sizes="(min-width: 640px) 30vw, 100vw"
-                          className="aspect-[3/2] w-full rounded-sm object-cover"
+                          className="aspect-[3/2] w-full rounded-sm"
                         />
                       ) : (
                         <span aria-hidden className="aspect-[3/2] w-full rounded-sm bg-brass-tint" />

@@ -2,7 +2,7 @@ import { stegaClean } from "next-sanity";
 
 import { Container } from "@/components/layout/container";
 import { ArrowLink, Eyebrow } from "@/components/blocks/block-heading";
-import { SanityImage } from "@/components/sanity-image";
+import { FramedImage } from "@/components/framed-image";
 import { PortableText } from "@/components/portable-text";
 import type { EtusivuBlock } from "@/lib/types";
 
@@ -36,12 +36,11 @@ export function EsittelyBlock(props: Props) {
         }
       >
         {hasImage && (
-          <SanityImage
+          <FramedImage
             image={props.image!}
-            width={1000}
-            height={750}
+            width={1280}
             sizes="(min-width: 1024px) 640px, 100vw"
-            className="aspect-[4/3] w-full rounded-sm object-cover"
+            className="aspect-[4/3] w-full rounded-sm"
           />
         )}
 

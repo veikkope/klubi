@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { SanityImage } from "@/components/sanity-image";
+import { FramedImage } from "@/components/framed-image";
 import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
 import { SectionNav } from "@/components/layout/section-nav";
@@ -121,12 +121,11 @@ function PelaajaListCard({
     >
       <div className="aspect-[4/3] w-full overflow-hidden bg-surface-strong">
         {pelaaja.kuva?.asset ? (
-          <SanityImage
+          <FramedImage
             image={pelaaja.kuva}
             width={800}
-            height={600}
             sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw"
-            className="h-full w-full object-cover"
+            className="h-full w-full"
           />
         ) : (
           <span

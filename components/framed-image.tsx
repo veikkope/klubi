@@ -12,19 +12,26 @@ type Props = {
   /** Kehyksen luokat: mittasuhde (esim. `aspect-[4/3]`), pyöristys, leveys. */
   className?: string;
   priority?: boolean;
+  /** Näkyvä kuvateksti: alt jätetään tyhjäksi, jos se on sama (ks. SanityImage). */
+  kuvateksti?: string | null;
 };
 
 /**
  * Kuva kokonaisena kiinteässä kehyksessä: ketään ei rajata pois.
  *
- * Ravintolakuvat ovat vanhalta sivustolta, ja niiden muodot vaihtelevat
+ * Käytössä kaikissa sisältökuvissa, joilla on kiinteä kehys (kortit, kansikuvat,
+ * kuvaruudukot). Poikkeukset: pienet esikatselut, jotka avaavat koko kuvan
+ * (albumin ja arvostelujen ruudut, ravintolakortin 80 px mobiilikuva),
+ * hallituksen pyöreät muotokuvat ja koristeelliset taustakuvat.
+ *
+ * Kuvat ovat vanhalta sivustolta, ja niiden muodot vaihtelevat
  * (3:2, 4:3, pysty- ja leveät kuvat), eikä niihin ole asetettu polttopisteitä.
  * Kehyksen muotoon rajaaminen (`object-cover`) leikkasi siksi ihmisiä pois.
  * Tässä kuva näytetään kokonaan (`object-contain`), ja kehykseen jäävä tila
  * täytetään saman kuvan sumennetulla, hieman tummennetulla versiolla.
  * Kehykset pysyvät yhtä suurina, joten ruudukko ei rikkoudu.
  */
-export function FramedImage({ image, alt, width = 1200, sizes, className, priority }: Props) {
+export function FramedImage({ image, alt, width = 1200, sizes, className, priority, kuvateksti }: Props) {
   const backdrop = urlForImage(image)?.width(96).blur(40).url();
 
   return (
@@ -42,6 +49,7 @@ export function FramedImage({ image, alt, width = 1200, sizes, className, priori
         width={width}
         crop={false}
         sizes={sizes}
+        kuvateksti={kuvateksti}
         className="absolute inset-0 h-full w-full object-contain"
         priority={priority}
       />

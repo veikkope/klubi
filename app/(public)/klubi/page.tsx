@@ -6,7 +6,7 @@ import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
 import { SectionNav } from "@/components/layout/section-nav";
 import { PortableText } from "@/components/portable-text";
-import { SanityImage } from "@/components/sanity-image";
+import { FramedImage } from "@/components/framed-image";
 import { JsonLd } from "@/components/seo/json-ld";
 import {
   Card,
@@ -98,13 +98,12 @@ export default async function KlubiPage() {
 
         {sivu?.hero?.asset && (
           <figure className="mt-10 overflow-hidden rounded-2xl">
-            <SanityImage
+            <FramedImage
               image={sivu.hero}
               kuvateksti={sivu.hero?.caption}
               width={1600}
-              height={900}
               sizes="(min-width: 1024px) 960px, 100vw"
-              className="h-auto w-full object-cover"
+              className="aspect-[16/9] w-full"
               priority
             />
             {sivu.hero.caption && (

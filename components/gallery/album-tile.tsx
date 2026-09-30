@@ -1,5 +1,5 @@
 import { Card, CardBody, CardEyebrow, CardTitle } from "@/components/ui/card";
-import { SanityImage } from "@/components/sanity-image";
+import { FramedImage } from "@/components/framed-image";
 import { formatDate } from "@/lib/format";
 import type { GalleriaAlbumCard } from "@/sanity/lib/queries/galleria";
 
@@ -29,16 +29,13 @@ export function AlbumTile({
   return (
     <Card href={`/galleria/${album.slug}`}>
       {/* Kiinteä kuvasuhde varaa tilan ennen latausta — ei CLS:ää. */}
-      <div className="relative -m-6 mb-4 aspect-[4/3] overflow-hidden rounded-t-2xl bg-surface-strong">
-        <SanityImage
-          image={album.coverImage}
-          width={800}
-          height={600}
-          sizes={sizes}
-          priority={priority}
-          className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
-        />
-      </div>
+      <FramedImage
+        image={album.coverImage}
+        width={800}
+        sizes={sizes}
+        priority={priority}
+        className="-m-6 mb-4 aspect-[4/3] rounded-t-2xl"
+      />
       <CardEyebrow>
         {formatDate(album.date)} · {imageCountLabel(album.imageCount)}
       </CardEyebrow>

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { PortableText } from "@/components/portable-text";
-import { SanityImage } from "@/components/sanity-image";
+import { FramedImage } from "@/components/framed-image";
 import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
 import { SectionNav } from "@/components/layout/section-nav";
@@ -215,13 +215,12 @@ export default async function ArvokisaPage({
             {kuvat.map((kuva, index) => (
               <li key={kuva?._key ?? index}>
                 <figure>
-                  <SanityImage
+                  <FramedImage
                     image={kuva}
                     kuvateksti={kuva?.caption}
                     width={900}
-                    height={600}
                     sizes="(min-width: 640px) 45vw, 100vw"
-                    className="h-auto w-full rounded-2xl object-cover"
+                    className="aspect-[3/2] w-full rounded-2xl"
                   />
                   {kuva?.caption && (
                     <figcaption className="mt-2 text-sm text-muted">
