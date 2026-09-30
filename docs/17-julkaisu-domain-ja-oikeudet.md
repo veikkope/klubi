@@ -154,9 +154,25 @@ riippuvainen web-muutoksesta C2:n jälkeen.
 - **Isä muokkaa productionia.** Tästä eteenpäin `development` → `production` -vientiä
   **`--replace`-tilassa ei saa tehdä**: se pyyhkisi isän muutokset. Uudet migraatiot
   viedään productioniin `--missing`-tilassa tai dokumenttikohtaisesti (CLAUDE.md).
-- **Varmuuskopio:** `npm run backup` ennen jokaista isompaa muutosta ja kerran
-  kuukaudessa. Tiedosto: `varmuuskopiot/production-<pvm>.tar.gz` (gitignoressa).
-  Säilytä kopio myös koneen ulkopuolella.
+- **Varmuuskopiot** (Sanityn Free-tasolla versiohistoria säilyy vain 3 päivää, ja
+  Sanityn oma Backups-palvelu on vain Enterprise-tasolla):
+  - **Automaattinen viikkokopio:** Vercel Cron (`vercel.json`, maanantaisin 01 UTC)
+    kutsuu `/api/varmuuskopio`. Julkaistu sisältö (ei luonnoksia eikä kuvia, koska
+    dataset on julkinen) gzip-tiedostona Sanityyn, Studiossa **Sivun asetukset →
+    Varmuuskopiot**. 12 uusinta säilyy. Maksuton Hobby-tasolla (1 ajastus, ~4
+    funktiokutsua kuussa).
+  - **Kertaluonteinen asetus:** Vercel → Settings → Environment Variables →
+    `CRON_SECRET` (Production), satunnainen arvo esim. `openssl rand -hex 32` →
+    redeploy. Ilman sitä reitti vastaa 501 eikä kopioita synny.
+    `SANITY_API_WRITE_TOKEN` (Editor) on jo asetettu.
+  - **Seuranta:** Vercel → Cron Jobs näyttää ajot; epäonnistunut ajo = HTTP 500 ja
+    syy lokissa. Studiossa uusimman kopion päiväys kertoo saman.
+  - **Palautus:** lataa kopio Studiosta, pura (`gunzip varmuuskopio-<pvm>.ndjson.gz`)
+    ja `npx sanity dataset import varmuuskopio-<pvm>.ndjson --dataset production
+    --missing` (puuttuvat dokumentit) tai poimi yksittäinen dokumentti ja
+    `--replace` vain sille. Varmuuskopio ensin (`npm run backup`).
+  - **Täysi kopio kuvineen:** `npm run backup` ennen jokaista isompaa muutosta.
+    Tiedosto: `varmuuskopiot/production-<pvm>.tar.gz` (gitignoressa, ~1 Gt).
 - **Sisällön jäädytys:** sovi isän kanssa päivä, jonka jälkeen vanhaa sivustoa ja blogia
   ei enää päivitetä. Sen jälkeen: `npm run crawl` ja migraatio vain muuttuneille sivuille
   (esim. Nonni-ravintola 25.9.2026) ja `npm run sync:blogspot`.
@@ -185,3 +201,4 @@ riippuvainen web-muutoksesta C2:n jälkeen.
 | 16 | Arvostelukuvat: tietosuojaselosteen patch (docs/18 §7) | kehittäjä | ✅ 30.9. (varmuuskopio ensin) |
 | 17 | Vercel-osoitteet noindex (`X-Robots-Tag`) | kehittäjä | ✅ 30.9. |
 | 18 | Blogin 29.9. kirjoitus productioniin (`sync:blogspot:production`) | kehittäjä | ✅ 30.9. |
+| 19 | Viikoittainen varmuuskopio: `CRON_SECRET` Verceliin + redeploy, ensimmäisen ajon tarkistus | kehittäjä | koodi ✅ 30.9. · asetus ☐ |

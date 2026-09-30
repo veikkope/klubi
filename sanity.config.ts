@@ -20,8 +20,9 @@ export default defineConfig({
   schema: {
     types: schemaTypes,
     // Estä singletonien duplikointi
+    // Singletoneja ja varmuuskopioita ei luoda käsin (varmuuskopiot tekee ajastus).
     templates: (templates) =>
-      templates.filter(({ schemaType }) => !singletonTypes.has(schemaType)),
+      templates.filter(({ schemaType }) => !singletonTypes.has(schemaType) && schemaType !== "varmuuskopio"),
   },
   document: {
     actions: (input, context) => {
@@ -35,6 +36,8 @@ export default defineConfig({
         actions.splice(publishAt === -1 ? actions.length : publishAt + 1, 0, HylkaaArvostelu);
         return [HyvaksyJaLuoRavintola, ...actions];
       }
+      // Varmuuskopio on vain luettava: ladataan, ei muokata, julkaista eikä poisteta käsin.
+      if (context.schemaType === "varmuuskopio") return [];
       if (singletonTypes.has(context.schemaType)) {
         return input.filter(
           ({ action }) => action !== "duplicate" && action !== "delete",
