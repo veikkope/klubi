@@ -1,5 +1,6 @@
 import { PinIcon } from "@sanity/icons";
 import { defineField, defineType } from "sanity";
+import { polkuMuuttunut } from "../objects/contentMeta";
 
 import { MAAKUNNAT, SUOMI, maakuntaTitle } from "../../../lib/maakunnat";
 
@@ -24,7 +25,10 @@ export const kaupunki = defineType({
       description:
         "Muodostuu nimestä (paina \"Generate\"). Näkyy ravintolahakemiston osoitteessa, esim. ?kaupunki=lahti.",
       options: { source: "name", maxLength: 60 },
-      validation: (rule) => rule.required().error("Muodosta osoitetunniste nimestä."),
+      validation: (rule) => [
+        rule.required().error("Muodosta osoitetunniste nimestä."),
+        polkuMuuttunut(rule),
+      ],
     }),
     defineField({
       name: "country",

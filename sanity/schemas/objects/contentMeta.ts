@@ -1,4 +1,6 @@
-import { defineField } from "sanity";
+import { defineField, type SlugRule } from "sanity";
+
+import { apiVersion } from "../../env";
 
 /**
  * Kentät jotka toistuvat kaikissa sisältötyypeissä.
@@ -85,3 +87,25 @@ export const needsReviewField = (group?: string) =>
     initialValue: false,
     ...(group ? { group } : {}),
   });
+
+/**
+ * Varoitus, kun julkaistun dokumentin polkua (slug) muutetaan: vanhat linkit
+ * (Google, jaetut linkit, vanhan sivuston ohjaukset) lakkaisivat toimimasta.
+ * Varoitus ei estä julkaisua, koska polun korjaus voi olla tarkoituksellinen;
+ * silloin kehittäjä lisää ohjauksen (CLAUDE.md: 301-ohjaukset).
+ */
+export const polkuMuuttunut = (rule: SlugRule) =>
+  rule
+    .custom(async (slug, context) => {
+      const id = context.document?._id;
+      if (!slug?.current || !id) return true;
+      const julkaistu = await context
+        .getClient({ apiVersion })
+        .fetch<string | null>(`*[_id == $id][0].slug.current`, { id: id.replace(/^drafts\./, "") });
+      if (!julkaistu || julkaistu === slug.current) return true;
+      return (
+        `Julkaistu polku on "${julkaistu}". Jos muutat sen, vanhat linkit tähän sivuun lakkaavat ` +
+        "toimimasta. Palauta vanha polku, tai pyydä kehittäjää lisäämään ohjaus ennen julkaisua."
+      );
+    })
+    .warning();

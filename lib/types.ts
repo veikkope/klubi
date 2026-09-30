@@ -34,7 +34,8 @@ export type ContactData = {
   address: string;
   postalCode: string;
   city: string;
-  email: string;
+  /** Tyhjä → osoitetta ei näytetä (ei kovakoodattua oletusta). */
+  email: string | null;
   phone?: string | null;
   yTunnus?: string | null;
   iban?: string | null;
@@ -100,14 +101,6 @@ export type EtusivuBlock =
       _key: string;
       heading?: string;
       count?: number;
-    }
-  | {
-      _type: "cta";
-      _key: string;
-      heading: string;
-      body?: string;
-      ctaLabel: string;
-      ctaHref: string;
     };
 
 export type EtusivuData = {

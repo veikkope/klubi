@@ -222,10 +222,10 @@ Eri osa-alueiden päällekkäiset löydökset on yhdistetty. Tunnukset ovat haka
 
 ### Isän käytettävyys ja Studio
 - ✅ *Korjattu 30.9.2026: taulukkoeditori, ks. docs/19.* **Tilastotaulukoiden muokkaus** avain–arvo-soluina on käytännössä mahdotonta. Esimerkiksi palloveikkauksessa on 31 saraketta, joten yksi rivi vaatii 31 soluobjektia. Ratkaisuksi tehdään ruudukkosyöttö tai "liitä CSV/Excelistä" -toiminto. [cms-5] Työmäärä **suuri**.
-- **"Sivuston asetukset" -singleton ei vaikuta sivustoon.** Se joko kytketään käyttöön tai piilotetaan. [cms-7, suorituskyky-3]
-- **Studio on englanniksi**, mikä on CLAUDE.md:n käytännön 3 vastaista. [cms-13]
-- **Kategorioiden valintalista ei toimi** (`layout: "tags"` ohittaa listan), joten isä kirjoittaa kategoriat vapaasti ja kirjoitusvirheet rikkovat suodattimen. [cms-16]
-- **info@-osoite on kovakoodattu** viiteen kohtaan (`lib/defaults.ts:53`, arvostelu- ja kommenttiactionit, `arvostele/page.tsx`). Osoite luetaan jatkossa yhteystiedot-singletonista, ja jos kenttä on tyhjä, osoitetta ei näytetä. [sisalto-4, cms-9]
+- ✅ *Korjattu 30.9.2026: poistettu Studion valikosta (skeema ja data säilyvät). Logo on tyylioppaan brändikuva (public/brand), kuvaus tulee etusivulta ja jakokuvat generoidaan.* **"Sivuston asetukset" -singleton ei vaikuta sivustoon.** Se joko kytketään käyttöön tai piilotetaan. [cms-7, suorituskyky-3]
+- ✅ *Korjattu 28.9.2026 (`@sanity/locale-fi-fi`).* **Studio on englanniksi**, mikä on CLAUDE.md:n käytännön 3 vastaista. [cms-13]
+- ✅ *Korjattu 30.9.2026: valintaruudut (uutiset ja ravintoloiden ruokatyyppi). Kaikki nykyiset kategoriat olivat listan arvoja.* **Kategorioiden valintalista ei toimi** (`layout: "tags"` ohittaa listan), joten isä kirjoittaa kategoriat vapaasti ja kirjoitusvirheet rikkovat suodattimen. [cms-16]
+- ✅ *Korjattu 30.9.2026: `lib/yhteystiedot.ts` lukee osoitteen Yhteystiedoista, eikä tyhjää korvata oletuksella. Huom.: tuotannossa kenttä on vielä tyhjä (docs/09 "Täytä itse").* **info@-osoite on kovakoodattu** viiteen kohtaan (`lib/defaults.ts:53`, arvostelu- ja kommenttiactionit, `arvostele/page.tsx`). Osoite luetaan jatkossa yhteystiedot-singletonista, ja jos kenttä on tyhjä, osoitetta ei näytetä. [sisalto-4, cms-9]
 
 ### Saavutettavuus (WCAG AA)
 - Lomakekenttien reunojen kontrasti on 1,10–1,19:1 (vaatimus 3:1). [saavutettavuus-1]

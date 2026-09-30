@@ -30,6 +30,7 @@
 import { unstable_cache } from "next/cache";
 
 import { fetchVeikkausliigaText } from "@/lib/fetch-with-intermediate";
+import { HUUHKAJAT, normalizeTeam } from "@/lib/joukkueet";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import { tulevatOttelutQuery } from "@/sanity/lib/queries/ottelut";
 
@@ -68,15 +69,9 @@ const helsinkiDate = new Intl.DateTimeFormat("sv-SE", {
   day: "2-digit",
 });
 
-function normalizeTeam(name: string): string {
-  return name
-    .toLocaleLowerCase("fi-FI")
-    .replace(/[^a-zåäö0-9]/g, "");
-}
-
 /** Miesten A-maajoukkue: joukkueen nimi on tasan "Suomi" (kirjainkoko ohitetaan). */
 function isHuuhkajat(team: string): boolean {
-  return normalizeTeam(team) === "suomi";
+  return normalizeTeam(team) === normalizeTeam(HUUHKAJAT);
 }
 
 function matchKey(o: Pick<Ottelu, "aika" | "koti" | "vieras">): string {
@@ -227,6 +222,23 @@ async function fetchExternal(): Promise<Ottelu[]> {
     console.error("[ottelut] ulkoisen otteluohjelman haku epäonnistui:", error);
     return [];
   }
+}
+
+/**
+ * Automaattisen otteluohjelman joukkueet ja "Suomi" aakkosjärjestyksessä.
+ * Studio ehdottaa näitä ottelun joukkueiksi ja varoittaa lähes samasta
+ * nimestä (app/api/joukkueet, lib/joukkueet.ts).
+ */
+export async function getJoukkueet(): Promise<string[]> {
+  const ottelut = await fetchExternal();
+  const nimet = new Map<string, string>([[normalizeTeam(HUUHKAJAT), HUUHKAJAT]]);
+  for (const o of ottelut) {
+    for (const nimi of [o.koti, o.vieras]) {
+      const avain = normalizeTeam(nimi);
+      if (avain && !nimet.has(avain)) nimet.set(avain, nimi.trim());
+    }
+  }
+  return [...nimet.values()].sort((a, b) => a.localeCompare(b, "fi"));
 }
 
 type Options = {

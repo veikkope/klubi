@@ -158,7 +158,11 @@ export function Lightbox({
           <Image
             key={src}
             src={src}
-            alt={current.alt ?? ""}
+            alt={
+              current.alt?.trim() ||
+              current.caption?.trim() ||
+              `${albumTitle ?? "Albumi"}, kuva ${index + 1}/${images.length}`
+            }
             width={1800}
             height={1200}
             sizes="100vw"

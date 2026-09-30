@@ -1,6 +1,5 @@
 import {
   ArchiveIcon,
-  CogIcon,
   CommentIcon,
   ControlsIcon,
   EnvelopeIcon,
@@ -16,6 +15,10 @@ import type { StructureBuilder, StructureResolver } from "sanity/structure";
  * Sanity Studion vasemman valikon järjestys (docs/09).
  *
  * - Singletonit ovat "Sivun asetukset" -osiossa, eikä niistä voi luoda kopioita.
+ * - "Sivuston asetukset" (asetukset) ei ole valikossa: mikään sen kentistä ei
+ *   vaikuta sivustoon. Logo on tyylioppaan brändikuva (public/brand, sininen ja
+ *   valkoinen versio), kuvaus tulee etusivulta ja jakokuvat generoidaan
+ *   (app/api/og). Skeema säilyy, jotta vanha data pysyy validina (docs/16 §5).
  * - Tyypit on järjestetty käyttötarkoituksen mukaan: ensin se, mitä sihteeri
  *   päivittää usein (uutiset, ottelut, tapahtumat), sitten arkistot.
  * - "Tarkistettavat" kokoaa migraation merkitsemät dokumentit tyypeittäin, joten
@@ -56,10 +59,6 @@ export const structure: StructureResolver = (S) =>
                 .title("Yhteystiedot")
                 .icon(EnvelopeIcon)
                 .child(S.document().schemaType("yhteystiedot").documentId("yhteystiedot")),
-              S.listItem()
-                .title("Sivuston asetukset")
-                .icon(CogIcon)
-                .child(S.document().schemaType("asetukset").documentId("asetukset")),
             ]),
         ),
 

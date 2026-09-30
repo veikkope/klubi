@@ -5,6 +5,7 @@ import {
   needsReviewField,
   tarkistettavaaField,
   tiivistelmaField,
+  polkuMuuttunut,
 } from "../objects/contentMeta";
 
 export const galleriaAlbumi = defineType({
@@ -24,7 +25,7 @@ export const galleriaAlbumi = defineType({
       title: "Polku (slug)",
       type: "slug",
       options: { source: "title", maxLength: 80 },
-      validation: (rule) => rule.required(),
+      validation: (rule) => [rule.required(), polkuMuuttunut(rule)],
     }),
     tiivistelmaField(),
     defineField({
@@ -48,8 +49,11 @@ export const galleriaAlbumi = defineType({
     defineField({
       name: "images",
       title: "Kuvat",
+      description:
+        "Raahaa kuvat tähän useita kerralla. Järjestä raahaamalla. Kuvaukset voi lisätä myöhemmin.",
       type: "array",
-      of: [{ type: "imageWithAlt" }],
+      of: [{ type: "galleriaKuva" }],
+      options: { layout: "grid" },
       validation: (rule) => rule.required().min(1).error("Vähintään yksi kuva tarvitaan."),
     }),
     needsReviewField(),

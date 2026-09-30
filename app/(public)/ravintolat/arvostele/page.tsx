@@ -7,6 +7,7 @@ import { JsonLd } from "@/components/seo/json-ld";
 import { buildMetadata } from "@/lib/seo";
 import { rootCrumb } from "@/lib/nav-sections";
 import { breadcrumbSchema, webPageSchema } from "@/lib/schema-org";
+import { getYhteysSahkoposti } from "@/lib/yhteystiedot";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import {
   ravintolaOptionsQuery,
@@ -47,11 +48,14 @@ export default async function ArvostelePage({
   const sp = await searchParams;
   const wanted = Array.isArray(sp.ravintola) ? sp.ravintola[0] : sp.ravintola;
 
-  const restaurants = await sanityFetch<RavintolaOption[]>({
-    query: ravintolaOptionsQuery,
-    tags: ["ravintola"],
-    fallback: [],
-  });
+  const [restaurants, email] = await Promise.all([
+    sanityFetch<RavintolaOption[]>({
+      query: ravintolaOptionsQuery,
+      tags: ["ravintola"],
+      fallback: [],
+    }),
+    getYhteysSahkoposti(),
+  ]);
 
   const preselected = wanted
     ? restaurants.find((r) => r.slug === wanted)?._id
@@ -77,7 +81,7 @@ export default async function ArvostelePage({
 
         <div className="mt-10">
           {restaurants.length === 0 ? (
-            <UnavailableNotice />
+            <UnavailableNotice email={email} />
           ) : (
             <ReviewForm
               restaurants={restaurants}
@@ -95,7 +99,7 @@ export default async function ArvostelePage({
  * sidottava olemassa olevaan ravintolaan. Kerrotaan se suoraan sen sijaan että
  * näytettäisiin lomake, joka ei voi onnistua.
  */
-function UnavailableNotice() {
+function UnavailableNotice({ email }: { email: string | null }) {
   return (
     <div className="rounded-2xl border border-dashed border-border bg-surface p-8">
       <h2 className="font-display text-2xl text-foreground">
@@ -103,15 +107,18 @@ function UnavailableNotice() {
       </h2>
       <p className="mt-3 leading-relaxed text-muted">
         Ravintolahakemisto on tyhjä, joten arvostelua ei voi kohdistaa mihinkään
-        ravintolaan. Kokeile hetken kuluttua uudelleen tai lähetä arviosi
-        sähköpostitse osoitteeseen{" "}
-        <a
-          href="mailto:info@lahdensuomalainenklubi.com"
-          className="text-accent underline underline-offset-4"
-        >
-          info@lahdensuomalainenklubi.com
-        </a>
-        .
+        ravintolaan. Kokeile hetken kuluttua uudelleen
+        {email ? (
+          <>
+            {" "}tai lähetä arviosi sähköpostitse osoitteeseen{" "}
+            <a href={`mailto:${email}`} className="text-accent underline underline-offset-4">
+              {email}
+            </a>
+            .
+          </>
+        ) : (
+          "."
+        )}
       </p>
       <Link
         href="/ravintolat"

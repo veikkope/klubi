@@ -7,6 +7,7 @@ import {
   needsReviewField,
   tarkistettavaaField,
   tiivistelmaField,
+  polkuMuuttunut,
 } from "../objects/contentMeta";
 
 /**
@@ -41,7 +42,7 @@ export const klubiToiminta = defineType({
       title: "Polku (slug)",
       type: "slug",
       options: { source: "title", maxLength: 80 },
-      validation: (rule) => rule.required(),
+      validation: (rule) => [rule.required(), polkuMuuttunut(rule)],
       group: "perustiedot",
     }),
     tiivistelmaField("perustiedot"),

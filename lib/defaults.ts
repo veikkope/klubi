@@ -49,7 +49,8 @@ export const defaultContact: ContactData = {
   address: "",
   postalCode: "",
   city: "Lahti",
-  email: "info@lahdensuomalainenklubi.com",
+  // Ei kovakoodattua osoitetta: sähköposti tulee vain Studiosta (docs/16 §5).
+  email: null,
   phone: null,
   yTunnus: null,
   iban: null,

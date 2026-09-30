@@ -3,6 +3,7 @@
 import { updateTag } from "next/cache";
 import { createClient } from "next-sanity";
 
+import { ilmoitaOsoitteeseen } from "@/lib/yhteystiedot";
 import { apiVersion, dataset, hasSanity, projectId } from "@/sanity/env";
 import {
   INITIAL_KOMMENTTI_STATE,
@@ -23,7 +24,6 @@ import { jarjestysLomakkeelta, siisti, validoi } from "./validointi";
  * Validointi tehdään kokonaan palvelimella: lomakkeen voi lähettää ilman selainta.
  */
 
-const SUPPORT_EMAIL = "info@lahdensuomalainenklubi.com";
 /** Sanity-dokumentti-id ilman `drafts.`-etuliitettä. */
 const DOCUMENT_ID = /^(?!drafts\.)[A-Za-z0-9_-][A-Za-z0-9._-]{0,127}$/;
 /** Sama nimi samaan uutiseen korkeintaan kerran tässä ajassa. */
@@ -67,7 +67,7 @@ export async function lahetaKommentti(
   if (!hasSanity || !projectId || !writeToken) {
     return fail(
       "Kommentteja ei voi juuri nyt tallentaa, koska palvelimen asetukset ovat kesken. " +
-        `Viestiäsi ei tallennettu. Ilmoitathan asiasta osoitteeseen ${SUPPORT_EMAIL}.`,
+        `Viestiäsi ei tallennettu. ${await ilmoitaOsoitteeseen()}`,
     );
   }
 

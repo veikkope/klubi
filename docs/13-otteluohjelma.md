@@ -16,6 +16,12 @@ Ulkoinen data välimuistitetaan tunniksi. Jos haku epäonnistuu, lista näytetä
 
 Studion ottelu yhdistyy automaattisesti haettuun, kun Helsingin aikaan päivä on sama ja joukkueiden nimet täsmäävät. Vertailussa kirjainkoko, välilyönnit ja välimerkit ohitetaan. Kirjoita siksi joukkueet Studioon kuten Veikkausliigan sivuilla (esim. "FC Lahti", "IF Gnistan"). Studion täytetyt kentät (kilpailu, stadion) voittavat, mutta kellonaika tulee aina syötteestä.
 
+Kirjoitusvirheiden esto (`lib/joukkueet.ts`, `sanity/components/joukkue/`):
+
+- `GET /api/joukkueet` palauttaa automaattisen ohjelman joukkueet ja "Suomi" (välimuisti tunti, julkista tietoa).
+- Studion Koti- ja Vieras-kentissä on ehdotuslista (datalist): automaattisen ohjelman joukkueet ja Studion otteluissa aiemmin käytetyt nimet.
+- Varoitus (ei estä julkaisua), kun nimi on lähes muttei täysin sama kuin tunnettu joukkue: Damerau–Levenshtein-etäisyys enintään 1 (≤ 5 merkin nimet) tai 2. Alle 4-merkkisiä lyhenteitä ei verrata, koska HJK/SJK ja TPS/VPS eroavat yhdellä merkillä. Testit: `npm run test:joukkueet`.
+
 Esimerkki: klubi lähtee vierasmatkalle Seinäjoelle. Lisää Studioon ottelu "SJK – FC Lahti" oikealle päivälle ja valitse "Vierasmatka". Merkintä ilmestyy automaattisesti haetun ottelun viereen.
 
 ## Huuhkajien ottelut
