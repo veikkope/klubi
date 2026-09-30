@@ -181,6 +181,10 @@ const cardProjection = /* groq */ `
  *                 maakunnan rajan). Maakunta huomioidaan vain Suomessa.
  *  $minRating     vähimmäisarvosana (0–5) tai null
  *  $includeClosed true = myös toimintansa lopettaneet
+ *  $terms         hakukentän kuviot (`lib/haku.ts` → `hakusanat`) tai null.
+ *                 Kaikkien sanojen pitää osua nimeen, kaupunkiin tai maahan.
+ *                 Haku löytää myös lopettaneet: nimellä etsitty paikka
+ *                 näytetään, vaikka se olisi suljettu (kortti kertoo sen).
  */
 const directoryFilter = /* groq */ `
   _type == "ravintola" && defined(slug.current)
@@ -189,7 +193,8 @@ const directoryFilter = /* groq */ `
   && ($maakuntaSlugs == null
       || (city->country == "Suomi" && city->maakunta in $maakuntaSlugs))
   && ($minRating == null || coalesce(ratingOverall, stars, 0) >= $minRating)
-  && ($includeClosed == true || closed != true)
+  && ($terms == null || [name, city->name, city->country] match $terms)
+  && ($includeClosed == true || $terms != null || closed != true)
 `;
 
 // ── Kyselyt ───────────────────────────────────────────────────────────────────
@@ -197,12 +202,21 @@ const directoryFilter = /* groq */ `
 /** Montako ravintolaa yhdellä hakemistosivulla. */
 export const RAVINTOLAT_PAGE_SIZE = 24;
 
+const OVERALL = "coalesce(ratingOverall, stars, 0) desc, name asc";
+
+/** Osa-arvosanan puuttuminen lajitellaan loppuun (`null` olisi GROQ:ssa ensin). */
 const ORDERINGS = {
-  arvosana: "coalesce(ratingOverall, stars, 0) desc, name asc",
+  arvosana: OVERALL,
   nimi: "name asc",
+  ruoka: `coalesce(ratingFood, -1) desc, ${OVERALL}`,
+  hinta: `coalesce(ratingPrice, -1) desc, ${OVERALL}`,
+  viihtyvyys: `coalesce(ratingAtmosphere, -1) desc, ${OVERALL}`,
 } as const;
 
 export type RavintolatOrdering = keyof typeof ORDERINGS;
+
+/** Top-listan pituus (`?lista=`): listaa ei sivuteta. */
+export const RAVINTOLAT_TOP_SIZE = 10;
 
 /**
  * Hakemiston sivullinen ravintoloita.
@@ -212,18 +226,31 @@ export type RavintolatOrdering = keyof typeof ORDERINGS;
  *    ei kelpaa, joten sivunumero on leivottava kyselyyn
  *  - `order()` ei ota kenttänimeä muuttujasta, joten lajittelu valitaan tässä
  *
- * Injektiopintaa ei synny: molemmat interpoloitavat arvot ovat koodin omia —
- * `ORDERINGS`-taulukon vakio ja tästä funktiosta laskettu kokonaisluku.
+ * Injektiopintaa ei synny: interpoloitavat arvot ovat koodin omia —
+ * `ORDERINGS`-taulukon vakio ja tästä funktiosta lasketut kokonaisluvut.
+ *
+ * Haussa (`search`) nimeen osuvat nostetaan ensin: "lahti" näyttää ensin
+ * nimessään Lahden sisältävät ja sitten muut Lahden ravintolat.
  */
-export function ravintolatDirectoryQuery(
-  ordering: RavintolatOrdering,
-  page: number,
-): string {
+export function ravintolatDirectoryQuery({
+  ordering,
+  page,
+  pageSize = RAVINTOLAT_PAGE_SIZE,
+  search = false,
+}: {
+  ordering: RavintolatOrdering;
+  page: number;
+  pageSize?: number;
+  search?: boolean;
+}): string {
   const safePage = Number.isInteger(page) && page > 0 ? page : 1;
-  const offset = (safePage - 1) * RAVINTOLAT_PAGE_SIZE;
-  const end = offset + RAVINTOLAT_PAGE_SIZE;
+  const offset = (safePage - 1) * pageSize;
+  const end = offset + pageSize;
+  const order = search
+    ? `score(boost(name match $terms, 3)) | order(_score desc, ${ORDERINGS[ordering]})`
+    : `order(${ORDERINGS[ordering]})`;
   return `*[${directoryFilter}]
-    | order(${ORDERINGS[ordering]})
+    | ${order}
     [${offset}...${end}]{${cardProjection}}`;
 }
 

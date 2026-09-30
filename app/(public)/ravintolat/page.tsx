@@ -10,15 +10,18 @@ import {
   buildRavintolaHref,
   hasActiveRavintolaFilters,
   parseRavintolaFilters,
+  ravintolaLista,
   type RavintolaFilterValues,
   type RavintolaSearchParams,
 } from "@/components/ravintola-filters";
+import { hakusanat } from "@/lib/haku";
 import { buildMetadata } from "@/lib/seo";
 import { rootCrumb } from "@/lib/nav-sections";
 import { breadcrumbSchema, collectionPageSchema } from "@/lib/schema-org";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import {
   RAVINTOLAT_PAGE_SIZE,
+  RAVINTOLAT_TOP_SIZE,
   buildRavintolatFacets,
   countryNamesForSlug,
   ravintolatCountQuery,
@@ -47,8 +50,8 @@ function buildLead(facets: RavintolatFacetData): string {
   return (
     `Lahden Suomalainen Klubi ry on arvioinut ${count} ravintolaa${since}. ` +
     "Jokainen kohde saa kokonaisarvosanan sekä osa-arviot ruoasta, hinnasta " +
-    "ja viihtyvyydestä. Rajaa hakemistoa maan, maakunnan, kaupungin " +
-    "tai arvosanan mukaan."
+    "ja viihtyvyydestä. Hae nimellä tai kaupungilla, tai katso parhaat " +
+    "suoraan top-listoista."
   );
 }
 
@@ -73,6 +76,7 @@ function queryParams(filters: RavintolaFilterValues, facets: RavintolatFacetData
     maakuntaSlugs: filters.maakunta.length ? filters.maakunta : null,
     minRating: filters.arvosana,
     includeClosed: filters.lopettaneet,
+    terms: filters.q ? hakusanat(filters.q) : null,
   };
 }
 
@@ -107,10 +111,15 @@ export default async function RavintolatPage({ searchParams }: PageProps) {
     }),
   );
   const params = queryParams(filters, facets);
+  const lista = ravintolaLista(filters.lista);
 
   const [items, total] = await Promise.all([
     sanityFetch<RavintolaCardData[]>({
-      query: ravintolatDirectoryQuery(filters.jarjesta, filters.sivu),
+      query: ravintolatDirectoryQuery(
+        lista
+          ? { ordering: lista.ordering, page: 1, pageSize: RAVINTOLAT_TOP_SIZE }
+          : { ordering: filters.jarjesta, page: filters.sivu, search: params.terms !== null },
+      ),
       params,
       tags: ["ravintola", "kaupunki"],
       fallback: [],
@@ -123,7 +132,8 @@ export default async function RavintolatPage({ searchParams }: PageProps) {
     }),
   ]);
 
-  const pageCount = Math.max(1, Math.ceil(total / RAVINTOLAT_PAGE_SIZE));
+  // Top-listaa ei sivuteta.
+  const pageCount = lista ? 1 : Math.max(1, Math.ceil(total / RAVINTOLAT_PAGE_SIZE));
   const isFiltered = hasActiveRavintolaFilters(filters);
   const lead = buildLead(facets);
 
@@ -168,7 +178,18 @@ export default async function RavintolatPage({ searchParams }: PageProps) {
 
         <section aria-label="Hakutulokset" className="mt-10">
           {items.length === 0 ? (
-            <EmptyState isFiltered={isFiltered} hasAnyContent={facets.total > 0} />
+            <EmptyState isFiltered={isFiltered} isSearch={Boolean(filters.q)} hasAnyContent={facets.total > 0} />
+          ) : lista ? (
+            <ol className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {items.map((restaurant, index) => (
+                <li key={restaurant._id} className="flex flex-col gap-2">
+                  <span aria-hidden className="font-display text-3xl leading-none text-accent">
+                    {index + 1}.
+                  </span>
+                  <RestaurantCard restaurant={restaurant} />
+                </li>
+              ))}
+            </ol>
           ) : (
             <>
               <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -189,22 +210,30 @@ export default async function RavintolatPage({ searchParams }: PageProps) {
 
 function EmptyState({
   isFiltered,
+  isSearch,
   hasAnyContent,
 }: {
   isFiltered: boolean;
+  isSearch: boolean;
   hasAnyContent: boolean;
 }) {
   return (
     <div className="rounded-2xl border border-dashed border-border bg-surface p-10 text-center">
       <h3 className="font-display text-2xl text-foreground">
-        {isFiltered ? "Ei osumia näillä rajauksilla" : "Hakemisto on vielä tyhjä"}
+        {isSearch
+          ? "Haulla ei löytynyt ravintoloita"
+          : isFiltered
+            ? "Ei osumia näillä rajauksilla"
+            : "Hakemisto on vielä tyhjä"}
       </h3>
       <p className="mx-auto mt-3 max-w-md text-muted">
-        {isFiltered
-          ? "Kokeile väljempiä rajauksia — esimerkiksi matalampaa vähimmäisarvosanaa tai laajempaa aluetta (maa, maakunta tai kaupunki)."
-          : hasAnyContent
-            ? "Arvostelut ovat juuri nyt piilossa. Tarkista rajaukset tai palaa hetken kuluttua."
-            : "Ravintola-arvostelut lisätään Sanity Studiossa. Kun ensimmäinen arvostelu on tallennettu, se ilmestyy tähän."}
+        {isSearch
+          ? "Tarkista kirjoitusasu tai kokeile pelkkää nimen alkua tai kaupunkia."
+          : isFiltered
+            ? "Kokeile väljempiä rajauksia — esimerkiksi matalampaa vähimmäisarvosanaa tai laajempaa aluetta (maa, maakunta tai kaupunki)."
+            : hasAnyContent
+              ? "Arvostelut ovat juuri nyt piilossa. Tarkista rajaukset tai palaa hetken kuluttua."
+              : "Ravintola-arvostelut lisätään Sanity Studiossa. Kun ensimmäinen arvostelu on tallennettu, se ilmestyy tähän."}
       </p>
       {isFiltered && (
         <Link
