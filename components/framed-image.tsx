@@ -11,7 +11,10 @@ type Props = {
   sizes?: string;
   /** Kehyksen luokat: mittasuhde (esim. `aspect-[4/3]`), pyöristys, leveys. */
   className?: string;
+  /** Sivun pääkuva (LCP): ladataan heti korkealla prioriteetilla (ks. SanityImage). */
   priority?: boolean;
+  /** Näkyvissä heti, mutta ei pääkuva: ladataan heti (ei lazy). */
+  eager?: boolean;
   /** Näkyvä kuvateksti: alt jätetään tyhjäksi, jos se on sama (ks. SanityImage). */
   kuvateksti?: string | null;
 };
@@ -39,7 +42,7 @@ export const korttiZoom =
  * täytetään saman kuvan sumennetulla, hieman tummennetulla versiolla.
  * Kehykset pysyvät yhtä suurina, joten ruudukko ei rikkoudu.
  */
-export function FramedImage({ image, alt, width = 1200, sizes, className, priority, kuvateksti }: Props) {
+export function FramedImage({ image, alt, width = 1200, sizes, className, priority, eager, kuvateksti }: Props) {
   // Tausta on kuvan sumea esikatselu (lqip, HTML:ssä valmiina), joten kehys
   // täyttyy heti eikä odota verkkopyyntöä. Se toimii samalla latauksen
   // paikanpitäjänä: terävä kuva piirtyy sen päälle. 20 px:n esikatselu
@@ -70,6 +73,7 @@ export function FramedImage({ image, alt, width = 1200, sizes, className, priori
         // Kortissa (group/kortti) kuva lähenee hoverissa hieman; muualla ei.
         className={cn("absolute inset-0 h-full w-full object-contain", korttiZoom)}
         priority={priority}
+        eager={eager}
         esikatselu={false}
       />
     </div>

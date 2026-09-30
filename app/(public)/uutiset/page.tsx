@@ -233,7 +233,7 @@ export default async function UutisetPage({
                 <ul className="mt-8 grid list-none grid-cols-1 gap-6 p-0 sm:grid-cols-2 lg:grid-cols-3">
                   {result.items.map((news, index) => (
                     <li key={news._id} className="flex">
-                      <NewsCard news={news} priority={page === 1 && index < 3} />
+                      <NewsCard news={news} eager={page === 1 && index < 3} />
                     </li>
                   ))}
                 </ul>

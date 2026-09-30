@@ -71,7 +71,7 @@ export function AlbumGrid({ images, albumTitle }: Props) {
                   width={400}
                   height={400}
                   sizes="(min-width: 1024px) 264px, (min-width: 640px) 33vw, 50vw"
-                  priority={index < EAGER_COUNT}
+                  loading={index < EAGER_COUNT ? "eager" : undefined}
                   className="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-105"
                 />
               </button>

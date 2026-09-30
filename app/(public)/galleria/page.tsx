@@ -67,7 +67,7 @@ export default async function GalleriaPage() {
           <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {albums.map((album, index) => (
               <li key={album._id} className="grid">
-                <AlbumTile album={album} priority={index < EAGER_COUNT} />
+                <AlbumTile album={album} eager={index < EAGER_COUNT} />
               </li>
             ))}
           </ul>

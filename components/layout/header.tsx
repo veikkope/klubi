@@ -42,7 +42,7 @@ export async function Header() {
             alt=""
             width={45}
             height={50}
-            priority
+            loading="eager"
             className="h-[38px] w-auto sm:h-[50px]"
           />
           <Image
@@ -50,7 +50,7 @@ export async function Header() {
             alt="Lahden Suomalainen Klubi ry — etusivu"
             width={159}
             height={25}
-            priority
+            loading="eager"
             className="h-[17px] w-auto sm:h-[25px]"
           />
         </Link>

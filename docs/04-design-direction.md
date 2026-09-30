@@ -129,6 +129,23 @@ Kuvat on generoitu tiedostosta `mark-blue.png` sharp-kirjastolla.
 | `HakuNakyma`, `HakuTulokset` | Ravintola- ja uutishaku päivittyvät ilman sivun uudelleenlatausta. Suodattimet ovat edelleen GET-lomakkeita ja linkkejä, jotka toimivat ilman JavaScriptiä. `HakuNakyma` ottaa haltuun vain samalle listaussivulle vievät linkit ja lomakkeet ja navigoi Reactin transitiona, jolloin nykyiset tulokset pysyvät näkyvissä. Päivityksen ajan tulokset himmenevät ja yläreunaan tulee ohut palkki (vasta 150 ms:n jälkeen, ettei nopea haku välähdä), ja tuloksilla on `aria-busy`. Vierityskohta säilyy, paitsi sivutuslinkeissä (`data-sivutus`), jotka vierittävät tulosten alkuun. Lomakkeiden kentät palautetaan vastaamaan URL:ia (esim. sirun poisto ja takaisin-painike). | `components/hakunakyma.tsx` |
 | `CtaBlock` | **Ei käytössä** (tyyliopas: ei liittymiskehotteita). Säilyy vanhan datan vuoksi. | `components/blocks/cta-block.tsx` |
 
+## Suorituskyky
+
+Mitattu 10/2026 tuotantobuildista (Slow 4G, CPU 4×, mobiili). Googlen hyvän rajat: LCP < 2,5 s, CLS < 0,1.
+
+| Sivu | LCP (DPR 1,75) | LCP (DPR 3) | CLS |
+|---|---|---|---|
+| Etusivu | 1,4 s | 1,8 s | 0 |
+| Uutislista, ravintolalista, ottelut, arkisto | 0,8–1,1 s | 0,8–1,1 s | 0–0,001 |
+| Uutinen (kansikuva) | 1,7 s | 2,7 s | 0 |
+| Ravintola-arvio | 1,0 s | 0,9 s | 0 (satunnaisesti 0,037) |
+| Stadionit | 2,1 s | 2,1 s | 0 |
+
+- **Fontit:** esiladataan vain `latin`-alijoukko (76 kt). `latin-ext` on mukana `@font-face`-sääntönä ja latautuu vain tarvittaessa. Kaikkien alijoukkojen esilataus (136 kt) vei kaistaa pääkuvalta.
+- **Tunnettu:** ravintola-arvion otsikko voi ensikäynnillä rivittyä uudelleen, kun serif-fontti saapuu varafontin jälkeen (CLS 0,037, hyvän rajan sisällä). Täysi korjaus vaatisi käsin rajatun oman fonttitiedoston, eikä se ole ylläpidon arvoinen.
+- **Tunnettu:** Sanityn kuva-CDN luo uuden kuvakoon ensimmäisellä pyynnöllä (1–3 s). Tämä koskee vain ensimmäistä käyttäjää kutakin kokoa kohden.
+- **Uutisen kansikuva DPR 3 -puhelimella** (2,7 s) on kaistan rajoittama: 1200 px:n kuva (111 kt) kilpailee JS:n ja fonttien kanssa. Seuraava parannus olisi `sizes`-arvo, joka huomioi kehykseen sovitetun (`object-contain`) kuvan todellisen leveyden.
+
 ## Tulostus
 
 Tulosteeseen tulee vain sisältö (`@media print`, globals.css):
@@ -157,6 +174,7 @@ Tulosteeseen tulee vain sisältö (`@media print`, globals.css):
   - `images[]{${ruutukuva}}`: isot kuvaruudukot. Näissä haetaan esikatselun sijaan vain hallitseva väri (`vari`), koska satojen esikatselujen kasvattama HTML ei ole sen arvoinen.
 
   `SanityImage` käyttää esikatselua automaattisesti (`placeholder="blur"`). `FramedImage` käyttää sitä kehyksen sumeana taustana, jolloin erillistä sumennettua kuvaa ei tarvitse hakea CDN:stä. **Kun lisäät uuden kuvakentän kyselyyn, käytä fragmenttia.** Ilman sitä kuva toimii, mutta ilman paikanpitäjää.
+- **Latausprioriteetti:** `priority` (SanityImage, FramedImage) = sivun pääkuva eli LCP (hero, kansikuva, arvion iso kuva): `loading="eager"` + `fetchPriority="high"`. Käytä vain yhdelle kuvalle sivulla. `eager` = näkyvissä heti mutta ei pääkuva (listan ensimmäinen rivi, logo): vain `loading="eager"`. Next 16:ssa vanhentunut `next/image`-`priority` ei nosta prioriteettia, joten LCP-kuva latautui Low-prioriteetilla (ks. Suorituskyky).
 - **Stega:** luonnosnäkymän stega-merkit puhdistetaan keskitetysti (`buildMetadata`, `JsonLd`, navigaation hrefit, kategoria- ja ruokatyyppihaut). Uusissa komponenteissa puhdista `stegaClean`illa Sanity-merkkijonot, joita verrataan, käytetään avaimina, id:inä tai URL:eissa — älä pelkkää näytettävää tekstiä.
 
 ## Animaatiot

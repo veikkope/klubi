@@ -232,7 +232,8 @@ export function Lightbox({
             width={kuva.width}
             height={kuva.height}
             sizes="100vw"
-            priority
+            loading="eager"
+            fetchPriority="high"
             draggable={false}
             // Hallitseva väri näkyy kuvan paikalla, kunnes kuva on ladattu.
             style={{

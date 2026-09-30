@@ -9,7 +9,13 @@ type Props = {
   height?: number;
   sizes?: string;
   className?: string;
+  /**
+   * Sivun pääkuva (LCP, esim. hero tai kansikuva): ladataan heti ja korkealla
+   * prioriteetilla (`fetchPriority="high"`). Käytä vain yhdelle kuvalle sivulla.
+   */
   priority?: boolean;
+  /** Näkyvissä heti sivun avautuessa, mutta ei pääkuva: ladataan heti (ei lazy). */
+  eager?: boolean;
   /**
    * `true` (oletus) = CDN rajaa kuvan `width`×`height`-mittasuhteeseen
    * toimittajan polttopisteen (hotspot) ja rajauksen mukaan.
@@ -31,6 +37,18 @@ type Props = {
    */
   esikatselu?: boolean;
 };
+
+/**
+ * Latausasetukset. Next 16:ssa vanhentunut `priority` lisää kuvalle vain
+ * esilatauslinkin, jonka selain hakee Low-prioriteetilla fonttien ja skriptien
+ * jälkeen: uutissivun kansikuva valmistui mobiilissa vasta 2,9 s:ssa (mitattu
+ * 10/2026). Pääkuvalle `fetchPriority="high"`, muille näkyville `eager`.
+ */
+function latausProps(priority?: boolean, eager?: boolean) {
+  if (priority) return { loading: "eager", fetchPriority: "high" } as const;
+  if (eager) return { loading: "eager" } as const;
+  return {};
+}
 
 /**
  * next/image-propsit sumealle esikatselulle. Next piirtää data-URL:n SVG-sumennuksen
@@ -104,6 +122,7 @@ export function SanityImage({
   sizes,
   className,
   priority,
+  eager,
   crop = true,
   kuvateksti,
   esikatselu = true,
@@ -128,7 +147,7 @@ export function SanityImage({
           sizes={sizes}
           className={className}
           style={hotspot ? { objectPosition: `${hotspot.x * 100}% ${hotspot.y * 100}%` } : undefined}
-          priority={priority}
+          {...latausProps(priority, eager)}
           {...esikatseluProps(image, esikatselu)}
         />
       );
@@ -150,7 +169,7 @@ export function SanityImage({
       sizes={sizes}
       className={className}
       style={objectPosition ? { objectPosition } : undefined}
-      priority={priority}
+      {...latausProps(priority, eager)}
       {...esikatseluProps(image, esikatselu)}
     />
   );

@@ -19,16 +19,22 @@ import "./globals.css";
 // Tyyliopas (docs/04): Source Serif 4 otsikoihin, Public Sans leipätekstiin ja
 // käyttöliittymään. next/font lataa fontit buildissa ja tarjoilee ne omalta
 // palvelimelta, joten ajonaikaista Google Fonts -kutsua ei ole.
+//
+// subsets = esiladattavat alijoukot. Vain latin (suomen ä, ö ja å kuuluvat
+// siihen): latin-ext-tiedostot (esim. Š, Ć pelaajien nimissä) ovat silti
+// mukana @font-face-sääntöinä, ja selain hakee ne vain, jos sivulla on niiden
+// merkkejä. Kaikkien alijoukkojen esilataus vei hitaalla mobiiliyhteydellä
+// kaistaa sivun pääkuvalta (135 kt fontteja ennen kuvaa, mitattu 10/2026).
 const sans = Public_Sans({
   variable: "--font-sans",
-  subsets: ["latin", "latin-ext"],
+  subsets: ["latin"],
   weight: ["400", "500", "600"],
   display: "swap",
 });
 
 const serif = Source_Serif_4({
   variable: "--font-serif",
-  subsets: ["latin", "latin-ext"],
+  subsets: ["latin"],
   weight: ["400", "600"],
   display: "swap",
 });

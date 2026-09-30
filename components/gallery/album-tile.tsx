@@ -12,8 +12,8 @@ import type { GalleriaAlbumCard } from "@/sanity/lib/queries/galleria";
 type Props = {
   album: GalleriaAlbumCard;
   sizes?: string;
-  /** Vain jos kortti on sivun LCP-alueella. */
-  priority?: boolean;
+  /** Ensimmäinen rivi on näkyvissä heti: kuva ladataan ilman lazy-viivettä. */
+  eager?: boolean;
 };
 
 /** Yksikkömuoto on suomeksi eri kuin monikko — ei "1 kuvaa". */
@@ -24,7 +24,7 @@ export function imageCountLabel(count: number): string {
 export function AlbumTile({
   album,
   sizes = "(min-width: 1024px) 384px, (min-width: 640px) 50vw, 100vw",
-  priority = false,
+  eager = false,
 }: Props) {
   return (
     <Card href={`/galleria/${album.slug}`}>
@@ -33,7 +33,7 @@ export function AlbumTile({
         image={album.coverImage}
         width={800}
         sizes={sizes}
-        priority={priority}
+        eager={eager}
         className="-m-6 mb-4 aspect-[4/3] rounded-t-2xl"
       />
       <CardEyebrow>

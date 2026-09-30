@@ -16,11 +16,11 @@ type Props = {
   news: UutinenCard;
   /** Korkeampi profiili — käytetään etusivulla. */
   feature?: boolean;
-  /** Ensimmäisen rivin kortit voivat olla LCP-elementti. */
-  priority?: boolean;
+  /** Ensimmäisen rivin kortit ovat näkyvissä heti: kuva ladataan ilman lazy-viivettä. */
+  eager?: boolean;
 };
 
-export function NewsCard({ news, feature = false, priority = false }: Props) {
+export function NewsCard({ news, feature = false, eager = false }: Props) {
   return (
     <Card href={`/uutiset/${news.slug}`} className="w-full">
       {news.coverImage?.asset && (
@@ -31,7 +31,7 @@ export function NewsCard({ news, feature = false, priority = false }: Props) {
               width={760}
               sizes="(min-width: 1024px) 380px, (min-width: 640px) 45vw, 100vw"
               className={feature ? "h-52 w-full" : "h-44 w-full"}
-              priority={priority}
+              eager={eager}
             />
           </KuvaSiirtyma>
         </div>
