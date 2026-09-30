@@ -1,4 +1,5 @@
 import { cn } from "@/lib/cn";
+import { formatInterval, formatIso, NUMEERISET, parseIso } from "@/lib/taulukko";
 
 /**
  * Jalkapalloarkiston tilastotaulukko.
@@ -32,7 +33,7 @@ interface StatTableProps {
   emptyLabel?: string;
 }
 
-const numericTypes = new Set(["number", "year"]);
+const numericTypes = NUMEERISET;
 
 function cellValue(row: StatRow, key: string): string {
   // Tyhjä solu on tuonnissa jätetty kokonaan pois (ei tyhjiä merkkijonoja),
@@ -40,38 +41,9 @@ function cellValue(row: StatRow, key: string): string {
   return (row.cells ?? []).find((cell) => cell.key === key)?.value?.trim() ?? "";
 }
 
-const isoDay = /^(\d{4})-(\d{2})-(\d{2})$/;
-const isoMonth = /^(\d{4})-(\d{2})$/;
 const integer = /^-?\d+$/;
 
 const numberFormat = new Intl.NumberFormat("fi-FI", { maximumFractionDigits: 0 });
-
-type IsoParts = { y: string; m: string; d?: string };
-
-function parseIso(value: string): IsoParts | null {
-  const day = isoDay.exec(value);
-  if (day) return { y: day[1], m: day[2], d: day[3] };
-  const month = isoMonth.exec(value);
-  if (month) return { y: month[1], m: month[2] };
-  return null;
-}
-
-function formatIso({ y, m, d }: IsoParts): string {
-  return d ? `${d}.${m}.${y}` : `${m}/${y}`;
-}
-
-/**
- * ISO 8601 -väli (2009-01-30/2009-02-01) suomalaisittain: vuosi (ja kuukausi)
- * kirjoitetaan vain kerran, jos ne ovat samat — "30.01.–01.02.2009".
- * Palauttaa alun ja lopun erikseen, jotta kumpikin saa oman `<time>`-elementin.
- */
-function formatInterval(start: IsoParts, end: IsoParts): [string, string] {
-  if (start.d && end.d) {
-    if (start.y === end.y && start.m === end.m) return [`${start.d}.`, `${end.d}.${end.m}.${end.y}`];
-    if (start.y === end.y) return [`${start.d}.${start.m}.`, `${end.d}.${end.m}.${end.y}`];
-  }
-  return [formatIso(start), formatIso(end)];
-}
 
 /**
  * Solun näyttömuoto:

@@ -1,6 +1,8 @@
 import { BarChartIcon } from "@sanity/icons";
 import { defineField, defineType } from "sanity";
 import { HUUHKAJAT_OSIOT } from "../../../lib/huuhkajat-osiot";
+import { TilastoDokumenttiInput } from "../../components/taulukkoeditori/konteksti";
+import { TaulukkoEditori } from "../../components/taulukkoeditori/TaulukkoEditori";
 import { seoFields } from "../objects/seoFields";
 import {
   legacyUrlField,
@@ -15,6 +17,8 @@ export const jalkapalloTilasto = defineType({
   title: "Jalkapallotilasto",
   type: "document",
   icon: BarChartIcon,
+  // Taulukkoeditori muokkaa sekä sarakkeita että rivejä (docs/19).
+  components: { input: TilastoDokumenttiInput },
   groups: [
     { name: "perustiedot", title: "Perustiedot", default: true },
     { name: "data", title: "Tilastodata" },
@@ -102,6 +106,8 @@ export const jalkapalloTilasto = defineType({
       title: "Taulukon sarakkeet",
       description: "Määrittele sarakkeiden avain, otsikko ja tyyppi.",
       type: "array",
+      // Sarakkeita muokataan taulukkoeditorin otsikkoriviltä (rows-kenttä).
+      hidden: true,
       of: [
         {
           type: "object",
@@ -131,9 +137,12 @@ export const jalkapalloTilasto = defineType({
     }),
     defineField({
       name: "rows",
-      title: "Taulukon rivit",
-      description: "Anna jokainen rivi avain-arvo-pareina (key vastaa saraketta).",
+      title: "Taulukko",
+      description:
+        "Muokkaa soluja kuten Excelissä. Sarakkeen nimen, tyypin ja järjestyksen saa " +
+        "muutettua otsikon ⋮-valikosta, rivit rivinumeron vierestä.",
       type: "array",
+      components: { input: TaulukkoEditori },
       of: [
         {
           type: "object",
