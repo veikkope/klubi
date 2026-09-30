@@ -4,16 +4,19 @@ import { CategoryFilter } from "@/components/category-filter";
 import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
 import { NewsCard } from "@/components/news-card";
+import { Uutishaku } from "@/components/uutishaku";
 import { JsonLd } from "@/components/seo/json-ld";
 import { LinkButton } from "@/components/ui/button";
 import { rootCrumb } from "@/lib/nav-sections";
 import { breadcrumbSchema, collectionPageSchema } from "@/lib/schema-org";
+import { hakusanat, siistiHaku } from "@/lib/haku";
 import { buildMetadata } from "@/lib/seo";
 import { categoryLabel, isValidCategory } from "@/lib/uutinen-categories";
 import type { UutinenCategory } from "@/lib/types";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import {
   uutisetCategoriesQuery,
+  uutisetHakuQuery,
   uutisetPageQuery,
   type Paged,
   type UutinenListItem,
@@ -44,18 +47,24 @@ function readParams(searchParams: SearchParams) {
   const raw = firstParam(searchParams.kategoria);
   const category: UutinenCategory | null = isValidCategory(raw) ? raw : null;
   const page = parsePage(searchParams.sivu);
-  return { category, page };
+  // Haku (lib/haku.ts): `haku` näytetään, `terms` menee kyselyyn. Liian lyhyt
+  // syöte (esim. "a") antaa tyhjät termit, jolloin näytetään tavallinen lista.
+  const haku = siistiHaku(firstParam(searchParams.q));
+  const terms = hakusanat(haku);
+  return { category, page, haku, terms };
 }
 
-function pathFor(category: UutinenCategory | null, page: number) {
+function pathFor(category: UutinenCategory | null, page: number, haku = "") {
   return buildPath("/uutiset", {
+    q: haku || null,
     kategoria: category,
     sivu: page > 1 ? page : null,
   });
 }
 
-function titleFor(category: UutinenCategory | null, page: number) {
-  const base = category ? `Uutiset: ${categoryLabel(category)}` : "Uutiset";
+function titleFor(category: UutinenCategory | null, page: number, haku = "") {
+  const aihe = category ? `Uutiset: ${categoryLabel(category)}` : "Uutiset";
+  const base = haku ? `Haku “${haku}”${category ? ` (${categoryLabel(category)})` : ""}` : aihe;
   return page > 1 ? `${base} — sivu ${page}` : base;
 }
 
@@ -64,7 +73,17 @@ export async function generateMetadata({
 }: {
   searchParams: Promise<SearchParams>;
 }): Promise<Metadata> {
-  const { category, page } = readParams(await searchParams);
+  const { category, page, haku, terms } = readParams(await searchParams);
+
+  // Hakutulokset eivät ole omaa sisältöä: ei hakukoneisiin, mutta linkit seurataan.
+  if (terms.length > 0) {
+    return buildMetadata({
+      title: titleFor(category, page, haku),
+      description: `Hakutulokset uutisista haulla “${haku}”.`,
+      path: pathFor(category, page, haku),
+      noIndex: true,
+    });
+  }
 
   return buildMetadata({
     title: titleFor(category, page),
@@ -84,13 +103,14 @@ export default async function UutisetPage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
-  const { category, page } = readParams(await searchParams);
+  const { category, page, haku, terms } = readParams(await searchParams);
   const { start, end } = pageRange(page, PER_PAGE);
+  const hakee = terms.length > 0;
 
   const [result, categoryValues] = await Promise.all([
     sanityFetch<Paged<UutinenListItem>>({
-      query: uutisetPageQuery,
-      params: { category, start, end },
+      query: hakee ? uutisetHakuQuery : uutisetPageQuery,
+      params: hakee ? { category, terms, start, end } : { category, start, end },
       tags: ["uutinen"],
       fallback: { items: [], total: 0 },
     }),
@@ -103,7 +123,7 @@ export default async function UutisetPage({
 
   const total = result.total;
   const pages = pageCount(total, PER_PAGE);
-  const path = pathFor(category, page);
+  const path = pathFor(category, page, hakee ? haku : "");
 
   const trail = category
     ? [
@@ -140,28 +160,43 @@ export default async function UutisetPage({
         />
 
         <div className="mt-8">
+          <Uutishaku haku={haku} kategoria={category} />
+        </div>
+
+        <div className="mt-6">
           <CategoryFilter
             active={category}
             basePath="/uutiset"
             available={new Set(categoryValues)}
+            haku={hakee ? haku : undefined}
           />
         </div>
       </Container>
 
       <Container className="py-16">
         <h2 className="font-display text-2xl sm:text-3xl">
-          {category ? categoryLabel(category) : "Kaikki uutiset"}
+          {hakee
+            ? `Hakutulokset: “${haku}”`
+            : category
+              ? categoryLabel(category)
+              : "Kaikki uutiset"}
         </h2>
         <p className="mt-2 text-sm text-muted">
+          {haku && !hakee && "Kirjoita hakuun vähintään kaksi merkkiä. "}
           {total === 0
             ? "Ei kirjoituksia."
             : total === 1
               ? "1 kirjoitus."
               : `${total} kirjoitusta.`}
+          {hakee && total > 0 && ` Osuvimmat ensin${category ? `, kategoriassa ${categoryLabel(category).toLowerCase()}` : ""}.`}
         </p>
 
         {result.items.length === 0 ? (
-          <EmptyState category={category} />
+          hakee ? (
+            <HakuEiTuloksia haku={haku} category={category} />
+          ) : (
+            <EmptyState category={category} />
+          )
         ) : (
           <>
             <ul className="mt-8 grid list-none grid-cols-1 gap-6 p-0 sm:grid-cols-2 lg:grid-cols-3">
@@ -175,13 +210,36 @@ export default async function UutisetPage({
             <Pagination
               page={page}
               pageCount={pages}
-              hrefForPage={(target) => pathFor(category, target)}
+              hrefForPage={(target) => pathFor(category, target, hakee ? haku : "")}
               label="Uutisten sivutus"
             />
           </>
         )}
       </Container>
     </>
+  );
+}
+
+function HakuEiTuloksia({ haku, category }: { haku: string; category: UutinenCategory | null }) {
+  return (
+    <div className="mt-8 rounded-2xl border border-dashed border-border bg-surface p-10 text-center">
+      <p className="font-display text-2xl">Haulla “{haku}” ei löytynyt uutisia</p>
+      <p className="mx-auto mt-2 max-w-md text-muted">
+        Kokeile lyhyempää tai toista sanaa. Useamman sanan haussa kaikkien sanojen pitää
+        löytyä samasta uutisesta.
+        {category && " Haku on rajattu valittuun kategoriaan."}
+      </p>
+      <div className="mt-6 flex flex-wrap justify-center gap-3">
+        {category && (
+          <LinkButton href={pathFor(null, 1, haku)} variant="secondary">
+            Hae kaikista kategorioista
+          </LinkButton>
+        )}
+        <LinkButton href="/uutiset" variant="secondary">
+          Kaikki uutiset
+        </LinkButton>
+      </div>
+    </div>
   );
 }
 

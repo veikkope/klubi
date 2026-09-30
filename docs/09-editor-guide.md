@@ -74,6 +74,10 @@ voi muuttaa projektin asetuksia tai käyttöoikeuksia. Kehittäjä hoitaa ne.
 Palloveikkauksen tilanne on tavallinen uutinen. Kirjoita sarjataulukko riveinä:
 **Shift + Enter** vaihtaa rivin saman kappaleen sisällä, kuten blogissa ennen.
 
+Uutissivulla on **haku**. Julkaistu uutinen löytyy haulla heti, eikä sinun tarvitse
+tehdä mitään. Hyvä otsikko ja lyhenne auttavat, koska otsikko-osumat nousevat
+tuloksissa ylimmäksi.
+
 ### Veikkaus tai kommentit uutisen alle
 
 Jäsenet voivat jättää veikkauksen tai kommentin uutisen alle, ja viesti näkyy heti.

@@ -34,8 +34,12 @@ const sizes: Record<Size, string> = {
   lg: "h-12 px-[26px] text-base",
 };
 
+// Fokusrengas on pakollinen (WCAG 2.4.7): utility-luokka voittaa globaalin
+// @layer base -fokussäännön, joten pelkkä outline-none piilottaisi fokuksen.
 const baseClass =
-  "inline-flex items-center justify-center gap-2 rounded-sm font-semibold no-underline transition focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60";
+  "inline-flex items-center justify-center gap-2 rounded-sm font-semibold no-underline transition " +
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 " +
+  "disabled:cursor-not-allowed disabled:opacity-60";
 
 type BaseProps = {
   variant?: Variant;

@@ -81,7 +81,7 @@
 | Suorituskyky ja tekninen laatu | lähes valmis | Next.js 16.2.6:ssa on haavoittuvuuksia, 404-sivu on oletussivu, webhook palauttaa 501 ja sanityFetch nielee virheet. | ✅ Next 16.3.7, oma 404, webhook, sanityFetch heittää virheen, kuvat Sanityn CDN:stä. |
 | Tietoturva ja tietosuoja | lähes valmis | Arvostelijoiden sähköpostit päätyisivät julkiseen API:in ja tietosuojaseloste puuttuu. Salaisuuksien käsittely on kunnossa. | ✅ Korjattu. ☐ Hallitus vahvistaa tietosuojaselosteen. |
 | CMS ja isän käytettävyys | **keskeneräinen** | Studio ei toimi tuotannossa (CORS). Kolme sisältötyyppiä puuttuu valikosta, tarkistusjonolla ei ole näkymää ja isän opas on virheellinen. | ✅ CORS, valikko, opas, taulukkoeditori, Studio-parannukset. ☐ Perehdytys. |
-| Visuaalinen ilme, UX ja linkit | lähes valmis | 0 rikkinäistä linkkiä. Etusivulta puuttuvat hero- ja Klubista-kuvat, Tapahtumat on tyhjä ja ruokatyyppisuodatin on tyhjä. | ☐ Kuvat ja tapahtumat (isä). ✅ Ruokatyyppisuodatin poistettu. ☐ Uutishaku. |
+| Visuaalinen ilme, UX ja linkit | lähes valmis | 0 rikkinäistä linkkiä. Etusivulta puuttuvat hero- ja Klubista-kuvat, Tapahtumat on tyhjä ja ruokatyyppisuodatin on tyhjä. | ☐ Kuvat ja tapahtumat (isä). ✅ Ruokatyyppisuodatin poistettu. ✅ Uutishaku. |
 | Julkaisuvalmius ja ylläpito | **keskeneräinen** | Kolme estettä ennen domainin siirtoa: MX, CORS ja webhook. Varmuuskopiointia ei ole, ja CLAUDE.md:n `--replace`-vienti on riski. | ✅ CORS, webhook, varmuuskopio, `--replace` korjattu. ☐ MX/DNS-siirto. ✅ Varmuuskopiot ajastettu (CRON_SECRET ☐). |
 
 ---
@@ -247,10 +247,11 @@ Eri osa-alueiden päällekkäiset löydökset on yhdistetty. Tunnukset ovat haka
 
 ### SEO ja UX
 - Viisi tyhjätilasivua on indeksoitavia ja sitemapissa. [seo-6]
+- ✅ *30.9.: `Button`/`LinkButton` saivat fokusrenkaan. Fokussääntöjen siirto `@layer base`:en (saavutettavuus-3) oli piilottanut niiden fokuksen, koska `focus-visible:outline-none` voittaa nyt globaalin säännön.* Uusi havainto 30.9.
 - Päänavigaation Tapahtumat on tyhjä, eikä etusivulla ole tapahtumasaraketta. [ux-2]
 - ✅ *Korjattu 30.9.2026: ruokatyyppi poistettu kokonaan (suodatin, Studion kenttä, kyselyt); dataa ei ollut kummassakaan datasetissä.* Ruokatyyppisuodattimessa ei ole yhtään vaihtoehtoa (cuisine 0/498), vaikka ingressi mainitsee sen. [ux-4]
 - Etusivulta puuttuvat tyylioppaan hero-kuva (4:5) ja Klubista-kuva. Isä valitsee ne. [ux-6]
-- 750 uutisessa ei ole hakua, ja 50 uutiselta puuttuu kategoria. [ux-8]
+- ◐ *30.9.: uutishaku tehty (`/uutiset?q=`, Sanityn GROQ-haku, ei erillistä indeksiä). ☐ 50 uutiselta puuttuu kategoria (isä, Studiossa).* 750 uutisessa ei ole hakua, ja 50 uutiselta puuttuu kategoria. [ux-8]
 
 ### Ylläpito
 - ✅ *Ratkaistu 28.9.: jäsenhakemuksia ei oteta vastaan sivuston kautta.* Jäsenhakemuksen sähköpostilähetys (Resend) ei ole käytössä. Vercelin tilaa ei voitu todentaa. [julkaisu-4]

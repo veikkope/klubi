@@ -106,6 +106,23 @@ export const uutisetPageQuery = defineQuery(`
   }
 `);
 
+/**
+ * Uutishaku (lib/haku.ts). `$terms` = GROQ-kuviot, esim. ["huuhkaj*", "fc*"]:
+ * kaikkien pitää löytyä otsikosta, ingressistä tai tekstistä. Järjestys
+ * osuvuuden mukaan (otsikko painaa eniten), sitten uusin ensin.
+ */
+const uutinenHakuFilter = `${uutinenListFilter} && [title, excerpt, pt::text(body)] match $terms`;
+
+export const uutisetHakuQuery = defineQuery(`
+  {
+    "items": *[${uutinenHakuFilter}]
+      | score(boost(title match $terms, 3), boost(excerpt match $terms, 2), pt::text(body) match $terms)
+      | order(_score desc, publishedAt desc)[$start...$end]{${uutinenCardFields}
+    },
+    "total": count(*[${uutinenHakuFilter}])
+  }
+`);
+
 /** Ne kategoriat joista on vähintään yksi uutinen — suodattimen sisältö. */
 export const uutisetCategoriesQuery = defineQuery(`
   array::unique(*[${uutinenFilter}].categories[])
