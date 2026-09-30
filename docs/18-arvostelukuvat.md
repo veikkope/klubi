@@ -95,8 +95,9 @@ valinta (enint. 3)
 
 ## 7. Käyttöönotto tuotantoon
 
-1. Merge + deploy. Uusia ympäristömuuttujia ei tarvita.
+1. Merge + deploy. Uusia ympäristömuuttujia ei tarvita. ✅ 30.9.2026 (`bb43089`)
 2. `npm run backup`, sitten `npx tsx scripts/lisaa-kuvat-tietosuojaan.ts --production`
    (päivittää tietosuojaselosteen arvostelukohdat, ei koske muihin muokkauksiin).
+   ✅ 30.9.2026, varmuuskopio `production-2026-09-30.tar.gz`
 3. Testaa: lähetä arvostelu kuvalla, hylkää se Studiossa **Hylkää arvostelu** -painikkeella
-   ja tarkista, ettei kuvan osoite enää avaudu.
+   ja tarkista, ettei kuvan osoite enää avaudu. ☐
