@@ -5,6 +5,7 @@ import { ArrowLink, BlockHeading } from "@/components/blocks/block-heading";
 import { SanityImage } from "@/components/sanity-image";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import { recentUutisetQuery } from "@/sanity/lib/queries";
+import { cn } from "@/lib/cn";
 import { categoryLabel } from "@/lib/uutinen-categories";
 import type { UutinenCard } from "@/lib/types";
 
@@ -32,12 +33,12 @@ function formatMonth(iso: string): string {
  * Valkoinen osio. Uusin juttu isona vasemmalla (16:10 kuva, kategoria + kuukausi,
  * serif 40 px otsikko, ingressi), seuraavat listana oikealla (serif 25 px).
  * Ilman juttuja lohkoa ei renderöidä.
+ *
+ * Otsikko ja yläotsake tulevat Studiosta. Tyhjä otsikko = ei näkyvää
+ * otsikkoriviä: ruudunlukijalle jää piilotettu "Uutiset", jotta osiolla on
+ * nimi, ja "Kaikki jutut" -linkki on juttujen alla kaikilla näytöillä.
  */
-export async function UutisetBlock({
-  eyebrow = "Jalkapallo",
-  heading = "Kentältä ja katsomosta",
-  count = 4,
-}: Props) {
+export async function UutisetBlock({ eyebrow, heading, count = 4 }: Props) {
   const items = await sanityFetch<UutinenCard[]>({
     query: recentUutisetQuery,
     params: { count },
@@ -47,17 +48,24 @@ export async function UutisetBlock({
 
   if (items.length === 0) return null;
   const [featured, ...rest] = items;
+  const naytaOtsikko = Boolean(heading?.trim());
 
   return (
     <section className="bg-surface py-11 sm:py-24" aria-labelledby="etusivu-uutiset">
       <Container size="wide" className="flex flex-col gap-4 sm:gap-10">
-        <BlockHeading
-          id="etusivu-uutiset"
-          eyebrow={eyebrow}
-          title={heading}
-          action={{ href: "/uutiset", label: "Kaikki jutut" }}
-          className="max-sm:[&>a]:hidden"
-        />
+        {naytaOtsikko ? (
+          <BlockHeading
+            id="etusivu-uutiset"
+            eyebrow={eyebrow?.trim() || undefined}
+            title={heading ?? ""}
+            action={{ href: "/uutiset", label: "Kaikki jutut" }}
+            className="max-sm:[&>a]:hidden"
+          />
+        ) : (
+          <h2 id="etusivu-uutiset" className="sr-only">
+            Uutiset
+          </h2>
+        )}
 
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:gap-14">
           <article className="flex flex-col gap-3.5 sm:gap-[18px]">
@@ -108,7 +116,7 @@ export async function UutisetBlock({
           )}
         </div>
 
-        <ArrowLink href="/uutiset" className="self-start sm:hidden">
+        <ArrowLink href="/uutiset" className={cn("self-start", naytaOtsikko && "sm:hidden")}>
           Kaikki jutut
         </ArrowLink>
       </Container>

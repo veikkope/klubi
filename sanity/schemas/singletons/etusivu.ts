@@ -116,15 +116,18 @@ export const etusivu = defineType({
       of: [
         defineArrayMember({
           name: "uutiset",
-          title: "Jutut (Kentältä ja katsomosta)",
+          title: "Jutut (uusimmat uutiset)",
           type: "object",
           description: "Uusin juttu isona, seuraavat listana vieressä.",
           fields: [
-            { name: "eyebrow", title: "Yläotsake", type: "string", description: "Pieni versaaliteksti otsikon yläpuolella.", initialValue: "Jalkapallo" },
-            { name: "heading", title: "Otsikko", type: "string", initialValue: "Kentältä ja katsomosta" },
+            { name: "eyebrow", title: "Yläotsake", type: "string", description: "Pieni versaaliteksti otsikon yläpuolella. Näkyy vain, jos otsikko on täytetty." },
+            { name: "heading", title: "Otsikko", type: "string", description: "Jätä tyhjäksi, jos osiolla ei ole näkyvää otsikkoa (jutut ja Kaikki jutut -linkki näkyvät silti)." },
             { name: "count", title: "Näytettävien määrä", type: "number", initialValue: 4, validation: (r) => r.min(1).max(6) },
           ],
-          preview: { prepare: () => ({ title: "Jutut (Kentältä ja katsomosta)" }) },
+          preview: {
+            select: { heading: "heading" },
+            prepare: ({ heading }) => ({ title: "Jutut (uusimmat uutiset)", subtitle: heading || "Ei näkyvää otsikkoa" }),
+          },
         }),
         defineArrayMember({
           name: "otteluohjelma",

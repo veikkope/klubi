@@ -15,7 +15,7 @@
 Logo viittaa etusivulle `/`. Aktiivinen kohta: sininen teksti + 2 px sininen alleviivaus. Valikko on Sanityssa (singleton `navigaatio`); oletukset `lib/defaults.ts`.
 
 ### Jalkapallo-dropdown
-- Uutiset → `/uutiset` (valikossa aiemmin "Kentältä ja katsomosta"; etusivun juttuosion otsikko on yhä se)
+- Uutiset → `/uutiset` (valikossa aiemmin "Kentältä ja katsomosta")
 - Jalkapalloarkisto → `/jalkapalloarkisto`
 - Huuhkajat → `/jalkapalloarkisto/huuhkajat`
 - Arvokisat → `/jalkapalloarkisto/arvokisat`
@@ -137,7 +137,7 @@ Tyyliopas (Sivut v3): etusivu esittelee klubin ensin ja näyttää sitten ajanko
 
 1. **Hero** (yönsininen) — yläotsake, H1, ingressi, kaksi tekstilinkkiä (Tulevat ottelut → / Lue klubista →), oikealla 4:5 kuva
 2. **Otteluohjelma ja tapahtumat** — tulevat ottelut listana (1,5fr) + klubin tapahtumat kortteina (1fr)
-3. **Kentältä ja katsomosta** (valkoinen) — uusin juttu isona + 3 listana
+3. **Uusimmat jutut** (valkoinen, ei näkyvää otsikkoa 30.9.2026 alkaen; otsikon voi palauttaa Studiossa) — uusin juttu isona + 3 listana
 4. **Ravintola-arviot** — 3 parhaiten arvioitua korttina
 5. **Klubista** (valkoinen) — kuva + esittelyteksti + linkki
 
