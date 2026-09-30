@@ -2402,6 +2402,23 @@ export type UutisetPageQueryResult = {
 };
 
 // Source: sanity/lib/queries/uutiset.ts
+// Variable: uutisetHakuQuery
+// Query: {    "items": *[_type == "uutinen" && defined(slug.current) && ($category == null || $category in categories) && [title, excerpt, pt::text(body)] match $terms]      | score(boost(title match $terms, 3), boost(excerpt match $terms, 2), pt::text(body) match $terms)      | order(_score desc, publishedAt desc)[$start...$end]{      _id,      title,      "slug": slug.current,      publishedAt,      excerpt,      tiivistelma,      coverImage,      categories    },    "total": count(*[_type == "uutinen" && defined(slug.current) && ($category == null || $category in categories) && [title, excerpt, pt::text(body)] match $terms])  }
+export type UutisetHakuQueryResult = {
+  items: Array<{
+    _id: string;
+    title: string | null;
+    slug: string | null;
+    publishedAt: string | null;
+    excerpt: string | null;
+    tiivistelma: string | null;
+    coverImage: ImageWithAlt | null;
+    categories: Array<string> | null;
+  }>;
+  total: number;
+};
+
+// Source: sanity/lib/queries/uutiset.ts
 // Variable: uutisetCategoriesQuery
 // Query: array::unique(*[_type == "uutinen" && defined(slug.current)].categories[])
 export type UutisetCategoriesQueryResult = Array<string | null>;
@@ -2589,6 +2606,7 @@ declare module "@sanity/client" {
     '\n  *[_type == "jalkapalloTilasto" && defined(slug.current)] | order(_updatedAt desc) {\n    _id,\n    _type,\n    "slug": slug.current,\n    category,\n    huuhkajatOsio,\n    "parent": *[\n      _type in ["arvokisa", "pelaaja", "klubiToiminta", "sivu"]\n      && references(^._id)\n      && !(_id in path("drafts.**"))\n    ] | order(_type asc, _id asc)[0]{ _type, "slug": slug.current },\n    "updatedAt": _updatedAt\n  }\n': SitemapTilastotQueryResult;
     '\n  *[_type == "uutinen" && defined(publishedAt)]\n    | order(publishedAt desc) {\n      "slug": string::split(publishedAt, "-")[0],\n      "updatedAt": _updatedAt\n    }\n': SitemapArchiveYearsQueryResult;
     '\n  {\n    "items": *[_type == "uutinen" && defined(slug.current) && ($category == null || $category in categories)] | order(publishedAt desc)[$start...$end]{\n      _id,\n      title,\n      "slug": slug.current,\n      publishedAt,\n      excerpt,\n      tiivistelma,\n      coverImage,\n      categories\n    },\n    "total": count(*[_type == "uutinen" && defined(slug.current) && ($category == null || $category in categories)])\n  }\n': UutisetPageQueryResult;
+    '\n  {\n    "items": *[_type == "uutinen" && defined(slug.current) && ($category == null || $category in categories) && [title, excerpt, pt::text(body)] match $terms]\n      | score(boost(title match $terms, 3), boost(excerpt match $terms, 2), pt::text(body) match $terms)\n      | order(_score desc, publishedAt desc)[$start...$end]{\n      _id,\n      title,\n      "slug": slug.current,\n      publishedAt,\n      excerpt,\n      tiivistelma,\n      coverImage,\n      categories\n    },\n    "total": count(*[_type == "uutinen" && defined(slug.current) && ($category == null || $category in categories) && [title, excerpt, pt::text(body)] match $terms])\n  }\n': UutisetHakuQueryResult;
     '\n  array::unique(*[_type == "uutinen" && defined(slug.current)].categories[])\n': UutisetCategoriesQueryResult;
     '\n  *[_type == "uutinen" && defined(slug.current)].slug.current\n': UutinenSlugsQueryResult;
     '\n  *[_type == "uutinen" && defined(slug.current) && slug.current == $slug][0]{\n      _id,\n      title,\n      "slug": slug.current,\n      publishedAt,\n      excerpt,\n      tiivistelma,\n      coverImage,\n      categories,\n    _updatedAt,\n    body,\n    lahde{ nimi, url, pvm },\n    ulkoinenLinkki,\n    "author": author->{ name, role },\n    kommentointi{ kaytossa, tyyppi, sulkeutuu, vaihtoehdot, sijoituksia, maalikuningas, ohje },\n    seoTitle,\n    seoDescription\n  }\n': UutinenDetailQueryResult;

@@ -41,6 +41,7 @@
     "brandikuvat": "tsx scripts/brandikuvat.ts",
     "test:kuvat": "tsx scripts/test-kuvat.ts",
     "test:varmuuskopio": "tsx scripts/test-varmuuskopio.ts",
+    "test:haku": "tsx scripts/test-haku.ts",
     "backup": "tsx scripts/varmuuskopio.ts",
     "siivoa:arvostelukuvat": "tsx scripts/siivoa-arvostelukuvat.ts"
   },

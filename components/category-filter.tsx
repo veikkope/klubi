@@ -22,6 +22,8 @@ type Props = {
   available?: Set<string>;
   /** Kyselyparametrin nimi. */
   paramName?: string;
+  /** Aktiivinen hakusana (uutishaku): säilyy, kun kategoriaa vaihdetaan. */
+  haku?: string;
   className?: string;
 };
 
@@ -38,6 +40,7 @@ export function CategoryFilter({
   basePath,
   available,
   paramName = "kategoria",
+  haku,
   className,
 }: Props) {
   const items = available
@@ -54,10 +57,11 @@ export function CategoryFilter({
     >
       <fieldset className="contents">
         <legend className="sr-only">Suodata uutisia kategorian mukaan</legend>
+        {haku && <input type="hidden" name="q" value={haku} />}
 
         {/* "Kaikki" on linkki eikä painike, jotta osoite pysyy siistinä. */}
         <Link
-          href={basePath}
+          href={haku ? `${basePath}?${new URLSearchParams({ q: haku })}` : basePath}
           aria-current={active === null ? "page" : undefined}
           className={cn(chipBase, active === null ? chipActive : chipIdle)}
         >
