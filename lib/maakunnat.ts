@@ -13,7 +13,7 @@ import { stegaClean } from "next-sanity";
  *  - `scripts/lib/maakunnat.ts` (kunta → maakunta -taulukko)
  *
  * Luettelo on virallinen luokitus, ei sisältöä, joten se on koodissa eikä
- * Sanityssa (vrt. `lib/ravintola-cuisines.ts`).
+ * Sanityssa.
  */
 export const MAAKUNNAT = [
   { value: "uusimaa", title: "Uusimaa" },

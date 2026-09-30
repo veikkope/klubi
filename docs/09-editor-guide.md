@@ -198,7 +198,7 @@ Silloin listassa lukee **UUSI: ravintolan nimi**, ja arvostelussa näkyy laatikk
 2. Muuten paina alareunan vihreää **Hyväksy ja luo ravintola** → **Vahvista**.
    Ravintola lisätään hakemistoon ja arvostelu julkaistaan sen sivulle.
 3. Täydennä ravintolan tietoja halutessasi: **Kaikki ravintolat** → ravintola (kuva,
-   osoite, ruokatyyppi) → **Julkaise**.
+   osoite) → **Julkaise**.
 4. Jos kaupunki oli uusi, avaa se **Kaupungit**-listasta ja valitse maakunta.
 
 Arvostelijalta kysytään vain nimi, joka näkyy arvostelun yhteydessä. Sähköpostia ei kerätä.

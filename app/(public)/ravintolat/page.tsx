@@ -47,8 +47,8 @@ function buildLead(facets: RavintolatFacetData): string {
   return (
     `Lahden Suomalainen Klubi ry on arvioinut ${count} ravintolaa${since}. ` +
     "Jokainen kohde saa kokonaisarvosanan sekä osa-arviot ruoasta, hinnasta " +
-    "ja viihtyvyydestä. Rajaa hakemistoa maan, maakunnan, kaupungin, " +
-    "ruokatyypin tai arvosanan mukaan."
+    "ja viihtyvyydestä. Rajaa hakemistoa maan, maakunnan, kaupungin " +
+    "tai arvosanan mukaan."
   );
 }
 
@@ -56,7 +56,6 @@ const trail = [rootCrumb, { label: TITLE }];
 
 const emptyFacets: RavintolatFacetsRaw = {
   places: [],
-  cuisines: [],
   total: 0,
   closedCount: 0,
   firstVisitYear: null,
@@ -72,7 +71,6 @@ function queryParams(filters: RavintolaFilterValues, facets: RavintolatFacetData
     citySlug: filters.kaupunki,
     countryNames: countryNamesForSlug(facets, filters.maa),
     maakuntaSlugs: filters.maakunta.length ? filters.maakunta : null,
-    cuisine: filters.ruoka,
     minRating: filters.arvosana,
     includeClosed: filters.lopettaneet,
   };
@@ -89,7 +87,7 @@ export async function generateMetadata({
     title: filters.sivu > 1 ? `${TITLE} — sivu ${filters.sivu}` : TITLE,
     description:
       "Klubin ravintola-arvostelut: kokonaisarvosana sekä osa-arviot ruoasta, " +
-      "hinnasta ja viihtyvyydestä. Suodata maan, maakunnan, kaupungin, ruokatyypin " +
+      "hinnasta ja viihtyvyydestä. Suodata maan, maakunnan, kaupungin " +
       "ja arvosanan mukaan.",
     path,
     // Rajattu näkymä on sama sisältö toisin järjestettynä — ei indeksoitavaksi.

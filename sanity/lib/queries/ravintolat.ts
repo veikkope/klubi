@@ -42,7 +42,6 @@ export type RavintolaCardData = {
   ratingPrice?: number | null;
   ratingAtmosphere?: number | null;
   priceLevel?: string | null;
-  cuisine?: string[] | null;
   closed?: boolean | null;
   tiivistelma?: string | null;
   /** Yhden rivin tuomio korttiin. */
@@ -119,7 +118,6 @@ export type RavintolatFacetData = {
   cities: RavintolaCityFacet[];
   countries: RavintolaCountryFacet[];
   maakunnat: RavintolaMaakuntaFacet[];
-  cuisines: (string | null)[];
   total: number;
   closedCount: number;
   /** Varhaisimman kirjatun käynnin päivä, esim. "1997-10-11". */
@@ -135,7 +133,6 @@ export type RavintolatFacetsRaw = {
     maakunta: string | null;
     count: number;
   }[];
-  cuisines: (string | null)[];
   total: number;
   closedCount: number;
   firstVisitYear: string | null;
@@ -162,7 +159,6 @@ const cardProjection = /* groq */ `
   ratingPrice,
   ratingAtmosphere,
   priceLevel,
-  cuisine,
   closed,
   tiivistelma,
   tuomio,
@@ -182,7 +178,6 @@ const cardProjection = /* groq */ `
  *  $maakuntaSlugs maakuntien arvot (`kaupunki.maakunta`) tai null. Useampi arvo
  *                 = mikä tahansa niistä (vanhat aluesivut, jotka ylittävät
  *                 maakunnan rajan). Maakunta huomioidaan vain Suomessa.
- *  $cuisine       yksi ruokatyyppi tai null
  *  $minRating     vähimmäisarvosana (0–5) tai null
  *  $includeClosed true = myös toimintansa lopettaneet
  */
@@ -192,7 +187,6 @@ const directoryFilter = /* groq */ `
   && ($countryNames == null || city->country in $countryNames)
   && ($maakuntaSlugs == null
       || (city->country == "Suomi" && city->maakunta in $maakuntaSlugs))
-  && ($cuisine == null || $cuisine in cuisine)
   && ($minRating == null || coalesce(ratingOverall, stars, 0) >= $minRating)
   && ($includeClosed == true || closed != true)
 `;
@@ -254,7 +248,6 @@ export const ravintolatFacetsQuery = defineQuery(`{
       maakunta,
       "count": count(*[_type == "ravintola" && references(^._id) && closed != true])
     },
-  "cuisines": array::unique(*[_type == "ravintola" && defined(cuisine)].cuisine[]),
   "total": count(*[_type == "ravintola" && defined(slug.current) && closed != true]),
   "closedCount": count(*[_type == "ravintola" && closed == true]),
   "firstVisitYear": *[_type == "ravintola" && defined(visitedAt)]
@@ -312,7 +305,6 @@ export function buildRavintolatFacets(dirty: RavintolatFacetsRaw): RavintolatFac
     maakunnat: MAAKUNNAT.filter((m) => maakunnat.has(m.value))
       .map((m) => ({ value: m.value, title: m.title, count: maakunnat.get(m.value) ?? 0 }))
       .sort((a, b) => fi(a.title, b.title)),
-    cuisines: raw.cuisines,
     total: raw.total,
     closedCount: raw.closedCount,
     firstVisitYear: raw.firstVisitYear,

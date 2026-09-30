@@ -87,7 +87,6 @@ Listanäkymässä järjestys: `startsAt` desc (tulevat ensin).
 | city | reference→kaupunki | kyllä | Sijainti |
 | address | string | ei | Katuosoite |
 | location | geopoint | ei | Karttapaikka |
-| cuisine | array of string (multi-select) | ei | Esim. "italiainen", "lounas", "pizza" |
 | priceLevel | string ("€"/"€€"/"€€€") | ei | Hintaluokka |
 | stars | number 1–5 | kyllä | Klubin tähtiarvio |
 | review | portableText | kyllä | Klubin arvostelu |
