@@ -17,8 +17,12 @@ export async function getYhteysSahkoposti(): Promise<string | null> {
   return stegaClean(email)?.trim() || null;
 }
 
-/** Virheilmoituksen loppu: "…osoitteeseen x@y." tai yleinen kehotus, jos osoitetta ei ole. */
+/**
+ * Virheilmoituksen loppu: "…osoitteeseen x@y." tai yleinen kehotus, jos osoitetta ei ole.
+ * Käytetään lomakkeiden virhepoluissa, joten Sanityn katkos ei saa kaataa itse
+ * virheilmoitusta (sanityFetch heittää virheen): silloin yleinen kehotus.
+ */
 export async function ilmoitaOsoitteeseen(): Promise<string> {
-  const email = await getYhteysSahkoposti();
+  const email = await getYhteysSahkoposti().catch(() => null);
   return email ? `Ilmoitathan asiasta osoitteeseen ${email}.` : "Yritä myöhemmin uudelleen.";
 }
