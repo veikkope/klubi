@@ -34,6 +34,7 @@
     "verify:blogspot": "tsx scripts/verify-blogspot.ts",
     "test:kommentit": "tsx scripts/test-kommentit.ts",
     "test:arvostelukuvat": "tsx scripts/test-arvostelukuvat.ts",
+    "test:taulukko": "tsx scripts/test-taulukko.ts",
     "backup": "tsx scripts/varmuuskopio.ts",
     "siivoa:arvostelukuvat": "tsx scripts/siivoa-arvostelukuvat.ts"
   },
@@ -42,6 +43,7 @@
     "@sanity/icons": "^3.7.4",
     "@sanity/image-url": "^2.1.1",
     "@sanity/locale-fi-fi": "^1.1.40",
+    "@sanity/ui": "^3.5.5",
     "@sanity/vision": "^5.25.1",
     "clsx": "^2.1.1",
     "lucide-react": "^1.16.0",

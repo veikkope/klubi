@@ -201,6 +201,33 @@ Arvostelijalta kysytään vain nimi, joka näkyy arvostelun yhteydessä. Sähkö
 Jos ravintolan kaupunkia ei tiedetä (esim. laiva), liitä se maan nimiseen "kaupunkiin"
 (esim. "Ruotsi").
 
+### Taulukon muokkaaminen (tilastot, palloveikkaus, mölkky)
+
+Taulukot löytyvät kohdasta **Jalkapalloarkisto → Tilastot**. Avaa taulukko ja valitse
+välilehti **Tilastodata**. Taulukko toimii kuten Excel.
+
+- **Solun muuttaminen:** napsauta solua ja kirjoita. Muutos tallentuu, kun siirryt
+  pois solusta. **Enter** siirtää alas, **nuolinäppäimet** solusta toiseen ja
+  **Esc** peruu muutoksen.
+- **Päivämäärät** kirjoitetaan tuttuun tapaan: `26.9.2026`, `9/2026` tai väli
+  `30.1.–1.2.2009`. **Luvut** voi kirjoittaa välilyönnillä (`61 035`).
+- **Uusi rivi:** **Lisää rivi** taulukon alla, tai rivinumeron vieressä olevasta
+  **⋮**-valikosta *Lisää rivi yläpuolelle / alapuolelle*. Samasta valikosta rivin voi
+  siirtää tai poistaa. Poiston voi perua ilmoituksen **Kumoa**-painikkeella.
+- **Sarakkeet:** sarakkeen otsikon **⋮**-valikosta muutetaan nimeä ja tyyppiä,
+  lisätään sarake viereen, siirretään tai poistetaan.
+- **Excelistä:** kopioi solut Excelissä (Ctrl+C), napsauta taulukon solua ja liitä
+  (Ctrl+V). Tiedot täyttyvät siitä solusta alkaen, ja puuttuvat rivit lisätään loppuun.
+  Isomman taulukon voi tuoda painikkeella **Tuo Excelistä**, joka näyttää ensin
+  esikatselun.
+- **Exceliin:** **Kopioi Exceliin** kopioi koko taulukon. Liitä se Exceliin, muokkaa ja
+  tuo takaisin **Tuo Excelistä → Korvaa koko taulukko**.
+- **Etsi taulukosta** näyttää vain rivit, joilla hakusana esiintyy.
+- Aaltoviiva solun alla tarkoittaa, että arvo ei näytä numerolta tai päivämäärältä.
+  Arvo tallentuu silti, ja viemällä hiiren solun päälle näet selityksen.
+
+Muista lopuksi **Julkaise**.
+
 ### Huuhkajat-taulukon lisääminen
 
 Huuhkajat-sivu on jaettu aiheisiin, ja jokaisella aiheella on oma sivunsa
@@ -211,7 +238,8 @@ Englannin pääsarjassa).
 2. **Kategoria:** *Huuhkajat (maajoukkueen tilastot)*.
 3. **Osio Huuhkajat-sivulla:** valitse aihe. Ilman valintaa taulukkoa ei voi julkaista.
 4. **Järjestysnumero:** pienempi luku näkyy osion sivulla ylempänä.
-5. **Julkaise**. Uusi osio ilmestyy Huuhkajat-sivulle vasta, kun siinä on taulukko.
+5. Täytä taulukko välilehdellä **Tilastodata** (ks. edellä), esim. **Tuo Excelistä**.
+6. **Julkaise**. Uusi osio ilmestyy Huuhkajat-sivulle vasta, kun siinä on taulukko.
 
 Karsintasarjat (kategoria *Karsinta*) ovat omia sivujaan, ja ne listataan
 Huuhkajat-sivun alaosassa uusin ensin. Kansojen liigan kaudet näkyvät samassa
