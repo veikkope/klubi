@@ -34,6 +34,8 @@ export type UutinenDetail = UutinenListItem & {
   author?: { name: string; role?: string | null } | null;
   /** Kommentit ja veikkaus (docs/15). */
   kommentointi?: Kommentointi | null;
+  /** Tunnisteet (lib/tunnisteet.ts), blogin "labels". */
+  tunnisteet?: string[] | null;
   seoTitle?: string | null;
   seoDescription?: string | null;
 };
@@ -108,15 +110,21 @@ export const uutisetPageQuery = defineQuery(`
 
 /**
  * Uutishaku (lib/haku.ts). `$terms` = GROQ-kuviot, esim. ["huuhkaj*", "fc*"]:
- * kaikkien pitää löytyä otsikosta, ingressistä tai tekstistä. Järjestys
+ * kaikkien pitää löytyä otsikosta, ingressistä, tekstistä tai tunnisteista
+ * (lib/tunnisteet.ts). Järjestys
  * osuvuuden mukaan (otsikko painaa eniten), sitten uusin ensin.
  */
-const uutinenHakuFilter = `${uutinenListFilter} && [title, excerpt, pt::text(body)] match $terms`;
+const uutinenHakuFilter = `${uutinenListFilter} && ([title, excerpt, pt::text(body)] + coalesce(tunnisteet, [])) match $terms`;
 
 export const uutisetHakuQuery = defineQuery(`
   {
     "items": *[${uutinenHakuFilter}]
-      | score(boost(title match $terms, 3), boost(excerpt match $terms, 2), pt::text(body) match $terms)
+      | score(
+          boost(title match $terms, 3),
+          boost(tunnisteet match $terms, 2),
+          boost(excerpt match $terms, 2),
+          pt::text(body) match $terms
+        )
       | order(_score desc, publishedAt desc)[$start...$end]{${uutinenCardFields}
     },
     "total": count(*[${uutinenHakuFilter}])
@@ -140,6 +148,7 @@ export const uutinenDetailQuery = defineQuery(`
     ulkoinenLinkki,
     "author": author->{ name, role },
     kommentointi{ kaytossa, tyyppi, sulkeutuu, vaihtoehdot, sijoituksia, maalikuningas, ohje },
+    tunnisteet,
     seoTitle,
     seoDescription
   }
@@ -150,6 +159,35 @@ export const relatedUutisetQuery = defineQuery(`
   *[${uutinenFilter} && slug.current != $slug
     && count((categories[])[@ in $categories]) > 0]
     | order(publishedAt desc)[0...$count]{${uutinenCardFields}
+  }
+`);
+
+/* -------------------------------------------------------------------------- */
+/* Tunnisteet (lib/tunnisteet.ts)                                              */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Jokaisen uutisen tunnistelista: hakemisto, slugin → nimien kartoitus ja
+ * määrät lasketaan tästä sovelluksessa (`kokoaTunnisteet`). GROQ ei osaa
+ * johtaa slugia nimestä, ja ~500 lyhyttä listaa on kevyt hakea kerralla.
+ */
+export type TunnisteRivi = { tunnisteet: string[]; paivitetty: string };
+
+export const uutisetTunnisteetQuery = defineQuery(`
+  *[${uutinenFilter} && count(tunnisteet) > 0]{ tunnisteet, "paivitetty": _updatedAt }
+`);
+
+/**
+ * Yhden tunnisteen uutiset. `$nimet` = tunnisteen kaikki kirjoitusasut
+ * ("Huuhkajat", "huuhkajat"). Parametrit: $nimet, $start, $end.
+ */
+const tunnisteFilter = `${uutinenFilter} && count((tunnisteet[])[@ in $nimet]) > 0`;
+
+export const uutisetTunnisteellaQuery = defineQuery(`
+  {
+    "items": *[${tunnisteFilter}] | order(publishedAt desc)[$start...$end]{${uutinenCardFields}
+    },
+    "total": count(*[${tunnisteFilter}])
   }
 `);
 

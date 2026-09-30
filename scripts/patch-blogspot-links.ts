@@ -13,14 +13,17 @@
  * ja niiden uudelleenajo palauttaa blogin osoitteet. Siksi skripti ajetaan
  * myös `migrate:klubi`n lopussa. Idempotentti: toinen ajo ei löydä mitään.
  *
- * Blogin osoite, jolle ei ole kirjoitusta (tunnistesivu, arkisto), jätetään
- * ennalleen ja listataan — se ohjautuu joka tapauksessa uutislistaan.
+ * Blogin tunnistesivu (/search/label/Huuhkajat) → sivuston tunnistesivu
+ * (/uutiset/tunniste/huuhkajat). Blogin osoite, jolle ei ole vastinetta
+ * (arkisto, haku), jätetään ennalleen ja listataan — se ohjautuu joka
+ * tapauksessa uutislistaan.
  */
 import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { createClient } from "@sanity/client";
 
+import { bloginTunniste, tunnisteHref, tunnisteSlug } from "../lib/tunnisteet";
 import { sanityWriteToken } from "./lib/sanity-token";
 
 const DATASET = "development";
@@ -37,6 +40,16 @@ function blogPath(url: string): string | null {
 }
 
 /**
+ * Blogin tunnistesivun vastine sivustolla, muuten null. Vain tunnisteet, jotka
+ * ovat jossakin uutisessa (`slugit`): muuten linkki veisi 404-sivulle, kun taas
+ * blogin osoite ohjautuu reitin app/blogspot kautta uutislistaan.
+ */
+function tunnisteSivu(polku: string, slugit: ReadonlySet<string>): string | null {
+  const nimi = bloginTunniste(polku);
+  return nimi && slugit.has(tunnisteSlug(nimi)) ? tunnisteHref(nimi) : null;
+}
+
+/**
  * Käy dokumentin läpi ja palauttaa `set`-patchit Sanityn polkusyntaksilla.
  * Taulukon alkio osoitetaan `_key`:llä, kun sellainen on (vakaa polku).
  */
@@ -45,11 +58,12 @@ function findLinks(
   path: string,
   map: Map<string, string>,
   out: { path: string; from: string; to: string | null }[],
+  slugit: ReadonlySet<string>,
 ) {
   if (Array.isArray(value)) {
     value.forEach((item, i) => {
       const k = item && typeof item === "object" && !Array.isArray(item) ? item._key : undefined;
-      findLinks(item, `${path}[${typeof k === "string" ? `_key=="${k}"` : i}]`, map, out);
+      findLinks(item, `${path}[${typeof k === "string" ? `_key=="${k}"` : i}]`, map, out, slugit);
     });
     return;
   }
@@ -58,10 +72,10 @@ function findLinks(
     const childPath = path ? `${path}.${k}` : k;
     if ((k === "url" || k === "href") && typeof child === "string") {
       const p = blogPath(child);
-      if (p) out.push({ path: childPath, from: child, to: map.get(p) ?? null });
+      if (p) out.push({ path: childPath, from: child, to: map.get(p) ?? tunnisteSivu(p, slugit) });
       continue;
     }
-    findLinks(child, childPath, map, out);
+    findLinks(child, childPath, map, out, slugit);
   }
 }
 
@@ -85,13 +99,17 @@ async function main() {
     `*[!(_type match "sanity.*") && !(_id in path("drafts.**")) && !defined(blogspot.id)]`,
   );
 
+  const slugit = new Set(
+    (await client.fetch<string[]>(`*[_type == "uutinen" && !(_id in path("drafts.**"))].tunnisteet[]`)).map(tunnisteSlug),
+  );
+
   const unresolved: string[] = [];
   let patched = 0;
   let links = 0;
   const transaction = client.transaction();
   for (const doc of docs) {
     const found: { path: string; from: string; to: string | null }[] = [];
-    findLinks(doc as Json, "", map, found);
+    findLinks(doc as Json, "", map, found, slugit);
     const sets: Record<string, string> = {};
     for (const f of found) {
       if (f.to) sets[f.path] = f.to;

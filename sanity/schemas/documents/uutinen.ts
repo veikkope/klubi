@@ -9,6 +9,11 @@ import {
   tiivistelmaField,
   polkuMuuttunut,
 } from "../objects/contentMeta";
+import { TunnisteetInput } from "../../components/tunnisteet/TunnisteetInput";
+import { tarkistaTunnisteet } from "../../../lib/tunnisteet";
+
+/** Uutisosion kiinteät reitit app/(public)/uutiset/-kansiossa. */
+const VARATUT_POLUT = new Set(["arkisto", "tunniste", "tunnisteet"]);
 
 export const uutinen = defineType({
   name: "uutinen",
@@ -33,7 +38,17 @@ export const uutinen = defineType({
       title: "Polku (slug)",
       type: "slug",
       options: { source: "title", maxLength: 80 },
-      validation: (rule) => [rule.required(), polkuMuuttunut(rule)],
+      validation: (rule) => [
+        rule.required(),
+        polkuMuuttunut(rule),
+        // Uutisosion omat sivut (/uutiset/arkisto, /uutiset/tunnisteet …) menevät
+        // uutisen edelle: tällä polulla uutinen ei koskaan näkyisi.
+        rule.custom((value: { current?: string } | undefined) =>
+          value?.current && VARATUT_POLUT.has(value.current)
+            ? `Polku “${value.current}” on varattu uutisosion omalle sivulle. Valitse toinen.`
+            : true,
+        ),
+      ],
       group: "sisalto",
     }),
     tiivistelmaField("sisalto"),
@@ -144,6 +159,19 @@ export const uutinen = defineType({
         // kategoriat rikkoivat uutislistan suodattimen (docs/16 §5).
         layout: "grid",
       },
+      group: "sisalto",
+    }),
+    defineField({
+      name: "tunnisteet",
+      title: "Tunnisteet",
+      description:
+        "Aiheet, paikat ja henkilöt, esim. Huuhkajat, Olympiastadion, Teemu Pukki. " +
+        "Jokaisesta tunnisteesta tulee oma sivu, jolla on kaikki sen uutiset. " +
+        "Valitse ehdotuksista, jos sama tunniste on jo käytössä.",
+      type: "array",
+      of: [{ type: "string" }],
+      components: { input: TunnisteetInput },
+      validation: (rule) => rule.custom(tarkistaTunnisteet),
       group: "sisalto",
     }),
     defineField({
@@ -267,7 +295,9 @@ export const uutinen = defineType({
         defineField({
           name: "tunnisteet",
           title: "Blogin tunnisteet",
-          description: "Kirjoituksen tunnisteet (labels) blogissa sellaisenaan.",
+          description:
+            "Kirjoituksen tunnisteet (labels) blogissa sellaisenaan, alkuperän tallenne. " +
+            "Sivustolla näkyvät tunnisteet muokataan Sisältö-välilehden kentässä Tunnisteet.",
           type: "array",
           of: [{ type: "string" }],
         }),

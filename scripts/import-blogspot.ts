@@ -25,6 +25,7 @@ import { pathToFileURL } from "node:url";
 
 import { legacyRedirects } from "../lib/redirects";
 import { slugify } from "../lib/slugify";
+import { bloginTunniste, siistiTunnisteLista, tunnisteHref, tunnisteSlug } from "../lib/tunnisteet";
 import { deriveAltFromFilename, hasCorruptChars, isJammedCamelCase, looksLikeFilename, splitCamelCase } from "./lib/derive-alt";
 import type { BlogspotEntry, BlogspotKommentti, BodyNode, ImageNode, Span } from "./parse-blogspot";
 
@@ -78,13 +79,17 @@ const redirectMap = new Map(legacyRedirects.map((r) => [r.source.toLowerCase(), 
 interface LinkContext {
   /** Blogin polku → uutisen polku. */
   blogPaths: Map<string, string>;
+  /** Tuotujen kirjoitusten tunnisteiden slugit: vain niille on tunnistesivu. */
+  tunnisteSlugit: Set<string>;
   notes: string[];
 }
 
 /**
  * Lähteen linkki uuden sivuston linkiksi:
  *  - blogin oma kirjoitus → `/uutiset/<slug>` (sisäinen linkki säilyy sivustolla)
- *  - blogin haku-, tunniste- ja arkistosivut → `/uutiset`
+ *  - blogin tunnistesivu → tunnisteen sivu `/uutiset/tunniste/<slug>`, jos jollakin
+ *    tuodulla kirjoituksella on se tunniste (muuten sivua ei olisi → `/uutiset`)
+ *  - blogin haku- ja arkistosivut → `/uutiset`
  *  - vanhan sivuston .htm → ohjauksen kohde (`lib/redirects.ts`)
  *  - muut http(s)- ja mailto-linkit sellaisenaan
  */
@@ -95,6 +100,8 @@ function resolveHref(href: string, ctx: LinkContext, docId: string): string | nu
   if (blogPath) {
     const target = ctx.blogPaths.get(blogPath);
     if (target) return target;
+    const tunniste = bloginTunniste(blogPath);
+    if (tunniste && ctx.tunnisteSlugit.has(tunnisteSlug(tunniste))) return tunnisteHref(tunniste) ?? "/uutiset";
     if (/^\/\d{4}\/\d{2}\/[^/]+\.html$/.test(blogPath)) {
       ctx.notes.push(`${docId}: blogin kirjoitusta ${h} ei löydy — linkki ohjattu uutislistaan`);
     }
@@ -226,6 +233,9 @@ function buildDoc(e: BlogspotEntry, slug: string, links: LinkContext, stats: Sta
   if (e.cover) doc.coverImage = imageValue(e.cover, e.title, null, stats, reasons);
   doc.body = body;
   if (e.categories.length) doc.categories = e.categories;
+  // Muokattava kenttä; alkuperäiset jäävät sellaisinaan `blogspot.tunnisteet`-kenttään.
+  const tunnisteet = siistiTunnisteLista(e.labels);
+  if (tunnisteet.length) doc.tunnisteet = tunnisteet;
   doc.needsReview = reasons.length > 0;
   doc.blogspot = {
     id: e.id,
@@ -260,6 +270,7 @@ async function main() {
 
   const links: LinkContext = {
     blogPaths: new Map(entries.map((e) => [e.path, `/uutiset/${slugs.get(e.id)}`])),
+    tunnisteSlugit: new Set(entries.flatMap((e) => siistiTunnisteLista(e.labels).map(tunnisteSlug))),
     notes: [],
   };
   const stats: Stats = {

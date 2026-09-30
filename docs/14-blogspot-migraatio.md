@@ -109,7 +109,8 @@ Komennot:
 ### 2.2 Linkit (`import-blogspot.ts`)
 
 - Blogin kirjoitus → `/uutiset/<slug>` (linkit kirjoitusten välillä säilyvät sivustolla)
-- Blogin muut sivut (tunnisteet, arkistot) → `/uutiset`
+- Blogin tunnistesivu `/search/label/Huuhkajat` → `/uutiset/tunniste/huuhkajat`
+- Blogin muut sivut (arkistot, haku) → `/uutiset`
 - Vanhan sivuston `.htm` → `lib/redirects.ts`:n kohde
 - Muut sellaisenaan
 
@@ -125,8 +126,34 @@ SEO-välilehdellä, "Alkuperäinen Blogspot-kirjoitus"):
 | `id` | Bloggerin kirjoitus-id: synkronoinnin avain |
 | `url` | Alkuperäinen osoite (tieto, ei näytetä kävijälle) |
 | `polku` | `/2019/03/milano-euroopan-renessanssin.html`: ohjausten avain (§5) |
-| `tunnisteet` | Blogin tunnisteet sellaisenaan |
+| `tunnisteet` | Blogin tunnisteet sellaisenaan (alkuperän tallenne, ei muokata) |
 | `kommentteja` | Kommenttien määrä blogissa |
+
+### 3.1 Tunnisteet sivustolla
+
+Sivustolla näkyvät ja muokattavat tunnisteet ovat uutisen omassa kentässä
+**`tunnisteet`** (Sisältö-välilehti), ei `blogspot.tunnisteet`issa. Näin isä
+voi lisätä tunnisteita myös uusiin uutisiin, ja blogin alkuperäinen lista säilyy.
+
+- **Tuonti:** `import-blogspot.ts` täyttää kentän (`siistiTunnisteLista`:
+  välilyönnit siistitty, saman slugin toistot pois).
+- **Jo tuodut uutiset:** `npm run patch:tunnisteet` kopioi
+  `blogspot.tunnisteet` → `tunnisteet` niille, joilta kenttä puuttuu
+  (`setIfMissing`, myös luonnokset). Oletuksena kuivaharjoitus, `-- --vie` kirjoittaa.
+  Development täytetty 30.9.2026 (525 uutista, 671 tunnistetta).
+- **Production:** `npm run patch:tunnisteet -- --production` (kuivaharjoitus), sitten
+  `-- --production --vie` (varmuuskopio ensin). **Aja vasta, kun kentän sisältävä
+  Studio on julkaistu Verceliin**, muuten vanha Studio näyttää kentän tuntemattomana.
+  Ennen ajoa tunnistesivut ovat productionissa tyhjiä (404) ja uutisilla ei näy tunnisteita.
+- **Sivut:** `/uutiset/tunniste/<slug>` (uutiset uusin ensin, liittyvät tunnisteet),
+  `/uutiset/tunnisteet` (suosituimmat + A–Ö). Slug tulee `lib/slugify.ts`:stä, ja saman
+  slugin kirjoitusasut ("Huuhkajat"/"huuhkajat") ovat sama tunniste. Ei-kanoninen
+  osoite (`/uutiset/tunniste/Valko-Venäjä`) ohjautuu 308:lla.
+- **SEO:** yhden uutisen tunnistesivut ovat `noindex, follow` eivätkä ole
+  sitemapissa (ohutta sisältöä); vähintään kahden uutisen tunnisteet ovat.
+- **Haku:** uutishaku etsii myös tunnisteista, ja jos haku on täsmälleen jokin
+  tunniste, listan yläpuolella on linkki sen sivulle.
+- **Testit:** `npm run test:tunnisteet` (lib/tunnisteet.ts).
 
 `legacyUrl` on vanhan sivuston `.htm`-polulle, joten sitä ei käytetä.
 `verify-migration.ts` hyväksyy `blogspot.id`:n alkuperäksi, ja
@@ -171,8 +198,10 @@ lahdensuomalainenklubi.blogspot.com/2019/03/milano-euroopan-renessanssin.html
 ```
 
 Ohjauslistan jälkeen tuodut kirjoitukset ja blogin muut sivut (etusivu, tunnisteet,
-arkistot) hoitaa reitti `app/blogspot/[[...polku]]/route.ts`: se hakee kirjoituksen
-Sanitystä `blogspot.polku`-kentällä (308 uutiseen) ja ohjaa muut `/uutiset`-listaan
+arkistot, haku) hoitaa reitti `app/blogspot/[[...polku]]/route.ts`: se hakee kirjoituksen
+Sanitystä `blogspot.polku`-kentällä (308 uutiseen), ohjaa tunnistesivun
+`/search/label/X` tunnisteen sivulle (308, jos tunniste on sivustolla) ja haun
+`/search?q=X` uutishakuun. Muut se ohjaa `/uutiset`-listaan
 (307, väliaikainen, jotta myöhemmin tuotu kirjoitus ei jää selaimen välimuistissa
 uutislistan taakse). Uusi kirjoitus toimii siis heti viennin jälkeen ilman deployta.
 Staattinen lista ei enää sisällä yleissääntöä `/blogspot/:polku*`, koska

@@ -24,7 +24,15 @@ import axe from "axe-core";
 import { JSDOM } from "jsdom";
 
 const BASE_URL = (process.env.BASE_URL ?? "http://localhost:3000").replace(/\/$/, "");
-const KIINTEAT = ["/", "/english", "/tama-sivu-ei-ole-olemassa", "/uutiset?q=m%C3%B6lkky", "/uutiset?q=zzqqxx"];
+const KIINTEAT = [
+  "/",
+  "/english",
+  "/tama-sivu-ei-ole-olemassa",
+  "/uutiset?q=m%C3%B6lkky",
+  "/uutiset?q=zzqqxx",
+  "/uutiset/tunnisteet",
+  "/uutiset/tunniste/huuhkajat",
+];
 
 type Rikkomus = { id: string; impact: string | null; help: string; helpUrl: string; kohteet: string[] };
 

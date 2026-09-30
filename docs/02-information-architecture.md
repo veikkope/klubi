@@ -46,6 +46,8 @@ Jos alakohde osoittaa pääkohteen sivulle, erillistä "yleisesittely"-linkkiä 
 ├── /uutiset                     Yhdistetty (entinen "Blogi" + "Kommentit")
 │   └── /uutiset/[slug]
 ├── /uutiset/arkisto             2005–2024 historiallinen blogiarkisto
+├── /uutiset/tunnisteet          tunnistehakemisto (suosituimmat + A–Ö)
+├── /uutiset/tunniste/[slug]     yhden tunnisteen uutiset (blogin /search/label/…)
 ├── /jalkapalloarkisto           Hub (entinen "Historia")
 │   ├── /jalkapalloarkisto/huuhkajat              entinen "Arvostelu"; hub: aiheet + karsintasarjat
 │   │   └── /jalkapalloarkisto/huuhkajat/[osio]   pelaajatilastot, huuhkaja-arvostelu, kansojen-liiga,

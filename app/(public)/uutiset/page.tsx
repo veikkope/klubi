@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { CategoryFilter } from "@/components/category-filter";
 import { Container } from "@/components/layout/container";
@@ -11,6 +12,7 @@ import { rootCrumb } from "@/lib/nav-sections";
 import { breadcrumbSchema, collectionPageSchema } from "@/lib/schema-org";
 import { hakusanat, siistiHaku } from "@/lib/haku";
 import { buildMetadata } from "@/lib/seo";
+import { tunnisteHref, tunnisteSlug, TUNNISTEET_POLKU } from "@/lib/tunnisteet";
 import { categoryLabel, isValidCategory } from "@/lib/uutinen-categories";
 import type { UutinenCategory } from "@/lib/types";
 import { sanityFetch } from "@/sanity/lib/fetch";
@@ -23,6 +25,7 @@ import {
 } from "@/sanity/lib/queries/uutiset";
 
 import { Pagination } from "./_components/pagination";
+import { haeTunniste } from "./_lib/tunnisteet";
 import {
   buildPath,
   firstParam,
@@ -107,7 +110,7 @@ export default async function UutisetPage({
   const { start, end } = pageRange(page, PER_PAGE);
   const hakee = terms.length > 0;
 
-  const [result, categoryValues] = await Promise.all([
+  const [result, categoryValues, hakuTunniste] = await Promise.all([
     sanityFetch<Paged<UutinenListItem>>({
       query: hakee ? uutisetHakuQuery : uutisetPageQuery,
       params: hakee ? { category, terms, start, end } : { category, start, end },
@@ -119,6 +122,8 @@ export default async function UutisetPage({
       tags: ["uutinen"],
       fallback: [],
     }),
+    // Haku on täsmälleen jokin tunniste ("huuhkajat") → vinkki sen sivulle.
+    hakee && tunnisteSlug(haku) ? haeTunniste(tunnisteSlug(haku)) : null,
   ]);
 
   const total = result.total;
@@ -153,9 +158,14 @@ export default async function UutisetPage({
           lead={LEAD}
           breadcrumbs={trail}
           actions={
-            <LinkButton href="/uutiset/arkisto" variant="secondary">
-              Selaa vuosiarkistoa
-            </LinkButton>
+            <>
+              <LinkButton href="/uutiset/arkisto" variant="secondary">
+                Selaa vuosiarkistoa
+              </LinkButton>
+              <LinkButton href={TUNNISTEET_POLKU} variant="secondary">
+                Selaa tunnisteita
+              </LinkButton>
+            </>
           }
         />
 
@@ -190,6 +200,17 @@ export default async function UutisetPage({
               : `${total} kirjoitusta.`}
           {hakee && total > 0 && ` Osuvimmat ensin${category ? `, kategoriassa ${categoryLabel(category).toLowerCase()}` : ""}.`}
         </p>
+
+        {hakuTunniste && (
+          <p className="mt-4 text-sm">
+            <Link
+              href={tunnisteHref(hakuTunniste.nimi) ?? TUNNISTEET_POLKU}
+              className="text-accent underline decoration-1 underline-offset-4 hover:decoration-2"
+            >
+              Kaikki kirjoitukset tunnisteella {hakuTunniste.nimi} ({hakuTunniste.maara})
+            </Link>
+          </p>
+        )}
 
         {result.items.length === 0 ? (
           hakee ? (
