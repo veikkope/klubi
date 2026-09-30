@@ -1,5 +1,6 @@
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
+import { Sivunvaihto } from "@/components/sivunvaihto";
 
 export default function PublicLayout({
   children,
@@ -16,7 +17,7 @@ export default function PublicLayout({
         id="sisalto"
         className="flex-1 pb-16 sm:pb-24 has-[>[data-flush-footer]]:pb-0"
       >
-        {children}
+        <Sivunvaihto>{children}</Sivunvaihto>
       </main>
       <Footer />
     </>

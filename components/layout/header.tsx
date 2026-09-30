@@ -29,7 +29,12 @@ export async function Header() {
   // Ei CTA-painiketta. Sivua vieritettäessä alle tulee hento varjo
   // (.header-varjo, globals.css).
   return (
-    <header className="header-varjo sticky top-0 z-40 border-b border-border bg-surface">
+    // viewTransitionName: header pysyy paikallaan sivunvaihdon animaatiossa
+    // (globals.css, sivuston-header).
+    <header
+      className="header-varjo sticky top-0 z-40 border-b border-border bg-surface"
+      style={{ viewTransitionName: "sivuston-header" }}
+    >
       <Container size="wide" className="flex items-center justify-between gap-6 py-3.5 sm:py-[22px]">
         <Link href="/" className="flex shrink-0 items-center gap-2.5 sm:gap-3.5">
           <Image

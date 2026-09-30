@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { FramedImage, korttiZoom } from "@/components/framed-image";
+import { KuvaSiirtyma } from "@/components/sivunvaihto";
 import { RatingDots } from "@/components/ui/rating-dots";
 import { SanityImage } from "@/components/sanity-image";
 import { cn } from "@/lib/cn";
@@ -82,12 +83,16 @@ export function RestaurantCard({
             sizes="80px"
             className={cn("aspect-square w-full rounded-sm object-cover sm:hidden", korttiZoom)}
           />
-          <FramedImage
-            image={r.image}
-            width={840}
-            sizes="(min-width: 1024px) 420px, 45vw"
-            className="aspect-[4/3] w-full max-sm:hidden"
-          />
+          {/* Vain ison kortin kuva siirtyy arviosivulle: nimi saa olla näkyvissä
+              kerran, ja mobiilin pikkukuva on piilossa isolla näytöllä. */}
+          <KuvaSiirtyma nimi={`ravintola-${r.slug}`}>
+            <FramedImage
+              image={r.image}
+              width={840}
+              sizes="(min-width: 1024px) 420px, 45vw"
+              className="aspect-[4/3] w-full max-sm:hidden"
+            />
+          </KuvaSiirtyma>
         </>
       ) : (
         <span aria-hidden className="aspect-square w-full rounded-sm bg-brass-tint sm:hidden" />

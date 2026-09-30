@@ -11,6 +11,7 @@ import { FramedImage } from "@/components/framed-image";
 import { UutisenTunnisteet } from "@/components/tunnistelista";
 import { JsonLd } from "@/components/seo/json-ld";
 import { JaaPainike } from "@/components/jaa-painike";
+import { KuvaSiirtyma } from "@/components/sivunvaihto";
 import { Nuoli } from "@/components/ui/nuoli";
 import {
   ensimmainenKappaleIngressiksi,
@@ -205,14 +206,16 @@ export default async function UutinenPage({
               figure + figcaption sitoo sen kuvaan myös ruudunlukijalle. */}
           <figure>
             <div className="overflow-hidden rounded-2xl">
-              <FramedImage
-                image={news.coverImage}
-                kuvateksti={news.coverImage.caption}
-                width={1600}
-                sizes="(min-width: 1280px) 1152px, 100vw"
-                className="aspect-[16/9] w-full"
-                priority
-              />
+              <KuvaSiirtyma nimi={`uutinen-${news.slug}`}>
+                <FramedImage
+                  image={news.coverImage}
+                  kuvateksti={news.coverImage.caption}
+                  width={1600}
+                  sizes="(min-width: 1280px) 1152px, 100vw"
+                  className="aspect-[16/9] w-full"
+                  priority
+                />
+              </KuvaSiirtyma>
             </div>
             {news.coverImage.caption?.trim() && (
               <figcaption className="mt-3 text-sm text-muted">

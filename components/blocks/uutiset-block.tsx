@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Container } from "@/components/layout/container";
 import { ArrowLink, BlockHeading } from "@/components/blocks/block-heading";
 import { FramedImage } from "@/components/framed-image";
+import { KuvaSiirtyma } from "@/components/sivunvaihto";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import { recentUutisetQuery } from "@/sanity/lib/queries";
 import { cn } from "@/lib/cn";
@@ -72,12 +73,14 @@ export async function UutisetBlock({ eyebrow, heading, count = 4 }: Props) {
               (sama malli kuin Card). Ruudunlukija kuulee linkkinä vain otsikon. */}
           <article className="group/kortti relative flex flex-col gap-3.5 sm:gap-[18px]">
             {featured.coverImage?.asset && (
-              <FramedImage
-                image={featured.coverImage}
-                width={1520}
-                sizes="(min-width: 1024px) 760px, 100vw"
-                className="aspect-[3/2] w-full rounded-sm sm:aspect-[16/10]"
-              />
+              <KuvaSiirtyma nimi={`uutinen-${featured.slug}`}>
+                <FramedImage
+                  image={featured.coverImage}
+                  width={1520}
+                  sizes="(min-width: 1024px) 760px, 100vw"
+                  className="aspect-[3/2] w-full rounded-sm sm:aspect-[16/10]"
+                />
+              </KuvaSiirtyma>
             )}
             <Meta news={featured} />
             <h3 className="text-pretty font-display text-2xl leading-[1.2] sm:text-[2.5rem] sm:leading-[1.12]">

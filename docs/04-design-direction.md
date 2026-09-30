@@ -169,6 +169,8 @@ Hyvin maltillisia. Vain:
 - Nuolilinkin nuoli liikahtaa 3 px osoittamaansa suuntaan (`Nuoli`, `components/ui/nuoli.tsx`). Käytä aina tätä komponenttia, älä pelkkää `→`-merkkiä. Linkkiin tulee luokka `group/linkki`, korttiin `group/kortti`.
 - Tekstilinkin alleviivaus vahvistuu hoverissa 1 px → 2 px (`decoration-1 hover:decoration-2`).
 - Headerin varjo: kun sivua vieritetään, sticky headerin alle tulee hento varjo, joka voimistuu ensimmäisten 64 px:n aikana (`.header-varjo`, scroll-driven animation). Selaimissa ilman tukea headerissa on pelkkä alaviiva.
+- **Sivunvaihto** (View Transitions, `components/sivunvaihto.tsx`): kun polku vaihtuu, vanha sisältö häivyttyy ulos (120 ms) ja uusi sisään (180 ms, alkaa 60 ms myöhemmin). Header on ankkuroitu (`viewTransitionName: sivuston-header`), joten se ei liiku eikä sivun kuva piirry sen päälle. Hakusivujen päivitykset eivät muuta polkua, joten ne eivät animoidu (niissä on `HakuTulokset`-tila). Selaimen takaisin-painike vaihtaa sivun ilman animaatiota.
+- **Kuvan siirtymä** (`KuvaSiirtyma`): ravintolakortin (vain iso kortti) ja uutiskortin kuva liukuu kohdesivun isoksi kuvaksi, 380 ms. Kuvat vaihtuvat ryhmän sisällä 150 ms:ssa, jottei eri tavoin rajattuja kuvia näy päällekkäin. Sama `nimi` kortissa ja kohdesivulla, ja nimi saa olla näkyvissä vain kerran sivulla. Toimii, kun kohdesivu on esihaettu, eli tuotannossa, ei kehityspalvelimella. Vähemmän liikettä: kuva ei liiku, sivu vain häivyttyy.
 - Sivun sisäisten ankkurihyppyjen pehmeä vieritys (`scroll-behavior: smooth`, vain `prefers-reduced-motion: no-preference`). Sivunvaihdoissa Next hyppää sivun alkuun heti (`data-scroll-behavior="smooth"` juuren `<html>`-elementissä).
 
 Kunnioita `prefers-reduced-motion`.

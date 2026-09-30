@@ -275,6 +275,81 @@ body {
   }
 }
 
+/* Sivunvaihdot (View Transitions, components/sivunvaihto.tsx, docs/04).
+   - Sivun sisältö häivyttyy: vanha nopeasti ulos, uusi hieman limittäin sisään.
+   - Kortin kuva liukuu kohdesivun isoksi kuvaksi (`.kuva-siirtyma`).
+   - Header on ankkuroitu: se ei animoidu, eikä sivun kuva piirry sen päälle.
+   Selaimet ilman tukea vaihtavat sivun ilman animaatiota. */
+:root {
+  --sivu-ulos: 120ms;
+  --sivu-sisaan: 180ms;
+  --kuva-siirtyma: 380ms;
+}
+
+/* Klikkaukset menevät siirtymän aikana elävälle sivulle eivätkä katoa. */
+::view-transition {
+  pointer-events: none;
+}
+
+::view-transition-old(.sivu-ulos) {
+  animation: var(--sivu-ulos) ease-in both sivu-haivytys reverse;
+}
+::view-transition-new(.sivu-sisaan) {
+  animation: var(--sivu-sisaan) ease-out 60ms both sivu-haivytys;
+}
+
+/* Juuri (header, footer): sama tahti kuin sisällöllä. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: var(--sivu-sisaan);
+}
+
+::view-transition-group(sivuston-header) {
+  animation: none;
+  z-index: 100;
+}
+::view-transition-old(sivuston-header) {
+  display: none;
+}
+::view-transition-new(sivuston-header) {
+  animation: none;
+}
+
+::view-transition-group(.kuva-siirtyma) {
+  z-index: 50;
+  overflow: clip;
+  border-radius: var(--radius-sm);
+  animation-duration: var(--kuva-siirtyma);
+  animation-timing-function: cubic-bezier(0.2, 0, 0, 1);
+}
+/* Kortin ja sivun kuvilla on eri mittasuhde: kuvat täyttävät ryhmän
+   venymättä, ja ryhmä rajaa ylimenevän osan. Kuvat vaihtuvat nopeasti
+   (150 ms) koon muutoksen alussa, jottei eri tavoin rajattuja kuvia näy
+   pitkään päällekkäin. */
+::view-transition-old(.kuva-siirtyma),
+::view-transition-new(.kuva-siirtyma) {
+  height: 100%;
+  object-fit: cover;
+}
+::view-transition-old(.kuva-siirtyma) {
+  animation: 150ms ease-out both sivu-haivytys reverse;
+}
+::view-transition-new(.kuva-siirtyma) {
+  animation: 150ms ease-out both sivu-haivytys;
+}
+
+@keyframes sivu-haivytys {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Vähemmän liikettä: ei siirtymiä eikä kokomuutoksia, vain häivytys. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+  }
+}
+
 /* Hakutulosten päivityspalkki (components/hakunakyma.tsx): ohut, edestakaisin
    liukuva klubinsininen jakso vaalealla pohjalla. Kun käyttäjä on pyytänyt
    vähemmän liikettä, palkki on paikallaan ja täysleveä. */
