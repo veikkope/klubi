@@ -26,9 +26,10 @@ export async function Header() {
 
   // Tyyliopas (Sivut v3): valkoinen ylätunniste, alareunassa ohut viiva.
   // Logo: merkki 50 px + tekstilogo 25 px, väli 14 px (mobiilissa 38 + 17).
-  // Ei CTA-painiketta.
+  // Ei CTA-painiketta. Sivua vieritettäessä alle tulee hento varjo
+  // (.header-varjo, globals.css).
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-surface">
+    <header className="header-varjo sticky top-0 z-40 border-b border-border bg-surface">
       <Container size="wide" className="flex items-center justify-between gap-6 py-3.5 sm:py-[22px]">
         <Link href="/" className="flex shrink-0 items-center gap-2.5 sm:gap-3.5">
           <Image

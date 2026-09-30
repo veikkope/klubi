@@ -24,7 +24,7 @@ export function EsikatseluPalkki() {
   return (
     <div
       role="status"
-      className="sticky top-0 z-50 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 border-b border-brass bg-brass-tint px-4 py-2 text-center text-sm font-medium text-brass-tint-text"
+      className="sticky top-0 z-50 flex print:hidden flex-wrap items-center justify-center gap-x-4 gap-y-1 border-b border-brass bg-brass-tint px-4 py-2 text-center text-sm font-medium text-brass-tint-text"
     >
       <span>
         Esikatselutila: näet myös julkaisemattomat luonnokset. Kävijät eivät näe niitä.

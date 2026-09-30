@@ -50,7 +50,7 @@ export function kuvanAlt(alt: string | null | undefined, kuvateksti?: string | n
 }
 
 /** Sanityn asset-viittaus sisältää alkuperäiset mitat: image-abc-1200x800-jpg. */
-function assetDimensions(image: SanityImageData): { width: number; height: number } | null {
+export function assetDimensions(image: SanityImageData): { width: number; height: number } | null {
   const ref = image?.asset?._ref ?? image?.asset?._id ?? "";
   const match = /-(\d+)x(\d+)-[a-z0-9]+$/i.exec(ref);
   if (!match) return null;

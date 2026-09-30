@@ -124,7 +124,20 @@ Kuvat on generoitu tiedostosta `mark-blue.png` sharp-kirjastolla.
 | `Footer` | Yönsininen, pystylogo (merkki 56 + teksti 24), sarakkeet Jalkapallo / Klubi / Yhteystiedot, alarivi | `components/layout/footer.tsx` |
 | Uutissivu | Metarivillä päiväys · kirjoittaja · lukuaika (vähintään 150 sanaa, 180 sanaa/min) · Jaa. Jos erillistä ingressiä ei näytetä, 60–320 merkin ensimmäinen kappale näytetään ingressinä (serif 20/24 px, paino 400). Tekstin jälkeen "Vanhempi / Uudempi uutinen" -selaus. Säännöt ovat tiedostossa `lib/artikkeli.ts` (testit: `npm run test:artikkeli`). | `app/(public)/uutiset/[slug]/page.tsx` |
 | `JaaPainike` | Kosketuslaitteella avaa laitteen oman jakovalikon, tietokoneella kopioi linkin ("Linkki kopioitu ✓", myös ruudunlukijalle). Ei kolmansien osapuolten widgettejä. | `components/jaa-painike.tsx` |
+| `StatTable` | Ensimmäinen sarake (rivin nimi) pysyy paikallaan vaakavierityksessä, ja sen reunaan tulee varjo, kun sisältöä vierii alle. Oikeassa reunassa on varjo niin kauan kuin sivulle on vieritettävää. Molemmat ovat CSS:n scroll-driven-animaatioita (`.taulukko-*`, globals.css), eivätkä ne näy, jos taulukko mahtuu. Rivi korostuu hoverissa (`surface-strong`). Rivien taustat ovat läpinäkymättömiä, ja taulukko on `border-separate`-mallissa, jotta kiinnitetyillä soluilla on omat viivansa. | `components/ui/stat-table.tsx` |
+| `Lightbox` | Kosketusnäytöllä pyyhkäisy vaihtaa kuvan (kuva seuraa sormea, kynnys 50 px; pystyveto ei vaihda). Edellinen ja seuraava kuva esiladataan samalla srcsetillä (`getImageProps` + `preload`). Kuvan mitat tulevat assetista, ja latauksen ajan näkyy hallitseva väri. Kuvan vaihtuminen luetaan ruudunlukijalle. | `components/gallery/lightbox.tsx` |
 | `CtaBlock` | **Ei käytössä** (tyyliopas: ei liittymiskehotteita). Säilyy vanhan datan vuoksi. | `components/blocks/cta-block.tsx` |
+
+## Tulostus
+
+Tulosteeseen tulee vain sisältö (`@media print`, globals.css):
+- Kaikki `<nav>`-elementit, lomakkeet, footer ja headerin painikkeet piilotetaan. Logo jää tunnisteeksi.
+- Yksittäiset elementit piilotetaan luokalla `print:hidden`: Jaa-painike, "Lue lisää" -osio, herokuva ja esikatselupalkki.
+- Selaimet eivät tulosta taustavärejä, joten yönsinisten pintojen (`bg-chrome`, `bg-navy`) teksti on tulosteessa mustaa. Sinipohjaisten merkkien ja painikkeiden (`bg-primary`, `bg-blue`) väri tulostetaan (`print-color-adjust: exact`).
+- Leveä taulukko tulostuu kokonaan. Sivu ei katkea kuvan, taulukon rivin tai otsikon kohdalta.
+- Ulkoisten linkkien osoite näytetään linkin perässä.
+
+**Uutta komponenttia tehdessä:** jos se on pelkkää käyttöliittymää (painike, suodatin, navigointi), lisää `print:hidden`, ellei se ole jo `<nav>` tai `<form>`.
 
 ## Ikonit
 
@@ -154,6 +167,7 @@ Hyvin maltillisia. Vain:
 - Kortin kuvan hidas lähennys hoverissa: 3 %, 500 ms (`korttiZoom`, `framed-image.tsx`). Koskee vain kortteja, joilla on luokka `group/kortti`.
 - Nuolilinkin nuoli liikahtaa 3 px osoittamaansa suuntaan (`Nuoli`, `components/ui/nuoli.tsx`). Käytä aina tätä komponenttia, älä pelkkää `→`-merkkiä. Linkkiin tulee luokka `group/linkki`, korttiin `group/kortti`.
 - Tekstilinkin alleviivaus vahvistuu hoverissa 1 px → 2 px (`decoration-1 hover:decoration-2`).
+- Headerin varjo: kun sivua vieritetään, sticky headerin alle tulee hento varjo, joka voimistuu ensimmäisten 64 px:n aikana (`.header-varjo`, scroll-driven animation). Selaimissa ilman tukea headerissa on pelkkä alaviiva.
 - Sivun sisäisten ankkurihyppyjen pehmeä vieritys (`scroll-behavior: smooth`, vain `prefers-reduced-motion: no-preference`). Sivunvaihdoissa Next hyppää sivun alkuun heti (`data-scroll-behavior="smooth"` juuren `<html>`-elementissä).
 
 Kunnioita `prefers-reduced-motion`.

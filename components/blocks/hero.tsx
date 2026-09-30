@@ -37,12 +37,13 @@ export function Hero({ data }: { data: EtusivuData }) {
             width={2400}
             crop={false}
             sizes="100vw"
-            className="absolute inset-0 -z-20 h-full w-full object-cover"
+            // Tulosteessa ei taustakuvaa: musta teksti jäisi kuvan päälle.
+            className="absolute inset-0 -z-20 h-full w-full object-cover print:hidden"
             priority
           />
           <div
             aria-hidden
-            className="absolute inset-0 -z-10 bg-black/55 lg:bg-transparent lg:bg-linear-to-r lg:from-black/75 lg:from-10% lg:via-black/55 lg:via-55% lg:to-transparent lg:to-90%"
+            className="absolute inset-0 -z-10 bg-black/55 print:hidden lg:bg-transparent lg:bg-linear-to-r lg:from-black/75 lg:from-10% lg:via-black/55 lg:via-55% lg:to-transparent lg:to-90%"
           />
         </>
       )}

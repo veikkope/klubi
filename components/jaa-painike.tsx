@@ -57,7 +57,7 @@ export function JaaPainike({ url, otsikko }: { url: string; otsikko: string }) {
       <button
         type="button"
         onClick={jaa}
-        className="inline-flex min-h-11 items-center gap-1.5 text-sm font-medium text-accent transition hover:text-accent-hover"
+        className="inline-flex min-h-11 items-center gap-1.5 text-sm font-medium text-accent transition hover:text-accent-hover print:hidden"
       >
         {tila === "kopioitu" ? (
           <Check aria-hidden size={16} strokeWidth={2.25} />

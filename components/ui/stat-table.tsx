@@ -9,6 +9,10 @@ import { formatInterval, formatIso, NUMEERISET, parseIso } from "@/lib/taulukko"
  *    ruudunlukija kertoo mihin sarakkeeseen solu kuuluu.
  *  - **Responsiivisuus:** leveä taulukko vierii omassa säiliössään, ei koskaan
  *    bodyssä. `tabindex={0}` tekee vierityksestä näppäimistökäyttöisen.
+ *    Ensimmäinen sarake (rivin nimi) pysyy paikallaan vaakavierityksessä, ja
+ *    reunavarjot kertovat, että sivulle on vieritettävää (`.taulukko-*`,
+ *    globals.css). Rivien taustat ovat läpinäkymättömiä, jotta kiinnitetty
+ *    sarake peittää alleen vierivän sisällön.
  *  - **GEO:** data on oikeaa HTML-taulukkoa, ei kuvaa eikä canvasta — vain
  *    silloin vastausmoottori voi lukea sen.
  */
@@ -34,6 +38,12 @@ interface StatTableProps {
 }
 
 const numericTypes = NUMEERISET;
+
+/**
+ * Ensimmäinen sarake pysyy vasemmassa reunassa. Tausta periytyy riviltä
+ * (sisältö ei näy läpi), ja varjo erottaa sen vierivästä sisällöstä.
+ */
+const kiinnitetty = "taulukko-kiinnitetty sticky left-0 z-[1] bg-inherit";
 
 function cellValue(row: StatRow, key: string): string {
   // Tyhjä solu on tuonnissa jätetty kokonaan pois (ei tyhjiä merkkijonoja),
@@ -90,76 +100,87 @@ export function StatTable({
   }
 
   return (
-    <div
-      tabIndex={0}
-      role="region"
-      aria-label={caption}
-      className={cn(
-        "overflow-x-auto rounded-2xl border border-border",
-        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
-        className,
-      )}
-    >
-      <table className="w-full border-collapse text-sm">
-        <caption
-          className={cn(
-            "px-4 py-3 text-left font-display text-lg text-foreground",
-            !captionVisible && "sr-only",
-          )}
-        >
-          {caption}
-        </caption>
-        <thead>
-          <tr className="border-b border-border bg-surface-strong">
-            {columns.map((column) => (
-              <th
-                key={column.key}
-                scope="col"
-                className={cn(
-                  "whitespace-nowrap px-4 py-3 font-medium text-foreground",
-                  numericTypes.has(column.type ?? "text")
-                    ? "text-right tabular-nums"
-                    : "text-left",
-                )}
-              >
-                {column.label}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row, rowIndex) => (
-            <tr
-              key={rowIndex}
-              className="border-b border-border last:border-0 even:bg-surface"
-            >
-              {columns.map((column, columnIndex) => {
-                const value = cellValue(row, column.key);
-                const numeric = numericTypes.has(column.type ?? "text");
-                const classes = cn(
-                  "px-4 py-2.5 align-top",
-                  numeric ? "text-right tabular-nums" : "text-left",
-                );
-                // Ensimmäinen sarake toimii rivin otsikkona. Tyhjä solu ei voi
-                // olla otsikko (ruudunlukija ilmoittaisi nimettömän rivin).
-                return columnIndex === 0 && value !== "" ? (
-                  <th
-                    key={column.key}
-                    scope="row"
-                    className={cn(classes, "font-medium text-foreground")}
-                  >
-                    <CellContent value={value} type={column.type} />
-                  </th>
-                ) : (
-                  <td key={column.key} className={cn(classes, "text-muted")}>
-                    <CellContent value={value} type={column.type} />
-                  </td>
-                );
-              })}
+    <div className={cn("taulukko relative rounded-2xl", className)}>
+      <div
+        tabIndex={0}
+        role="region"
+        aria-label={caption}
+        className={cn(
+          "taulukko-vieritin overflow-x-auto rounded-2xl border border-border",
+          "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+        )}
+      >
+        {/* border-separate: kiinnitetyillä soluilla on omat reunaviivansa
+            (border-collapse-mallissa viivat jäisivät vierivän taulukon mukaan). */}
+        <table className="w-full border-separate border-spacing-0 text-sm">
+          <caption
+            className={cn(
+              "px-4 py-3 text-left font-display text-lg text-foreground",
+              !captionVisible && "sr-only",
+            )}
+          >
+            {caption}
+          </caption>
+          <thead>
+            <tr className="bg-surface-strong">
+              {columns.map((column, columnIndex) => (
+                <th
+                  key={column.key}
+                  scope="col"
+                  className={cn(
+                    "whitespace-nowrap border-b border-border px-4 py-3 font-medium text-foreground",
+                    columnIndex === 0 && kiinnitetty,
+                    numericTypes.has(column.type ?? "text")
+                      ? "text-right tabular-nums"
+                      : "text-left",
+                  )}
+                >
+                  {column.label}
+                </th>
+              ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {rows.map((row, rowIndex) => (
+              <tr
+                key={rowIndex}
+                className="group/rivi odd:bg-background even:bg-surface"
+              >
+                {columns.map((column, columnIndex) => {
+                  const value = cellValue(row, column.key);
+                  const numeric = numericTypes.has(column.type ?? "text");
+                  const classes = cn(
+                    "px-4 py-2.5 align-top",
+                    // Rivin viiva soluissa (border-separate); viimeisellä rivillä ei viivaa.
+                    "border-b border-border group-last/rivi:border-b-0",
+                    // Osoitettu rivi korostuu; kiinnitetty solu mukana (oma tausta).
+                    "group-hover/rivi:bg-surface-strong",
+                    numeric ? "text-right tabular-nums" : "text-left",
+                    columnIndex === 0 && kiinnitetty,
+                  );
+                  // Ensimmäinen sarake toimii rivin otsikkona. Tyhjä solu ei voi
+                  // olla otsikko (ruudunlukija ilmoittaisi nimettömän rivin).
+                  return columnIndex === 0 && value !== "" ? (
+                    <th
+                      key={column.key}
+                      scope="row"
+                      className={cn(classes, "font-medium text-foreground")}
+                    >
+                      <CellContent value={value} type={column.type} />
+                    </th>
+                  ) : (
+                    <td key={column.key} className={cn(classes, "text-muted")}>
+                      <CellContent value={value} type={column.type} />
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {/* Oikean reunan varjo: sivulle on vielä vieritettävää. */}
+      <div aria-hidden className="taulukko-vihje pointer-events-none absolute inset-y-px right-px w-8 rounded-r-2xl" />
     </div>
   );
 }

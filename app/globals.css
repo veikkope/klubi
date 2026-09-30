@@ -246,6 +246,155 @@ body {
   }
 }
 
+/* Tilastotaulukon vaakavierityksen vihjeet (components/ui/stat-table.tsx).
+   Varjot seuraavat taulukon vieritystä (scroll-driven animation, ei JS:ää):
+   - kiinnitetyn ensimmäisen sarakkeen reunaan tulee varjo, kun sisältöä on
+     vieritetty sen alle
+   - oikeaan reunaan varjo niin kauan kuin sivulle on vielä vieritettävää.
+   Jos taulukko mahtuu, aikajana ei ole aktiivinen eikä varjoja näy. Selaimet
+   ilman tukea (Firefox 9/2026) näyttävät taulukon ilman varjoja. */
+.taulukko-vihje {
+  opacity: 0;
+  background: linear-gradient(to left, rgb(20 31 77 / 0.12), transparent);
+}
+
+@supports (animation-timeline: scroll()) {
+  .taulukko { timeline-scope: --taulukko; }
+  .taulukko-vieritin { scroll-timeline: --taulukko inline; }
+
+  .taulukko-kiinnitetty {
+    animation: taulukko-varjo linear both;
+    animation-timeline: --taulukko;
+    animation-range: 0 1.5rem;
+  }
+
+  .taulukko-vihje {
+    animation: taulukko-vihje linear both;
+    animation-timeline: --taulukko;
+    animation-range: calc(100% - 1.5rem) 100%;
+  }
+}
+
+/* Sticky header (components/layout/header.tsx): kun sivua on vieritetty,
+   headerin alle tulee hento varjo, joka erottaa sen alle liukuvasta
+   sisällöstä. Varjo voimistuu ensimmäisten 64 px:n aikana ja seuraa sivun
+   vieritystä (scroll-driven animation, ei JS:ää). Selaimissa ilman tukea
+   headerissa on pelkkä alaviiva. */
+@supports (animation-timeline: scroll()) {
+  .header-varjo {
+    animation: header-varjo linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 0 64px;
+  }
+}
+
+@keyframes header-varjo {
+  from { box-shadow: 0 0 0 transparent; }
+  to { box-shadow: 0 6px 20px -10px rgb(20 31 77 / 0.18); }
+}
+
+@keyframes taulukko-varjo {
+  from { box-shadow: none; }
+  to { box-shadow: 6px 0 8px -6px rgb(20 31 77 / 0.28); }
+}
+
+@keyframes taulukko-vihje {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* Tulostus: vain sisältö (otteluohjelma, tapahtuma, uutinen, taulukko).
+   Navigaatio, lomakkeet ja footer jäävät pois, logo jää tunnisteeksi.
+   Selaimet eivät tulosta taustavärejä, joten yönsinisten pintojen valkoinen
+   teksti vaihdetaan mustaksi. Yksittäiset elementit piilotetaan luokalla
+   `print:hidden`. */
+@media print {
+  @page {
+    margin: 16mm 14mm;
+  }
+
+  body {
+    font-size: 11pt;
+    line-height: 1.5;
+    background: #fff;
+  }
+
+  /* Ei varjoja, animaatioita eikä vierityksen mukaan kiinnittyviä osia. */
+  *,
+  *::before,
+  *::after {
+    box-shadow: none !important;
+    text-shadow: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+
+  header {
+    position: static !important;
+    border: 0 !important;
+  }
+
+  nav,
+  form,
+  footer,
+  header button,
+  .taulukko-vihje {
+    display: none !important;
+  }
+
+  /* Yönsiniset pinnat (hero, laskuri): musta teksti ilman taustaa. */
+  .bg-chrome,
+  .bg-navy,
+  .bg-chrome *,
+  .bg-navy * {
+    color: #000 !important;
+    background: transparent !important;
+  }
+
+  /* Sinipohjaiset merkit ja painikkeet ("Klubi paikalla", valittu sivu):
+     valkoinen teksti katoaisi ilman taustaa, joten niiden taustaväri
+     tulostetaan. */
+  .bg-primary,
+  .bg-blue {
+    print-color-adjust: exact;
+  }
+
+  /* Leveä taulukko kokonaan paperille, ei vierityssäiliöön. */
+  .taulukko-vieritin {
+    overflow: visible !important;
+  }
+  .taulukko-kiinnitetty {
+    position: static !important;
+  }
+
+  /* Sivu ei katkea kuvan, taulukon rivin tai otsikon kohdalta. */
+  img,
+  figure,
+  blockquote,
+  tr {
+    break-inside: avoid;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    break-after: avoid;
+  }
+  p {
+    orphans: 3;
+    widows: 3;
+  }
+
+  /* Paperilla linkkiä ei voi klikata: ulkoisen linkin osoite näkyviin. */
+  main a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.85em;
+    font-weight: 400;
+    color: var(--muted);
+    overflow-wrap: anywhere;
+  }
+}
+
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

@@ -30,12 +30,10 @@ import { urlForImage } from "@/sanity/lib/image";
 import {
   relatedUutisetQuery,
   uutinenDetailQuery,
-  uutinenNaapuritQuery,
   uutinenSlugsQuery,
   type UutinenDetail,
   type UutinenListItem,
   type UutinenNaapuri,
-  type UutinenNaapurit,
 } from "@/sanity/lib/queries/uutiset";
 
 export const revalidate = 3600;
@@ -108,23 +106,12 @@ export default async function UutinenPage({
   const news = await getUutinen(slug);
   if (!news) notFound();
 
-  const eiNaapureita: UutinenNaapurit = { vanhempi: null, uudempi: null };
-  const [related, naapurit] = await Promise.all([
-    sanityFetch<UutinenListItem[]>({
-      query: relatedUutisetQuery,
-      params: { slug: news.slug, categories: news.categories ?? [], count: 3 },
-      tags: ["uutinen"],
-      fallback: [],
-    }),
-    news.publishedAt
-      ? sanityFetch<UutinenNaapurit>({
-          query: uutinenNaapuritQuery,
-          params: { id: news._id, publishedAt: news.publishedAt },
-          tags: ["uutinen"],
-          fallback: eiNaapureita,
-        })
-      : eiNaapureita,
-  ]);
+  const related = await sanityFetch<UutinenListItem[]>({
+    query: relatedUutisetQuery,
+    params: { slug: news.slug, categories: news.categories ?? [], count: 3 },
+    tags: ["uutinen"],
+    fallback: [],
+  });
 
   const path = `/uutiset/${news.slug}`;
   const trail = [
@@ -188,7 +175,7 @@ export default async function UutinenPage({
                   <span>{minuutit} min lukuaika</span>
                 </>
               )}
-              <span aria-hidden>·</span>
+              <span aria-hidden className="print:hidden">·</span>
               <JaaPainike url={new URL(path, siteUrl).toString()} otsikko={news.title} />
             </div>
           }
@@ -290,7 +277,7 @@ export default async function UutinenPage({
 
         <KommentitOsio uutinenId={news._id} kommentointi={news.kommentointi} />
 
-        <UutisSelaus naapurit={naapurit} />
+        <UutisSelaus vanhempi={news.vanhempi} uudempi={news.uudempi} />
 
         <p className="mt-10 text-sm text-muted">
           <Link href="/uutiset" className="text-accent underline decoration-1 underline-offset-4 hover:decoration-2">
@@ -313,7 +300,7 @@ export default async function UutinenPage({
       {related.length > 0 && (
         <section
           aria-labelledby="lue-lisaa"
-          className="border-t border-border bg-surface py-16"
+          className="border-t border-border bg-surface py-16 print:hidden"
         >
           <Container>
             <h2 id="lue-lisaa" className="font-display text-2xl sm:text-3xl">
@@ -337,8 +324,13 @@ export default async function UutinenPage({
  * Vanhempi ja uudempi uutinen julkaisujärjestyksessä (vasen = vanhempi, kuten
  * arkiston vuosiselauksessa). Otsikko kertoo, mihin linkki vie.
  */
-function UutisSelaus({ naapurit }: { naapurit: UutinenNaapurit }) {
-  const { vanhempi, uudempi } = naapurit;
+function UutisSelaus({
+  vanhempi,
+  uudempi,
+}: {
+  vanhempi?: UutinenNaapuri | null;
+  uudempi?: UutinenNaapuri | null;
+}) {
   if (!vanhempi && !uudempi) return null;
   return (
     <nav
