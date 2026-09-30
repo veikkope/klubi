@@ -68,7 +68,7 @@ voi muuttaa projektin asetuksia tai käyttöoikeuksia. Kehittäjä hoitaa ne.
 3. **Lyhenne** (enintään 200 merkkiä) näkyy uutislistalla.
 4. **Kansikuva** ja **Sisältö**. Sisältöön voi lisätä otsikoita, listoja, linkkejä ja
    **kuvia tekstin sekaan**: paina **+** tekstin kohdalla → *Kuva*.
-5. **Kategoriat:** valitse listalta (esim. Palloveikkaus, Matkakuvaus, Tapahtumaraportti).
+5. **Kategoriat:** valitse listalta (esim. Palloveikkaus, Matkakuvaus, Tapahtumat).
 6. **Julkaise**.
 
 Palloveikkauksen tilanne on tavallinen uutinen. Kirjoita sarjataulukko riveinä:

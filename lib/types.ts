@@ -149,7 +149,6 @@ export type UutinenCategory =
   | "kannattajakulttuuri"
   | "tiedote"
   | "tapahtumaraportti"
-  | "jasentieto"
   | "jalkapallo"
   | "ravintola"
   | "blogi"

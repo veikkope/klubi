@@ -61,7 +61,7 @@ Listanäkymässä järjestys: `startsAt` desc (tulevat ensin).
 | excerpt | text | kyllä | Lyhenne listoja varten (max 200 merkkiä) |
 | coverImage | image (alt pakollinen) | ei | Kansikuva |
 | body | portableText | kyllä | Sisältö |
-| categories | array of string | ei | Tyyliopas (Sivut v3): jalkapallojuttujen pääkategoriat **otteluraportti** ja **kannattajakulttuuri**. Lisäksi tiedote, tapahtumaraportti, jäsentieto, jalkapallo, ravintola, blogi. Ensimmäinen kategoria näkyy etusivun jutuissa sinisenä yläotsakkeena. |
+| categories | array of string | ei | Tyyliopas (Sivut v3): jalkapallojuttujen pääkategoriat **otteluraportti** (Studiossa "Ottelutapahtuma") ja **kannattajakulttuuri**. Lisäksi tiedote, tapahtumaraportti (Studiossa "Tapahtumat"; entinen jäsentieto yhdistetty tähän 30.9.2026), jalkapallo, ravintola, blogi. Ensimmäinen kategoria näkyy etusivun jutuissa sinisenä yläotsakkeena. |
 | tunnisteet | array of string | ei | Blogin "labels": aiheet, paikat, henkilöt (vapaa teksti, enintään 30 kpl, 50 merkkiä). Sama tunniste = sama slug (`lib/tunnisteet.ts`), joten "Huuhkajat" ja "huuhkajat" eivät saa olla samassa uutisessa. Studiossa oma syöttö ehdotuksineen (`sanity/components/tunnisteet/`). Jokaisella tunnisteella sivu `/uutiset/tunniste/<slug>`, hakemisto `/uutiset/tunnisteet`. Blogista tuoduissa täytetty `blogspot.tunnisteet`-kentästä (docs/14 §3). |
 | author | reference→hallitus-jasen | ei | Kirjoittaja |
 

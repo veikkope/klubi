@@ -144,11 +144,11 @@ export const uutinen = defineType({
       of: [{ type: "string" }],
       options: {
         list: [
-          { title: "Otteluraportti", value: "otteluraportti" },
+          { title: "Ottelutapahtuma", value: "otteluraportti" },
           { title: "Kannattajakulttuuri", value: "kannattajakulttuuri" },
           { title: "Tiedote", value: "tiedote" },
-          { title: "Tapahtumaraportti", value: "tapahtumaraportti" },
-          { title: "Jäsentieto", value: "jasentieto" },
+          // Entinen "Jäsentieto" (jasentieto) yhdistetty tähän 30.9.2026.
+          { title: "Tapahtumat", value: "tapahtumaraportti" },
           { title: "Jalkapallo", value: "jalkapallo" },
           { title: "Ravintola", value: "ravintola" },
           { title: "Blogikirjoitus", value: "blogi" },

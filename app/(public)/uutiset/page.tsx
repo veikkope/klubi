@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { permanentRedirect } from "next/navigation";
 
 import { CategoryFilter } from "@/components/category-filter";
 import { Container } from "@/components/layout/container";
@@ -13,7 +14,7 @@ import { breadcrumbSchema, collectionPageSchema } from "@/lib/schema-org";
 import { hakusanat, siistiHaku } from "@/lib/haku";
 import { buildMetadata } from "@/lib/seo";
 import { tunnisteHref, tunnisteSlug, TUNNISTEET_POLKU } from "@/lib/tunnisteet";
-import { categoryLabel, isValidCategory } from "@/lib/uutinen-categories";
+import { categoryLabel, isValidCategory, MERGED_CATEGORIES } from "@/lib/uutinen-categories";
 import type { UutinenCategory } from "@/lib/types";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import {
@@ -40,7 +41,7 @@ export const revalidate = 3600;
 const PER_PAGE = 12;
 
 const LEAD =
-  "Klubin tiedotteet, tapahtumaraportit ja jäsentiedot sekä jalkapallo- ja " +
+  "Klubin tiedotteet, tapahtumat ja ottelutapahtumat sekä jalkapallo- ja " +
   "ravintola-aiheiset kirjoitukset. Uusimmat ensin.";
 
 type SearchParams = Record<string, SearchParamValue>;
@@ -106,7 +107,11 @@ export default async function UutisetPage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
-  const { category, page, haku, terms } = readParams(await searchParams);
+  const params = await searchParams;
+  // Yhdistetyn kategorian vanha linkki (esim. ?kategoria=jasentieto) → uusi.
+  const merged = MERGED_CATEGORIES.get(firstParam(params.kategoria) ?? "");
+  if (merged) permanentRedirect(pathFor(merged, 1, siistiHaku(firstParam(params.q))));
+  const { category, page, haku, terms } = readParams(params);
   const { start, end } = pageRange(page, PER_PAGE);
   const hakee = terms.length > 0;
 

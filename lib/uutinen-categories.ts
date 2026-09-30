@@ -11,17 +11,21 @@ export const UUTINEN_CATEGORIES: {
   label: string;
 }[] = [
   // Tyyliopas (Sivut v3): jalkapallojuttujen pääkategoriat
-  { value: "otteluraportti", label: "Otteluraportti" },
+  { value: "otteluraportti", label: "Ottelutapahtuma" },
   { value: "kannattajakulttuuri", label: "Kannattajakulttuuri" },
   { value: "tiedote", label: "Tiedote" },
-  { value: "tapahtumaraportti", label: "Tapahtumaraportti" },
-  { value: "jasentieto", label: "Jäsentieto" },
+  { value: "tapahtumaraportti", label: "Tapahtumat" },
   { value: "jalkapallo", label: "Jalkapallo" },
   { value: "ravintola", label: "Ravintola" },
   { value: "blogi", label: "Blogikirjoitus" },
   { value: "palloveikkaus", label: "Palloveikkaus" },
   { value: "matkakuvaus", label: "Matkakuvaus" },
 ];
+
+/** Yhdistetyt kategoriat: vanha arvo → nykyinen (vanhat linkit ohjataan). */
+export const MERGED_CATEGORIES = new Map<string, UutinenCategory>([
+  ["jasentieto", "tapahtumaraportti"],
+]);
 
 const labelMap = new Map(UUTINEN_CATEGORIES.map((c) => [c.value, c.label]));
 

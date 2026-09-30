@@ -114,7 +114,7 @@ const LABEL_CATEGORIES: Record<string, string> = {
   jouluruokailu: "ravintola",
   ottelutapahtuma: "otteluraportti",
   harjoitusottelu: "otteluraportti",
-  vuosikokous: "jasentieto",
+  vuosikokous: "tapahtumaraportti",
   vappu: "tapahtumaraportti",
   "mölkky": "tapahtumaraportti",
   "pääsiäinen": "tapahtumaraportti",
@@ -149,9 +149,9 @@ const LABEL_CATEGORIES: Record<string, string> = {
 /** Otsikon avainsanat tunnisteettomille ja tunnisteiltaan niukoille kirjoituksille. */
 const TITLE_CATEGORIES: [RegExp, string][] = [
   [/\bveikkaus/i, "palloveikkaus"],
-  [/\bvuosikokous/i, "jasentieto"],
-  // Klubin vuosipäivät, logokilpailu ja paidat: jäsenille suunnattua klubin asiaa.
-  [/\bklubi\b.*\b(\d+|kolme) vuotta|\bklubin (logo|paidat)|\bklubin paidat|\brekisteröity/i, "jasentieto"],
+  [/\bvuosikokous/i, "tapahtumaraportti"],
+  // Klubin vuosipäivät, logokilpailu ja paidat: klubin omaa asiaa (Tapahtumat; entinen Jäsentieto).
+  [/\bklubi\b.*\b(\d+|kolme) vuotta|\bklubin (logo|paidat)|\bklubin paidat|\brekisteröity/i, "tapahtumaraportti"],
   [/jalkapallo|paras avaus|\b(MM|EM)-karsint|\bHuuhkaj/i, "jalkapallo"],
   [/\bravintolat?\b/i, "ravintola"],
   [/juhla\b|\bvenetsialaiset|\b(pitkäperjantai|pallopäivä|mölkky)/i, "tapahtumaraportti"],
@@ -163,7 +163,6 @@ const CATEGORY_ORDER = [
   "kannattajakulttuuri",
   "tiedote",
   "tapahtumaraportti",
-  "jasentieto",
   "jalkapallo",
   "ravintola",
   "palloveikkaus",
