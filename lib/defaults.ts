@@ -18,7 +18,7 @@ export const defaultNavigation: NavigationData = {
       href: "/uutiset",
       highlight: false,
       children: [
-        { label: "Kentältä ja katsomosta", href: "/uutiset" },
+        { label: "Uutiset", href: "/uutiset" },
         { label: "Jalkapalloarkisto", href: "/jalkapalloarkisto" },
         { label: "Huuhkajat", href: "/jalkapalloarkisto/huuhkajat" },
         { label: "Arvokisat", href: "/jalkapalloarkisto/arvokisat" },

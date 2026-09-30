@@ -22,7 +22,7 @@ const linkColumns: { title: string; links: { label: string; href: string }[] }[]
     title: "Jalkapallo",
     links: [
       { label: "Ottelut", href: "/ottelut" },
-      { label: "Kentältä ja katsomosta", href: "/uutiset" },
+      { label: "Uutiset", href: "/uutiset" },
       { label: "Jalkapalloarkisto", href: "/jalkapalloarkisto" },
       { label: "Uutisarkisto", href: "/uutiset/arkisto" },
     ],

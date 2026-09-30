@@ -15,7 +15,7 @@
 Logo viittaa etusivulle `/`. Aktiivinen kohta: sininen teksti + 2 px sininen alleviivaus. Valikko on Sanityssa (singleton `navigaatio`); oletukset `lib/defaults.ts`.
 
 ### Jalkapallo-dropdown
-- Kentältä ja katsomosta → `/uutiset`
+- Uutiset → `/uutiset` (valikossa aiemmin "Kentältä ja katsomosta"; etusivun juttuosion otsikko on yhä se)
 - Jalkapalloarkisto → `/jalkapalloarkisto`
 - Huuhkajat → `/jalkapalloarkisto/huuhkajat`
 - Arvokisat → `/jalkapalloarkisto/arvokisat`
@@ -116,7 +116,7 @@ Järjestys osoitteessa: kaupunki, maa, maakunta, ruoka, arvosana, lopettaneet, j
 ## Footer
 
 Tyyliopas: yönsininen, valkoinen pystylogo, linkkisarakkeet ja tekijänoikeusrivi.
-- **Jalkapallo**: Ottelut, Kentältä ja katsomosta, Jalkapalloarkisto, Uutisarkisto
+- **Jalkapallo**: Ottelut, Uutiset, Jalkapalloarkisto, Uutisarkisto
 - **Klubi**: Ravintola-arviot, Tapahtumat, Klubista, Kuvagalleria
 - **Yhteystiedot**: sähköposti, puhelin, osoite/kaupunki, some, Y-tunnus/IBAN (Sanity `yhteystiedot`)
 - **Alarivi**: © vuosi Lahden Suomalainen Klubi ry · Ylläpito (`/studio`)
