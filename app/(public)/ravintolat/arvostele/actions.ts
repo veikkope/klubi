@@ -54,7 +54,7 @@ import {
  * Sanityyn vasta, kun muu lomake on kunnossa. Sanityn kuvatiedostoilla ei ole
  * luonnostilaa, joten moderoimaton kuva on teknisesti haettavissa satunnaisesta
  * osoitteesta, kunnes sihteeri hylkää arvostelun ("Hylkää arvostelu" poistaa
- * myös kuvat) tai siivous poistaa orvon kuvan (sanity/lib/arvostelukuvat-siivous.ts).
+ * myös kuvat).
  *
  * Validointi tehdään kokonaan palvelimella. Selaimen `required`-attribuutit
  * ovat käytettävyyttä varten, eivät suoja — lomakkeen voi lähettää suoraan
@@ -315,7 +315,7 @@ export async function submitReview(
   } catch (error) {
     console.error("[submitReview] tallennus epäonnistui:", error);
     // Peruutus: ladatut kuvat pois, ettei moderoimattomia orpoja jää. Jos
-    // poisto epäonnistuu, päivittäinen siivous hoitaa ne.
+    // poisto epäonnistuu, orvot voi poistaa: npm run siivoa:arvostelukuvat.
     await Promise.allSettled(uploadedAssetIds.map((id) => writeClient.delete(id)));
     return {
       status: "error",

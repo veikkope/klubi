@@ -113,7 +113,7 @@ Listanäkymässä järjestys: `startsAt` desc (tulevat ensin).
 | vierasmatka | boolean | ei | "Vierasmatka"-merkki |
 
 ### 6. `ravintola-kayttaja-arvostelu`
-**Tarkoitus:** Yleisön jättämät arvostelut (`/ravintolat/arvostele`). Server Action tallentaa arvostelun **luonnoksena**. Isä hyväksyy julkaisemalla ja hylkää toiminnolla **Hylkää arvostelu** (poistaa luonnoksen ja sen kuvat), joten erillistä tilakenttää ei ole.
+**Tarkoitus:** Yleisön jättämät arvostelut (`/ravintolat/arvostele`). Server Action tallentaa arvostelun **luonnoksena**. Isä hyväksyy julkaisemalla ja hylkää toiminnolla **Hylkää arvostelu** (poistaa luonnoksen ja sen kuvat), joten erillistä tilakenttää ei ole. Julkaistun arvostelun poisto on **Poista arvostelu** (sama toiminto); Studion tavallinen Poista on piilotettu tältä tyypiltä.
 
 | Kenttä | Tyyppi | Pakollinen | Kuvaus |
 |---|---|---|---|

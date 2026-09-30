@@ -12,8 +12,8 @@
  *    tiedoston alusta, ei ilmoitetusta tyypistä) ja poistaa metatiedot vielä
  *    kerran (`stripJpegMetadata`), jos joku lähettää lomakkeen ohi selaimen.
  * 3. Kuva ladataan Sanityyn `source.name = REVIEW_PHOTO_SOURCE` -merkinnällä.
- *    Siivous poistaa vain näin merkityt kuvat, joten klubin omiin kuviin se
- *    ei koske koskaan.
+ *    Hylkäys ja käsin ajettava siivous poistavat vain näin merkityt kuvat,
+ *    joten klubin omiin kuviin ne eivät koske koskaan.
  */
 
 /** Enintään näin monta kuvaa yhteen arvosteluun. */

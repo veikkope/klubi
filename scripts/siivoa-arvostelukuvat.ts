@@ -1,6 +1,6 @@
 /**
- * Kävijöiden arvostelukuvien siivous käsin (docs/18). Sama logiikka kuin
- * päivittäisessä Vercel Cron -ajossa (sanity/lib/arvostelukuvat-siivous.ts).
+ * Kävijöiden orpojen arvostelukuvien siivous käsin, tarvittaessa (docs/18).
+ * Logiikka: sanity/lib/arvostelukuvat-siivous.ts.
  *
  * Ajo:  npm run siivoa:arvostelukuvat                          (development, vain listaus)
  *       npm run siivoa:arvostelukuvat -- --poista              (development, poistaa)

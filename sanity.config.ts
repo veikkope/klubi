@@ -27,9 +27,10 @@ export default defineConfig({
     actions: (input, context) => {
       if (context.schemaType === "ravintolaKayttajaArvostelu") {
         // Ensisijainen toiminto, kun kävijä ehdotti uutta ravintolaa. "Hylkää
-        // arvostelu" heti julkaisun jälkeen, koska se poistaa myös kuvat (docs/18).
-        const publishAt = input.findIndex(({ action }) => action === "publish");
-        const actions = [...input];
+        // arvostelu" korvaa tavallisen Poista-toiminnon, koska se poistaa myös
+        // kuvat (docs/18). Sijoitetaan heti julkaisun jälkeen.
+        const actions = input.filter(({ action }) => action !== "delete");
+        const publishAt = actions.findIndex(({ action }) => action === "publish");
         // Jos julkaisutoimintoa ei ole, loppuun: hylkäys ei saa olla päätoiminto.
         actions.splice(publishAt === -1 ? actions.length : publishAt + 1, 0, HylkaaArvostelu);
         return [HyvaksyJaLuoRavintola, ...actions];

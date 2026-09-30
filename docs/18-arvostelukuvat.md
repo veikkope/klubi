@@ -5,7 +5,9 @@ arvostelun luonnoksen mukana ja julkaistaan, kun sihteeri hyväksyy arvostelun.
 
 Päätös 30.9.2026: kuvat ladataan suoraan Sanityyn (vaihtoehto 1). Erillistä välivarastoa ei
 käytetä, koska se toisi uuden palvelun ja avaimen. Lyhyt julkisuusikkuna (§3) hoidetaan
-poistamalla hylätyt kuvat heti ja siivoamalla orvot kuvat joka yö.
+poistamalla hylättyjen arvostelujen kuvat heti. Ajastettua siivousta ei ole (päätös 30.9.:
+tarpeeton, koska kaikki poistot kulkevat Hylkää-toiminnon kautta); harvinaiset orvot
+siivotaan käsin tarvittaessa.
 
 ## 1. Kulku
 
@@ -35,10 +37,9 @@ valinta (enint. 3)
 | `app/(public)/ravintolat/arvostele/review-form.tsx` | Kuvat React-tilassa; `submit` liittää ne FormDataan |
 | `app/(public)/ravintolat/arvostele/actions.ts` | Tarkistus, lataus, peruutus virheessä |
 | `sanity/schemas/documents/ravintolaKayttajaArvostelu.ts` | Kenttä `kuvat` (enint. 3, `alt` pakollinen), esikatselukuva jonossa |
-| `sanity/actions/hylkaa-arvostelu.tsx` | Studio: "Hylkää arvostelu" poistaa luonnoksen ja sen kuvat |
+| `sanity/actions/hylkaa-arvostelu.tsx` | Studio: "Hylkää arvostelu" / julkaistussa "Poista arvostelu" poistaa arvostelun ja sen kuvat. Korvaa tavallisen Poista-toiminnon (`sanity.config.ts`) |
 | `sanity/lib/arvostelukuvat-siivous.ts` | Orpojen kuvien haku ja poisto (`raw`-näkökulma) |
-| `app/api/cron/siivoa-arvostelukuvat/route.ts` + `vercel.json` | Yösiivous klo 3.30 UTC (Vercel Cron, `CRON_SECRET`) |
-| `scripts/siivoa-arvostelukuvat.ts` | Sama siivous käsin (`npm run siivoa:arvostelukuvat`) |
+| `scripts/siivoa-arvostelukuvat.ts` | Siivous käsin tarvittaessa (`npm run siivoa:arvostelukuvat`, oletuksena vain listaus) |
 | `components/gallery/review-photos.tsx` | Pikkukuvat arvostelun alla ja suurennus nykyisellä Lightboxilla |
 | `scripts/test-arvostelukuvat.ts` | Yksikkötestit (`npm run test:arvostelukuvat`) |
 
@@ -46,9 +47,11 @@ valinta (enint. 3)
 
 - **Julkisuusikkuna.** Sanityn kuvatiedostoilla ei ole luonnostilaa. Ladattu kuva on
   CDN:ssä satunnaisessa osoitteessa, ja julkisessa datasetissä kuvatiedostot voi listata
-  kyselyllä. Hylätyn arvostelun kuvat poistaa heti **Hylkää arvostelu**. Muuten orvoksi
-  jääneet (tavallinen Poista, yksittäisen kuvan poisto, katkennut tallennus) poistuvat yösiivouksessa.
-- **Siivous ei koske klubin kuviin.** Vain `source.name == "kavija-arvostelu"`, ei viittauksia
+  kyselyllä. Hylätyn arvostelun kuvat poistaa heti **Hylkää arvostelu**; tavallinen Poista on
+  piilotettu, joten muuta poistotapaa ei ole. Orpoja voi jäädä vain, kun sihteeri poistaa
+  yksittäisen kuvan ennen julkaisua tai kuvan poisto epäonnistuu. Ne voi listata ja poistaa
+  käsin: `npm run siivoa:arvostelukuvat [-- --production] [-- --poista]`.
+- **Siivous ja hylkäys eivät koske klubin kuviin.** Vain `source.name == "kavija-arvostelu"`, ei viittauksia
   mistään dokumentista (luonnokset mukaan lukien, `raw`-näkökulma) ja yli 24 h vanhat. Sanity
   estää lisäksi viitatun kuvan poiston (409). Testattu 30.9.2026 `development`-datasetissä.
 - **Vain JPEG.** Palvelin tunnistaa tyypin tiedoston alusta, ei selaimen ilmoituksesta. SVG,
@@ -87,15 +90,13 @@ valinta (enint. 3)
 | Tallennus | 1286×1600 JPEG 289 kt, `source.name` oikein, ei EXIF/XMP alkuperäisessä, luonnos ei näy julkisesti | ✅ |
 | Näyttö | Pikkukuvat, Lightbox, fokuksen palautus, ei vaakavieritystä 390 px | ✅ |
 | Hylkäys ja siivous | Viitattu kuva säilyy (julkaistu, luonnos, alle 24 h), orpo poistuu, 409 viitatulle | ✅ |
-| Cron-reitti | 501 ilman salaisuutta, 401 väärällä, 200 oikealla | ✅ |
 | Studio-painike | Käsin Studiossa (vaatii kirjautumisen) | ☐ |
 | iPhone (HEIC, kamera) | Käsin puhelimella | ☐ |
 
 ## 7. Käyttöönotto tuotantoon
 
-1. Vercel → Settings → Environment Variables: `CRON_SECRET` (Production), satunnainen arvo.
-2. Merge + deploy. Vercel näyttää ajastuksen kohdassa Settings → Cron Jobs.
-3. `npm run backup`, sitten `npx tsx scripts/lisaa-kuvat-tietosuojaan.ts --production`
+1. Merge + deploy. Uusia ympäristömuuttujia ei tarvita.
+2. `npm run backup`, sitten `npx tsx scripts/lisaa-kuvat-tietosuojaan.ts --production`
    (päivittää tietosuojaselosteen arvostelukohdat, ei koske muihin muokkauksiin).
-4. Testaa: lähetä arvostelu kuvalla, hylkää se Studiossa **Hylkää arvostelu** -painikkeella
+3. Testaa: lähetä arvostelu kuvalla, hylkää se Studiossa **Hylkää arvostelu** -painikkeella
    ja tarkista, ettei kuvan osoite enää avaudu.

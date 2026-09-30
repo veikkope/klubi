@@ -169,9 +169,9 @@ Kävijöiden lähettämät arvostelut eivät näy sivulla ennen kuin hyväksyt n
   **⋯** → **Poista**, ja paina sitten **Julkaise**.
 - **Kuvaus** on teksti, jonka ruudunlukija lukee näkövammaiselle. Jos kävijä ei kirjoittanut
   sitä, siinä lukee "Kävijän kuva ravintolasta …". Voit tarkentaa sitä, esim. "Paahdettu lohi".
-- Hylkää mieluummin **Hylkää arvostelu** -painikkeella kuin tavallisella Poista-toiminnolla:
-  vain se poistaa kuvat heti. Muulla tavalla poistetut kuvat poistuvat automaattisesti
-  seuraavana yönä.
+- Arvosteluissa ei ole tavallista Poista-toimintoa. Hylkäys ja poisto tehdään aina
+  **Hylkää arvostelu** (tai julkaistussa **Poista arvostelu**) -toiminnolla, joka poistaa
+  myös kuvat.
 - Kuvia, joissa on tunnistettavia ihmisiä, ei kannata julkaista ilman syytä.
 
 **Uusi ravintola.** Kävijä voi arvostella myös ravintolan, jota hakemistossa ei vielä ole.
@@ -251,8 +251,8 @@ kävijälle asiallisen ilmoituksen.
 Jos joku pyytää poistamaan tietonsa (kommentti, veikkaus tai arvostelu kuvineen):
 
 1. Etsi viesti Studion hakukentällä nimellä.
-2. **⋯ → Poista** (Delete). Piilottaminen ei riitä poistopyyntöön, koska piilotettu viesti
-   säilyy järjestelmässä. Arvostelun kuvat poistuvat automaattisesti seuraavana yönä.
+2. **⋯ → Poista** (Delete). Arvostelussa **⋯ → Poista arvostelu**, joka poistaa myös kuvat.
+   Piilottaminen ei riitä poistopyyntöön, koska piilotettu viesti säilyy järjestelmässä.
 3. Vastaa pyytäjälle, että tieto on poistettu. Tietosuojaseloste on osoitteessa /tietosuoja.
 
 ## Tyypilliset tilanteet

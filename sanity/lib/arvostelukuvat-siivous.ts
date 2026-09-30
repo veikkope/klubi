@@ -12,15 +12,15 @@ import { ORPHAN_GRACE_HOURS, REVIEW_PHOTO_SOURCE } from "../../lib/arvostelukuva
  *  3. ovat vanhempia kuin ORPHAN_GRACE_HOURS (lataus ja arvostelun luonti
  *     eivät tapahdu samalla hetkellä).
  *
- * Orpoja syntyy, kun arvostelu poistetaan tavallisella Poista-toiminnolla,
- * sihteeri poistaa yksittäisen kuvan ennen julkaisua tai tallennus katkeaa.
+ * Orpoja syntyy harvoin: kun sihteeri poistaa yksittäisen kuvan ennen
+ * julkaisua, tai kun kuvan poisto hylkäyksen tai katkenneen tallennuksen
+ * yhteydessä epäonnistuu. Siksi siivous ajetaan käsin tarvittaessa, ei ajastettuna.
  *
  * TÄRKEÄÄ: kysely ajetaan `raw`-näkökulmassa. Julkaistujen näkökulmassa
  * luonnokset eivät näkyisi, ja moderointia odottavien arvostelujen kuvat
  * näyttäisivät orvoilta.
  *
- * Käyttö: scripts/siivoa-arvostelukuvat.ts (käsin) ja
- * app/api/cron/siivoa-arvostelukuvat/route.ts (Vercel Cron, päivittäin).
+ * Käyttö: scripts/siivoa-arvostelukuvat.ts (npm run siivoa:arvostelukuvat).
  */
 
 export type OrphanPhoto = { _id: string; _createdAt: string; originalFilename: string | null; size: number | null };

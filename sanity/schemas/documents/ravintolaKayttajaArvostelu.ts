@@ -18,9 +18,9 @@ import { defineField, defineType } from "sanity";
  * liittää arvostelun siihen ja julkaisee molemmat.
  *
  * Kuvat (enintään 3, docs/18): Sanityn kuvatiedostoilla ei ole luonnostilaa,
- * joten hylkäys tehdään toiminnolla "Hylkää arvostelu", joka poistaa luonnoksen
- * ja sen kuvat (sanity/actions/hylkaa-arvostelu.tsx). Muuten jäävät orvot kuvat
- * poistaa päivittäinen siivous.
+ * joten hylkäys ja poisto tehdään toiminnolla "Hylkää arvostelu" / "Poista
+ * arvostelu", joka poistaa myös kuvat (sanity/actions/hylkaa-arvostelu.tsx).
+ * Tavallinen Poista on piilotettu tältä tyypiltä (sanity.config.ts).
  */
 export const ravintolaKayttajaArvostelu = defineType({
   name: "ravintolaKayttajaArvostelu",

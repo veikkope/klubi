@@ -58,7 +58,6 @@ Vercel → projekti → **Settings → Environment Variables** (Production ja Pr
 | `SANITY_API_WRITE_TOKEN` | token "Vercel – lomakkeet" | kommentit ja arvostelut |
 | `SANITY_API_READ_TOKEN` | token "Vercel – esikatselu" | Studion esikatselu (draft mode) |
 | `SANITY_REVALIDATE_SECRET` | arvo `.env.local`-tiedostosta | webhookin allekirjoitus |
-| `CRON_SECRET` | satunnainen, esim. `openssl rand -hex 32` (vain Production) | arvostelukuvien yösiivous (`vercel.json`, docs/18) |
 
 Muutosten jälkeen: **Deployments → Redeploy** (muuttujat tulevat voimaan vasta uudessa
 deployssa).
@@ -183,4 +182,4 @@ riippuvainen web-muutoksesta C2:n jälkeen.
 | 13 | Jäsenhakemukset poistettu (ei Resendiä) | kehittäjä | ✅ 28.9. koodi · tietosuojaselosteen patch ☐ |
 | 14 | DNS C1–C4 | kehittäjä + int2000 | ☐ |
 | 15 | Blogin ohjaus (docs/14 §6) | kehittäjä | ☐ siirron jälkeen |
-| 16 | Arvostelukuvat: `CRON_SECRET` Verceliin, tietosuojaselosteen patch (docs/18 §7) | kehittäjä | ☐ |
+| 16 | Arvostelukuvat: tietosuojaselosteen patch (docs/18 §7) | kehittäjä | ☐ |
