@@ -240,8 +240,8 @@ Eri osa-alueiden päällekkäiset löydökset on yhdistetty. Tunnukset ovat haka
 
 ### Sisältö ja blogi
 - Nonni-ravintola ja sisällön jäädytys. [sisalto-1]
-- `sync:blogspot` kirjoittaa vain developmentiin, joten tarvitaan dokumentoitu production-polku. [blogi-2]
-- docs/14 §6.3:sta puuttuu ehdoton vaihe "domain osoittaa Verceliin". Jos teemaskripti asennetaan liian aikaisin, blogin kävijät ohjautuvat 404-sivulle. [blogi-1]
+- ✅ *Korjattu 30.9.2026: `npm run sync:blogspot:production` (kuivaharjoitus, `--vie`: varmuuskopio + `--missing` + tarkistus) ja dynaaminen `/blogspot`-reitti, jolla uudet kirjoitukset ohjautuvat ilman deployta (docs/14 §5–6).* `sync:blogspot` kirjoittaa vain developmentiin, joten tarvitaan dokumentoitu production-polku. [blogi-2]
+- ✅ *Korjattu 30.9.2026: docs/14 §6.4 vaihe 3.* docs/14 §6.3:sta puuttuu ehdoton vaihe "domain osoittaa Verceliin". Jos teemaskripti asennetaan liian aikaisin, blogin kävijät ohjautuvat 404-sivulle. [blogi-1]
 
 ### SEO ja UX
 - Viisi tyhjätilasivua on indeksoitavia ja sitemapissa. [seo-6]
@@ -269,7 +269,7 @@ Eri osa-alueiden päällekkäiset löydökset on yhdistetty. Tunnukset ovat haka
 **Blogi ja kommentit**
 - Kommentointi ei ole päällä missään uutisessa, ja koodisana puuttuu. Tämä on tarkoituksellisesti vaiheistettu. [blogi-3, cms-12]
 - docs/09:n Duplicate-vinkki kopioisi vanhan blogikirjoituksen blogspot-kentän. [blogi-4]
-- Testiesimerkki `/blogspot/2019/03/milano.html` on väärä polku. [blogi-5]
+- ✅ *Korjattu 30.9.2026.* Testiesimerkki `/blogspot/2019/03/milano.html` on väärä polku. [blogi-5]
 - Vanhentuneita tietoja on docs/14:ssä, docs/15:ssä ja uutinen.ts:n kenttäkuvauksessa. [blogi-6]
 - Blogi on JSON-LD:n sameAs-listassa. [blogi-7]
 - Käyttöönottoaikataulu päätetään ennen joulukuun "paras avaus" -kierrosta. [blogi-8]

@@ -218,10 +218,10 @@ export const legacyRedirects: Redirect[] = [
 ];
 
 /**
- * Blogspot-blogin kirjoitukset (528) → uutiset. Bloggerin teema ohjaa
- * kävijän osoitteeseen /blogspot/<blogin polku> (docs/14 §5). Viimeinen sääntö
- * ohjaa blogin muut sivut (etusivu, tunnisteet, arkistot) uutislistaan; Next.js
- * käy säännöt läpi järjestyksessä, joten se ei ohita yksittäisiä kirjoituksia.
+ * Blogspot-blogin kirjoitukset (529) → uutiset. Bloggerin teema ohjaa
+ * kävijän osoitteeseen /blogspot/<blogin polku> (docs/14 §5). Generoinnin jälkeen
+ * tuodut kirjoitukset ja blogin muut sivut (etusivu, tunnisteet, arkistot) hoitaa
+ * app/blogspot/[...polku]/route.ts, joka hakee kirjoituksen Sanitystä.
  */
 export const blogspotRedirects: Redirect[] = [
   { source: "/blogspot/2007/01/lahden-suomalainen-klubi.html", destination: "/uutiset/2007-01-31-lahden-suomalainen-klubi", permanent: true },
@@ -752,5 +752,5 @@ export const blogspotRedirects: Redirect[] = [
   { source: "/blogspot/2026/07/klubin-kesajuhla-2026.html", destination: "/uutiset/2026-07-17-klubin-kesajuhla-2026", permanent: true },
   { source: "/blogspot/2026/08/kesakauden-paatos-lahdessa-29082026.html", destination: "/uutiset/2026-08-29-kesakauden-paatos-lahdessa-29-08-2026", permanent: true },
   { source: "/blogspot/2026/09/palloveikkaus-tilanne-2026-25.html", destination: "/uutiset/2026-09-27-palloveikkaus-tilanne-2026-25", permanent: true },
-  { source: "/blogspot/:polku*", destination: "/uutiset", permanent: true },
+  { source: "/blogspot/2026/09/suomi-valko-venaja-29092026.html", destination: "/uutiset/2026-09-29-suomi-valko-venaja-29-09-2026", permanent: true },
 ];

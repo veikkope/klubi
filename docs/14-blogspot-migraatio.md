@@ -79,7 +79,9 @@ Komennot:
 |---|---|
 | Hae blogi paikalliseksi kopioksi | `npm run blogspot:fetch` |
 | Koko tuonti (ensimmäinen kerta, `--replace`) | `npm run migrate:blogspot && npm run redirects` |
-| Uudet kirjoitukset, säilytä Studion muokkaukset | `npm run sync:blogspot` |
+| Uudet kirjoitukset, säilytä Studion muokkaukset | `npm run sync:blogspot` (→ development) |
+| Uudet kirjoitukset productioniin (kuivaharjoitus) | `npm run sync:blogspot:production` |
+| … ja vienti (varmuuskopio + `--missing` + tarkistus) | `npm run sync:blogspot:production -- --vie` |
 | Tarkista | `npm run verify:blogspot` |
 
 ### 2.1 HTML → Portable Text (`parse-blogspot.ts`)
@@ -122,7 +124,7 @@ SEO-välilehdellä, "Alkuperäinen Blogspot-kirjoitus"):
 |---|---|
 | `id` | Bloggerin kirjoitus-id: synkronoinnin avain |
 | `url` | Alkuperäinen osoite (tieto, ei näytetä kävijälle) |
-| `polku` | `/2019/03/milano.html`: ohjausten avain (§5) |
+| `polku` | `/2019/03/milano-euroopan-renessanssin.html`: ohjausten avain (§5) |
 | `tunnisteet` | Blogin tunnisteet sellaisenaan |
 | `kommentteja` | Kommenttien määrä blogissa |
 
@@ -163,13 +165,19 @@ polun uutiseksi staattisella 308-ohjauksella (`lib/redirects.ts` →
 kokonaan tällä sivustolla: teemaan ei tarvitse koskaan lisätä yksittäisiä osoitteita.
 
 ```
-lahdensuomalainenklubi.blogspot.com/2019/03/milano.html
-  → (teeman skripti)  www.lahdensuomalainenklubi.com/blogspot/2019/03/milano.html
+lahdensuomalainenklubi.blogspot.com/2019/03/milano-euroopan-renessanssin.html
+  → (teeman skripti)  www.lahdensuomalainenklubi.com/blogspot/2019/03/milano-euroopan-renessanssin.html
   → (308)             www.lahdensuomalainenklubi.com/uutiset/2019-03-10-milano-euroopan-…
 ```
 
-Blogin muut sivut (etusivu, tunnisteet, arkistot) ohjautuvat `/uutiset`-listaan
-(`/blogspot/:polku*`). Mobiiliparametri `?m=1` ei haittaa.
+Ohjauslistan jälkeen tuodut kirjoitukset ja blogin muut sivut (etusivu, tunnisteet,
+arkistot) hoitaa reitti `app/blogspot/[[...polku]]/route.ts`: se hakee kirjoituksen
+Sanitystä `blogspot.polku`-kentällä (308 uutiseen) ja ohjaa muut `/uutiset`-listaan
+(307, väliaikainen, jotta myöhemmin tuotu kirjoitus ei jää selaimen välimuistissa
+uutislistan taakse). Uusi kirjoitus toimii siis heti viennin jälkeen ilman deployta.
+Staattinen lista ei enää sisällä yleissääntöä `/blogspot/:polku*`, koska
+next.config-ohjaukset käsitellään ennen reittejä ja se nappaisi uudetkin kirjoitukset.
+Mobiiliparametri `?m=1` ei haittaa.
 
 **Teeman muutos (tehdään käyttöönotossa §6, ei ennen):** Blogger → Teema → Muokkaa
 HTML:ää → heti `<head>`-tagin jälkeen:
@@ -206,10 +214,24 @@ Studioon. Siihen asti:
    Se hakee blogin uudelleen ja tuo vain puuttuvat kirjoitukset (`--missing`),
    joten muokkaukset säilyvät. Blogissa muokattuja vanhoja kirjoituksia se ei
    päivitä, ja se on tarkoituksellista.
-3. **Käyttöönottopäivä:**
-   1. Viimeinen `npm run sync:blogspot` ja `npm run verify:blogspot`
-   2. Sisällön vienti productioniin (CLAUDE.md, ks. varoitus alla)
-   3. Deploy, jonka jälkeen tarkistetaan esim. `/blogspot/2019/03/milano.html` → uutinen
+3. **Productioniin** (isä kirjoittaa vielä blogiin ennen käyttöönottoa):
+   1. `npm run sync:blogspot` (blogi → development, ohjauslista päivittyy)
+   2. `npm run sync:blogspot:production`: kuivaharjoitus listaa puuttuvat
+      kirjoitukset ja kommentit. Mitään ei kirjoiteta.
+   3. `npm run sync:blogspot:production -- --vie`: varmuuskopio (`npm run backup`,
+      keskeyttää jos epäonnistuu) → vienti `--missing` → tarkistus, että jokainen
+      viety dokumentti on productionissa. Tuotannossa jo olevia ei kosketa.
+   4. Commitoi `lib/redirects.ts`, jos se muuttui (ei kiireellinen: reitti hoitaa
+      uuden kirjoituksen ohjauksen jo ennen deployta).
+4. **Käyttöönottopäivä:**
+   1. Viimeinen `npm run sync:blogspot`, `npm run verify:blogspot` ja
+      `npm run sync:blogspot:production -- --vie`
+   2. Deploy
+   3. **Ehdoton edellytys ennen vaihetta 5:** domain `www.lahdensuomalainenklubi.com`
+      osoittaa Verceliin (docs/17 §C), ja
+      `curl -I https://www.lahdensuomalainenklubi.com/blogspot/2019/03/milano-euroopan-renessanssin.html` → 308 uutiseen.
+      Jos teeman skripti asennetaan ennen domainin siirtoa, blogin kävijät ohjautuvat
+      vanhalle sivustolle, jossa polkua ei ole (404) (docs/16, blogi-1).
    4. Blogiin viimeinen kirjoitus "Klubin blogi on muuttanut" + linkki
    5. Teeman ohjausskripti (§5)
    6. Isä julkaisee tästä eteenpäin Studiossa (docs/09 "Uutisen lisääminen")
@@ -278,7 +300,7 @@ Mitattu 2026-09-28 development-datasetista ja tuotantobuildista (`next start -p 
 | Alt-tekstit | 649/649 kuvaavia (322 kuvatekstistä, 327 katsomalla), 0 otsikosta johdettua |
 | Toistettavuus | kaksi ajoa → tavulleen sama NDJSON (sha256 `5b4c305c…`) |
 | type-check, lint, build | ✅ puhtaat |
-| Production | ⏳ ei kirjoitettu (§6) |
+| Production | ✅ 528 kirjoitusta ja 502 kommenttia (28.9.). Uudet: `sync:blogspot:production` (§6.3). 30.9.: 1 uusi (29.9.) odottaa vientiä |
 | Blogin ohjaus käyttöön | ⏳ käyttöönotossa (§6), edellyttää §8:n päätöstä |
 
 Korjauksia ajon aikana: kahdesti koodattu entiteetti (`fish &amp;amp; chips`) puretaan

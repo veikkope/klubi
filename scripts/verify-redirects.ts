@@ -16,7 +16,7 @@
  */
 import { blogspotRedirects, legacyRedirects } from "../lib/redirects";
 
-// Blogin yleisohjaus (/blogspot/:polku*) on kuvio, ei osoite: testataan yksittäiset.
+// Kuviot (esim. :polku*) eivät ole osoitteita: testataan yksittäiset ohjaukset.
 const redirects = [...legacyRedirects, ...blogspotRedirects.filter((r) => !r.source.includes(":"))];
 
 const BASE_URL = process.env.BASE_URL ?? "http://localhost:3000";

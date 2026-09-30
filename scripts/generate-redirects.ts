@@ -610,7 +610,7 @@ async function main() {
 
   const blogspot = await blogspotDestinations(offline);
   if (offline && blogspot.size === 0) {
-    console.warn("\nHUOM: --offline ilman data/normalized/blogspot-map.json-tiedostoa: vain blogin yleisohjaus.");
+    console.warn("\nHUOM: --offline ilman data/normalized/blogspot-map.json-tiedostoa: blogiohjaukset hoitaa vain app/blogspot-reitti.");
   }
   const blogspotLines = [...blogspot.entries()]
     .sort(([a], [b]) => a.localeCompare(b))
@@ -618,7 +618,9 @@ async function main() {
       ([from, to]) =>
         `  { source: ${JSON.stringify(`/blogspot${from}`)}, destination: ${JSON.stringify(to)}, permanent: true },`,
     );
-  blogspotLines.push(`  { source: "/blogspot/:polku*", destination: "/uutiset", permanent: true },`);
+  // Ei yleissääntöä (/blogspot/:polku*): next.config-ohjaukset käsitellään ennen
+  // reittejä, joten se nappaisi myös generoinnin jälkeen tuodut kirjoitukset.
+  // Muut blogiosoitteet hoitaa app/blogspot/[...polku]/route.ts (Sanity-haku).
 
   const file = `import type { Redirect } from "next/dist/lib/load-custom-routes";
 
@@ -642,9 +644,9 @@ ${lines.join("\n")}
 
 /**
  * Blogspot-blogin kirjoitukset (${blogspot.size}) → uutiset. Bloggerin teema ohjaa
- * kävijän osoitteeseen /blogspot/<blogin polku> (docs/14 §5). Viimeinen sääntö
- * ohjaa blogin muut sivut (etusivu, tunnisteet, arkistot) uutislistaan; Next.js
- * käy säännöt läpi järjestyksessä, joten se ei ohita yksittäisiä kirjoituksia.
+ * kävijän osoitteeseen /blogspot/<blogin polku> (docs/14 §5). Generoinnin jälkeen
+ * tuodut kirjoitukset ja blogin muut sivut (etusivu, tunnisteet, arkistot) hoitaa
+ * app/blogspot/[...polku]/route.ts, joka hakee kirjoituksen Sanitystä.
  */
 export const blogspotRedirects: Redirect[] = [
 ${blogspotLines.join("\n")}
