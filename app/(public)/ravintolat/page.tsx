@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 
+import { HakuNakyma, HakuTulokset } from "@/components/hakunakyma";
 import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
 import { JsonLd } from "@/components/seo/json-ld";
@@ -169,41 +170,45 @@ export default async function RavintolatPage({ searchParams }: PageProps) {
           }
         />
 
-        <div className="mt-10">
-          <RavintolaFilterBar
-            active={filters}
-            facets={facets}
-            resultCount={total}
-          />
-        </div>
+        <HakuNakyma polku="/ravintolat" tila={buildRavintolaHref(filters)}>
+          <div className="mt-10">
+            <RavintolaFilterBar
+              active={filters}
+              facets={facets}
+              resultCount={total}
+            />
+          </div>
 
-        <section aria-label="Hakutulokset" className="mt-10">
-          {items.length === 0 ? (
-            <EmptyState isFiltered={isFiltered} isSearch={Boolean(filters.q)} hasAnyContent={facets.total > 0} />
-          ) : lista ? (
-            <ol className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {items.map((restaurant, index) => (
-                <li key={restaurant._id} className="flex flex-col gap-2">
-                  <span aria-hidden className="font-display text-3xl leading-none text-accent">
-                    {index + 1}.
-                  </span>
-                  <RestaurantCard restaurant={restaurant} />
-                </li>
-              ))}
-            </ol>
-          ) : (
-            <>
-              <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {items.map((restaurant) => (
-                  <li key={restaurant._id} className="flex">
-                    <RestaurantCard restaurant={restaurant} />
-                  </li>
-                ))}
-              </ul>
-              <Pagination filters={filters} pageCount={pageCount} />
-            </>
-          )}
-        </section>
+          <section aria-label="Hakutulokset" className="mt-10">
+            <HakuTulokset>
+              {items.length === 0 ? (
+                <EmptyState isFiltered={isFiltered} isSearch={Boolean(filters.q)} hasAnyContent={facets.total > 0} />
+              ) : lista ? (
+                <ol className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  {items.map((restaurant, index) => (
+                    <li key={restaurant._id} className="flex flex-col gap-2">
+                      <span aria-hidden className="font-display text-3xl leading-none text-accent">
+                        {index + 1}.
+                      </span>
+                      <RestaurantCard restaurant={restaurant} />
+                    </li>
+                  ))}
+                </ol>
+              ) : (
+                <>
+                  <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    {items.map((restaurant) => (
+                      <li key={restaurant._id} className="flex">
+                        <RestaurantCard restaurant={restaurant} />
+                      </li>
+                    ))}
+                  </ul>
+                  <Pagination filters={filters} pageCount={pageCount} />
+                </>
+              )}
+            </HakuTulokset>
+          </section>
+        </HakuNakyma>
       </Container>
     </>
   );
@@ -265,6 +270,7 @@ function Pagination({
   return (
     <nav
       aria-label="Sivutus"
+      data-sivutus
       className="mt-10 flex flex-wrap items-center justify-between gap-4"
     >
       {hasPrev ? (

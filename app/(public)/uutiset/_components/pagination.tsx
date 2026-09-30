@@ -52,7 +52,8 @@ export function Pagination({
   const items = windowedPages(current, pageCount);
 
   return (
-    <nav aria-label={label} className={cn("mt-12", className)}>
+    // data-sivutus: hakusivulla (HakuNakyma) sivun vaihto vierittää tulosten alkuun.
+    <nav aria-label={label} data-sivutus className={cn("mt-12", className)}>
       <ol className="flex flex-wrap items-center justify-center gap-2">
         <li>
           {current > 1 ? (

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { permanentRedirect } from "next/navigation";
 
 import { CategoryFilter } from "@/components/category-filter";
+import { HakuNakyma, HakuTulokset } from "@/components/hakunakyma";
 import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
 import { NewsCard } from "@/components/news-card";
@@ -173,75 +174,81 @@ export default async function UutisetPage({
             </>
           }
         />
-
-        <div className="mt-8">
-          <Uutishaku haku={haku} kategoria={category} />
-        </div>
-
-        <div className="mt-6">
-          <CategoryFilter
-            active={category}
-            basePath="/uutiset"
-            available={new Set(categoryValues)}
-            haku={hakee ? haku : undefined}
-          />
-        </div>
       </Container>
 
-      <Container className="py-16">
-        <h2 className="font-display text-2xl sm:text-3xl">
-          {hakee
-            ? `Hakutulokset: “${haku}”`
-            : category
-              ? categoryLabel(category)
-              : "Kaikki uutiset"}
-        </h2>
-        <p className="mt-2 text-sm text-muted">
-          {haku && !hakee && "Kirjoita hakuun vähintään kaksi merkkiä. "}
-          {total === 0
-            ? "Ei kirjoituksia."
-            : total === 1
-              ? "1 kirjoitus."
-              : `${total} kirjoitusta.`}
-          {hakee && total > 0 && ` Osuvimmat ensin${category ? `, kategoriassa ${categoryLabel(category).toLowerCase()}` : ""}.`}
-        </p>
+      <HakuNakyma polku="/uutiset" tila={pathFor(category, page, haku)}>
+        <Container>
+          <div className="mt-8">
+            <Uutishaku haku={haku} kategoria={category} />
+          </div>
 
-        {hakuTunniste && (
-          <p className="mt-4 text-sm">
-            <Link
-              href={tunnisteHref(hakuTunniste.nimi) ?? TUNNISTEET_POLKU}
-              className="text-accent underline decoration-1 underline-offset-4 hover:decoration-2"
-            >
-              Kaikki kirjoitukset tunnisteella {hakuTunniste.nimi} ({hakuTunniste.maara})
-            </Link>
-          </p>
-        )}
-
-        {result.items.length === 0 ? (
-          hakee ? (
-            <HakuEiTuloksia haku={haku} category={category} />
-          ) : (
-            <EmptyState category={category} />
-          )
-        ) : (
-          <>
-            <ul className="mt-8 grid list-none grid-cols-1 gap-6 p-0 sm:grid-cols-2 lg:grid-cols-3">
-              {result.items.map((news, index) => (
-                <li key={news._id} className="flex">
-                  <NewsCard news={news} priority={page === 1 && index < 3} />
-                </li>
-              ))}
-            </ul>
-
-            <Pagination
-              page={page}
-              pageCount={pages}
-              hrefForPage={(target) => pathFor(category, target, hakee ? haku : "")}
-              label="Uutisten sivutus"
+          <div className="mt-6">
+            <CategoryFilter
+              active={category}
+              basePath="/uutiset"
+              available={new Set(categoryValues)}
+              haku={hakee ? haku : undefined}
             />
-          </>
-        )}
-      </Container>
+          </div>
+        </Container>
+
+        <Container className="py-16">
+          <HakuTulokset>
+            <h2 className="font-display text-2xl sm:text-3xl">
+              {hakee
+                ? `Hakutulokset: “${haku}”`
+                : category
+                  ? categoryLabel(category)
+                  : "Kaikki uutiset"}
+            </h2>
+            <p aria-live="polite" className="mt-2 text-sm text-muted">
+              {haku && !hakee && "Kirjoita hakuun vähintään kaksi merkkiä. "}
+              {total === 0
+                ? "Ei kirjoituksia."
+                : total === 1
+                  ? "1 kirjoitus."
+                  : `${total} kirjoitusta.`}
+              {hakee && total > 0 && ` Osuvimmat ensin${category ? `, kategoriassa ${categoryLabel(category).toLowerCase()}` : ""}.`}
+            </p>
+
+            {hakuTunniste && (
+              <p className="mt-4 text-sm">
+                <Link
+                  href={tunnisteHref(hakuTunniste.nimi) ?? TUNNISTEET_POLKU}
+                  className="text-accent underline decoration-1 underline-offset-4 hover:decoration-2"
+                >
+                  Kaikki kirjoitukset tunnisteella {hakuTunniste.nimi} ({hakuTunniste.maara})
+                </Link>
+              </p>
+            )}
+
+            {result.items.length === 0 ? (
+              hakee ? (
+                <HakuEiTuloksia haku={haku} category={category} />
+              ) : (
+                <EmptyState category={category} />
+              )
+            ) : (
+              <>
+                <ul className="mt-8 grid list-none grid-cols-1 gap-6 p-0 sm:grid-cols-2 lg:grid-cols-3">
+                  {result.items.map((news, index) => (
+                    <li key={news._id} className="flex">
+                      <NewsCard news={news} priority={page === 1 && index < 3} />
+                    </li>
+                  ))}
+                </ul>
+
+                <Pagination
+                  page={page}
+                  pageCount={pages}
+                  hrefForPage={(target) => pathFor(category, target, hakee ? haku : "")}
+                  label="Uutisten sivutus"
+                />
+              </>
+            )}
+          </HakuTulokset>
+        </Container>
+      </HakuNakyma>
     </>
   );
 }

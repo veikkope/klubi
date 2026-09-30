@@ -275,6 +275,34 @@ body {
   }
 }
 
+/* Hakutulosten päivityspalkki (components/hakunakyma.tsx): ohut, edestakaisin
+   liukuva klubinsininen jakso vaalealla pohjalla. Kun käyttäjä on pyytänyt
+   vähemmän liikettä, palkki on paikallaan ja täysleveä. */
+.hakupalkki {
+  background: var(--blue-tint);
+}
+.hakupalkki::before {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  width: 35%;
+  border-radius: inherit;
+  background: var(--blue);
+  animation: hakupalkki 1.1s ease-in-out infinite;
+}
+@keyframes hakupalkki {
+  from { translate: -100% 0; }
+  to { translate: 290% 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hakupalkki::before {
+    width: 100%;
+    animation: none !important;
+    opacity: 0.6;
+  }
+}
+
 /* Sticky header (components/layout/header.tsx): kun sivua on vieritetty,
    headerin alle tulee hento varjo, joka erottaa sen alle liukuvasta
    sisällöstä. Varjo voimistuu ensimmäisten 64 px:n aikana ja seuraa sivun

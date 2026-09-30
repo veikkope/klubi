@@ -19,6 +19,7 @@ import {
   overallRating,
   subRatings,
 } from "@/components/restaurant-card";
+import { ensimmainenKappaleIngressiksi } from "@/lib/artikkeli";
 import { cn } from "@/lib/cn";
 import { formatDate } from "@/lib/format";
 import { rootCrumb } from "@/lib/nav-sections";
@@ -227,10 +228,11 @@ export default async function RavintolaPage({ params }: PageProps) {
 
         <article className="flex min-w-0 max-w-[700px] flex-col gap-6 text-[17px] leading-[1.7] sm:gap-[26px] sm:text-[19px] sm:leading-[1.75] lg:order-1">
           {hasReview ? (
-            // Ensimmäinen kappale ingressinä (serif 24 px), lainaukset nostoina
-            // messinkiviivalla (tyyliopas).
-            <div className="[&>*:first-child]:!mt-0 [&>p:first-child]:font-display [&>p:first-child]:!text-xl [&>p:first-child]:!leading-[1.5] [&>p:first-child]:text-heading sm:[&>p:first-child]:!text-2xl [&_blockquote]:!my-8 [&_blockquote]:!border-l-[3px] [&_blockquote]:!border-brass [&_blockquote]:!bg-transparent [&_blockquote]:!py-0 [&_blockquote]:!pl-[18px] [&_blockquote]:font-display [&_blockquote]:!text-[22px] [&_blockquote]:!leading-[1.4] [&_blockquote]:text-heading sm:[&_blockquote]:!pl-7 sm:[&_blockquote]:!text-[28px] [&_p]:!text-[17px] [&_p]:!leading-[1.7] sm:[&_p]:!text-[19px] sm:[&_p]:!leading-[1.75]">
-              <PortableText value={r.review!} />
+            // Ensimmäinen kappale ingressinä samalla säännöllä kuin uutisissa
+            // (lib/artikkeli.ts): metatietorivi kuten "Perustettu 2017" ei ole
+            // ingressi. Lainaukset nostoina messinkiviivalla (tyyliopas).
+            <div className="[&>*:first-child]:!mt-0 [&_blockquote]:!my-8 [&_blockquote]:!border-l-[3px] [&_blockquote]:!border-brass [&_blockquote]:!bg-transparent [&_blockquote]:!py-0 [&_blockquote]:!pl-[18px] [&_blockquote]:font-display [&_blockquote]:!text-[22px] [&_blockquote]:!leading-[1.4] [&_blockquote]:text-heading sm:[&_blockquote]:!pl-7 sm:[&_blockquote]:!text-[28px] [&_p:not([data-ingressi])]:!text-[17px] [&_p:not([data-ingressi])]:!leading-[1.7] sm:[&_p:not([data-ingressi])]:!text-[19px] sm:[&_p:not([data-ingressi])]:!leading-[1.75]">
+              <PortableText value={r.review!} ingressi={ensimmainenKappaleIngressiksi(r.review)} />
             </div>
           ) : (
             r.tiivistelma && (

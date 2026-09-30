@@ -63,7 +63,7 @@ public/                Staattiset tiedostot (favicon, robots, kuvat joita Sanity
 | Varmuuskopio productionista | `npm run backup` → `varmuuskopiot/` (gitignoressa, kuvineen). Aina ennen isompaa muutosta. Lisäksi automaattinen viikkokopio Studioon (`/api/varmuuskopio`, docs/17 §D) |
 | Testaa varmuuskopion säännöt | `npm run test:varmuuskopio` |
 | Testaa uutishaun hakusanat | `npm run test:haku` |
-| Testaa uutissivun lukuaika ja ingressi | `npm run test:artikkeli` |
+| Testaa lukuaika ja ingressisääntö (uutiset, ravintola-arviot) | `npm run test:artikkeli` |
 | Testaa uutisten tunnisteet | `npm run test:tunnisteet` |
 | Blogin tunnisteet muokattavaan kenttään (kuivaharjoitus; `-- --vie` kirjoittaa, `-- --production` productioniin varmuuskopion kanssa) | `npm run patch:tunnisteet` (docs/14 §3.1) |
 | Yhdistettyjen uutiskategorioiden vanhat arvot uusiin (kuivaharjoitus; `-- --vie` kirjoittaa, `-- --production` varmuuskopion kanssa) | `npm run patch:kategoriat` |

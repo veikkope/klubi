@@ -28,10 +28,13 @@ function otsikko(tyyli: OtsikkoTyyli, siirto: number) {
   return Otsikko;
 }
 
-/** Tavallinen kappale; ensimmäinen (index 0) ingressinä. */
+/**
+ * Tavallinen kappale; ensimmäinen (index 0) ingressinä. `data-ingressi`
+ * antaa kutsujan tyyleille tavan rajata ingressi pois kappaletyyleistä.
+ */
 const kappaleIngressilla: PortableTextBlockComponent = ({ children, index }) =>
   index === 0 ? (
-    <p className="font-display text-xl font-normal leading-[1.5] text-heading sm:text-2xl sm:leading-[1.45]">
+    <p data-ingressi className="font-display text-xl font-normal leading-[1.5] text-heading sm:text-2xl sm:leading-[1.45]">
       {children}
     </p>
   ) : (
