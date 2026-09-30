@@ -7,6 +7,18 @@ import { ChevronDown, Menu, X } from "lucide-react";
 import { cn } from "@/lib/cn";
 import type { NavigationItem } from "@/lib/types";
 
+/**
+ * Valikon avautuminen: 150 ms häivytys ja 4 px liuku ylhäältä. `starting:` on
+ * CSS:n @starting-style, joten animaatio toimii ilman JavaScriptiä juuri
+ * lisätylle elementille. Sulkeutuminen on välitön. Reduced motion poistaa
+ * siirtymän (globals.css).
+ */
+const avautuu =
+  "transition-[opacity,translate] duration-150 ease-out starting:-translate-y-1 starting:opacity-0";
+
+/** Tailwindin lg-raja: tästä leveämmällä mobiilivalikkoa ei näytetä. */
+const TYOPOYTA = "(min-width: 64rem)";
+
 export function HeaderClient({ items }: { items: NavigationItem[] }) {
   const pathname = usePathname();
   // Avain pathname → komponentti remountataan reitin vaihtuessa ja
@@ -58,6 +70,24 @@ function HeaderClientInner({
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [openDropdown, mobileOpen]);
+
+  // Mobiilivalikko auki: taustasivu ei vierity valikon alla (valikolla on oma
+  // vieritys). Jos ikkuna levenee työpöytäkokoon, valikko suljetaan, jottei
+  // piilotettu valikko jätä sivua lukkoon.
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const mql = window.matchMedia(TYOPOYTA);
+    const aiempi = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const suljeLeveana = (e: MediaQueryListEvent) => {
+      if (e.matches) setMobileOpen(false);
+    };
+    mql.addEventListener("change", suljeLeveana);
+    return () => {
+      document.body.style.overflow = aiempi;
+      mql.removeEventListener("change", suljeLeveana);
+    };
+  }, [mobileOpen]);
 
   return (
     <>
@@ -113,7 +143,10 @@ function HeaderClientInner({
                 {isOpen && (
                   <div
                     id={listaId}
-                    className="absolute left-0 top-full mt-1 min-w-56 rounded-2xl border border-border bg-surface p-2 shadow-panel"
+                    className={cn(
+                      "absolute left-0 top-full mt-1 min-w-56 rounded-2xl border border-border bg-surface p-2 shadow-panel",
+                      avautuu,
+                    )}
                   >
                     {!hasOverviewChild(item) && (
                       <>
@@ -173,19 +206,33 @@ function HeaderClientInner({
       </button>
 
       {mobileOpen && (
-        <div
-          id="mobiilivalikko"
-          className="absolute inset-x-0 top-full z-30 border-b border-border bg-surface text-foreground shadow-panel lg:hidden"
-        >
-          <nav
-            aria-label="Mobiilinavigaatio"
-            className="mx-auto flex max-w-6xl flex-col gap-1 px-6 py-4"
+        <>
+          {/* Himmennys valikon alla: rajaa valikon sivusta, ja napautus sulkee
+              sen. Ei fokusoitava: näppäimistöllä suljetaan Escillä tai
+              valikkopainikkeella. */}
+          <div
+            aria-hidden
+            onClick={() => setMobileOpen(false)}
+            className="absolute inset-x-0 top-full z-20 h-dvh bg-navy/25 transition-opacity duration-200 starting:opacity-0 lg:hidden"
+          />
+          <div
+            id="mobiilivalikko"
+            className={cn(
+              "absolute inset-x-0 top-full z-30 max-h-[calc(100dvh-var(--header-korkeus))] overflow-y-auto overscroll-contain",
+              "border-b border-border bg-surface text-foreground shadow-panel lg:hidden",
+              avautuu,
+            )}
           >
-            {items.map((item) => (
-              <MobileItem key={item.href} item={item} pathname={pathname} />
-            ))}
-          </nav>
-        </div>
+            <nav
+              aria-label="Mobiilinavigaatio"
+              className="mx-auto flex max-w-6xl flex-col gap-1 px-6 py-4"
+            >
+              {items.map((item) => (
+                <MobileItem key={item.href} item={item} pathname={pathname} />
+              ))}
+            </nav>
+          </div>
+        </>
       )}
     </>
   );
@@ -236,7 +283,7 @@ function MobileItem({
         />
       </button>
       {open && (
-        <div className="ml-2 mt-1 flex flex-col gap-0.5 border-l border-border pl-3">
+        <div className={cn("ml-2 mt-1 flex flex-col gap-0.5 border-l border-border pl-3", avautuu)}>
           {!hasOverviewChild(item) && (
             <Link
               href={item.href}

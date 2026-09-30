@@ -6,6 +6,7 @@ import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
 import { SectionNav } from "@/components/layout/section-nav";
 import { JsonLd } from "@/components/seo/json-ld";
+import { Nuoli } from "@/components/ui/nuoli";
 import { rootCrumb } from "@/lib/nav-sections";
 import { breadcrumbSchema, collectionPageSchema } from "@/lib/schema-org";
 import { buildMetadata } from "@/lib/seo";
@@ -212,11 +213,9 @@ export default async function ArkistoVuosiPage({
             <Link
               href={`/uutiset/arkisto/${older.year}`}
               rel="prev"
-              className="inline-flex min-h-11 items-center text-accent underline decoration-1 underline-offset-4 hover:decoration-2"
+              className="group/linkki inline-flex min-h-11 items-center text-accent underline decoration-1 underline-offset-4 hover:decoration-2"
             >
-              <span aria-hidden className="mr-2">
-                ←
-              </span>
+              <Nuoli suunta="vasen" className="mr-2" />
               Vanhempi vuosi {older.year}
             </Link>
           ) : (
@@ -226,12 +225,10 @@ export default async function ArkistoVuosiPage({
             <Link
               href={`/uutiset/arkisto/${newer.year}`}
               rel="next"
-              className="inline-flex min-h-11 items-center text-accent underline decoration-1 underline-offset-4 hover:decoration-2"
+              className="group/linkki inline-flex min-h-11 items-center text-accent underline decoration-1 underline-offset-4 hover:decoration-2"
             >
               Uudempi vuosi {newer.year}
-              <span aria-hidden className="ml-2">
-                →
-              </span>
+              <Nuoli className="ml-2" />
             </Link>
           ) : (
             <span />

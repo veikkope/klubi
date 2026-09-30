@@ -17,6 +17,14 @@ type Props = {
 };
 
 /**
+ * Kuvan hidas 3 %:n lähennys, kun sen sisältävää korttia (`group/kortti`)
+ * osoitetaan. Vain hiirellä (Tailwindin hover-variantti) ja kun käyttäjä ei
+ * ole pyytänyt vähemmän liikettä.
+ */
+export const korttiZoom =
+  "transition-transform duration-500 ease-out motion-safe:group-hover/kortti:scale-[1.03]";
+
+/**
  * Kuva kokonaisena kiinteässä kehyksessä: ketään ei rajata pois.
  *
  * Käytössä kaikissa sisältökuvissa, joilla on kiinteä kehys (kortit, kansikuvat,
@@ -59,7 +67,8 @@ export function FramedImage({ image, alt, width = 1200, sizes, className, priori
         crop={false}
         sizes={sizes}
         kuvateksti={kuvateksti}
-        className="absolute inset-0 h-full w-full object-contain"
+        // Kortissa (group/kortti) kuva lähenee hoverissa hieman; muualla ei.
+        className={cn("absolute inset-0 h-full w-full object-contain", korttiZoom)}
         priority={priority}
         esikatselu={false}
       />

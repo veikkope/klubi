@@ -1,5 +1,6 @@
 import {
   PortableText as PortableTextRaw,
+  type PortableTextBlockComponent,
   type PortableTextComponents,
   type PortableTextBlock,
 } from "@portabletext/react";
@@ -26,6 +27,16 @@ function otsikko(tyyli: OtsikkoTyyli, siirto: number) {
   }
   return Otsikko;
 }
+
+/** Tavallinen kappale; ensimmäinen (index 0) ingressinä. */
+const kappaleIngressilla: PortableTextBlockComponent = ({ children, index }) =>
+  index === 0 ? (
+    <p className="font-display text-xl font-normal leading-[1.5] text-heading sm:text-2xl sm:leading-[1.45]">
+      {children}
+    </p>
+  ) : (
+    <p className="mt-4 text-lg leading-relaxed text-foreground">{children}</p>
+  );
 
 const components: PortableTextComponents = {
   block: {
@@ -117,27 +128,35 @@ function ylinTaso(value: PortableTextBlock[]): number | null {
  *   (WCAG 1.3.1: tasot eivät saa hypätä). Migroitu sisältö alkaa usein h3:lla
  *   suoraan sivun h1:n alla; `ylinOtsikko={2}` nostaa kaikkia otsikoita tasolla.
  *   Ulkoasu ei muutu. Ilman arvoa tasot ovat sellaisenaan.
+ * @param ingressi Ensimmäinen kappale ingressinä: isompi serif, kuten
+ *   ravintola-arvion alussa. Kutsuja päättää, sopiiko kappale ingressiksi
+ *   (`ensimmainenKappaleIngressiksi`, lib/artikkeli.ts).
  */
 export function PortableText({
   value,
   ylinOtsikko,
+  ingressi = false,
 }: {
   value: PortableTextBlock[] | null | undefined;
   ylinOtsikko?: 2 | 3 | 4;
+  ingressi?: boolean;
 }) {
   if (!value || value.length === 0) return null;
   const ylin = ylinOtsikko ? ylinTaso(value) : null;
   const siirto = ylinOtsikko && ylin ? ylinOtsikko - ylin : 0;
   const kaytettavat =
-    siirto === 0
+    siirto === 0 && !ingressi
       ? components
       : {
           ...components,
           block: {
             ...(components.block as object),
-            h2: otsikko("h2", siirto),
-            h3: otsikko("h3", siirto),
-            h4: otsikko("h4", siirto),
+            ...(siirto !== 0 && {
+              h2: otsikko("h2", siirto),
+              h3: otsikko("h3", siirto),
+              h4: otsikko("h4", siirto),
+            }),
+            ...(ingressi && { normal: kappaleIngressilla }),
           },
         };
   return <PortableTextRaw value={value} components={kaytettavat} />;

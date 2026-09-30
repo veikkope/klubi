@@ -151,6 +151,10 @@ html {
      ankkureita ja scrollIntoView-kutsuja, joten elementtikohtaisia
      scroll-mt-luokkia ei tarvita. */
   scroll-padding-top: calc(var(--header-korkeus) + 1.5rem);
+  /* Vierityspalkin tila pysyy varattuna, kun mobiilivalikko tai kuvakatselin
+     lukitsee vierityksen (overflow: hidden): sisältö ei hyppää sivuttain
+     palkin kadotessa. */
+  scrollbar-gutter: stable;
 }
 
 /* Sivun sisäiset hypyt (ankkurit, "Siirry sisältöön") liukuvat. Sivunvaihdoissa

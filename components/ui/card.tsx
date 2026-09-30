@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Children, cloneElement, isValidElement, type ReactElement, type ReactNode } from "react";
 
+import { Nuoli } from "@/components/ui/nuoli";
 import { cn } from "@/lib/cn";
 
 type CardProps = {
@@ -32,7 +33,7 @@ export function Card({ href, className, children }: CardProps) {
         <div
           className={cn(
             cardBase,
-            "group relative hover:border-border-strong hover:shadow-panel",
+            "group group/kortti relative hover:border-border-strong hover:shadow-panel",
             // Fokus näkyy koko kortin ympärillä, vaikka se on otsikkolinkissä.
             "has-[a:focus-visible]:ring-2 has-[a:focus-visible]:ring-ring has-[a:focus-visible]:ring-offset-2",
             className,
@@ -47,7 +48,7 @@ export function Card({ href, className, children }: CardProps) {
         href={href}
         className={cn(
           cardBase,
-          "group hover:border-border-strong hover:shadow-panel",
+          "group group/kortti hover:border-border-strong hover:shadow-panel",
           className,
         )}
       >
@@ -136,9 +137,9 @@ export function CardBody({
 /** Näkyvä kehotus. Ruudunlukijalta piilotettu: linkki on jo otsikossa. */
 export function CardArrow({ label = "Lue lisää" }: { label?: string }) {
   return (
-    <span aria-hidden className="mt-4 inline-flex items-center gap-1 text-[15px] font-semibold text-accent underline underline-offset-4 transition group-hover:text-accent-hover">
+    <span aria-hidden className="mt-4 inline-flex items-center gap-1 text-[15px] font-semibold text-accent underline decoration-1 underline-offset-4 transition group-hover/kortti:text-accent-hover group-hover/kortti:decoration-2">
       {label}
-      <span aria-hidden>→</span>
+      <Nuoli ryhma="kortti" />
     </span>
   );
 }

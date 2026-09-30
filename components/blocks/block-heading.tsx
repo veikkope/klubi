@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { Nuoli } from "@/components/ui/nuoli";
 import { cn } from "@/lib/cn";
 
 /**
@@ -104,11 +105,11 @@ export function ArrowLink({
     <Link
       href={href}
       className={cn(
-        "inline-flex min-h-11 items-center font-semibold text-accent underline underline-offset-4 transition hover:text-accent-hover",
+        "group/linkki inline-flex min-h-11 items-center font-semibold text-accent underline decoration-1 underline-offset-4 transition hover:text-accent-hover hover:decoration-2",
         className,
       )}
     >
-      {children}&nbsp;<span aria-hidden>→</span>
+      {children}&nbsp;<Nuoli />
     </Link>
   );
 }

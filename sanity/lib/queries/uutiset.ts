@@ -163,6 +163,30 @@ export const relatedUutisetQuery = defineQuery(`
   }
 `);
 
+/** Uutissivun selauslinkki: otsikko ja osoite. */
+export type UutinenNaapuri = { title: string; slug: string; publishedAt: string };
+
+export type UutinenNaapurit = {
+  vanhempi: UutinenNaapuri | null;
+  uudempi: UutinenNaapuri | null;
+};
+
+/**
+ * Julkaisujärjestyksessä edellinen ja seuraava uutinen. Parametrit: $id
+ * (uutisen _id), $publishedAt. Samalla hetkellä julkaistut järjestetään
+ * _id:n mukaan, jottei yhtään ohiteta eikä selaus jää kehään.
+ */
+export const uutinenNaapuritQuery = defineQuery(`
+  {
+    "vanhempi": *[${uutinenFilter} && (publishedAt < $publishedAt
+      || (publishedAt == $publishedAt && _id < $id))]
+      | order(publishedAt desc, _id desc)[0]{ title, "slug": slug.current, publishedAt },
+    "uudempi": *[${uutinenFilter} && (publishedAt > $publishedAt
+      || (publishedAt == $publishedAt && _id > $id))]
+      | order(publishedAt asc, _id asc)[0]{ title, "slug": slug.current, publishedAt }
+  }
+`);
+
 /* -------------------------------------------------------------------------- */
 /* Tunnisteet (lib/tunnisteet.ts)                                              */
 /* -------------------------------------------------------------------------- */

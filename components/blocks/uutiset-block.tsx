@@ -68,7 +68,9 @@ export async function UutisetBlock({ eyebrow, heading, count = 4 }: Props) {
         )}
 
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:gap-14">
-          <article className="flex flex-col gap-3.5 sm:gap-[18px]">
+          {/* Koko nosto on klikattava: otsikkolinkin ::after kattaa artikkelin
+              (sama malli kuin Card). Ruudunlukija kuulee linkkinä vain otsikon. */}
+          <article className="group/kortti relative flex flex-col gap-3.5 sm:gap-[18px]">
             {featured.coverImage?.asset && (
               <FramedImage
                 image={featured.coverImage}
@@ -79,7 +81,10 @@ export async function UutisetBlock({ eyebrow, heading, count = 4 }: Props) {
             )}
             <Meta news={featured} />
             <h3 className="text-pretty font-display text-2xl leading-[1.2] sm:text-[2.5rem] sm:leading-[1.12]">
-              <Link href={`/uutiset/${featured.slug}`} className="text-heading no-underline hover:text-accent">
+              <Link
+                href={`/uutiset/${featured.slug}`}
+                className="text-heading no-underline after:absolute after:inset-0 after:content-[] group-hover/kortti:text-accent"
+              >
                 {featured.title}
               </Link>
             </h3>

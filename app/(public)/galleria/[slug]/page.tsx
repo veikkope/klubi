@@ -7,6 +7,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { AlbumGrid } from "@/components/gallery/album-grid";
 import { imageCountLabel } from "@/components/gallery/album-tile";
 import { JsonLd } from "@/components/seo/json-ld";
+import { Nuoli } from "@/components/ui/nuoli";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import { allGalleriaSlugsQuery } from "@/sanity/lib/queries";
 import {
@@ -154,9 +155,9 @@ export default async function AlbumPage({
       <Container size="wide" className="pb-16">
         <Link
           href="/galleria"
-          className="inline-flex min-h-11 items-center gap-1 text-sm font-medium text-accent hover:text-accent-hover"
+          className="group/linkki inline-flex min-h-11 items-center gap-1 text-sm font-medium text-accent hover:text-accent-hover"
         >
-          <span aria-hidden>←</span> Kaikki albumit
+          <Nuoli suunta="vasen" /> Kaikki albumit
         </Link>
       </Container>
     </>

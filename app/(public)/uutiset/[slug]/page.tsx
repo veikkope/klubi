@@ -10,8 +10,16 @@ import { PortableText } from "@/components/portable-text";
 import { FramedImage } from "@/components/framed-image";
 import { UutisenTunnisteet } from "@/components/tunnistelista";
 import { JsonLd } from "@/components/seo/json-ld";
+import { JaaPainike } from "@/components/jaa-painike";
+import { Nuoli } from "@/components/ui/nuoli";
+import {
+  ensimmainenKappaleIngressiksi,
+  lukuaika,
+  tiivistelmaToistaaTekstin,
+} from "@/lib/artikkeli";
 import { formatDate } from "@/lib/format";
 import { rootCrumb } from "@/lib/nav-sections";
+import { siteUrl } from "@/lib/site";
 import { articleSchema, breadcrumbSchema } from "@/lib/schema-org";
 import { buildMetadata, resolveDescription } from "@/lib/seo";
 import { categoryLabel } from "@/lib/uutinen-categories";
@@ -22,41 +30,17 @@ import { urlForImage } from "@/sanity/lib/image";
 import {
   relatedUutisetQuery,
   uutinenDetailQuery,
+  uutinenNaapuritQuery,
   uutinenSlugsQuery,
   type UutinenDetail,
   type UutinenListItem,
+  type UutinenNaapuri,
+  type UutinenNaapurit,
 } from "@/sanity/lib/queries/uutiset";
 
 export const revalidate = 3600;
 
 type Params = { slug: string };
-
-/** Portable Textin tavallinen teksti yhtenä rivinä vertailua varten. */
-function plainText(blocks: UutinenDetail["body"]): string {
-  return (blocks ?? [])
-    .map((block) =>
-      block._type === "block" && Array.isArray(block.children)
-        ? block.children.map((child) => (typeof child.text === "string" ? child.text : "")).join("")
-        : "",
-    )
-    .join(" ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-/**
- * Onko tiivistelmä leipätekstin alku? Katkaistun tiivistelmän loppu-"…"
- * ja välilyöntierot eivät vaikuta vertailuun.
- */
-function leadRepeatsBody(
-  lead: string | null | undefined,
-  body: UutinenDetail["body"],
-): boolean {
-  if (!lead) return false;
-  const normalizedLead = lead.replace(/(…|\.\.\.)\s*$/, "").replace(/\s+/g, " ").trim();
-  if (normalizedLead.length < 20) return false;
-  return plainText(body).startsWith(normalizedLead);
-}
 
 export async function generateStaticParams(): Promise<Params[]> {
   if (!hasSanity) return [];
@@ -124,12 +108,23 @@ export default async function UutinenPage({
   const news = await getUutinen(slug);
   if (!news) notFound();
 
-  const related = await sanityFetch<UutinenListItem[]>({
-    query: relatedUutisetQuery,
-    params: { slug: news.slug, categories: news.categories ?? [], count: 3 },
-    tags: ["uutinen"],
-    fallback: [],
-  });
+  const eiNaapureita: UutinenNaapurit = { vanhempi: null, uudempi: null };
+  const [related, naapurit] = await Promise.all([
+    sanityFetch<UutinenListItem[]>({
+      query: relatedUutisetQuery,
+      params: { slug: news.slug, categories: news.categories ?? [], count: 3 },
+      tags: ["uutinen"],
+      fallback: [],
+    }),
+    news.publishedAt
+      ? sanityFetch<UutinenNaapurit>({
+          query: uutinenNaapuritQuery,
+          params: { id: news._id, publishedAt: news.publishedAt },
+          tags: ["uutinen"],
+          fallback: eiNaapureita,
+        })
+      : eiNaapureita,
+  ]);
 
   const path = `/uutiset/${news.slug}`;
   const trail = [
@@ -141,7 +136,10 @@ export default async function UutinenPage({
   const summary = news.tiivistelma ?? news.excerpt;
   // Migroiduissa uutisissa tiivistelmä on leipätekstin sanatarkka alku
   // (docs/12 §2.1.6). Ingressinä se toistaisi saman tekstin kahdesti.
-  const lead = leadRepeatsBody(summary, news.body) ? null : summary;
+  const lead = tiivistelmaToistaaTekstin(summary, news.body) ? null : summary;
+  // Ilman erillistä ingressiä sopivan mittainen ensimmäinen kappale toimii sinä.
+  const ingressi = !lead && ensimmainenKappaleIngressiksi(news.body);
+  const minuutit = lukuaika(news.body);
   const lahde = news.lahde?.nimi?.trim() ? news.lahde : null;
 
   return (
@@ -184,6 +182,14 @@ export default async function UutinenPage({
                   </span>
                 </>
               )}
+              {minuutit && (
+                <>
+                  <span aria-hidden>·</span>
+                  <span>{minuutit} min lukuaika</span>
+                </>
+              )}
+              <span aria-hidden>·</span>
+              <JaaPainike url={new URL(path, siteUrl).toString()} otsikko={news.title} />
             </div>
           }
         />
@@ -231,7 +237,7 @@ export default async function UutinenPage({
       )}
 
       <Container size="narrow" className="py-16">
-        <PortableText value={news.body} />
+        <PortableText value={news.body} ingressi={ingressi} />
 
         <UutisenTunnisteet tunnisteet={news.tunnisteet} className="mt-10" />
 
@@ -284,7 +290,9 @@ export default async function UutinenPage({
 
         <KommentitOsio uutinenId={news._id} kommentointi={news.kommentointi} />
 
-        <p className="mt-12 text-sm text-muted">
+        <UutisSelaus naapurit={naapurit} />
+
+        <p className="mt-10 text-sm text-muted">
           <Link href="/uutiset" className="text-accent underline decoration-1 underline-offset-4 hover:decoration-2">
             Kaikki uutiset
           </Link>
@@ -322,5 +330,56 @@ export default async function UutinenPage({
         </section>
       )}
     </article>
+  );
+}
+
+/**
+ * Vanhempi ja uudempi uutinen julkaisujärjestyksessä (vasen = vanhempi, kuten
+ * arkiston vuosiselauksessa). Otsikko kertoo, mihin linkki vie.
+ */
+function UutisSelaus({ naapurit }: { naapurit: UutinenNaapurit }) {
+  const { vanhempi, uudempi } = naapurit;
+  if (!vanhempi && !uudempi) return null;
+  return (
+    <nav
+      aria-label="Selaa uutisia"
+      className="mt-12 grid gap-6 border-t border-border pt-8 sm:grid-cols-2"
+    >
+      {vanhempi && <SelausLinkki uutinen={vanhempi} suunta="vanhempi" />}
+      {uudempi && <SelausLinkki uutinen={uudempi} suunta="uudempi" />}
+    </nav>
+  );
+}
+
+function SelausLinkki({
+  uutinen,
+  suunta,
+}: {
+  uutinen: UutinenNaapuri;
+  suunta: "vanhempi" | "uudempi";
+}) {
+  const uudempi = suunta === "uudempi";
+  return (
+    <Link
+      href={`/uutiset/${uutinen.slug}`}
+      rel={uudempi ? "next" : "prev"}
+      className={
+        "group/linkki flex flex-col gap-1.5 no-underline" +
+        // Yksinään oleva uudempi-linkki pysyy oikealla puolella.
+        (uudempi ? " sm:col-start-2 sm:items-end sm:text-right" : "")
+      }
+    >
+      <span className="inline-flex items-center gap-1.5 text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-soft">
+        {!uudempi && <Nuoli suunta="vasen" />}
+        {uudempi ? "Uudempi uutinen" : "Vanhempi uutinen"}
+        {uudempi && <Nuoli />}
+      </span>
+      <span className="font-display text-lg leading-[1.35] text-heading transition group-hover/linkki:text-accent">
+        {uutinen.title}
+      </span>
+      <time dateTime={uutinen.publishedAt} className="text-sm text-muted-soft">
+        {formatDate(uutinen.publishedAt)}
+      </time>
+    </Link>
   );
 }

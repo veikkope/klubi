@@ -42,6 +42,7 @@
     "test:kuvat": "tsx scripts/test-kuvat.ts",
     "test:varmuuskopio": "tsx scripts/test-varmuuskopio.ts",
     "test:haku": "tsx scripts/test-haku.ts",
+    "test:artikkeli": "tsx scripts/test-artikkeli.ts",
     "test:tunnisteet": "tsx scripts/test-tunnisteet.ts",
     "patch:tunnisteet": "tsx scripts/patch-tunnisteet.ts",
     "patch:kategoriat": "tsx scripts/patch-kategoriat.ts",

@@ -5,6 +5,7 @@ import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
 import { JsonLd } from "@/components/seo/json-ld";
 import { RestaurantCard } from "@/components/restaurant-card";
+import { Nuoli } from "@/components/ui/nuoli";
 import {
   RavintolaFilterBar,
   buildRavintolaHref,
@@ -259,7 +260,7 @@ function Pagination({
   const hasNext = filters.sivu < pageCount;
 
   const linkClass =
-    "inline-flex min-h-11 items-center justify-center rounded-sm border border-border px-5 text-sm font-medium text-foreground transition hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
+    "group/linkki inline-flex min-h-11 items-center justify-center gap-1.5 rounded-sm border border-border px-5 text-sm font-medium text-foreground transition hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
 
   return (
     <nav
@@ -272,7 +273,7 @@ function Pagination({
           rel="prev"
           className={linkClass}
         >
-          ← Edellinen sivu
+          <Nuoli suunta="vasen" /> Edellinen sivu
         </Link>
       ) : (
         <span aria-hidden />
@@ -288,7 +289,7 @@ function Pagination({
           rel="next"
           className={linkClass}
         >
-          Seuraava sivu →
+          Seuraava sivu <Nuoli />
         </Link>
       ) : (
         <span aria-hidden />

@@ -8,6 +8,7 @@ import { SectionNav } from "@/components/layout/section-nav";
 import { PortableText } from "@/components/portable-text";
 import { FramedImage } from "@/components/framed-image";
 import { JsonLd } from "@/components/seo/json-ld";
+import { Nuoli } from "@/components/ui/nuoli";
 import {
   Card,
   CardArrow,
@@ -180,12 +181,10 @@ export default async function KlubiPage() {
               <li key={item.href}>
                 <Link
                   href={item.href}
-                  className="flex min-h-11 items-center justify-between gap-3 rounded-xl border border-border bg-surface px-5 py-3 text-foreground transition hover:border-accent"
+                  className="group/linkki flex min-h-11 items-center justify-between gap-3 rounded-xl border border-border bg-surface px-5 py-3 text-foreground transition hover:border-accent"
                 >
                   <span>{item.label}</span>
-                  <span aria-hidden className="text-accent">
-                    →
-                  </span>
+                  <Nuoli className="text-accent" />
                 </Link>
               </li>
             ))}

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { JsonLd } from "@/components/seo/json-ld";
+import { Nuoli } from "@/components/ui/nuoli";
 import {
   Card,
   CardArrow,
@@ -245,15 +246,10 @@ function SarjaLista({
           <li key={linkki.id} className="border-b border-border">
             <Link
               href={linkki.href}
-              className="group flex min-h-11 items-center justify-between gap-4 py-3 text-foreground no-underline transition hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+              className="group/linkki flex min-h-11 items-center justify-between gap-4 py-3 text-foreground no-underline transition hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
             >
               <span>{linkki.title}</span>
-              <span
-                aria-hidden
-                className="text-accent transition group-hover:translate-x-0.5"
-              >
-                →
-              </span>
+              <Nuoli className="text-accent" />
             </Link>
           </li>
         ))}

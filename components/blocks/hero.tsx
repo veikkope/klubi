@@ -3,6 +3,7 @@ import { stegaClean } from "next-sanity";
 
 import { Container } from "@/components/layout/container";
 import { SanityImage } from "@/components/sanity-image";
+import { Nuoli } from "@/components/ui/nuoli";
 import { cn } from "@/lib/cn";
 import type { EtusivuData } from "@/lib/types";
 
@@ -86,13 +87,13 @@ export function Hero({ data }: { data: EtusivuData }) {
                   // Stega pois hrefistä (luonnosnäkymä); nimi jää muokattavaksi.
                   href={stegaClean(cta.href)}
                   className={cn(
-                    "text-[17px] font-semibold underline underline-offset-[5px] transition hover:decoration-2",
+                    "group/linkki text-[17px] font-semibold underline decoration-1 underline-offset-[5px] transition hover:decoration-2",
                     cta.primary
                       ? "text-on-chrome hover:text-on-chrome"
                       : "text-on-chrome-muted hover:text-on-chrome",
                   )}
                 >
-                  {cta.label}&nbsp;<span aria-hidden>→</span>
+                  {cta.label}&nbsp;<Nuoli />
                 </Link>
               ))}
             </div>

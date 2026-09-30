@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { Nuoli } from "@/components/ui/nuoli";
 import { cn } from "@/lib/cn";
 
 /**
@@ -60,10 +61,10 @@ export function Pagination({
               rel="prev"
               className={cn(
                 linkBase,
-                "border-border bg-background text-foreground hover:border-accent hover:text-accent",
+                "group/linkki border-border bg-background text-foreground hover:border-accent hover:text-accent",
               )}
             >
-              <span aria-hidden>←</span>
+              <Nuoli suunta="vasen" />
               <span className="ml-2">Edellinen</span>
             </Link>
           ) : (
@@ -112,11 +113,11 @@ export function Pagination({
               rel="next"
               className={cn(
                 linkBase,
-                "border-border bg-background text-foreground hover:border-accent hover:text-accent",
+                "group/linkki border-border bg-background text-foreground hover:border-accent hover:text-accent",
               )}
             >
               <span className="mr-2">Seuraava</span>
-              <span aria-hidden>→</span>
+              <Nuoli />
             </Link>
           ) : (
             <span

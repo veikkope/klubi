@@ -74,6 +74,14 @@ voi muuttaa projektin asetuksia tai käyttöoikeuksia. Kehittäjä hoitaa ne.
 Palloveikkauksen tilanne on tavallinen uutinen. Kirjoita sarjataulukko riveinä:
 **Shift + Enter** vaihtaa rivin saman kappaleen sisällä, kuten blogissa ennen.
 
+Sivusto tekee muutaman asian itse, eikä sinun tarvitse tehdä niille mitään:
+- **Ensimmäinen kappale** näytetään isommalla kirjasimella johdantona, jos se on
+  lyhyt tai keskipitkä, noin 1–4 lausetta. Kirjoita siis alkuun pari lausetta,
+  jotka kertovat, mistä jutussa on kyse.
+- **Lukuaika** ("3 min lukuaika") näkyy pidemmissä jutuissa.
+- **Jaa-painike** ja linkit edelliseen ja seuraavaan uutiseen tulevat jokaiseen
+  uutiseen.
+
 Uutissivulla on **haku**. Julkaistu uutinen löytyy haulla heti, eikä sinun tarvitse
 tehdä mitään. Hyvä otsikko ja lyhenne auttavat, koska otsikko-osumat nousevat
 tuloksissa ylimmäksi.

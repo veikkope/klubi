@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { FramedImage } from "@/components/framed-image";
+import { FramedImage, korttiZoom } from "@/components/framed-image";
 import { RatingDots } from "@/components/ui/rating-dots";
 import { SanityImage } from "@/components/sanity-image";
 import { cn } from "@/lib/cn";
@@ -65,7 +65,7 @@ export function RestaurantCard({
     <Link
       href={`/ravintolat/${r.slug}`}
       className={cn(
-        "group grid w-full grid-cols-[80px_1fr] items-center gap-3.5 overflow-hidden rounded-sm border-t-[3px] border-t-brass bg-surface p-[18px] no-underline transition hover:shadow-panel",
+        "group group/kortti grid w-full grid-cols-[80px_1fr] items-center gap-3.5 overflow-hidden rounded-sm border-t-[3px] border-t-brass bg-surface p-[18px] no-underline transition hover:shadow-panel",
         "sm:flex sm:flex-col sm:items-stretch sm:gap-0 sm:border-t-0 sm:p-0",
         // Lopettanut paikka: vain kuva haalistetaan. Koko kortin läpinäkyvyys
         // pudotti pienet tekstit alle AA-kontrastin (docs/16, saavutettavuus-9).
@@ -80,7 +80,7 @@ export function RestaurantCard({
             width={160}
             height={160}
             sizes="80px"
-            className="aspect-square w-full rounded-sm object-cover sm:hidden"
+            className={cn("aspect-square w-full rounded-sm object-cover sm:hidden", korttiZoom)}
           />
           <FramedImage
             image={r.image}

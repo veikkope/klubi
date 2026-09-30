@@ -10,6 +10,7 @@ import { PortableText } from "@/components/portable-text";
 import { FramedImage } from "@/components/framed-image";
 import { JsonLd } from "@/components/seo/json-ld";
 import { Badge } from "@/components/ui/badge";
+import { Nuoli } from "@/components/ui/nuoli";
 import { formatDate } from "@/lib/format";
 import { klubiNav, rootCrumb } from "@/lib/nav-sections";
 import { breadcrumbSchema, webPageSchema, type Crumb } from "@/lib/schema-org";
@@ -294,12 +295,10 @@ export default async function ToimintaDetailPage({
                 <li key={sibling._id}>
                   <Link
                     href={`/klubi/toiminta/${sibling.slug}`}
-                    className="flex min-h-11 items-center justify-between gap-3 rounded-xl border border-border bg-surface px-5 py-3 text-foreground transition hover:border-accent"
+                    className="group/linkki flex min-h-11 items-center justify-between gap-3 rounded-xl border border-border bg-surface px-5 py-3 text-foreground transition hover:border-accent"
                   >
                     <span>{sibling.title}</span>
-                    <span aria-hidden className="text-accent">
-                      →
-                    </span>
+                    <Nuoli className="text-accent" />
                   </Link>
                 </li>
               ))}

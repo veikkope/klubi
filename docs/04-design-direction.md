@@ -122,6 +122,8 @@ Kuvat on generoitu tiedostosta `mark-blue.png` sharp-kirjastolla.
 | `Button` | `primary` sininen → hover yönsininen, `outline` yönsininen reuna, `onDarkPrimary`, `onDark`. 48 px (`lg`), 600, 4 px. | `components/ui/button.tsx` |
 | `Badge` (tag) | Vaalea sininen + navy, 13 px / 600, 3 px | `components/ui/badge.tsx` |
 | `Footer` | Yönsininen, pystylogo (merkki 56 + teksti 24), sarakkeet Jalkapallo / Klubi / Yhteystiedot, alarivi | `components/layout/footer.tsx` |
+| Uutissivu | Metarivillä päiväys · kirjoittaja · lukuaika (vähintään 150 sanaa, 180 sanaa/min) · Jaa. Jos erillistä ingressiä ei näytetä, 60–320 merkin ensimmäinen kappale näytetään ingressinä (serif 20/24 px, paino 400). Tekstin jälkeen "Vanhempi / Uudempi uutinen" -selaus. Säännöt ovat tiedostossa `lib/artikkeli.ts` (testit: `npm run test:artikkeli`). | `app/(public)/uutiset/[slug]/page.tsx` |
+| `JaaPainike` | Kosketuslaitteella avaa laitteen oman jakovalikon, tietokoneella kopioi linkin ("Linkki kopioitu ✓", myös ruudunlukijalle). Ei kolmansien osapuolten widgettejä. | `components/jaa-painike.tsx` |
 | `CtaBlock` | **Ei käytössä** (tyyliopas: ei liittymiskehotteita). Säilyy vanhan datan vuoksi. | `components/blocks/cta-block.tsx` |
 
 ## Ikonit
@@ -148,6 +150,10 @@ Kuvat on generoitu tiedostosta `mark-blue.png` sharp-kirjastolla.
 Hyvin maltillisia. Vain:
 - Linkki-hoverin värimuutos (150 ms)
 - Kortin hover-varjo (200 ms)
+- Valikon avautuminen (pudotusvalikko, mobiilivalikko ja sen alavalikot): 150 ms häivytys ja 4 px liuku ylhäältä (`starting:`-variantti eli CSS:n `@starting-style`, ks. `avautuu` tiedostossa `header-client.tsx`). Sulkeutuminen on välitön. Mobiilivalikon alla sivu himmenee (`bg-navy/25`, napautus sulkee), ja taustasivun vieritys lukitaan.
+- Kortin kuvan hidas lähennys hoverissa: 3 %, 500 ms (`korttiZoom`, `framed-image.tsx`). Koskee vain kortteja, joilla on luokka `group/kortti`.
+- Nuolilinkin nuoli liikahtaa 3 px osoittamaansa suuntaan (`Nuoli`, `components/ui/nuoli.tsx`). Käytä aina tätä komponenttia, älä pelkkää `→`-merkkiä. Linkkiin tulee luokka `group/linkki`, korttiin `group/kortti`.
+- Tekstilinkin alleviivaus vahvistuu hoverissa 1 px → 2 px (`decoration-1 hover:decoration-2`).
 - Sivun sisäisten ankkurihyppyjen pehmeä vieritys (`scroll-behavior: smooth`, vain `prefers-reduced-motion: no-preference`). Sivunvaihdoissa Next hyppää sivun alkuun heti (`data-scroll-behavior="smooth"` juuren `<html>`-elementissä).
 
 Kunnioita `prefers-reduced-motion`.

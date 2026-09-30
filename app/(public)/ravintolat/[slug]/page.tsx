@@ -7,6 +7,7 @@ import { Container } from "@/components/layout/container";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { Eyebrow } from "@/components/blocks/block-heading";
 import { LinkButton } from "@/components/ui/button";
+import { Nuoli } from "@/components/ui/nuoli";
 import { RatingDots } from "@/components/ui/rating-dots";
 import { JsonLd } from "@/components/seo/json-ld";
 import { FramedImage } from "@/components/framed-image";
@@ -162,9 +163,9 @@ export default async function RavintolaPage({ params }: PageProps) {
       <Container size="wide" className="pt-5 sm:pt-12">
         <Link
           href="/ravintolat"
-          className="text-sm font-medium text-accent no-underline sm:hidden"
+          className="group/linkki text-sm font-medium text-accent no-underline sm:hidden"
         >
-          ← Ravintola-arviot
+          <Nuoli suunta="vasen" /> Ravintola-arviot
         </Link>
         <Breadcrumbs items={trail.slice(1)} className="hidden sm:block" />
 
