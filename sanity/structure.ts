@@ -167,13 +167,14 @@ export const structure: StructureResolver = (S) =>
                 .schemaType("ravintolaKayttajaArvostelu")
                 .child(
                   // Lomake tallentaa arvostelun luonnoksena. Julkaistu = hyväksytty.
+                  // Studio hakee listat luonnosnäkymässä (perspective "drafts"), jossa
+                  // luonnoksen `_id` on ilman `drafts.`-etuliitettä: luonnoksen tunnistaa
+                  // `_originalId`:stä. Listalle tulee myös jo hyväksytty arvostelu, jota on
+                  // muokattu julkaisematta: sekin odottaa julkaisua.
                   S.documentList()
                     .title("Odottavat hyväksyntää")
                     .schemaType("ravintolaKayttajaArvostelu")
-                    .filter(
-                      `_type == "ravintolaKayttajaArvostelu" && _id in path("drafts.**")
-                        && !defined(*[_id == string::split(^._id, "drafts.")[1]][0]._id)`,
-                    )
+                    .filter(`_type == "ravintolaKayttajaArvostelu" && _originalId in path("drafts.**")`)
                     .defaultOrdering([{ field: "submittedAt", direction: "desc" }]),
                 ),
               S.listItem()
