@@ -90,8 +90,9 @@ valinta (enint. 3)
 | Tallennus | 1286×1600 JPEG 289 kt, `source.name` oikein, ei EXIF/XMP alkuperäisessä, luonnos ei näy julkisesti | ✅ |
 | Näyttö | Pikkukuvat, Lightbox, fokuksen palautus, ei vaakavieritystä 390 px | ✅ |
 | Hylkäys ja siivous | Viitattu kuva säilyy (julkaistu, luonnos, alle 24 h), orpo poistuu, 409 viitatulle | ✅ |
-| Studio-painike | Käsin Studiossa (vaatii kirjautumisen) | ☐ |
-| iPhone (HEIC, kamera) | Käsin puhelimella | ☐ |
+| Studio-painikkeet | Paikallinen Studio + Playwright, väliaikainen Editor-token (poistettu testin jälkeen), `development`: valikossa "Hylkää arvostelu" (luonnos) / "Poista arvostelu" (julkaistu), tavallista Poista-toimintoa ei ole; vahvistusteksti; arvostelu ja kuva poistuvat; paneeli sulkeutuu | ✅ |
+| iPhone | Playwright WebKit, iPhone 13 -emulointi: purkamaton tiedosto → selkeä ohje, JPEG ja PNG → 1600 px, ei vaakavieritystä, lähetys ja tallennus | ✅ emuloitu |
+| Oikea iPhone (HEIC, kamera) | Ei testattavissa ilman laitetta. iOS muuntaa HEIC:n JPEG:ksi, kun `accept="image/*"`; purkuvirhe näyttää ohjeen | ☐ ensimmäinen oikea käyttö |
 
 ## 7. Käyttöönotto tuotantoon
 
@@ -100,4 +101,4 @@ valinta (enint. 3)
    (päivittää tietosuojaselosteen arvostelukohdat, ei koske muihin muokkauksiin).
    ✅ 30.9.2026, varmuuskopio `production-2026-09-30.tar.gz`
 3. Testaa: lähetä arvostelu kuvalla, hylkää se Studiossa **Hylkää arvostelu** -painikkeella
-   ja tarkista, ettei kuvan osoite enää avaudu. ☐
+   ja tarkista, ettei kuvan osoite enää avaudu. ✅ 30.9.2026 `development`-datasetissä (sama koodi)

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { TrashIcon } from "@sanity/icons";
 import { useClient, type DocumentActionComponent } from "sanity";
+import { usePaneRouter } from "sanity/structure";
 
 import { REVIEW_PHOTO_SOURCE } from "../../lib/arvostelukuvat";
 import { apiVersion } from "../env";
@@ -31,6 +32,7 @@ const kuvaIdt = (doc: Arvostelu | null) =>
 export const HylkaaArvostelu: DocumentActionComponent = (props) => {
   const { id, draft, published, onComplete } = props;
   const client = useClient({ apiVersion });
+  const paneRouter = usePaneRouter();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [virhe, setVirhe] = useState(false);
@@ -63,6 +65,15 @@ export const HylkaaArvostelu: DocumentActionComponent = (props) => {
       });
       setDialogOpen(false);
       onComplete();
+      // Poistetun dokumentin paneeli jäisi muuten auki tyhjänä lomakkeena
+      // ("Nimetön") ja tarjoaisi palautusta, joka viittaisi jo poistettuihin
+      // kuviin. Suljetaan se; lista jää näkyviin.
+      try {
+        paneRouter.closeCurrentAndAfter();
+      } catch (error) {
+        // Toiminto ajettiin rakennenäkymän ulkopuolella; ei suljettavaa paneelia.
+        console.warn("[Hylkää arvostelu] paneelin sulkeminen ei onnistunut", error);
+      }
     } catch (error) {
       console.error("[Hylkää arvostelu]", error);
       setVirhe(true);
