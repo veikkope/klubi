@@ -243,7 +243,6 @@ export type RavintolaCard = {
   city?: { name: string; slug: string } | null;
   stars: number;
   priceLevel?: string | null;
-  cuisine?: string[] | null;
   image?: SanityImage;
 };
 
@@ -262,7 +261,6 @@ export type RavintolaFull = {
   city?: { name: string; slug: string; country?: string } | null;
   address?: string | null;
   location?: { lat: number; lng: number } | null;
-  cuisine?: string[] | null;
   priceLevel?: string | null;
   stars: number;
   review?: PortableTextBlock[] | null;
@@ -277,11 +275,6 @@ export type RavintolaFull = {
   userReviews: UserReview[];
 };
 
-export type RavintolatFacets = {
-  cities: { name: string; slug: string }[];
-  cuisines: string[];
-  priceLevels: string[];
-};
 
 /* Kommentit ja veikkaus (docs/15) */
 

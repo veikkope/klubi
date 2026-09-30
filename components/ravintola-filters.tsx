@@ -2,7 +2,6 @@ import Link from "next/link";
 
 import { cn } from "@/lib/cn";
 import { formatRating } from "@/components/restaurant-card";
-import { cuisineLabel, isValidCuisine } from "@/lib/ravintola-cuisines";
 import { MAAKUNNAT, SUOMI_SLUG, isMaakunta, maakuntaTitle } from "@/lib/maakunnat";
 import type { RavintolatFacetData } from "@/sanity/lib/queries/ravintolat";
 
@@ -39,7 +38,6 @@ export type RavintolaFilterValues = {
    * vanhojen aluesivujen ohjaukset, joiden ravintolat ylittävät maakunnan rajan.
    */
   maakunta: string[];
-  ruoka: string | null;
   arvosana: number | null;
   lopettaneet: boolean;
   jarjesta: RavintolaSort;
@@ -50,7 +48,6 @@ export const RAVINTOLA_DEFAULT_FILTERS: RavintolaFilterValues = {
   kaupunki: null,
   maa: null,
   maakunta: [],
-  ruoka: null,
   arvosana: null,
   lopettaneet: false,
   jarjesta: "arvosana",
@@ -83,7 +80,6 @@ export function parseRavintolaFilters(
     validMaa && validMaa !== SUOMI_SLUG
       ? []
       : MAAKUNNAT.map((m) => m.value as string).filter((v) => requested.has(v));
-  const ruoka = first(sp.ruoka)?.trim();
   const arvosana = Number.parseFloat(first(sp.arvosana) ?? "");
   const jarjesta = first(sp.jarjesta);
   const sivu = Number.parseInt(first(sp.sivu) ?? "", 10);
@@ -92,7 +88,6 @@ export function parseRavintolaFilters(
     kaupunki: kaupunki && /^[a-z0-9_-]{1,60}$/i.test(kaupunki) ? kaupunki : null,
     maa: validMaa,
     maakunta,
-    ruoka: isValidCuisine(ruoka) ? (ruoka as string) : null,
     arvosana:
       Number.isFinite(arvosana) && arvosana > 0 && arvosana <= 5
         ? arvosana
@@ -113,7 +108,6 @@ export function buildRavintolaHref(
   if (merged.kaupunki) params.set("kaupunki", merged.kaupunki);
   if (merged.maa) params.set("maa", merged.maa);
   if (merged.maakunta.length) params.set("maakunta", merged.maakunta.join(","));
-  if (merged.ruoka) params.set("ruoka", merged.ruoka);
   if (merged.arvosana) params.set("arvosana", String(merged.arvosana));
   if (merged.lopettaneet) params.set("lopettaneet", "1");
   if (merged.jarjesta !== "arvosana") params.set("jarjesta", merged.jarjesta);
@@ -126,7 +120,7 @@ export function buildRavintolaHref(
 /** Onko jokin muu kuin oletusrajaus voimassa. */
 export function hasActiveRavintolaFilters(f: RavintolaFilterValues): boolean {
   return Boolean(
-    f.kaupunki || f.maa || f.maakunta.length || f.ruoka || f.arvosana || f.lopettaneet,
+    f.kaupunki || f.maa || f.maakunta.length || f.arvosana || f.lopettaneet,
   );
 }
 
@@ -159,11 +153,6 @@ export function RavintolaFilterBar({ active, facets, resultCount }: Props) {
   const showMaakunta =
     facets.maakunnat.length > 0 && (!active.maa || active.maa === SUOMI_SLUG);
   const maakuntaValue = active.maakunta.join(",");
-  // GROQ:n `array::unique` palauttaa arvot löytymisjärjestyksessä — järjestetään
-  // suomalaisittain aakkosiin vasta täällä, jotta kysely pysyy yksinkertaisena.
-  const cuisines = facets.cuisines
-    .filter((c): c is string => typeof c === "string" && c.length > 0)
-    .sort((a, b) => cuisineLabel(a).localeCompare(cuisineLabel(b), "fi"));
   const isFiltered = hasActiveRavintolaFilters(active);
 
   return (
@@ -247,25 +236,6 @@ export function RavintolaFilterBar({ active, facets, resultCount }: Props) {
                 <option key={city.slug} value={city.slug ?? ""}>
                   {city.name}
                   {city.count > 0 ? ` (${city.count})` : ""}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="suodatin-ruoka" className={labelClass}>
-              Ruokatyyppi
-            </label>
-            <select
-              id="suodatin-ruoka"
-              name="ruoka"
-              defaultValue={active.ruoka ?? ""}
-              className={fieldClass}
-            >
-              <option value="">Kaikki ruokatyypit</option>
-              {cuisines.map((value) => (
-                <option key={value} value={value}>
-                  {cuisineLabel(value)}
                 </option>
               ))}
             </select>
@@ -398,13 +368,6 @@ function ActiveFilterChips({
         maakunta: active.maakunta.filter((m) => m !== value),
         sivu: 1,
       }),
-    });
-  }
-  if (active.ruoka) {
-    chips.push({
-      key: "ruoka",
-      label: `Ruokatyyppi: ${cuisineLabel(active.ruoka)}`,
-      href: buildRavintolaHref(active, { ruoka: null, sivu: 1 }),
     });
   }
   if (active.arvosana) {

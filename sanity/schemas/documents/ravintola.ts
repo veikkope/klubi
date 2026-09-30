@@ -90,29 +90,6 @@ export const ravintola = defineType({
       group: "perustiedot",
     }),
     defineField({
-      name: "cuisine",
-      title: "Ruokatyyppi",
-      type: "array",
-      of: [{ type: "string" }],
-      options: {
-        list: [
-          { title: "Lounas", value: "lounas" },
-          { title: "Pizza", value: "pizza" },
-          { title: "Burgeri", value: "burgeri" },
-          { title: "Italialainen", value: "italialainen" },
-          { title: "Aasialainen", value: "aasialainen" },
-          { title: "Suomalainen", value: "suomalainen" },
-          { title: "Kreikkalainen", value: "kreikkalainen" },
-          { title: "Kahvila", value: "kahvila" },
-          { title: "Á la carte", value: "alacarte" },
-          { title: "Pikaruoka", value: "pikaruoka" },
-        ],
-        // Valintaruudut: "tags"-asettelu ohitti listan (docs/16 §5).
-        layout: "grid",
-      },
-      group: "perustiedot",
-    }),
-    defineField({
       name: "priceLevel",
       title: "Hintaluokka",
       type: "string",

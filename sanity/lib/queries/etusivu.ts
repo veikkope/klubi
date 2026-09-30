@@ -74,7 +74,6 @@ export const etusivuRavintolatQuery = defineQuery(`
     stars,
     ratingOverall,
     priceLevel,
-    cuisine,
     tuomio,
     stadionHuomio,
     "image": images[0]

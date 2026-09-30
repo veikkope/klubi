@@ -20,7 +20,6 @@ import {
   subRatings,
 } from "@/components/restaurant-card";
 import { cn } from "@/lib/cn";
-import { cuisineLabel } from "@/lib/ravintola-cuisines";
 import { formatDate } from "@/lib/format";
 import { rootCrumb } from "@/lib/nav-sections";
 import { breadcrumbSchema, restaurantSchema } from "@/lib/schema-org";
@@ -363,7 +362,7 @@ export default async function RavintolaPage({ params }: PageProps) {
 /**
  * Arvosanakortti (tyyliopas): 4 px messinkinen yläreuna, varjo. Kokonaisarvosana
  * isona, ala-arvosanat pisteinä (Ruoka / Hinta / Viihtyvyys), yhteystiedot,
- * ruokatyypit ja ravintolan verkkosivut.
+ * stadionhuomio ja ravintolan verkkosivut.
  */
 function ScoreCard({
   restaurant: r,
@@ -377,10 +376,7 @@ function ScoreCard({
   const address = [r.address, [r.postalCode, r.city?.name].filter(Boolean).join(" ")]
     .filter(Boolean)
     .join(", ");
-  const tags = [
-    ...(r.cuisine ?? []).map((c) => ({ label: cuisineLabel(c), food: true })),
-    ...(r.stadionHuomio ? [{ label: r.stadionHuomio, food: false }] : []),
-  ];
+  const tags = r.stadionHuomio ? [{ label: r.stadionHuomio, food: false }] : [];
 
   return (
     <div className="flex flex-col gap-5 rounded-sm border-t-[3px] border-t-brass bg-surface p-5 sm:gap-6 sm:rounded-2xl sm:border-t-4 sm:p-8 sm:shadow-panel">
