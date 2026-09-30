@@ -23,6 +23,12 @@ test("vain julkaistu sisältö kuuluu kopioon", () => {
   assert.equal(kuuluuKopioon({ _type: "uutinen" }), false, "ei id:tä");
 });
 
+test("Sanityn järjestelmädokumentit eivät kuulu kopioon", () => {
+  assert.equal(kuuluuKopioon({ _id: "_.groups.administrator", _type: "system.group" }), false, "käyttöoikeusryhmä");
+  assert.equal(kuuluuKopioon({ _id: "_.retention._maximum_project", _type: "system.retention" }), false);
+  assert.equal(kuuluuKopioon({ _id: "jokin", _type: "system.muu" }), false, "tyyppi riittää");
+});
+
 test("varmuuskopiot eivät päädy seuraavaan kopioon", () => {
   assert.equal(kuuluuKopioon({ _id: "varmuuskopio-2026-10-05", _type: "varmuuskopio" }), false);
   assert.equal(
