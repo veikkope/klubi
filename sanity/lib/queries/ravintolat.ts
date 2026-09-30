@@ -69,6 +69,7 @@ export type RavintolaDetail = RavintolaCardData & {
   images?: SanityImage[] | null;
   seoTitle?: string | null;
   seoDescription?: string | null;
+  /** Haetaan erikseen (`ravintolaArvostelutQuery`), vain hyväksytyt. */
   userReviews: RavintolaUserReview[];
   related: RavintolaCardData[];
 };
@@ -337,23 +338,31 @@ export const ravintolaBySlugQuery = defineQuery(`
     images,
     seoTitle,
     seoDescription,
-    "userReviews": *[_type == "ravintolaKayttajaArvostelu"
-      && restaurant._ref == ^._id]
-      | order(submittedAt desc){
-        _id,
-        reviewerName,
-        ratingFood,
-        ratingPrice,
-        ratingAtmosphere,
-        "rating": math::avg([ratingFood, ratingPrice, ratingAtmosphere]),
-        comment,
-        "kuvat": kuvat[defined(asset)]{ _key, alt, asset },
-        submittedAt
-      },
     "related": *[_type == "ravintola" && defined(slug.current)
       && _id != ^._id && closed != true && city._ref == ^.city._ref]
       | order(coalesce(ratingOverall, stars, 0) desc, name asc)[0...3]{${cardProjection}}
   }
+`);
+
+/**
+ * Ravintolan hyväksytyt kävijäarvostelut. Oma kysely, koska se haetaan aina
+ * julkaistuna (`sanityFetch({ vainJulkaistu: true })`): lähetetty arvostelu on
+ * luonnos, ja luonnosnäkymässä ravintolakysely näyttäisi sen hyväksymättömänä.
+ * Parametri: $id (ravintolan julkaistu _id).
+ */
+export const ravintolaArvostelutQuery = defineQuery(`
+  *[_type == "ravintolaKayttajaArvostelu" && restaurant._ref == $id && !(_id in path("drafts.**"))]
+    | order(submittedAt desc){
+      _id,
+      reviewerName,
+      ratingFood,
+      ratingPrice,
+      ratingAtmosphere,
+      "rating": math::avg([ratingFood, ratingPrice, ratingAtmosphere]),
+      comment,
+      "kuvat": kuvat[defined(asset)]{ _key, alt, asset },
+      submittedAt
+    }
 `);
 
 export const ravintolaSlugsQuery = defineQuery(`

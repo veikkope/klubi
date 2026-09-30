@@ -207,6 +207,12 @@ yhteystietosivulla.
 ### Ravintola-arvostelun hyväksyminen
 
 Kävijöiden lähettämät arvostelut eivät näy sivulla ennen kuin hyväksyt ne.
+Hyväksymätön arvostelu ei näy sivulla edes esikatselussa, vain tässä jonossa.
+
+> **Keltainen "Esikatselutila"-palkki sivun yläreunassa?** Olet käyttänyt Studion
+> esikatselua, ja selaimesi näyttää nyt myös julkaisemattomat luonnokset (esim.
+> keskeneräiset uutiset). Kävijät eivät näe niitä. Paina palkista **Poistu
+> esikatselusta**, niin näet sivun kuten kävijät.
 
 1. **Ravintolat → Arvostelut: odottavat hyväksyntää**.
 2. Avaa arvostelu ja lue se. Katso myös kuvat, jos niitä on (listassa näkyy esim. "2 kuvaa").

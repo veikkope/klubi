@@ -39,6 +39,12 @@ type FetchOptions<T> = {
    * jälkeen, vaikka Next.js:n välimuisti on jo tyhjennetty.
    */
   useCdn?: boolean;
+  /**
+   * true = vain julkaistu sisältö myös luonnosnäkymässä (draft mode). Kävijöiden
+   * lähettämälle moderoitavalle sisällölle (ravintola-arvostelut): luonnos on
+   * hyväksymätön arvostelu, eikä sitä saa näyttää sivulla missään tilassa.
+   */
+  vainJulkaistu?: boolean;
 };
 
 /** Onko draft mode päällä. Palauttaa false jos konteksti ei salli lukemista. */
@@ -58,12 +64,13 @@ export async function sanityFetch<T>({
   tags,
   fallback,
   useCdn = true,
+  vainJulkaistu = false,
 }: FetchOptions<T>): Promise<T> {
   if (!hasSanity || !client) {
     return fallback;
   }
 
-  const isDraft = readToken ? await isDraftEnabled() : false;
+  const isDraft = readToken && !vainJulkaistu ? await isDraftEnabled() : false;
 
   // Luonnosnäkymässä ohitetaan CDN ja välimuisti, ja stega-koodaus kytketään
   // päälle jotta Presentationin klikkaa-ja-muokkaa-peittokuva löytää kentät.

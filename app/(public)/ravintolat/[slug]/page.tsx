@@ -27,9 +27,11 @@ import { sanityFetch } from "@/sanity/lib/fetch";
 import { urlForImage } from "@/sanity/lib/image";
 import { hasSanity } from "@/sanity/env";
 import {
+  ravintolaArvostelutQuery,
   ravintolaBySlugQuery,
   ravintolaSlugsQuery,
   type RavintolaDetail,
+  type RavintolaUserReview,
 } from "@/sanity/lib/queries/ravintolat";
 import type { AlbumImage } from "@/lib/types";
 
@@ -49,12 +51,23 @@ export async function generateStaticParams(): Promise<Params[]> {
 }
 
 async function getRavintola(slug: string): Promise<RavintolaDetail | null> {
-  return sanityFetch<RavintolaDetail | null>({
+  const r = await sanityFetch<Omit<RavintolaDetail, "userReviews"> | null>({
     query: ravintolaBySlugQuery,
     params: { slug },
     tags: ["ravintola", `ravintola:${slug}`],
     fallback: null,
   });
+  if (!r) return null;
+  // Kävijäarvostelut aina julkaistuina, myös esikatselussa: luonnos on
+  // hyväksymätön arvostelu (moderointi, ravintolaKayttajaArvostelu.ts).
+  const userReviews = await sanityFetch<RavintolaUserReview[]>({
+    query: ravintolaArvostelutQuery,
+    params: { id: r._id.replace(/^drafts\./, "") },
+    tags: ["ravintola", `ravintola:${slug}`],
+    fallback: [],
+    vainJulkaistu: true,
+  });
+  return { ...r, userReviews };
 }
 
 /** Sivun kuvaus: kirjoitettu SEO-teksti, muuten tiivistelmä, muuten koottu fakta. */

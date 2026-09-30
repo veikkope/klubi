@@ -3,6 +3,8 @@ import { draftMode } from "next/headers";
 import { Public_Sans, Source_Serif_4 } from "next/font/google";
 import { VisualEditing } from "next-sanity/visual-editing";
 
+import { EsikatseluPalkki } from "@/components/esikatselu-palkki";
+
 import { JsonLd } from "@/components/seo/json-ld";
 import { organizationSchema, websiteSchema } from "@/lib/schema-org";
 import {
@@ -65,6 +67,8 @@ export default async function RootLayout({
           JSON-LD:t viittaavat näihin @id:llä sen sijaan että toistaisivat ne.
         */}
         <JsonLd schema={[organizationSchema(), websiteSchema()]} />
+
+        {isDraft && <EsikatseluPalkki />}
 
         <a
           href="#sisalto"
