@@ -57,6 +57,7 @@ public/                Staattiset tiedostot (favicon, robots, kuvat joita Sanity
 | Orpojen arvostelukuvien siivous (listaa; `-- --poista` poistaa) | `npm run siivoa:arvostelukuvat` (tarvittaessa; lisää `-- --production`) |
 | Hae Blogspot-blogi paikallisesti | `npm run blogspot:fetch` → `data/blogspot/` (gitignoressa) |
 | Blogi → `development` | `npm run migrate:blogspot` (ensimmäinen kerta) · `npm run sync:blogspot` (vain uudet, säilyttää Studion muokkaukset) |
+| Blogin uudet kirjoitukset → `production` | `npm run sync:blogspot:production` (kuivaharjoitus) · `-- --vie` (varmuuskopio + `--missing` + tarkistus) |
 | Generoi redirectit | `npm run redirects` |
 | Vie uutta sisältöä `development` → `production` | **Vain lisäys:** `npx sanity dataset import data/migration-<tyyppi>.ndjson --dataset production --missing`. **Ei koskaan `--replace` koko datasettiin**: isä muokkaa productionia (docs/17 §D) |
 | Varmuuskopio productionista | `npm run backup` → `varmuuskopiot/` (gitignoressa). Aina ennen isompaa muutosta |

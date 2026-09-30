@@ -27,6 +27,7 @@
     "migrate:klubi": "tsx scripts/parse-klubi.ts && tsx scripts/import-klubi.ts && tsx scripts/sanity-import.ts data/migration-klubi.ndjson && tsx scripts/patch-ravintola-arviot.ts && tsx scripts/patch-blogspot-links.ts",
     "migrate:blogspot": "tsx scripts/parse-blogspot.ts && tsx scripts/import-blogspot.ts && tsx scripts/sanity-import.ts data/migration-blogspot.ndjson && tsx scripts/sanity-import.ts data/migration-blogspot-kommentit.ndjson --missing && tsx scripts/patch-blogspot-links.ts",
     "sync:blogspot": "npm run blogspot:fetch && tsx scripts/parse-blogspot.ts && tsx scripts/import-blogspot.ts && tsx scripts/sanity-import.ts data/migration-blogspot.ndjson --missing && tsx scripts/sanity-import.ts data/migration-blogspot-kommentit.ndjson --missing && tsx scripts/patch-blogspot-links.ts && npm run redirects",
+    "sync:blogspot:production": "tsx scripts/sync-blogspot-production.ts",
     "migrate:coverage": "tsx scripts/build-coverage.ts --sanity",
     "migrate:all": "npm run migrate:ravintolat && npm run migrate:stadionit && npm run migrate:uutiset && npm run migrate:huuhkajat && npm run migrate:tilastot && npm run migrate:arvokisat && npm run migrate:klubi && npm run migrate:blogspot && npm run migrate:coverage && tsx scripts/patch-tarkistussyyt.ts && npm run redirects",
     "verify:content": "tsx scripts/verify-content-routes.ts",
