@@ -131,7 +131,7 @@ export function hasActiveRavintolaFilters(f: RavintolaFilterValues): boolean {
 }
 
 const fieldClass =
-  "h-11 w-full rounded-lg border border-border bg-background px-3 text-sm text-foreground " +
+  "h-11 w-full rounded-lg border border-border-input bg-background px-3 text-sm text-foreground " +
   "transition focus-visible:border-accent focus-visible:outline-none focus-visible:ring-2 " +
   "focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background";
 
@@ -321,7 +321,7 @@ export function RavintolaFilterBar({ active, facets, resultCount }: Props) {
                 type="checkbox"
                 value="1"
                 defaultChecked={active.lopettaneet}
-                className="size-5 shrink-0 rounded border-border-strong text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                className="size-5 shrink-0 rounded border-border-input text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               />
               <span>
                 Näytä myös toimintansa lopettaneet

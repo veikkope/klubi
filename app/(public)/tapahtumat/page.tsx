@@ -82,7 +82,7 @@ export default async function TapahtumatPage() {
                 <p className="mt-4 max-w-2xl text-muted">
                   Ei tulevia tapahtumia juuri nyt. Seuraava tilaisuus
                   ilmoitetaan täällä ja{" "}
-                  <Link href="/uutiset" className="text-accent hover:underline">
+                  <Link href="/uutiset" className="text-accent underline decoration-1 underline-offset-4 hover:decoration-2">
                     uutisissa
                   </Link>
                   .
@@ -133,10 +133,10 @@ function EmptyState() {
         toimintasivuilta.
       </p>
       <p className="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2">
-        <Link href="/klubi/toiminta" className="text-accent hover:underline">
+        <Link href="/klubi/toiminta" className="text-accent underline decoration-1 underline-offset-4 hover:decoration-2">
           Klubin toiminta
         </Link>
-        <Link href="/uutiset" className="text-accent hover:underline">
+        <Link href="/uutiset" className="text-accent underline decoration-1 underline-offset-4 hover:decoration-2">
           Lue uutisia
         </Link>
       </p>

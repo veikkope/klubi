@@ -135,7 +135,7 @@ export default async function AlbumPage({
                   </span>
                   <Link
                     href={`/tapahtumat/${album.event.slug}`}
-                    className="inline-flex min-h-11 items-center text-sm font-medium text-accent hover:text-accent-hover"
+                    className="inline-flex min-h-11 items-center text-sm font-medium text-accent underline decoration-1 underline-offset-4 hover:decoration-2 hover:text-accent-hover"
                   >
                     {album.event.title}
                   </Link>

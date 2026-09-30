@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { UusiValilehti } from "@/components/ui/uusi-valilehti";
 import { cn } from "@/lib/cn";
 
 type Variant =
@@ -86,6 +87,7 @@ export function LinkButton({
         rel="noopener noreferrer"
       >
         {children}
+        <UusiValilehti />
       </a>
     );
   }

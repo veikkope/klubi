@@ -102,6 +102,25 @@ export const sivu = defineType({
       ],
       group: "sisalto",
     }),
+    defineField({
+      name: "kieli",
+      title: "Sisällön kieli",
+      description:
+        "Vaihda, jos sivu on kirjoitettu muulla kuin suomella (esim. englanninkielinen " +
+        "esittely). Ruudunlukija ääntää tekstin silloin oikein.",
+      type: "string",
+      options: {
+        list: [
+          { title: "Suomi", value: "fi" },
+          { title: "Englanti", value: "en" },
+          { title: "Ruotsi", value: "sv" },
+        ],
+        layout: "radio",
+        direction: "horizontal",
+      },
+      initialValue: "fi",
+      group: "sisalto",
+    }),
     tiivistelmaField("sisalto"),
     defineField({
       name: "hero",

@@ -114,7 +114,7 @@ export default async function ToimintaPage() {
                       className="mb-4 h-44 w-full rounded-xl object-cover"
                     />
                   )}
-                  <CardTitle>{toiminta.title}</CardTitle>
+                  <CardTitle as="h2">{toiminta.title}</CardTitle>
                   {toiminta.tiivistelma && (
                     <CardBody className="mt-2 text-sm">
                       {toiminta.tiivistelma}

@@ -67,7 +67,9 @@ export function RestaurantCard({
       className={cn(
         "group grid w-full grid-cols-[80px_1fr] items-center gap-3.5 overflow-hidden rounded-sm border-t-[3px] border-t-brass bg-surface p-[18px] no-underline transition hover:shadow-panel",
         "sm:flex sm:flex-col sm:items-stretch sm:gap-0 sm:border-t-0 sm:p-0",
-        isClosed && "opacity-85",
+        // Lopettanut paikka: vain kuva haalistetaan. Koko kortin läpinäkyvyys
+        // pudotti pienet tekstit alle AA-kontrastin (docs/16, saavutettavuus-9).
+        isClosed && "[&_img]:grayscale [&_img]:opacity-80",
       )}
     >
       {r.image?.asset ? (
@@ -112,7 +114,9 @@ export function RestaurantCard({
           {r.name}
         </h3>
         <p className="text-[13px] text-muted-soft sm:hidden">
-          {[r.city?.name, r.stadionHuomio ?? r.priceLevel].filter(Boolean).join(" · ")}
+          {[r.city?.name, isClosed ? "Toiminta loppunut" : (r.stadionHuomio ?? r.priceLevel)]
+            .filter(Boolean)
+            .join(" · ")}
         </p>
         {r.tuomio && (
           <p className="hidden text-base leading-[1.55] text-muted sm:block">{r.tuomio}</p>

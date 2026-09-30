@@ -76,7 +76,7 @@ export default async function UutisarkistoPage() {
               julkaistaan Studiossa — luetteloa ei tarvitse ylläpitää käsin.
             </p>
             <p className="mt-6">
-              <Link href="/uutiset" className="text-accent hover:underline">
+              <Link href="/uutiset" className="text-accent underline decoration-1 underline-offset-4 hover:decoration-2">
                 Palaa uutisiin
               </Link>
             </p>

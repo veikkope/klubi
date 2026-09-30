@@ -165,7 +165,7 @@ export default async function StadionitPage() {
         Klubin havainnot otteluiden järjestelyistä on koottu sivulle{" "}
         <Link
           href="/jalkapalloarkisto/tilastot/puutteelliset-jarjestelyt"
-          className="text-accent underline-offset-4 hover:underline"
+          className="text-accent underline decoration-1 underline-offset-4 hover:decoration-2"
         >
           Puutteelliset järjestelyt
         </Link>

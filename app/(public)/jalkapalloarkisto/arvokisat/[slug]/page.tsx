@@ -217,6 +217,7 @@ export default async function ArvokisaPage({
                 <figure>
                   <SanityImage
                     image={kuva}
+                    kuvateksti={kuva?.caption}
                     width={900}
                     height={600}
                     sizes="(min-width: 640px) 45vw, 100vw"

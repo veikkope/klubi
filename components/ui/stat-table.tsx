@@ -140,8 +140,9 @@ export function StatTable({
                   "px-4 py-2.5 align-top",
                   numeric ? "text-right tabular-nums" : "text-left",
                 );
-                // Ensimmäinen sarake toimii rivin otsikkona.
-                return columnIndex === 0 ? (
+                // Ensimmäinen sarake toimii rivin otsikkona. Tyhjä solu ei voi
+                // olla otsikko (ruudunlukija ilmoittaisi nimettömän rivin).
+                return columnIndex === 0 && value !== "" ? (
                   <th
                     key={column.key}
                     scope="row"

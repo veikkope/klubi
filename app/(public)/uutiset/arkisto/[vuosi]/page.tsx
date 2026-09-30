@@ -185,7 +185,7 @@ export default async function ArkistoVuosiPage({
             <p className="mt-6">
               <Link
                 href="/uutiset/arkisto"
-                className="text-accent hover:underline"
+                className="text-accent underline decoration-1 underline-offset-4 hover:decoration-2"
               >
                 Kaikki vuodet
               </Link>
@@ -212,7 +212,7 @@ export default async function ArkistoVuosiPage({
             <Link
               href={`/uutiset/arkisto/${older.year}`}
               rel="prev"
-              className="inline-flex min-h-11 items-center text-accent hover:underline"
+              className="inline-flex min-h-11 items-center text-accent underline decoration-1 underline-offset-4 hover:decoration-2"
             >
               <span aria-hidden className="mr-2">
                 ←
@@ -226,7 +226,7 @@ export default async function ArkistoVuosiPage({
             <Link
               href={`/uutiset/arkisto/${newer.year}`}
               rel="next"
-              className="inline-flex min-h-11 items-center text-accent hover:underline"
+              className="inline-flex min-h-11 items-center text-accent underline decoration-1 underline-offset-4 hover:decoration-2"
             >
               Uudempi vuosi {newer.year}
               <span aria-hidden className="ml-2">

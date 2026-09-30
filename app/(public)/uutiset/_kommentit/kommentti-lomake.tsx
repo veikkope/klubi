@@ -29,7 +29,7 @@ import {
  */
 
 const fieldClass =
-  "w-full rounded-lg border border-border bg-background px-3 py-2.5 text-base text-foreground " +
+  "w-full rounded-lg border border-border-input bg-background px-3 py-2.5 text-base text-foreground " +
   "transition placeholder:text-muted-soft focus-visible:border-accent focus-visible:outline-none " +
   "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background";
 
@@ -71,6 +71,18 @@ export function KommenttiLomake({
     if (nimiRef.current && !nimiRef.current.value) nimiRef.current.value = lueMuisti(MUISTI_NIMI);
   }, [state.lahetyksia]);
 
+  // Lähetyksen jälkeen fokus vastaukseen (virheyhteenveto tai kiitos), kuten
+  // arvostelulomakkeessa: ruudunlukija ja näppäimistö jatkavat siitä.
+  const vastausRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (state.status === "idle" || !vastausRef.current) return;
+    vastausRef.current.focus({ preventScroll: true });
+    vastausRef.current.scrollIntoView({
+      block: "start",
+      behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+    });
+  }, [state]);
+
   const muista = () => {
     if (nimiRef.current?.value) kirjoitaMuisti(MUISTI_NIMI, nimiRef.current.value.trim());
   };
@@ -81,7 +93,7 @@ export function KommenttiLomake({
 
   return (
     <div>
-      <div aria-live="polite" role="status">
+      <div ref={vastausRef} tabIndex={-1} aria-live="polite" role="status" className="scroll-mt-28 outline-none">
         {state.status === "success" && (
           <p className="mb-6 rounded-2xl border border-border bg-surface p-5 font-medium text-foreground">
             {state.message}
@@ -203,6 +215,24 @@ function Sarjajarjestys({
   );
   const [ilmoitus, setIlmoitus] = useState("");
   const n = jarjestys.length;
+  /** Painike, jolle fokus palautetaan siirron jälkeen (id). */
+  const palautaFokus = useRef<string | null>(null);
+
+  // Siirto irrottaa rivin DOMista ja ääripäässä painike muuttuu disabled-tilaan:
+  // kummassakin fokus katoaisi. Palautetaan se saman joukkueen painikkeelle.
+  useEffect(() => {
+    const id = palautaFokus.current;
+    if (!id) return;
+    palautaFokus.current = null;
+    const nappi = document.getElementById(id) as HTMLButtonElement | null;
+    const vastakkainen = document.getElementById(id.endsWith("-ylos") ? id.replace(/-ylos$/, "-alas") : id.replace(/-alas$/, "-ylos"));
+    (nappi && !nappi.disabled ? nappi : vastakkainen)?.focus();
+  }, [jarjestys]);
+
+  const siirraNapilla = (joukkue: string, uusiSija: number, nappiId: string) => {
+    palautaFokus.current = nappiId;
+    siirra(joukkue, uusiSija);
+  };
 
   const siirra = (joukkue: string, uusiSija: number) => {
     const kohde = Math.min(n, Math.max(1, uusiSija)) - 1;
@@ -215,7 +245,7 @@ function Sarjajarjestys({
   };
 
   const buttonClass =
-    "inline-flex size-11 items-center justify-center rounded-sm border border-border bg-background text-lg " +
+    "inline-flex size-11 items-center justify-center rounded-sm border border-border-input bg-background text-lg " +
     "text-foreground transition hover:border-accent hover:text-accent disabled:opacity-30 " +
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
 
@@ -262,8 +292,9 @@ function Sarjajarjestys({
               </select>
               <span className="min-w-0 flex-1 truncate font-medium text-foreground">{joukkue}</span>
               <button
+                id={`${selectId}-ylos`}
                 type="button"
-                onClick={() => siirra(joukkue, index)}
+                onClick={() => siirraNapilla(joukkue, index, `${selectId}-ylos`)}
                 disabled={index === 0}
                 aria-label={`Siirrä ${joukkue} ylöspäin`}
                 className={buttonClass}
@@ -271,8 +302,9 @@ function Sarjajarjestys({
                 <span aria-hidden>↑</span>
               </button>
               <button
+                id={`${selectId}-alas`}
                 type="button"
-                onClick={() => siirra(joukkue, index + 2)}
+                onClick={() => siirraNapilla(joukkue, index + 2, `${selectId}-alas`)}
                 disabled={index === n - 1}
                 aria-label={`Siirrä ${joukkue} alaspäin`}
                 className={buttonClass}

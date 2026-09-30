@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { UusiValilehti } from "@/components/ui/uusi-valilehti";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -242,9 +243,10 @@ export default async function UutinenPage({
                       href={lahde.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-accent underline-offset-4 hover:underline"
+                      className="text-accent underline decoration-1 underline-offset-4 hover:decoration-2"
                     >
                       {lahde.nimi}
+                      <UusiValilehti />
                     </a>
                   ) : (
                     lahde.nimi
@@ -266,9 +268,10 @@ export default async function UutinenPage({
                     href={news.ulkoinenLinkki}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="break-all text-accent underline-offset-4 hover:underline"
+                    className="break-all text-accent underline decoration-1 underline-offset-4 hover:decoration-2"
                   >
                     {news.ulkoinenLinkki}
+                    <UusiValilehti />
                   </a>
                 </dd>
               </div>
@@ -279,7 +282,7 @@ export default async function UutinenPage({
         <KommentitOsio uutinenId={news._id} kommentointi={news.kommentointi} />
 
         <p className="mt-12 text-sm text-muted">
-          <Link href="/uutiset" className="text-accent hover:underline">
+          <Link href="/uutiset" className="text-accent underline decoration-1 underline-offset-4 hover:decoration-2">
             Kaikki uutiset
           </Link>
           {publishedYear && (
@@ -287,7 +290,7 @@ export default async function UutinenPage({
               <span aria-hidden> · </span>
               <Link
                 href={`/uutiset/arkisto/${publishedYear}`}
-                className="text-accent hover:underline"
+                className="text-accent underline decoration-1 underline-offset-4 hover:decoration-2"
               >
                 Arkisto {publishedYear}
               </Link>

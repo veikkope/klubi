@@ -77,6 +77,7 @@ export function KlubiSivuPage({
           <figure className="mt-10 overflow-hidden rounded-2xl">
             <SanityImage
               image={sivu.hero}
+              kuvateksti={sivu.hero?.caption}
               width={1600}
               height={900}
               sizes="(min-width: 1024px) 960px, 100vw"

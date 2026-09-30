@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { UusiValilehti } from "@/components/ui/uusi-valilehti";
 import { Mail, MapPin, Phone } from "lucide-react";
 import { stegaClean } from "next-sanity";
 
@@ -185,6 +186,7 @@ export default async function YhteystiedotPage() {
                   >
                     <SocialIcon platform={social.platform} />
                     {socialLabels[social.platform]}
+                    <UusiValilehti />
                   </a>
                 </li>
               ))}

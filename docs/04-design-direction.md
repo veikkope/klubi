@@ -32,7 +32,8 @@ Lähde: `app/globals.css` (CSS-muuttujat ja Tailwind v4 `@theme inline`). Kompon
 | `muted` | #4A4D5C | Toissijainen teksti | 7,7:1 |
 | `muted-soft` | #6B6E7C | Kuvatekstit, meta, pienet osiolabelit | 4,7:1 |
 | `border` | #ECEBE5 | Erottimet, korttien reunat | — |
-| `border-strong` | #C9C8C0 | Lomakekenttien reunat | — |
+| `border-strong` | #C9C8C0 | Korostettu erotin (kortin hover, pudotusalue) | — |
+| `border-input` | #7C7F8C | Lomakekenttien reunat (WCAG 1.4.11: 3,98:1 valkoisella, 3,68:1 paperilla) | — |
 | `brass` / `brass-text` | #B8862E / #8A6420 | Messinki = ruoan kategoriaväri: arvosanapisteet, arviokorttien yläreuna, ruoka-aiheiset yläotsakkeet, juhlatapahtuman kortti | teksti 5,4:1 |
 | `brass-tint` / `brass-tint-text` | #F3EAD8 / #5C4315 | Ruokatagi (esim. keittiötyyppi arviosivulla) | 7,7:1 |
 | `on-chrome-muted` | #D4D8F0 | Leipäteksti yönsinisellä | 11,2:1 |

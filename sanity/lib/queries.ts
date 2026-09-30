@@ -50,6 +50,7 @@ export const sivuWithAncestorsQuery = /* groq */ `
       _id,
       title,
       "slug": slug.current,
+      kieli,
       hero,
       ingress,
       tiivistelma,

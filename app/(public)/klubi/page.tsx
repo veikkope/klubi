@@ -100,6 +100,7 @@ export default async function KlubiPage() {
           <figure className="mt-10 overflow-hidden rounded-2xl">
             <SanityImage
               image={sivu.hero}
+              kuvateksti={sivu.hero?.caption}
               width={1600}
               height={900}
               sizes="(min-width: 1024px) 960px, 100vw"
@@ -134,7 +135,7 @@ export default async function KlubiPage() {
             </h2>
             <Link
               href="/klubi/toiminta"
-              className="inline-flex min-h-11 items-center text-sm font-medium text-accent hover:underline"
+              className="inline-flex min-h-11 items-center text-sm font-medium text-accent underline decoration-1 underline-offset-4 hover:decoration-2"
             >
               Kaikki toiminta
             </Link>

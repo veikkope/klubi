@@ -71,7 +71,7 @@ export default async function MuutTilastotPage() {
               <li key={tilasto._id} className="flex">
                 <Card href={muuTilastoPath(tilasto.slug)} className="flex w-full flex-col">
                   <CardEyebrow>{rowsLabel(tilasto)}</CardEyebrow>
-                  <CardTitle className="mt-1">{tilasto.title}</CardTitle>
+                  <CardTitle as="h2" className="mt-1">{tilasto.title}</CardTitle>
                   {tilasto.tiivistelma && (
                     <CardBody className="mt-3 text-sm">{tilasto.tiivistelma}</CardBody>
                   )}

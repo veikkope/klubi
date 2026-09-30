@@ -18,7 +18,21 @@ type Props = {
    * ja `width` on silloin enimmäisleveys.
    */
   crop?: boolean;
+  /**
+   * Kuvateksti, jonka kutsuja näyttää kuvan yhteydessä (`figcaption`). Jos
+   * alt-teksti on sama, alt jätetään tyhjäksi, jottei ruudunlukija lue samaa
+   * tekstiä kahdesti (migroidussa sisällössä alt = kuvateksti usein).
+   */
+  kuvateksti?: string | null;
 };
+
+const vertailtava = (s: string) => s.trim().replace(/\s+/g, " ").toLocaleLowerCase("fi");
+
+/** Alt-teksti: tyhjä, jos se toistaa näkyvän kuvatekstin. */
+export function kuvanAlt(alt: string | null | undefined, kuvateksti?: string | null): string {
+  if (!alt) return "";
+  return kuvateksti && vertailtava(alt) === vertailtava(kuvateksti) ? "" : alt;
+}
 
 /** Sanityn asset-viittaus sisältää alkuperäiset mitat: image-abc-1200x800-jpg. */
 function assetDimensions(image: SanityImageData): { width: number; height: number } | null {
@@ -76,6 +90,7 @@ export function SanityImage({
   className,
   priority,
   crop = true,
+  kuvateksti,
 }: Props) {
   if (!image) return null;
   const urlBuilder = urlForImage(image);
@@ -91,7 +106,7 @@ export function SanityImage({
       return (
         <Image
           src={urlBuilder.width(renderWidth).fit("max").url()}
-          alt={alt ?? image.alt ?? ""}
+          alt={kuvanAlt(alt ?? image.alt, kuvateksti)}
           width={renderWidth}
           height={renderHeight}
           sizes={sizes}
@@ -112,7 +127,7 @@ export function SanityImage({
   return (
     <Image
       src={src}
-      alt={alt ?? image.alt ?? ""}
+      alt={kuvanAlt(alt ?? image.alt, kuvateksti)}
       width={width}
       height={height}
       sizes={sizes}

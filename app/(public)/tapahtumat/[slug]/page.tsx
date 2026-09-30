@@ -198,11 +198,11 @@ export default async function TapahtumaPage({
             {isPast && (
               <p className="mt-10 text-sm text-muted">
                 Tämä tapahtuma on jo pidetty. Raportti tai kuvia voi löytyä{" "}
-                <Link href="/uutiset" className="text-accent hover:underline">
+                <Link href="/uutiset" className="text-accent underline decoration-1 underline-offset-4 hover:decoration-2">
                   uutisista
                 </Link>{" "}
                 tai{" "}
-                <Link href="/galleria" className="text-accent hover:underline">
+                <Link href="/galleria" className="text-accent underline decoration-1 underline-offset-4 hover:decoration-2">
                   galleriasta
                 </Link>
                 .
@@ -276,7 +276,7 @@ export default async function TapahtumaPage({
                 <IcsLink slug={event.slug} />
                 <Link
                   href="/tapahtumat"
-                  className="inline-flex min-h-11 items-center justify-center text-sm text-accent hover:underline"
+                  className="inline-flex min-h-11 items-center justify-center text-sm text-accent underline decoration-1 underline-offset-4 hover:decoration-2"
                 >
                   Kaikki tapahtumat
                 </Link>

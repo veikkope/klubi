@@ -133,6 +133,9 @@ poistaa seuroja (kirjoita nimi kuten Veikkausliigan sivuilla ja paina Enter).
    niistä.
 3. Ingressi ja sisältö. **Julkaise**.
 
+Jos sivu on kirjoitettu muulla kielellä (esim. englanninkielinen esittely), valitse
+**Sisällön kieli**. Ruudunlukija ääntää tekstin silloin oikein.
+
 ### Kuvan vaihtaminen
 
 1. Avaa dokumentti ja klikkaa kuvaa → **Korvaa** (Replace).
