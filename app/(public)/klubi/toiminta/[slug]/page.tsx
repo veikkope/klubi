@@ -157,6 +157,7 @@ export default async function ToimintaDetailPage({
                   <figure>
                     <SanityImage
                       image={kuva}
+                      kuvateksti={kuva?.caption}
                       width={900}
                       height={600}
                       sizes="(min-width: 1024px) 320px, (min-width: 640px) 45vw, 90vw"
@@ -248,6 +249,7 @@ export default async function ToimintaDetailPage({
                               <figure>
                                 <SanityImage
                                   image={kuva}
+                                  kuvateksti={kuva?.caption}
                                   width={800}
                                   height={533}
                                   sizes="(min-width: 1024px) 300px, (min-width: 640px) 45vw, 90vw"

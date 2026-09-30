@@ -3,7 +3,7 @@ import { reviewErrorId, type ReviewField } from "./form-state";
 /** Arvostelulomakkeen yhteiset tyylit ja pienet osat. */
 
 export const fieldClass =
-  "w-full rounded-sm border border-border-strong bg-background px-3.5 py-2.5 text-base text-foreground " +
+  "w-full rounded-sm border border-border-input bg-background px-3.5 py-2.5 text-base text-foreground " +
   "transition placeholder:text-muted-soft hover:border-muted-soft focus-visible:border-accent focus-visible:outline-none " +
   "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background " +
   "aria-invalid:border-danger";

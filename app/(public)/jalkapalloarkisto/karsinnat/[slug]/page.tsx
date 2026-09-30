@@ -121,13 +121,13 @@ export default async function KarsintaPage({
           ) : undefined
         }
       >
-        <TilastoBody tilasto={tilasto} />
+        <TilastoBody tilasto={tilasto} ylinOtsikko={2} />
 
         <p className="mt-12 text-muted">
           Kaikki karsintasarjat löytyvät{" "}
           <Link
             href={huuhkajatPath}
-            className="text-accent underline-offset-4 hover:underline"
+            className="text-accent underline decoration-1 underline-offset-4 hover:decoration-2"
           >
             Huuhkajat-sivulta
           </Link>

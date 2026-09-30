@@ -228,9 +228,9 @@ Eri osa-alueiden päällekkäiset löydökset on yhdistetty. Tunnukset ovat haka
 - ✅ *Korjattu 30.9.2026: `lib/yhteystiedot.ts` lukee osoitteen Yhteystiedoista, eikä tyhjää korvata oletuksella. Huom.: tuotannossa kenttä on vielä tyhjä (docs/09 "Täytä itse").* **info@-osoite on kovakoodattu** viiteen kohtaan (`lib/defaults.ts:53`, arvostelu- ja kommenttiactionit, `arvostele/page.tsx`). Osoite luetaan jatkossa yhteystiedot-singletonista, ja jos kenttä on tyhjä, osoitetta ei näytetä. [sisalto-4, cms-9]
 
 ### Saavutettavuus (WCAG AA)
-- Lomakekenttien reunojen kontrasti on 1,10–1,19:1 (vaatimus 3:1). [saavutettavuus-1]
-- Tekstin sisäiset linkit erottuvat vain värillä (taso A, 1.4.1), koska alleviivaus näkyy vain hoverissa. [saavutettavuus-2]
-- Globals.css:n kerrostamattomat fokussäännöt ohittavat komponenttien fokustyylit, ja rengas näkyy tummilla pinnoilla huonosti (1,8:1). [saavutettavuus-3]
+- ✅ *Korjattu 30.9.2026. uusi token `--border-input` #7c7f8c = 3,98:1 valkoisella, 3,68:1 paperilla.* Lomakekenttien reunojen kontrasti on 1,10–1,19:1 (vaatimus 3:1). [saavutettavuus-1]
+- ✅ *Korjattu 30.9.2026. 28 tekstilinkkiä alleviivattu pysyvästi (tyylioppaan mukaisesti); sininen erottuu leipätekstistä vain 1,92:1.* Tekstin sisäiset linkit erottuvat vain värillä (taso A, 1.4.1), koska alleviivaus näkyy vain hoverissa. [saavutettavuus-2]
+- ✅ *Korjattu 30.9.2026. fokussäännöt `@layer base`:en; tummilla pinnoilla `--ring` on valkoinen (15,8:1).* Globals.css:n kerrostamattomat fokussäännöt ohittavat komponenttien fokustyylit, ja rengas näkyy tummilla pinnoilla huonosti (1,8:1). [saavutettavuus-3]
 
 ### Tekninen kestävyys ja kustannukset
 - `sanityFetch` nielee virheet varadataan, joten Sanityn katkos voi tallentaa välimuistiin tyhjiä tai 404-sivuja, ja build voi "onnistua" tyhjänä. [suorituskyky-6]
@@ -280,7 +280,7 @@ Eri osa-alueiden päällekkäiset löydökset on yhdistetty. Tunnukset ovat haka
 - Sitemapin lastmod on kaikilla sivuilla migraatiopäivä. [seo-7]
 - Päällekkäisiä title-tageja: esim. McDonald's 9 kertaa. [seo-8]
 - 6 sivulta puuttuu kuvaus. [seo-9]
-- Pitkiä otsikoita, ja /klubi-sivun otsikko toistaa sivuston nimen. [seo-10, saavutettavuus-14]
+- ✅ *Korjattu 30.9.2026. /klubi: sivuston nimeä ei toisteta (`buildMetadata`).* Pitkiä otsikoita, ja /klubi-sivun otsikko toistaa sivuston nimen. [seo-10, saavutettavuus-14]
 - Organization-merkinnästä puuttuvat logo ja sähköposti. [seo-12]
 - Blogspot on julkinen siirtoon asti. [seo-13]
 - verify:redirects antaa 6 väärää hälytystä. [seo-14]
@@ -288,17 +288,18 @@ Eri osa-alueiden päällekkäiset löydökset on yhdistetty. Tunnukset ovat haka
 - `?sivu=999` antaa indeksoitavan tyhjän sivun. [seo-16, ux-12]
 
 **Saavutettavuus**
-- /english on merkitty suomeksi. [saavutettavuus-4, seo-11]
-- Sarjajärjestyskomponentin fokus katoaa (koodianalyysi). [saavutettavuus-5]
+- ✅ *Korjattu 30.9.2026. sivulle kenttä "Sisällön kieli" (Studio). Tuotannon /english-sivulle valitaan Englanti deployn jälkeen.* /english on merkitty suomeksi. [saavutettavuus-4, seo-11]
+- ✅ *Korjattu 30.9.2026. fokus palautetaan siirretyn joukkueen painikkeeseen.* Sarjajärjestyskomponentin fokus katoaa (koodianalyysi). [saavutettavuus-5]
 - Taulukoita on kuvina ilman tekstivastinetta. [saavutettavuus-6]
 - Korttilinkkien nimet ovat pitkiä. [saavutettavuus-7]
-- Otteluohjelmakuvien alt-tekstit ovat epävarmoja ja toistavat kuvatekstin. [saavutettavuus-8]
-- Lopettaneiden ravintoloiden kortit jäävät alle kontrastivaatimuksen. [saavutettavuus-9]
-- Dropdownin Esc ja Tab-käytös on puutteellinen. [saavutettavuus-10]
-- Lomakkeet eivät siirrä fokusta virheyhteenvetoon. [saavutettavuus-11]
-- Otsikkotasoissa on hyppyjä, ja ravintolasivulla on tuplattu id. [saavutettavuus-12]
-- Uuteen välilehteen avautuvista linkeistä ei varoiteta, ja somekuvakkeet ovat 36 px. [saavutettavuus-13]
-- Automaattista axe-testausta ei ole. [saavutettavuus-15]
+- ✅ *Korjattu 30.9.2026. alt tyhjätään, kun se toistaa näkyvän kuvatekstin (`SanityImage kuvateksti`). Epävarmat alt-tekstit ovat sisältötyötä.* Otteluohjelmakuvien alt-tekstit ovat epävarmoja ja toistavat kuvatekstin. [saavutettavuus-8]
+- ✅ *Korjattu 30.9.2026. vain kuva haalistetaan (oli 3,72:1); "Toiminta loppunut" näkyy myös mobiilissa.* Lopettaneiden ravintoloiden kortit jäävät alle kontrastivaatimuksen. [saavutettavuus-9]
+- ✅ *Korjattu 30.9.2026. Esc palauttaa fokuksen, Tab ulos sulkee, aria-controls ja aria-current, ei aria-haspopupia (disclosure-malli).* Dropdownin Esc ja Tab-käytös on puutteellinen. [saavutettavuus-10]
+- ✅ *Korjattu 30.9.2026. kommenttilomake kuten arvostelulomake.* Lomakkeet eivät siirrä fokusta virheyhteenvetoon. [saavutettavuus-11]
+- ✅ *Korjattu 30.9.2026. `PortableText ylinOtsikko`, `CardTitle as`, yksilöllinen id; tyhjä riviotsikko `<td>`:ksi.* Otsikkotasoissa on hyppyjä, ja ravintolasivulla on tuplattu id. [saavutettavuus-12]
+- ✅ *Korjattu 30.9.2026. `UusiValilehti` kaikissa 7 kohdassa, somekuvakkeet 44 px.* Uuteen välilehteen avautuvista linkeistä ei varoiteta, ja somekuvakkeet ovat 36 px. [saavutettavuus-13]
+- ✅ *Korjattu 30.9.2026. `npm run test:saavutettavuus` (axe-core, WCAG 2.1 A/AA, 48 sivua sitemapista). Kontrasti lasketaan tokeneista, koska jsdomissa ei ole asettelua.* Automaattista axe-testausta ei ole. [saavutettavuus-15]
+- **Uusi havainto 30.9.2026:** Next.js 16.3.6–16.3.7 palauttaa `notFound()`-sivut tyhjänä virhekuorena ilman `lang`-attribuuttia (sisältö renderöityy selaimessa). Nextin bugi: https://github.com/vercel/next.js/issues/99287. HTTP-tila (404), otsikko ja noindex ovat oikein. Päivitetään Next, kun korjaus julkaistaan; testi raportoi tämän varoituksena.
 
 **Tekniikka**
 - ISR-väli on todellisuudessa 60 s eikä 3600 s. [suorituskyky-5]

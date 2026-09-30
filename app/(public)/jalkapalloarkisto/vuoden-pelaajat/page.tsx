@@ -59,7 +59,7 @@ export default async function VuodenPelaajatPage() {
           Nuorten palkinnot löytyvät omalta sivultaan:{" "}
           <Link
             href="/jalkapalloarkisto/lupaavat"
-            className="text-accent underline-offset-4 hover:underline"
+            className="text-accent underline decoration-1 underline-offset-4 hover:decoration-2"
           >
             lupaavat pelaajat 1980–1991
           </Link>

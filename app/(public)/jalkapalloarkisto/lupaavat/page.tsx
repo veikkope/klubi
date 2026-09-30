@@ -59,7 +59,7 @@ export default async function LupaavatPage() {
           Vuosittaiset pääpalkinnot löytyvät sivulta{" "}
           <Link
             href="/jalkapalloarkisto/vuoden-pelaajat"
-            className="text-accent underline-offset-4 hover:underline"
+            className="text-accent underline decoration-1 underline-offset-4 hover:decoration-2"
           >
             vuoden pelaajat
           </Link>

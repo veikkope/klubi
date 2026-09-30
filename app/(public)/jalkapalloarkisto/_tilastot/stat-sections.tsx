@@ -1,4 +1,5 @@
 import { PortableText } from "@/components/portable-text";
+import { UusiValilehti } from "@/components/ui/uusi-valilehti";
 import { SanityImage } from "@/components/sanity-image";
 import { StatTable } from "@/components/ui/stat-table";
 import { cn } from "@/lib/cn";
@@ -45,9 +46,10 @@ function Sources({ sources }: { sources: string[] | null }) {
               href={source}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex min-h-11 items-center break-all text-accent underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+              className="inline-flex min-h-11 items-center break-all text-accent underline decoration-1 underline-offset-4 hover:decoration-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
             >
               {source}
+              <UusiValilehti />
             </a>
           </li>
         ))}
@@ -77,6 +79,7 @@ export function TilastoKuvat({
           <figure>
             <SanityImage
               image={kuva}
+              kuvateksti={kuva?.caption}
               width={900}
               crop={false}
               sizes="(min-width: 1024px) 380px, (min-width: 640px) 45vw, 90vw"
@@ -103,9 +106,12 @@ function hasBlocks(value: unknown[] | null | undefined): boolean {
  */
 export function TilastoBody({
   tilasto,
+  ylinOtsikko,
   className,
 }: {
   tilasto: TilastoDoc;
+  /** Tekstisisällön ylimmän otsikon taso: yhtä syvemmällä kuin kutsujan otsikko. */
+  ylinOtsikko: 2 | 3 | 4;
   className?: string;
 }) {
   const hasTable = (tilasto.columns?.length ?? 0) > 0 && (tilasto.rows?.length ?? 0) > 0;
@@ -118,7 +124,7 @@ export function TilastoBody({
     <div className={className}>
       {hasBlocks(tilasto.intro) && (
         <div className="max-w-3xl">
-          <PortableText value={tilasto.intro} />
+          <PortableText value={tilasto.intro} ylinOtsikko={ylinOtsikko} />
         </div>
       )}
 
@@ -141,7 +147,7 @@ export function TilastoBody({
 
       {hasBlocks(tilasto.lisatiedot) && (
         <div className="mt-8 max-w-3xl">
-          <PortableText value={tilasto.lisatiedot} />
+          <PortableText value={tilasto.lisatiedot} ylinOtsikko={ylinOtsikko} />
         </div>
       )}
 
@@ -194,7 +200,7 @@ export function StatSections({
             </p>
           )}
 
-          <TilastoBody tilasto={tilasto} className="mt-2" />
+          <TilastoBody tilasto={tilasto} ylinOtsikko={headingLevel === "h2" ? 3 : 4} className="mt-2" />
         </section>
       ))}
     </div>

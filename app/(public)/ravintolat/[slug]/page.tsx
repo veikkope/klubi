@@ -210,7 +210,7 @@ export default async function RavintolaPage({ params }: PageProps) {
         {/* Mobiilissa arvosanakortti ennen tekstiä, tietokoneella oikealla. */}
         <aside className="flex flex-col gap-6 lg:sticky lg:top-6 lg:order-2">
           <ScoreCard restaurant={r} rating={rating} parts={parts} />
-          <VisitsAndInvite restaurant={r} visits={visits} className="max-lg:hidden" />
+          <VisitsAndInvite restaurant={r} visits={visits} sijainti="sivupalkki" className="max-lg:hidden" />
         </aside>
 
         <article className="flex min-w-0 max-w-[700px] flex-col gap-6 text-[17px] leading-[1.7] sm:gap-[26px] sm:text-[19px] sm:leading-[1.75] lg:order-1">
@@ -315,7 +315,7 @@ export default async function RavintolaPage({ params }: PageProps) {
           )}
 
           {/* Mobiilissa käynnit tekstin jälkeen, tietokoneella sivupalkissa. */}
-          <VisitsAndInvite restaurant={r} visits={visits} className="mt-4 lg:hidden" />
+          <VisitsAndInvite restaurant={r} visits={visits} sijainti="teksti" className="mt-4 lg:hidden" />
         </article>
       </Container>
 
@@ -417,7 +417,7 @@ function ScoreCard({
           {r.priceLevel && <Fact label="Hintataso">{r.priceLevel}</Fact>}
           {r.phone && (
             <Fact label="Puhelin">
-              <a href={`tel:${r.phone.replace(/[^\d+]/g, "")}`} className="text-accent hover:underline">
+              <a href={`tel:${r.phone.replace(/[^\d+]/g, "")}`} className="text-accent underline decoration-1 underline-offset-4 hover:decoration-2">
                 {r.phone}
               </a>
             </Fact>
@@ -452,19 +452,31 @@ function ScoreCard({
   );
 }
 
+/**
+ * Käynnit ja arviokutsu. Renderöidään kahdesti (sivupalkki tietokoneella,
+ * tekstin jälkeen mobiilissa; toinen piilotetaan CSS:llä), joten `sijainti`
+ * tekee otsikon id:stä yksilöllisen.
+ */
 function VisitsAndInvite({
   restaurant: r,
   visits,
+  sijainti,
   className,
 }: {
   restaurant: RavintolaDetail;
   visits: string[];
+  sijainti: "sivupalkki" | "teksti";
   className?: string;
 }) {
   return (
     <div className={cn("flex flex-col gap-6", className)}>
       {(visits.length > 0 || r.visitedAt || r.visitContext) && (
-        <VisitSection visits={visits} visitedAt={r.visitedAt} visitContext={r.visitContext} />
+        <VisitSection
+          otsikkoId={`kaynnit-otsikko-${sijainti}`}
+          visits={visits}
+          visitedAt={r.visitedAt}
+          visitContext={r.visitContext}
+        />
       )}
       <p className="text-[15px] text-muted">
         Kävitkö täällä?{" "}
@@ -541,10 +553,12 @@ function ProsConsSection({
 }
 
 function VisitSection({
+  otsikkoId,
   visits,
   visitedAt,
   visitContext,
 }: {
+  otsikkoId: string;
   visits: string[];
   visitedAt?: string | null;
   visitContext?: string | null;
@@ -552,9 +566,9 @@ function VisitSection({
   const dates = visits.length > 0 ? visits : visitedAt ? [visitedAt] : [];
 
   return (
-    <section aria-labelledby="kaynnit-otsikko">
+    <section aria-labelledby={otsikkoId}>
       <h2
-        id="kaynnit-otsikko"
+        id={otsikkoId}
         className="font-sans text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-soft"
       >
         Klubin käynnit

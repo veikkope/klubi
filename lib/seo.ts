@@ -73,7 +73,12 @@ export function buildMetadata(input: BuildMetadataInput): Metadata {
   const desc = description?.trim() || undefined;
 
   return {
-    title: absoluteTitle ? { absolute: title } : title,
+    // Otsikkopohja lisää sivuston nimen perään. Jos otsikko on jo sivuston nimi
+    // (esim. /klubi), sitä ei toisteta: "Lahden Suomalainen Klubi ry · Lahden…".
+    title:
+      absoluteTitle || title.trim().toLocaleLowerCase("fi") === siteName.toLocaleLowerCase("fi")
+        ? { absolute: title }
+        : title,
     description: desc,
     alternates: { canonical: url },
     robots: { index: !noIndex, follow: !noFollow },

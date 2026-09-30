@@ -78,6 +78,8 @@ export default async function SivuPage({
 
   const hasHero = Boolean(sivu.hero?.asset);
   const lead = sivu.tiivistelma || sivu.ingress;
+  // WCAG 3.1.2: vieraskielinen sisältö merkitään, sivupohja (murupolku) on suomea.
+  const kieli = sivu.kieli && sivu.kieli !== "fi" ? sivu.kieli : undefined;
 
   return (
     <article>
@@ -107,28 +109,34 @@ export default async function SivuPage({
           </div>
           <Container className="py-20 sm:py-28">
             <Breadcrumbs className="text-on-chrome-muted" items={crumbs} />
-            <h1 className="mt-6 font-display text-4xl leading-[1.1] text-on-chrome sm:text-5xl">
+            <h1 lang={kieli} className="mt-6 font-display text-4xl leading-[1.1] text-on-chrome sm:text-5xl">
               {sivu.title}
             </h1>
             {lead && (
-              <p className="mt-4 max-w-2xl text-lg text-on-chrome-muted">{lead}</p>
+              <p lang={kieli} className="mt-4 max-w-2xl text-lg text-on-chrome-muted">
+                {lead}
+              </p>
             )}
           </Container>
         </section>
       ) : (
         <Container className="pt-12">
           <Breadcrumbs items={crumbs} />
-          <h1 className="mt-6 font-display text-4xl leading-tight sm:text-5xl">
+          <h1 lang={kieli} className="mt-6 font-display text-4xl leading-tight sm:text-5xl">
             {sivu.title}
           </h1>
           {lead && (
-            <p className="mt-4 max-w-2xl text-lg text-muted">{lead}</p>
+            <p lang={kieli} className="mt-4 max-w-2xl text-lg text-muted">
+              {lead}
+            </p>
           )}
         </Container>
       )}
 
       <Container size="narrow" className="py-16">
-        <PortableText value={sivu.body} />
+        <div lang={kieli}>
+          <PortableText value={sivu.body} ylinOtsikko={2} />
+        </div>
       </Container>
     </article>
   );

@@ -179,6 +179,7 @@ export default async function StadionPage({
         <figure className="mt-10 overflow-hidden rounded-2xl">
           <SanityImage
             image={paakuva}
+            kuvateksti={paakuva?.caption}
             width={1600}
             height={900}
             sizes="(min-width: 1024px) 1024px, 100vw"
@@ -237,6 +238,7 @@ export default async function StadionPage({
                 <figure>
                   <SanityImage
                     image={kuva}
+                    kuvateksti={kuva?.caption}
                     width={800}
                     height={600}
                     sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw"

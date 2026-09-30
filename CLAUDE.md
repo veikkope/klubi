@@ -51,6 +51,7 @@ public/                Staattiset tiedostot (favicon, robots, kuvat joita Sanity
 | Testaa arvostelukuvien säännöt | `npm run test:arvostelukuvat` |
 | Testaa taulukkoeditorin säännöt | `npm run test:taulukko` |
 | Testaa joukkueiden nimivertailu (otteluohjelma) | `npm run test:joukkueet` |
+| Saavutettavuustesti (axe, WCAG 2.1 AA) | `npm run test:saavutettavuus` (sivusto käynnissä; `BASE_URL=…` muu osoite) |
 | Orpojen arvostelukuvien siivous (listaa; `-- --poista` poistaa) | `npm run siivoa:arvostelukuvat` (tarvittaessa; lisää `-- --production`) |
 | Hae Blogspot-blogi paikallisesti | `npm run blogspot:fetch` → `data/blogspot/` (gitignoressa) |
 | Blogi → `development` | `npm run migrate:blogspot` (ensimmäinen kerta) · `npm run sync:blogspot` (vain uudet, säilyttää Studion muokkaukset) |

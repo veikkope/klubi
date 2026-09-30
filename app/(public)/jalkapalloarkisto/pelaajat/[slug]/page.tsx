@@ -187,6 +187,7 @@ export default async function PelaajaPage({
           <figure className="overflow-hidden rounded-2xl">
             <SanityImage
               image={paakuva}
+              kuvateksti={paakuva?.caption}
               width={900}
               height={1100}
               sizes="(min-width: 1024px) 40vw, 100vw"
@@ -288,6 +289,7 @@ export default async function PelaajaPage({
                 <figure>
                   <SanityImage
                     image={kuva}
+                    kuvateksti={kuva?.caption}
                     width={800}
                     height={600}
                     sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw"

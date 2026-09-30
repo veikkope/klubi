@@ -113,13 +113,13 @@ export default async function MuuTilastoPage({
         lead={tilasto.tiivistelma}
         breadcrumbs={trail}
       >
-        <TilastoBody tilasto={tilasto} />
+        <TilastoBody tilasto={tilasto} ylinOtsikko={2} />
 
         <p className="mt-12 text-muted">
           Muut koosteet löytyvät{" "}
           <Link
             href={muutTilastotPath}
-            className="text-accent underline-offset-4 hover:underline"
+            className="text-accent underline decoration-1 underline-offset-4 hover:decoration-2"
           >
             Muut tilastot -sivulta
           </Link>

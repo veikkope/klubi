@@ -31,7 +31,11 @@
   --muted: #4a4d5c;
   --muted-soft: #6b6e7c;    /* Kuvatekstit, meta */
   --border: #ecebe5;        /* Erottimet */
-  --border-strong: #c9c8c0; /* Lomakekenttien reunat */
+  --border-strong: #c9c8c0; /* Korostettu erotin (kortin hover, pudotusalue) */
+  /* Lomakekenttien reunat: WCAG 1.4.11 vaatii käyttöliittymäkomponentin
+     rajalle 3:1 ympäristöön nähden. #7c7f8c = 3,98:1 valkoisella ja 3,68:1
+     paperilla (--background); aiempi #ecebe5 oli 1,19:1. */
+  --border-input: #7c7f8c;
 
   /* Linkit ja toiminnot */
   --accent: var(--blue);
@@ -78,6 +82,7 @@
   --color-muted-soft: var(--muted-soft);
   --color-border: var(--border);
   --color-border-strong: var(--border-strong);
+  --color-border-input: var(--border-input);
 
   --color-blue: var(--blue);
   --color-navy: var(--navy);
@@ -159,20 +164,35 @@ body {
   a:hover { color: var(--accent-hover); }
 }
 
-/* Saavutettavuus: näppäimistöfokus näkyvä */
-:focus-visible {
-  outline: 2px solid var(--ring);
-  outline-offset: 2px;
-  border-radius: var(--radius-sm);
-}
+/* Saavutettavuus: näppäimistöfokus (WCAG 2.4.7).
+   Base-kerroksessa: aiemmin kerrostamattomat säännöt voittivat Tailwindin
+   utility-luokat, joten komponenttien omat fokustyylit (ring-2 ring-ring)
+   eivät koskaan näkyneet (docs/16, saavutettavuus-3). */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
 
-/* Lomakekenttä: fokuksessa sininen reuna + 3 px vaalea sininen kehys */
-input:not([type="checkbox"], [type="radio"]):focus-visible,
-textarea:focus-visible,
-select:focus-visible {
-  outline: none;
-  border-color: var(--blue);
-  box-shadow: 0 0 0 3px var(--blue-tint);
+  /* Lomakekenttä: fokuksessa sininen reuna + 2 px sininen rengas. Pelkkä vaalea
+     kehys (--blue-tint, 1,2:1) ei erottunut. Komponentin omat luokat voittavat. */
+  input:not([type="checkbox"], [type="radio"]):focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    border-color: var(--blue);
+  }
+
+  /* Tummat pinnat (footer, yönsiniset osiot, lightbox): klubinsininen rengas
+     yönsinisellä on 1,8:1, valkoinen 15,8:1. Muuttuja periytyy kaikille
+     jälkeläisille, myös Tailwindin ring-ring-luokille. */
+  .bg-chrome,
+  .bg-navy,
+  [class*="bg-black/"] {
+    --ring: var(--on-chrome);
+  }
 }
 
 /* Reduced motion */

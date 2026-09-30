@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { UUSI_VALILEHTI } from "@/components/ui/uusi-valilehti";
 import Link from "next/link";
 import { stegaClean } from "next-sanity";
 import { Container } from "./container";
@@ -119,8 +120,8 @@ export async function Footer() {
                     href={social.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    aria-label={socialLabels[social.platform]}
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-chrome-border text-on-chrome-muted transition hover:border-white hover:text-white"
+                    aria-label={`${socialLabels[social.platform]} (${UUSI_VALILEHTI})`}
+                    className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-chrome-border text-on-chrome-muted transition hover:border-white hover:text-white"
                   >
                     <SocialIcon platform={social.platform} />
                   </a>

@@ -755,6 +755,7 @@ export type Sivu = {
   _rev: string;
   title?: string;
   slug?: Slug;
+  kieli?: "fi" | "en" | "sv";
   tiivistelma?: string;
   hero?: ImageWithAlt;
   ingress?: string;

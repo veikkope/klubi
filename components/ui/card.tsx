@@ -52,14 +52,17 @@ export function CardEyebrow({
 export function CardTitle({
   children,
   className,
+  as: Tagi = "h3",
 }: {
   children: React.ReactNode;
   className?: string;
+  /** h2, kun korttilista on suoraan sivun h1:n alla (otsikkotasot eivät saa hypätä). */
+  as?: "h2" | "h3";
 }) {
   return (
-    <h3 className={cn("font-display text-[1.375rem] leading-[1.3] text-heading", className)}>
+    <Tagi className={cn("font-display text-[1.375rem] leading-[1.3] text-heading", className)}>
       {children}
-    </h3>
+    </Tagi>
   );
 }
 

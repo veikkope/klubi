@@ -119,6 +119,8 @@ export type SivuData = {
   title: string;
   slug: string;
   hero?: SanityImage;
+  /** Sisällön kieli (BCP 47), jos muu kuin suomi. Murupolku ja sivupohja pysyvät suomena. */
+  kieli?: "fi" | "en" | "sv" | null;
   ingress?: string | null;
   /** Itsenäinen 2–3 virkkeen tiivistelmä — sivun ingressi ja siteerattava vastaus. */
   tiivistelma?: string | null;

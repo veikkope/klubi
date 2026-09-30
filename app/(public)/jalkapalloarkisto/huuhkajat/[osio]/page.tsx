@@ -133,7 +133,7 @@ export default async function HuuhkajatOsioPage({
                 <li key={tilasto._id}>
                   <a
                     href={`#${tilasto.slug}`}
-                    className="inline-flex min-h-11 items-center text-accent underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                    className="inline-flex min-h-11 items-center text-accent underline decoration-1 underline-offset-4 hover:decoration-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
                   >
                     {tilasto.title}
                   </a>

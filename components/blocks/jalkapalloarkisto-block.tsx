@@ -145,7 +145,7 @@ export async function JalkapalloarkistoBlock({
                 Päivitetty {formatDate(data.fifa._updatedAt)}.{" "}
                 <Link
                   href="/jalkapalloarkisto/fifa-ranking"
-                  className="text-accent hover:text-accent-hover"
+                  className="text-accent underline decoration-1 underline-offset-4 hover:decoration-2 hover:text-accent-hover"
                 >
                   Koko ranking
                 </Link>

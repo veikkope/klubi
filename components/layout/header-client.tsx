@@ -23,6 +23,10 @@ function HeaderClientInner({
 }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  // Esc palauttaa fokuksen avanneeseen painikkeeseen (WAI-ARIA disclosure):
+  // muuten fokus katoaisi suljetun valikon linkin mukana.
+  const triggerRefs = useRef(new Map<string, HTMLButtonElement>());
+  const mobileButtonRef = useRef<HTMLButtonElement>(null);
 
   // Sulje desktop-dropdown kun klikataan ulkopuolelle
   const navRef = useRef<HTMLElement>(null);
@@ -37,17 +41,23 @@ function HeaderClientInner({
     return () => document.removeEventListener("mousedown", onClick);
   }, [openDropdown]);
 
-  // Sulje ESC-näppäimellä
+  // Sulje Esc-näppäimellä ja palauta fokus avanneeseen painikkeeseen
   useEffect(() => {
+    if (!openDropdown && !mobileOpen) return;
     function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") {
+      if (e.key !== "Escape") return;
+      if (openDropdown) {
+        triggerRefs.current.get(openDropdown)?.focus();
         setOpenDropdown(null);
+      }
+      if (mobileOpen) {
+        mobileButtonRef.current?.focus();
         setMobileOpen(false);
       }
     }
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, []);
+  }, [openDropdown, mobileOpen]);
 
   return (
     <>
@@ -56,7 +66,7 @@ function HeaderClientInner({
         aria-label="Päänavigaatio"
         className="hidden lg:flex items-center gap-7 xl:gap-10"
       >
-        {items.map((item) => {
+        {items.map((item, index) => {
           const hasChildren = item.children && item.children.length > 0;
           const active =
             pathname === item.href ||
@@ -64,12 +74,27 @@ function HeaderClientInner({
             item.children?.some((c) => pathname.startsWith(c.href));
           if (hasChildren) {
             const isOpen = openDropdown === item.href;
+            const listaId = `alavalikko-${index}`;
             return (
-              <div key={item.href} className="relative">
+              <div
+                key={item.href}
+                className="relative"
+                // Tab valikosta ulos sulkee sen, jottei se jää sisällön päälle.
+                onBlur={(e) => {
+                  if (isOpen && !e.currentTarget.contains(e.relatedTarget as Node | null)) {
+                    setOpenDropdown(null);
+                  }
+                }}
+              >
+                {/* Disclosure-malli: ei aria-haspopupia, koska kyse on linkkilistasta eikä valikosta (role="menu"). */}
                 <button
+                  ref={(node) => {
+                    if (node) triggerRefs.current.set(item.href, node);
+                    else triggerRefs.current.delete(item.href);
+                  }}
                   type="button"
-                  aria-haspopup="true"
                   aria-expanded={isOpen}
+                  aria-controls={listaId}
                   onClick={() => setOpenDropdown(isOpen ? null : item.href)}
                   className={cn(
                     "inline-flex items-center gap-1 py-1 text-base font-medium transition",
@@ -86,7 +111,10 @@ function HeaderClientInner({
                   />
                 </button>
                 {isOpen && (
-                  <div className="absolute left-0 top-full mt-1 min-w-56 rounded-2xl border border-border bg-surface p-2 shadow-panel">
+                  <div
+                    id={listaId}
+                    className="absolute left-0 top-full mt-1 min-w-56 rounded-2xl border border-border bg-surface p-2 shadow-panel"
+                  >
                     {!hasOverviewChild(item) && (
                       <>
                         <Link
@@ -102,6 +130,7 @@ function HeaderClientInner({
                       <Link
                         key={c.href}
                         href={c.href}
+                        aria-current={pathname === c.href ? "page" : undefined}
                         className="block rounded-lg px-3 py-2 text-sm text-foreground hover:bg-surface-strong"
                       >
                         {c.label}
@@ -116,6 +145,7 @@ function HeaderClientInner({
             <Link
               key={item.href}
               href={item.href}
+              aria-current={pathname === item.href ? "page" : undefined}
               className={cn(
                 // Tyyliopas: ei CTA-painiketta, joten highlight-kohdetta ei korosteta.
                 "py-1 text-base font-medium no-underline transition",
@@ -131,9 +161,11 @@ function HeaderClientInner({
       </nav>
 
       <button
+        ref={mobileButtonRef}
         type="button"
         aria-label={mobileOpen ? "Sulje valikko" : "Avaa valikko"}
         aria-expanded={mobileOpen}
+        aria-controls="mobiilivalikko"
         onClick={() => setMobileOpen((v) => !v)}
         className="inline-flex h-11 w-11 items-center justify-center rounded-sm text-navy hover:bg-surface-strong lg:hidden"
       >
@@ -141,7 +173,10 @@ function HeaderClientInner({
       </button>
 
       {mobileOpen && (
-        <div className="absolute inset-x-0 top-full z-30 border-b border-border bg-surface text-foreground shadow-panel lg:hidden">
+        <div
+          id="mobiilivalikko"
+          className="absolute inset-x-0 top-full z-30 border-b border-border bg-surface text-foreground shadow-panel lg:hidden"
+        >
           <nav
             aria-label="Mobiilinavigaatio"
             className="mx-auto flex max-w-6xl flex-col gap-1 px-6 py-4"
@@ -170,6 +205,7 @@ function MobileItem({
     return (
       <Link
         href={item.href}
+        aria-current={pathname === item.href ? "page" : undefined}
         className={cn(
           "rounded-lg px-3 py-3 text-base font-medium transition",
           active
@@ -213,6 +249,7 @@ function MobileItem({
             <Link
               key={c.href}
               href={c.href}
+              aria-current={pathname === c.href ? "page" : undefined}
               className="rounded-lg px-3 py-2 text-sm text-foreground hover:bg-surface-strong"
             >
               {c.label}
