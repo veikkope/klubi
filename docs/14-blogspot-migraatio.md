@@ -300,7 +300,7 @@ Mitattu 2026-09-28 development-datasetista ja tuotantobuildista (`next start -p 
 | Alt-tekstit | 649/649 kuvaavia (322 kuvatekstistä, 327 katsomalla), 0 otsikosta johdettua |
 | Toistettavuus | kaksi ajoa → tavulleen sama NDJSON (sha256 `5b4c305c…`) |
 | type-check, lint, build | ✅ puhtaat |
-| Production | ✅ 528 kirjoitusta ja 502 kommenttia (28.9.). Uudet: `sync:blogspot:production` (§6.3). 30.9.: 1 uusi (29.9.) odottaa vientiä |
+| Production | ✅ 528 kirjoitusta ja 502 kommenttia (28.9.). Uudet: `sync:blogspot:production` (§6.3). 30.9.: 29.9. kirjoitus viety (varmuuskopio ensin), 529/529 |
 | Blogin ohjaus käyttöön | ⏳ käyttöönotossa (§6), edellyttää §8:n päätöstä |
 
 Korjauksia ajon aikana: kahdesti koodattu entiteetti (`fish &amp;amp; chips`) puretaan
