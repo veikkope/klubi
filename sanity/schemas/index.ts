@@ -1,6 +1,7 @@
 import type { SchemaTypeDefinition } from "sanity";
 
 import { imageWithAlt } from "./objects/imageWithAlt";
+import { galleriaKuva } from "./objects/galleriaKuva";
 import { portableText } from "./objects/portableText";
 
 import { sivu } from "./documents/sivu";
@@ -33,6 +34,7 @@ export const singletonTypes = new Set([
 
 export const schemaTypes: SchemaTypeDefinition[] = [
   imageWithAlt,
+  galleriaKuva,
   portableText,
   sivu,
   tapahtuma,

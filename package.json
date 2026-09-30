@@ -35,6 +35,7 @@
     "test:kommentit": "tsx scripts/test-kommentit.ts",
     "test:arvostelukuvat": "tsx scripts/test-arvostelukuvat.ts",
     "test:taulukko": "tsx scripts/test-taulukko.ts",
+    "test:joukkueet": "tsx scripts/test-joukkueet.ts",
     "backup": "tsx scripts/varmuuskopio.ts",
     "siivoa:arvostelukuvat": "tsx scripts/siivoa-arvostelukuvat.ts"
   },

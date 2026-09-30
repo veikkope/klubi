@@ -6,6 +6,7 @@ import {
   needsReviewField,
   tarkistettavaaField,
   tiivistelmaField,
+  polkuMuuttunut,
 } from "../objects/contentMeta";
 
 export const tapahtuma = defineType({
@@ -31,7 +32,7 @@ export const tapahtuma = defineType({
       title: "Polku (slug)",
       type: "slug",
       options: { source: "title", maxLength: 80 },
-      validation: (rule) => rule.required(),
+      validation: (rule) => [rule.required(), polkuMuuttunut(rule)],
       group: "perustiedot",
     }),
     tiivistelmaField("perustiedot"),
@@ -45,7 +46,15 @@ export const tapahtuma = defineType({
     defineField({
       name: "endsAt",
       title: "Päättymisaika",
+      description: "Valinnainen. Tapahtuma näkyy tulevana päättymisaikaan asti.",
       type: "datetime",
+      validation: (rule) =>
+        rule.custom((value, context) => {
+          const alku = (context.document as { startsAt?: string } | undefined)?.startsAt;
+          return !value || !alku || value >= alku
+            ? true
+            : "Päättymisaika ei voi olla ennen alkamisaikaa.";
+        }),
       group: "perustiedot",
     }),
     defineField({

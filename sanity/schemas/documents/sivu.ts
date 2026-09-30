@@ -7,6 +7,7 @@ import {
   needsReviewField,
   tarkistettavaaField,
   tiivistelmaField,
+  polkuMuuttunut,
 } from "../objects/contentMeta";
 
 /**
@@ -95,8 +96,10 @@ export const sivu = defineType({
         maxLength: 96,
         slugify: slugifyPath,
       },
-      validation: (rule) =>
+      validation: (rule) => [
         rule.required().custom((slug) => validateSlugPath(slug?.current)),
+        polkuMuuttunut(rule),
+      ],
       group: "sisalto",
     }),
     tiivistelmaField("sisalto"),

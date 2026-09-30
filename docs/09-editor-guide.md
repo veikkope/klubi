@@ -45,7 +45,6 @@ voi muuttaa projektin asetuksia tai käyttöoikeuksia. Kehittäjä hoitaa ne.
   - **Etusivu:** etusivun iso otsikko, kuva ja lohkot
   - **Navigaatio:** yläpalkin linkit
   - **Yhteystiedot:** osoite, sähköposti, puhelin ja some. Näkyvät footerissa ja yhteystietosivulla
-  - **Sivuston asetukset:** logo
 - **Tarkistettavat:** migraation merkitsemät dokumentit tyypeittäin (ks. alla)
 - **Uutiset:** tiedotteet ja blogikirjoitukset, myös blogin kaikki 528 kirjoitusta vuodesta 2007
 - **Kommentit ja veikkaukset:** jäsenten viestit uusin ensin sekä piilotetut
@@ -104,8 +103,11 @@ Veikkausliigan ottelut tulevat automaattisesti. Lisää käsin maajoukkueen otte
 ottelut, joihin klubi lähtee.
 
 1. **Ottelut** → **+**.
-2. **Aika** (päivä ja kellonaika), **Koti** ja **Vieras**. Kirjoita joukkueet kuten
-   Veikkausliigan sivuilla, esim. "FC Lahti". Suomen maajoukkue on tasan "Suomi".
+2. **Aika** (päivä ja kellonaika), **Koti** ja **Vieras**. Kun alat kirjoittaa
+   joukkuetta, Studio ehdottaa nimiä automaattisesta otteluohjelmasta. Valitse
+   ehdotus, niin kirjoitusasu on varmasti oikein. Suomen maajoukkue on tasan "Suomi".
+   Jos Studio kysyy keltaisella **Tarkoititko…?**, korjaa nimi. Muuten merkintä ei
+   yhdisty oikeaan otteluun. Muiden maiden nimet (esim. "Albania") ovat kunnossa sellaisenaan.
 3. Valinnaiset: kilpailu, stadion, **Klubi paikalla** tai **Vierasmatka**.
 4. **Julkaise**.
 
@@ -139,6 +141,16 @@ poistaa seuroja (kirjoita nimi kuten Veikkausliigan sivuilla ja paina Enter).
 3. **Julkaise**.
 
 Pakkaa yli 5 Mt:n kuvat ensin (esim. tinypng.com).
+
+### Galleria-albumin lisääminen
+
+1. **Galleria-albumit** → **+**. Anna nimi, polku (*Luo*), päivämäärä ja kansikuva.
+2. **Kuvat:** raahaa kaikki kuvat kerralla tietokoneen kansiosta kenttään. Järjestä
+   raahaamalla.
+3. Kuvaukset (**Mitä kuvassa on**) ovat suositeltavia, mutta eivät pakollisia. Ilman
+   kuvausta sivu nimeää kuvan albumin ja numeron mukaan ("Vappu 2026, kuva 3/40").
+   Kuvauksia voi lisätä myöhemmin.
+4. **Julkaise**.
 
 ### Etusivun muokkaaminen
 
@@ -266,7 +278,7 @@ kävijälle asiallisen ilmoituksen.
 
 | # | Mitä | Missä Studiossa | Tila 28.9.2026 |
 |---|---|---|---|
-| 1 | Yhteystiedot: osoite, sähköposti, puhelin | Sivun asetukset → Yhteystiedot | vain "Lahti" |
+| 1 | Yhteystiedot: osoite, **sähköposti**, puhelin. Sähköposti näkyy alatunnisteessa ja lomakkeiden virheilmoituksissa vain, kun se on täytetty | Sivun asetukset → Yhteystiedot | vain "Lahti" |
 | 2 | Y-tunnus ja IBAN | Sivun asetukset → Yhteystiedot | puuttuu |
 | 3 | Sosiaalinen media | Sivun asetukset → Yhteystiedot | puuttuu |
 | 4 | Hallituksen jäsenet | Hallitus → + | 0 jäsentä |
@@ -295,7 +307,9 @@ Jos joku pyytää poistamaan tietonsa (kommentti, veikkaus tai arvostelu kuvinee
 ## Mitä EI saa tehdä
 
 - **Älä poista** Sivun asetuksien dokumentteja. Ne on lukittu, mutta jos jokin menee pieleen, soita kehittäjälle.
-- **Älä muuta julkaistun sivun Polkua**, koska se rikkoo linkit. Jos se on pakko, kerro kehittäjälle, joka tekee ohjauksen.
+- **Älä muuta julkaistun sivun Polkua**, koska se rikkoo linkit. Studio varoittaa
+  keltaisella, jos polku poikkeaa julkaistusta. Jos muutos on pakko tehdä, kerro
+  kehittäjälle, joka tekee ohjauksen.
 - **Älä muuta** kenttiä **Vanha osoite** tai **Alkuperäinen Blogspot-kirjoitus**. Vanhat linkit ohjautuvat niiden varassa.
 
 ## Tuki

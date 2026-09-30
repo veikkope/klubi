@@ -15,6 +15,7 @@ import {
   validatePhotos,
   type CleanPhoto,
 } from "@/lib/arvostelukuvat";
+import { ilmoitaOsoitteeseen } from "@/lib/yhteystiedot";
 import { apiVersion, dataset, hasSanity, projectId } from "@/sanity/env";
 import {
   COMMENT_MAX,
@@ -90,8 +91,6 @@ const arrayKey = () => randomUUID().replace(/-/g, "").slice(0, 12);
 
 /** Sanity-dokumentti-id: kirjaimia, numeroita, väliviivoja ja pisteitä. */
 const DOCUMENT_ID = /^[A-Za-z0-9._-]{1,128}$/;
-
-const SUPPORT_EMAIL = "info@lahdensuomalainenklubi.com";
 
 export async function submitReview(
   _prev: ReviewFormState,
@@ -197,8 +196,7 @@ export async function submitReview(
       status: "error",
       message:
         "Arvostelujen vastaanotto ei ole vielä käytössä: sisällönhallintaa ei ole " +
-        `yhdistetty sivustoon. Arvosteluasi ei tallennettu — voit lähettää sen ` +
-        `sähköpostitse osoitteeseen ${SUPPORT_EMAIL}.`,
+        "yhdistetty sivustoon. Arvosteluasi ei tallennettu. Yritä myöhemmin uudelleen.",
       fieldErrors: {},
       values,
     };
@@ -211,7 +209,7 @@ export async function submitReview(
       status: "error",
       message:
         "Arvostelua ei voitu tallentaa, koska palvelimelta puuttuu kirjoitusoikeus. " +
-        `Arvosteluasi ei tallennettu. Ilmoitathan asiasta osoitteeseen ${SUPPORT_EMAIL}.`,
+        `Arvosteluasi ei tallennettu. ${await ilmoitaOsoitteeseen()}`,
       fieldErrors: {},
       values,
     };

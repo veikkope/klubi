@@ -100,14 +100,6 @@ export type Etusivu = {
         _type: "galleria";
         _key: string;
       }
-    | {
-        heading?: string;
-        body?: string;
-        ctaLabel?: string;
-        ctaHref?: string;
-        _type: "cta";
-        _key: string;
-      }
   >;
   legacyUrl?: string;
 };
@@ -430,7 +422,7 @@ export type GalleriaAlbumi = {
   images?: Array<
     {
       _key: string;
-    } & ImageWithAlt
+    } & GalleriaKuva
   >;
   needsReview?: boolean;
   tarkistettavaa?: string;
@@ -780,6 +772,16 @@ export type Sivu = {
   muutLegacyUrlit?: Array<string>;
 };
 
+export type GalleriaKuva = {
+  _type: "galleriaKuva";
+  asset?: SanityImageAssetReference;
+  media?: unknown;
+  hotspot?: SanityImageHotspot;
+  crop?: SanityImageCrop;
+  alt?: string;
+  caption?: string;
+};
+
 export type SanityImagePaletteSwatch = {
   _type: "sanity.imagePaletteSwatch";
   background?: string;
@@ -903,6 +905,7 @@ export type AllSanitySchemaTypes =
   | Ottelu
   | Tapahtuma
   | Sivu
+  | GalleriaKuva
   | SanityImagePaletteSwatch
   | SanityImagePalette
   | SanityImageDimensions
@@ -1665,25 +1668,6 @@ export type EtusivuQueryResult = {
   } | null;
   blocks: Array<
     | {
-        _type: "cta";
-        _key: string;
-        eyebrow: null;
-        heading: string | null;
-        count: null;
-        ottelutHeading: null;
-        ottelutCount: null;
-        vainMaajoukkue: null;
-        seurat: null;
-        laskuri: null;
-        tapahtumatHeading: null;
-        tapahtumatCount: null;
-        body: string | null;
-        image: null;
-        ctaLabel: string | null;
-        ctaHref: string | null;
-        city: null;
-      }
-    | {
         _type: "esittely";
         _key: string;
         eyebrow: string | null;
@@ -1912,7 +1896,7 @@ export type GalleriaAlbumiBySlugQueryResult = {
   images: Array<
     {
       _key: string;
-    } & ImageWithAlt
+    } & GalleriaKuva
   > | null;
   event: {
     title: string | null;

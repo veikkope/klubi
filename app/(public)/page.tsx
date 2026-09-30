@@ -8,7 +8,6 @@ import { EsittelyBlock } from "@/components/blocks/esittely-block";
 import { RavintolatSpotlightBlock } from "@/components/blocks/ravintolat-spotlight-block";
 import { JalkapalloarkistoBlock } from "@/components/blocks/jalkapalloarkisto-block";
 import { GalleriaBlock } from "@/components/blocks/galleria-block";
-import { CtaBlock } from "@/components/blocks/cta-block";
 import { JsonLd } from "@/components/seo/json-ld";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import { etusivuQuery } from "@/sanity/lib/queries/etusivu";
@@ -122,8 +121,6 @@ function renderBlock(block: EtusivuBlock) {
           count={block.count}
         />
       );
-    case "cta":
-      return <CtaBlock key={block._key} {...block} />;
     default:
       return null;
   }

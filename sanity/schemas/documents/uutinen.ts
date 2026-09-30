@@ -7,6 +7,7 @@ import {
   needsReviewField,
   tarkistettavaaField,
   tiivistelmaField,
+  polkuMuuttunut,
 } from "../objects/contentMeta";
 
 export const uutinen = defineType({
@@ -32,7 +33,7 @@ export const uutinen = defineType({
       title: "Polku (slug)",
       type: "slug",
       options: { source: "title", maxLength: 80 },
-      validation: (rule) => rule.required(),
+      validation: (rule) => [rule.required(), polkuMuuttunut(rule)],
       group: "sisalto",
     }),
     tiivistelmaField("sisalto"),
@@ -139,7 +140,9 @@ export const uutinen = defineType({
           { title: "Palloveikkaus", value: "palloveikkaus" },
           { title: "Matkakuvaus", value: "matkakuvaus" },
         ],
-        layout: "tags",
+        // Valintaruudut: "tags"-asettelu ohitti listan, ja vapaasti kirjoitetut
+        // kategoriat rikkoivat uutislistan suodattimen (docs/16 §5).
+        layout: "grid",
       },
       group: "sisalto",
     }),

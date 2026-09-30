@@ -7,6 +7,7 @@ import {
   needsReviewField,
   tarkistettavaaField,
   tiivistelmaField,
+  polkuMuuttunut,
 } from "../objects/contentMeta";
 
 /**
@@ -41,7 +42,7 @@ export const ravintola = defineType({
       title: "Polku (slug)",
       type: "slug",
       options: { source: "name", maxLength: 80 },
-      validation: (rule) => rule.required(),
+      validation: (rule) => [rule.required(), polkuMuuttunut(rule)],
       group: "perustiedot",
     }),
     tiivistelmaField("perustiedot"),
@@ -106,7 +107,8 @@ export const ravintola = defineType({
           { title: "Á la carte", value: "alacarte" },
           { title: "Pikaruoka", value: "pikaruoka" },
         ],
-        layout: "tags",
+        // Valintaruudut: "tags"-asettelu ohitti listan (docs/16 §5).
+        layout: "grid",
       },
       group: "perustiedot",
     }),

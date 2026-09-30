@@ -262,20 +262,6 @@ export const etusivu = defineType({
           ],
           preview: { prepare: () => ({ title: "Galleria-nosto" }) },
         }),
-        defineArrayMember({
-          name: "cta",
-          // Tyyliopas: ei liittymis- tai uutiskirjekehotteita. Tyyppi säilyy,
-          // jotta vanha data pysyy validina, mutta sitä ei suositella.
-          title: "CTA-lohko (vanha — ei käytössä)",
-          type: "object",
-          fields: [
-            { name: "heading", title: "Otsikko", type: "string", validation: (r) => r.required() },
-            { name: "body", title: "Teksti", type: "text", rows: 2 },
-            { name: "ctaLabel", title: "Napin teksti", type: "string", validation: (r) => r.required() },
-            { name: "ctaHref", title: "Napin linkki", type: "string", validation: (r) => r.required() },
-          ],
-          preview: { select: { title: "heading" } },
-        }),
       ],
       group: "blocks",
     }),

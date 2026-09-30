@@ -7,6 +7,7 @@ import {
   needsReviewField,
   tarkistettavaaField,
   tiivistelmaField,
+  polkuMuuttunut,
 } from "../objects/contentMeta";
 
 export const stadion = defineType({
@@ -31,7 +32,7 @@ export const stadion = defineType({
       title: "Polku (slug)",
       type: "slug",
       options: { source: "name", maxLength: 80 },
-      validation: (rule) => rule.required(),
+      validation: (rule) => [rule.required(), polkuMuuttunut(rule)],
       group: "perustiedot",
     }),
     tiivistelmaField("perustiedot"),

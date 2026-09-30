@@ -1,5 +1,25 @@
 import { TargetIcon } from "@sanity/icons";
-import { defineField, defineType } from "sanity";
+import { defineField, defineType, type StringRule } from "sanity";
+
+import { ehdotaJoukkue } from "../../../lib/joukkueet";
+import { haeJoukkueet } from "../../components/joukkue/joukkueet";
+import { JoukkueInput } from "../../components/joukkue/JoukkueInput";
+
+/**
+ * Varoitus lähes oikeasta nimestä ("FC Lahden" → "FC Lahti"). Väärin kirjoitettu
+ * nimi ei yhdisty automaattisesti haettuun otteluun eikä Huuhkajien korostukseen.
+ * Täysin eri nimet (vastustajamaat, cup-joukkueet) eivät saa varoitusta.
+ */
+const tarkistaKirjoitusasu = (rule: StringRule) =>
+  rule
+    .custom(async (value) => {
+      if (!value) return true;
+      const ehdotus = ehdotaJoukkue(value, await haeJoukkueet());
+      return ehdotus
+        ? `Tarkoititko "${ehdotus}"? Nimen pitää olla sama kuin automaattisessa otteluohjelmassa, jotta merkinnät yhdistyvät oikeaan otteluun.`
+        : true;
+    })
+    .warning();
 
 /**
  * Ottelu otteluohjelmaan.
@@ -33,13 +53,16 @@ export const ottelu = defineType({
       description:
         'Kirjoita kuten Veikkausliigan sivuilla, esim. "FC Lahti". Huuhkajien ottelussa kirjoita "Suomi" — ottelu korostetaan, ja Suomen kotiottelu merkitään automaattisesti "Klubi paikalla". Muille maajoukkueille tarkenne, esim. "Suomi (naiset)" tai "Suomi U21".',
       type: "string",
-      validation: (rule) => rule.required().error("Anna kotijoukkue."),
+      components: { input: JoukkueInput },
+      validation: (rule) => [rule.required().error("Anna kotijoukkue."), tarkistaKirjoitusasu(rule)],
     }),
     defineField({
       name: "vieras",
       title: "Vierasjoukkue",
+      description: "Aloita kirjoittaminen, niin saat ehdotuksia.",
       type: "string",
-      validation: (rule) => rule.required().error("Anna vierasjoukkue."),
+      components: { input: JoukkueInput },
+      validation: (rule) => [rule.required().error("Anna vierasjoukkue."), tarkistaKirjoitusasu(rule)],
     }),
     defineField({
       name: "kilpailu",
