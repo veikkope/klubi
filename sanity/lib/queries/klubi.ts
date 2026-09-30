@@ -14,6 +14,7 @@
  */
 
 import { defineQuery } from "next-sanity";
+import { kuva, lqip, runko } from "@/sanity/lib/queries/kuvat";
 
 import type { PortableTextBlock } from "@portabletext/react";
 import type { SanityImage } from "@/lib/types";
@@ -48,8 +49,8 @@ export const klubiSivuQuery = defineQuery(`
     "slug": slug.current,
     tiivistelma,
     ingress,
-    hero,
-    body,
+    hero{${kuva}},
+    body[]{${runko}},
     tilastot[]->{
       _id,
       _updatedAt,
@@ -57,11 +58,11 @@ export const klubiSivuQuery = defineQuery(`
       "slug": slug.current,
       tiivistelma,
       category,
-      intro,
+      intro[]{${runko}},
       columns[]{ key, label, type },
       rows[]{ cells[]{ key, value } },
-      lisatiedot,
-      kuvat[]{ _key, alt, caption, asset, hotspot, crop },
+      lisatiedot[]{${runko}},
+      kuvat[]{ _key, alt, caption, asset, hotspot, crop, ${lqip} },
       paivitetty,
       jarjestys,
       "sources": coalesce(sources, [])
@@ -122,7 +123,7 @@ export const klubiToimintaListQuery = defineQuery(`
     title,
     "slug": slug.current,
     tiivistelma,
-    "kuva": kuvat[0],
+    "kuva": kuvat[0]{${kuva}},
     "vuosiMaara": count(vuodet),
     "uusinVuosi": math::max(vuodet[].vuosi)
   }
@@ -136,8 +137,8 @@ export const klubiToimintaBySlugQuery = defineQuery(`
     title,
     "slug": slug.current,
     tiivistelma,
-    kuvaus,
-    kuvat,
+    kuvaus[]{${runko}},
+    kuvat[]{${kuva}},
     seoTitle,
     seoDescription,
     "vuodet": vuodet[] | order(vuosi desc, paivamaara desc){
@@ -150,7 +151,7 @@ export const klubiToimintaBySlugQuery = defineQuery(`
       paikka,
       kuvaus,
       linkki{ url, teksti },
-      kuvat
+      kuvat[]{${kuva}}
     },
     tilastot[]->{
       _id,
@@ -159,11 +160,11 @@ export const klubiToimintaBySlugQuery = defineQuery(`
       "slug": slug.current,
       tiivistelma,
       category,
-      intro,
+      intro[]{${runko}},
       columns[]{ key, label, type },
       rows[]{ cells[]{ key, value } },
-      lisatiedot,
-      kuvat[]{ _key, alt, caption, asset, hotspot, crop },
+      lisatiedot[]{${runko}},
+      kuvat[]{ _key, alt, caption, asset, hotspot, crop, ${lqip} },
       paivitetty,
       jarjestys,
       "sources": coalesce(sources, [])
@@ -208,7 +209,7 @@ export const hallitusListQuery = defineQuery(`
     _id,
     name,
     role,
-    image,
+    image{${kuva}},
     bio,
     email,
     phone

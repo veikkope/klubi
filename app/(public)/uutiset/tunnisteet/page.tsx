@@ -117,8 +117,8 @@ export default async function TunnisteetPage() {
 
               <div className="mt-10 space-y-10">
                 {ryhmat.map(({ kirjain, tunnisteet: ryhma }) => (
-                  <section key={kirjain} aria-labelledby={ankkuri(kirjain)} className="scroll-mt-24">
-                    <h3 id={ankkuri(kirjain)} className="scroll-mt-24 border-b border-border pb-2 font-display text-xl">
+                  <section key={kirjain} aria-labelledby={ankkuri(kirjain)}>
+                    <h3 id={ankkuri(kirjain)} className="border-b border-border pb-2 font-display text-xl">
                       {kirjain}
                     </h3>
                     <Tunnistelista

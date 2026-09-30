@@ -93,7 +93,7 @@ export function KommenttiLomake({
 
   return (
     <div>
-      <div ref={vastausRef} tabIndex={-1} aria-live="polite" role="status" className="scroll-mt-28 outline-none">
+      <div ref={vastausRef} tabIndex={-1} aria-live="polite" role="status" className="outline-none">
         {state.status === "success" && (
           <p className="mb-6 rounded-2xl border border-border bg-surface p-5 font-medium text-foreground">
             {state.message}

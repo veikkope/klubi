@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { draftMode } from "next/headers";
 import { Public_Sans, Source_Serif_4 } from "next/font/google";
 import { VisualEditing } from "next-sanity/visual-editing";
@@ -49,6 +49,14 @@ export const metadata: Metadata = {
   formatDetection: { telephone: false },
 };
 
+export const viewport: Viewport = {
+  // Mobiiliselaimen yläpalkki samaa valkoista kuin sticky header, jolloin
+  // palkki ja header jatkuvat saumattomasti (--surface, globals.css).
+  themeColor: "#ffffff",
+  // Vain vaalea teema (docs/04), ks. color-scheme globals.css:ssä.
+  colorScheme: "light",
+};
+
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -59,6 +67,9 @@ export default async function RootLayout({
   return (
     <html
       lang={siteLang}
+      // Sivunvaihdossa Next hyppää sivun alkuun heti; pehmeä vieritys
+      // (globals.css) koskee vain sivun sisäisiä ankkureita.
+      data-scroll-behavior="smooth"
       className={`${sans.variable} ${serif.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">

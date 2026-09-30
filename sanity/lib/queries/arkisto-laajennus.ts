@@ -16,6 +16,7 @@
  */
 
 import { defineQuery } from "next-sanity";
+import { lqip, runko } from "@/sanity/lib/queries/kuvat";
 import type { PortableTextBlock } from "@portabletext/react";
 
 import type { SanityImage } from "@/lib/types";
@@ -151,7 +152,7 @@ export const arvokisaBySlugQuery = defineQuery(`
     loppuPvm,
     hopea,
     pronssi,
-    kuvaus,
+    kuvaus[]{${runko}},
     tilastot[]->{
       _id,
       _updatedAt,
@@ -159,16 +160,16 @@ export const arvokisaBySlugQuery = defineQuery(`
       "slug": slug.current,
       tiivistelma,
       category,
-      intro,
+      intro[]{${runko}},
       columns[]{ key, label, type },
       rows[]{ cells[]{ key, value } },
-      lisatiedot,
-      kuvat[]{ _key, alt, caption, asset, hotspot, crop },
+      lisatiedot[]{${runko}},
+      kuvat[]{ _key, alt, caption, asset, hotspot, crop, ${lqip} },
       paivitetty,
       jarjestys,
       "sources": coalesce(sources, [])
     },
-    kuvat[]{ _key, alt, caption, asset, hotspot, crop },
+    kuvat[]{ _key, alt, caption, asset, hotspot, crop, ${lqip} },
     seoTitle,
     seoDescription
   }
@@ -190,11 +191,11 @@ export const arvokisaMitalitaulukotQuery = defineQuery(`
       "slug": slug.current,
       tiivistelma,
       category,
-      intro,
+      intro[]{${runko}},
       columns[]{ key, label, type },
       rows[]{ cells[]{ key, value } },
-      lisatiedot,
-      kuvat[]{ _key, alt, caption, asset, hotspot, crop },
+      lisatiedot[]{${runko}},
+      kuvat[]{ _key, alt, caption, asset, hotspot, crop, ${lqip} },
       paivitetty,
       jarjestys,
       "sources": coalesce(sources, [])
@@ -274,7 +275,7 @@ export const pelaajatListQuery = defineQuery(`
     pelipaikka,
     maaottelut,
     maalit,
-    "kuva": kuvat[0]{ alt, caption, asset, hotspot, crop }
+    "kuva": kuvat[0]{ alt, caption, asset, hotspot, crop, ${lqip} }
   }
 `);
 
@@ -294,7 +295,7 @@ export const pelaajaBySlugQuery = defineQuery(`
     maalit,
     syntymaaika,
     seurat[]{ _key, seura, alkuvuosi, loppuvuosi },
-    kuvaus,
+    kuvaus[]{${runko}},
     tilastot[]->{
       _id,
       _updatedAt,
@@ -302,16 +303,16 @@ export const pelaajaBySlugQuery = defineQuery(`
       "slug": slug.current,
       tiivistelma,
       category,
-      intro,
+      intro[]{${runko}},
       columns[]{ key, label, type },
       rows[]{ cells[]{ key, value } },
-      lisatiedot,
-      kuvat[]{ _key, alt, caption, asset, hotspot, crop },
+      lisatiedot[]{${runko}},
+      kuvat[]{ _key, alt, caption, asset, hotspot, crop, ${lqip} },
       paivitetty,
       jarjestys,
       "sources": coalesce(sources, [])
     },
-    kuvat[]{ _key, alt, caption, asset, hotspot, crop },
+    kuvat[]{ _key, alt, caption, asset, hotspot, crop, ${lqip} },
     seoTitle,
     seoDescription
   }
@@ -328,7 +329,7 @@ export const pelaajatRelatedQuery = defineQuery(`
     pelipaikka,
     maaottelut,
     maalit,
-    "kuva": kuvat[0]{ alt, caption, asset, hotspot, crop }
+    "kuva": kuvat[0]{ alt, caption, asset, hotspot, crop, ${lqip} }
   }
 `);
 
@@ -380,7 +381,7 @@ export const stadionitListQuery = defineQuery(`
     capacity,
     openedYear,
     "city": city->{ name, "slug": slug.current, country },
-    "kuva": images[0]{ alt, caption, asset, hotspot, crop }
+    "kuva": images[0]{ alt, caption, asset, hotspot, crop, ${lqip} }
   }
 `);
 
@@ -400,8 +401,8 @@ export const stadionBySlugQuery = defineQuery(`
     address,
     "city": city->{ name, "slug": slug.current, country },
     location{ lat, lng, alt },
-    description,
-    images[]{ _key, alt, caption, asset, hotspot, crop },
+    description[]{${runko}},
+    images[]{ _key, alt, caption, asset, hotspot, crop, ${lqip} },
     seoTitle,
     seoDescription
   }
@@ -418,6 +419,6 @@ export const stadionitRelatedQuery = defineQuery(`
     capacity,
     openedYear,
     "city": city->{ name, "slug": slug.current, country },
-    "kuva": images[0]{ alt, caption, asset, hotspot, crop }
+    "kuva": images[0]{ alt, caption, asset, hotspot, crop, ${lqip} }
   }
 `);

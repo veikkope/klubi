@@ -94,7 +94,7 @@ export default async function ValmentajatPage() {
         <section
           id="palkat"
           aria-labelledby="palkat-otsikko"
-          className="mt-16 scroll-mt-24"
+          className="mt-16"
         >
           <h2
             id="palkat-otsikko"

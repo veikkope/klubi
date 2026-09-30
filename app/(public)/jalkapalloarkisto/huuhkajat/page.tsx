@@ -160,7 +160,7 @@ export default async function HuuhkajatPage() {
           <section
             id={karsinnatAnchor}
             aria-labelledby="karsinnat-otsikko"
-            className="mt-16 scroll-mt-24"
+            className="mt-16"
           >
             <h2 id="karsinnat-otsikko" className={headingClass}>
               Karsintasarjat

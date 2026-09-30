@@ -62,6 +62,8 @@ export function AlbumGrid({ images, albumTitle }: Props) {
                 aria-haspopup="dialog"
                 aria-label={label}
                 className="group relative block aspect-square w-full overflow-hidden rounded-lg bg-surface-strong"
+                // Kuvan hallitseva väri latauksen ajaksi (sanity/lib/queries/kuvat.ts).
+                style={image.vari ? { backgroundColor: image.vari } : undefined}
               >
                 <Image
                   src={src}

@@ -12,6 +12,7 @@
  */
 
 import { defineQuery } from "next-sanity";
+import { kuva, runko } from "@/sanity/lib/queries/kuvat";
 import type { PortableTextBlock } from "@portabletext/react";
 
 import type { Kommentointi, TapahtumaCard, UutinenCard } from "@/lib/types";
@@ -73,7 +74,7 @@ const uutinenCardFields = `
       publishedAt,
       excerpt,
       tiivistelma,
-      coverImage,
+      coverImage{${kuva}},
       categories`;
 
 const tapahtumaCardFields = `
@@ -85,7 +86,7 @@ const tapahtumaCardFields = `
       location,
       tiivistelma,
       juhla,
-      image`;
+      image{${kuva}}`;
 
 /** Julkaistu, näkyvä uutinen. */
 const uutinenFilter = `_type == "uutinen" && defined(slug.current)`;
@@ -143,7 +144,7 @@ export const uutinenSlugsQuery = defineQuery(`
 export const uutinenDetailQuery = defineQuery(`
   *[${uutinenFilter} && slug.current == $slug][0]{${uutinenCardFields},
     _updatedAt,
-    body,
+    body[]{${runko}},
     lahde{ nimi, url, pvm },
     ulkoinenLinkki,
     "author": author->{ name, role },
@@ -232,7 +233,7 @@ export const tapahtumaSlugsQuery = defineQuery(`
 export const tapahtumaDetailQuery = defineQuery(`
   *[${tapahtumaFilter} && slug.current == $slug][0]{${tapahtumaCardFields},
     _updatedAt,
-    description,
+    description[]{${runko}},
     signupUrl,
     signupEmail,
     seoTitle,

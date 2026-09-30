@@ -17,6 +17,8 @@
  * kenttäryhmän nimi, ei kenttä. Sen projisointi palauttaa aina nullin.
  */
 
+import { kuva, runko, ruutukuva } from "@/sanity/lib/queries/kuvat";
+
 export const navigationQuery = /* groq */ `
   *[_type == "navigaatio"][0]{
     items[]{
@@ -51,10 +53,10 @@ export const sivuWithAncestorsQuery = /* groq */ `
       title,
       "slug": slug.current,
       kieli,
-      hero,
+      hero{${kuva}},
       ingress,
       tiivistelma,
-      body,
+      body[]{${runko}},
       seoTitle,
       seoDescription,
       "updatedAt": _updatedAt
@@ -80,7 +82,7 @@ export const recentUutisetQuery = /* groq */ `
     publishedAt,
     excerpt,
     tiivistelma,
-    coverImage,
+    coverImage{${kuva}},
     categories
   }
 `;
@@ -95,7 +97,7 @@ export const upcomingTapahtumatQuery = /* groq */ `
     startsAt,
     endsAt,
     location,
-    image
+    image{${kuva}}
   }
 `;
 
@@ -107,7 +109,7 @@ export const galleriaListQuery = /* groq */ `
     "slug": slug.current,
     date,
     tiivistelma,
-    coverImage,
+    coverImage{${kuva}},
     "imageCount": count(images)
   }
 `;
@@ -119,8 +121,8 @@ export const galleriaBySlugQuery = /* groq */ `
     "slug": slug.current,
     date,
     tiivistelma,
-    coverImage,
-    images,
+    coverImage{${kuva}},
+    images[]{${ruutukuva}},
     "updatedAt": _updatedAt,
     "event": event->{ title, "slug": slug.current }
   }

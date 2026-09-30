@@ -24,7 +24,22 @@ type Props = {
    * tekstiä kahdesti (migroidussa sisällössä alt = kuvateksti usein).
    */
   kuvateksti?: string | null;
+  /**
+   * `true` (oletus) = kuvan paikalla näkyy sen sumea esikatselu, kunnes kuva on
+   * latautunut (vaatii kyselyssä `lqip`-kentän, ks. sanity/lib/queries/kuvat.ts).
+   * `false`, kun kutsuja näyttää esikatselun itse (`FramedImage`).
+   */
+  esikatselu?: boolean;
 };
+
+/**
+ * next/image-propsit sumealle esikatselulle. Next piirtää data-URL:n SVG-sumennuksen
+ * läpi taustakuvaksi ja poistaa sen, kun varsinainen kuva on ladattu.
+ */
+function esikatseluProps(image: SanityImageData, kaytossa: boolean) {
+  const lqip = kaytossa ? image?.lqip : null;
+  return lqip ? { placeholder: "blur" as const, blurDataURL: lqip } : {};
+}
 
 const vertailtava = (s: string) => s.trim().replace(/\s+/g, " ").toLocaleLowerCase("fi");
 
@@ -91,6 +106,7 @@ export function SanityImage({
   priority,
   crop = true,
   kuvateksti,
+  esikatselu = true,
 }: Props) {
   if (!image) return null;
   const urlBuilder = urlForImage(image);
@@ -113,6 +129,7 @@ export function SanityImage({
           className={className}
           style={hotspot ? { objectPosition: `${hotspot.x * 100}% ${hotspot.y * 100}%` } : undefined}
           priority={priority}
+          {...esikatseluProps(image, esikatselu)}
         />
       );
     }
@@ -134,6 +151,7 @@ export function SanityImage({
       className={className}
       style={objectPosition ? { objectPosition } : undefined}
       priority={priority}
+      {...esikatseluProps(image, esikatselu)}
     />
   );
 }

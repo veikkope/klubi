@@ -65,6 +65,11 @@ IBM Plex Mono on tyylioppaassa valinnainen, eikä sitä ole otettu käyttöön.
 
 Pienet h2/h3-osiolabelit (esim. "Yhteystiedot", "Plussat") käyttävät yläotsakkeen tyyliä `font-sans`-luokalla ja `muted-soft`-värillä, jotta ne eivät peri serif-otsikkotyyliä. Sinistä ei käytetä, koska ne eivät ole klikattavia.
 
+**Rivitys ja tavutus** (`globals.css`, base-kerros):
+- Otsikot (`h1`–`h4`, `.font-display`): `hyphens: auto` ja `hyphenate-limit-chars: 10 4 4`. Suomen pitkät yhdyssanat tavutetaan isoissa otsikoissa, mutta vain vähintään 10 merkin sanat ja niin, että kummallekin riville jää vähintään 4 merkkiä. Firefox ja Safari tavuttavat suomea. Chrome ei tavuta sitä (testattu Windowsilla 9/2026), joten siinä sana katkeaa ilman tavuviivaa.
+- Kappaleet, listat, `dd`, lainaukset ja kuvatekstit: `text-wrap: pretty`, joten viimeiselle riville ei jää yksittäistä sanaa. Leipätekstiä ei tavuteta.
+- `body`: `overflow-wrap: break-word` varaverkkona. Pitkä URL tai tavuttamaton sana katkeaa eikä levennä sivua ruutua leveämmäksi.
+
 ## Taitto, välit, pyöristys, varjo
 
 - **Taitto** (Sivut v3): leveys 1440 px, sisällön sivumarginaali 80 px tietokoneella ja 20 px mobiilissa (`Container size="wide"`).
@@ -78,6 +83,8 @@ Pienet h2/h3-osiolabelit (esim. "Yhteystiedot", "Plussat") käyttävät yläotsa
 
   Tailwindin pyöristysasteikko on uudelleenmääritelty tiedostossa `globals.css`, joten vanhat luokat noudattavat tyyliopasta. `rounded-full` on vain ympyröille (avatarit, pisteet, ikoninapit, numerot).
 - **Varjo** vain isoille paneeleille: `shadow-panel`. Korttien hoverissa käytetään samaa.
+- **Sticky header ja ankkurit:** `html`-elementillä on `scroll-padding-top` = headerin korkeus (`--header-korkeus`: 73 px mobiilissa, 95 px sm+) + 24 px. Ankkurilinkit, `scrollIntoView` ja fokuksen siirrot pysähtyvät siksi headerin alle, eikä elementeille tarvita omia `scroll-mt-*`-luokkia. Jos headerin pehmustetta tai logon kokoa muutetaan, päivitä muuttuja.
+- **Vain vaalea teema:** `:root { color-scheme: light }` ja viewportin `colorScheme: "light"` estävät selainta tummentamasta lomakekenttiä tumman käyttöjärjestelmän mukaan. Mobiiliselaimen yläpalkin väri (`themeColor`) on valkoinen kuten header. Studio (`/studio`) ohittaa `colorScheme`-asetuksen, koska siinä on oma tumma tila.
 
 ## Logo
 
@@ -127,6 +134,13 @@ Kuvat on generoitu tiedostosta `mark-blue.png` sharp-kirjastolla.
 - Etusivun hero: vaakakuva koko osion taustana omissa väreissään, tekstin takana neutraali tummennus (esim. Huuhkajien katsomo)
 - Kuvat Sanityn Asset CDN:stä, näytetään `next/image`:lla, AVIF/WebP automaattisesti
 - **Polttopiste:** kuvakentissä on `hotspot` päällä. `SanityImage` rajaa kuvan CDN:ssä (`fit=crop`) toimittajan valitseman polttopisteen mukaan ja asettaa saman kohdan `object-position`-arvoksi, jolloin myös breakpointissa vaihtuva CSS-mittasuhde rajaa polttopisteen ympäriltä. Anna `width`/`height` kutsujan CSS-mittasuhteessa, ja kyselyissä palauta kuvan `hotspot` ja `crop` (koko kuvaobjekti tai eksplisiittinen projektio).
+- **Latauksen paikanpitäjä:** kuvan paikalla näkyy sen sumea esikatselu, kunnes kuva on latautunut. Tyhjiä harmaita laatikoita ei ole. Sanity laskee esikatselun (`metadata.lqip`, noin 0,6 kt) jokaiselle kuvalle latauksen yhteydessä, ja kyselyt hakevat sen fragmenteilla, jotka ovat tiedostossa `sanity/lib/queries/kuvat.ts`:
+  - `coverImage{${kuva}}`: yksittäinen kuva
+  - `body[]{${runko}}`: Portable Text
+  - `{ …, ${lqip} }`: rajattu projektio
+  - `images[]{${ruutukuva}}`: isot kuvaruudukot. Näissä haetaan esikatselun sijaan vain hallitseva väri (`vari`), koska satojen esikatselujen kasvattama HTML ei ole sen arvoinen.
+
+  `SanityImage` käyttää esikatselua automaattisesti (`placeholder="blur"`). `FramedImage` käyttää sitä kehyksen sumeana taustana, jolloin erillistä sumennettua kuvaa ei tarvitse hakea CDN:stä. **Kun lisäät uuden kuvakentän kyselyyn, käytä fragmenttia.** Ilman sitä kuva toimii, mutta ilman paikanpitäjää.
 - **Stega:** luonnosnäkymän stega-merkit puhdistetaan keskitetysti (`buildMetadata`, `JsonLd`, navigaation hrefit, kategoria- ja ruokatyyppihaut). Uusissa komponenteissa puhdista `stegaClean`illa Sanity-merkkijonot, joita verrataan, käytetään avaimina, id:inä tai URL:eissa — älä pelkkää näytettävää tekstiä.
 
 ## Animaatiot
@@ -134,6 +148,7 @@ Kuvat on generoitu tiedostosta `mark-blue.png` sharp-kirjastolla.
 Hyvin maltillisia. Vain:
 - Linkki-hoverin värimuutos (150 ms)
 - Kortin hover-varjo (200 ms)
+- Sivun sisäisten ankkurihyppyjen pehmeä vieritys (`scroll-behavior: smooth`, vain `prefers-reduced-motion: no-preference`). Sivunvaihdoissa Next hyppää sivun alkuun heti (`data-scroll-behavior="smooth"` juuren `<html>`-elementissä).
 
 Kunnioita `prefers-reduced-motion`.
 

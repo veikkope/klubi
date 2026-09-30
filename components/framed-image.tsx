@@ -32,15 +32,24 @@ type Props = {
  * Kehykset pysyvät yhtä suurina, joten ruudukko ei rikkoudu.
  */
 export function FramedImage({ image, alt, width = 1200, sizes, className, priority, kuvateksti }: Props) {
-  const backdrop = urlForImage(image)?.width(96).blur(40).url();
+  // Tausta on kuvan sumea esikatselu (lqip, HTML:ssä valmiina), joten kehys
+  // täyttyy heti eikä odota verkkopyyntöä. Se toimii samalla latauksen
+  // paikanpitäjänä: terävä kuva piirtyy sen päälle. 20 px:n esikatselu
+  // sumennetaan CSS:llä; ilman sitä (vanha kysely) haetaan sumennettu kuva CDN:stä.
+  const lqip = image?.lqip;
+  const backdrop = lqip ?? urlForImage(image)?.width(96).blur(40).url();
 
   return (
     <div className={cn("relative isolate overflow-hidden bg-surface-strong", className)}>
       {backdrop && (
         <div
           aria-hidden
-          className="absolute inset-0 -z-10 scale-110 bg-cover bg-center opacity-90 brightness-[0.8]"
-          style={{ backgroundImage: `url(${backdrop})` }}
+          className={cn(
+            "absolute inset-0 -z-10 scale-110 bg-cover bg-center opacity-90 brightness-[0.8]",
+            // Suurennus peittää sumennuksen läpikuultavat reunat.
+            lqip && "scale-125 blur-xl",
+          )}
+          style={{ backgroundImage: `url("${backdrop}")` }}
         />
       )}
       <SanityImage
@@ -52,6 +61,7 @@ export function FramedImage({ image, alt, width = 1200, sizes, className, priori
         kuvateksti={kuvateksti}
         className="absolute inset-0 h-full w-full object-contain"
         priority={priority}
+        esikatselu={false}
       />
     </div>
   );

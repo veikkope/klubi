@@ -15,6 +15,7 @@
  */
 
 import { defineQuery } from "next-sanity";
+import { lqip, runko } from "@/sanity/lib/queries/kuvat";
 import type { PortableTextBlock } from "@portabletext/react";
 
 import type { StatColumn, StatRow } from "@/components/ui/stat-table";
@@ -59,11 +60,11 @@ const tilastoProjection = /* groq */ `
   tiivistelma,
   category,
   huuhkajatOsio,
-  intro,
+  intro[]{${runko}},
   columns[]{ key, label, type },
   rows[]{ cells[]{ key, value } },
-  lisatiedot,
-  kuvat[]{ _key, alt, caption, asset, hotspot, crop },
+  lisatiedot[]{${runko}},
+  kuvat[]{ _key, alt, caption, asset, hotspot, crop, ${lqip} },
   paivitetty,
   jarjestys,
   "sources": coalesce(sources, [])

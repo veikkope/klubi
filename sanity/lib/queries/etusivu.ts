@@ -14,6 +14,7 @@
  */
 
 import { defineQuery } from "next-sanity";
+import { kuva, runko } from "@/sanity/lib/queries/kuvat";
 
 import type { StatColumn, StatRow } from "@/components/ui/stat-table";
 
@@ -29,7 +30,7 @@ export const etusivuQuery = defineQuery(`
     heroEyebrow,
     heroTitle,
     heroDescription,
-    heroImage,
+    heroImage{${kuva}},
     heroCtas[]{ label, href, primary },
     seuraavaOttelu{ ottelu, kilpailu, aika },
     blocks[]{
@@ -45,8 +46,8 @@ export const etusivuQuery = defineQuery(`
       laskuri,
       tapahtumatHeading,
       tapahtumatCount,
-      body,
-      image,
+      body[]{${runko}},
+      image{${kuva}},
       ctaLabel,
       ctaHref,
       "city": city->{ "_ref": _id, name }
@@ -76,7 +77,7 @@ export const etusivuRavintolatQuery = defineQuery(`
     priceLevel,
     tuomio,
     stadionHuomio,
-    "image": images[0]
+    "image": images[0]{${kuva}}
   }
 `);
 

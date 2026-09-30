@@ -190,7 +190,6 @@ export function StatSections({
         <section
           key={tilasto._id}
           id={tilasto.slug ?? undefined}
-          className="scroll-mt-24"
         >
           <Heading className={headingClass}>{tilasto.title}</Heading>
 

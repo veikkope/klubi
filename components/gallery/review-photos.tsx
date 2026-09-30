@@ -43,6 +43,8 @@ export function ReviewPhotos({ images, reviewerName }: { images: AlbumImage[]; r
                 aria-haspopup="dialog"
                 aria-label={`Avaa kuva: ${image.alt?.trim() || "kävijän kuva"} (${position})`}
                 className="group relative block size-24 overflow-hidden rounded-sm bg-surface-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:size-28"
+                // Kuvan hallitseva väri latauksen ajaksi (sanity/lib/queries/kuvat.ts).
+                style={image.vari ? { backgroundColor: image.vari } : undefined}
               >
                 <Image
                   src={builder.width(224).height(224).fit("crop").url()}

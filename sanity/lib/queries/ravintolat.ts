@@ -1,4 +1,5 @@
 import { defineQuery, stegaClean } from "next-sanity";
+import { kuva, vari } from "@/sanity/lib/queries/kuvat";
 
 import { MAAKUNNAT, SUOMI, isMaakunta } from "@/lib/maakunnat";
 import { isCountryLevelPlace } from "@/lib/places";
@@ -164,7 +165,7 @@ const cardProjection = /* groq */ `
   tiivistelma,
   tuomio,
   stadionHuomio,
-  "image": images[0]
+  "image": images[0]{${kuva}}
 `;
 
 /**
@@ -362,7 +363,7 @@ export const ravintolaBySlugQuery = defineQuery(`
     visitContext,
     review,
     ottelupaivana,
-    images,
+    images[]{${kuva}},
     seoTitle,
     seoDescription,
     "related": *[_type == "ravintola" && defined(slug.current)
@@ -387,7 +388,7 @@ export const ravintolaArvostelutQuery = defineQuery(`
       ratingAtmosphere,
       "rating": math::avg([ratingFood, ratingPrice, ratingAtmosphere]),
       comment,
-      "kuvat": kuvat[defined(asset)]{ _key, alt, asset },
+      "kuvat": kuvat[defined(asset)]{ _key, alt, asset, ${vari} },
       submittedAt
     }
 `);

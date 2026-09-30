@@ -95,7 +95,7 @@ export function ReviewForm({
         ref={successRef}
         tabIndex={-1}
         role="status"
-        className="scroll-mt-28 rounded-sm border-t-[3px] border-t-success bg-surface p-7 sm:p-9"
+        className="rounded-sm border-t-[3px] border-t-success bg-surface p-7 sm:p-9"
       >
         <svg aria-hidden viewBox="0 0 24 24" className="size-10 text-success">
           <path
@@ -139,7 +139,7 @@ export function ReviewForm({
           ref={summaryRef}
           tabIndex={-1}
           role="alert"
-          className="scroll-mt-28 rounded-sm border border-danger-border border-l-[3px] border-l-danger bg-danger-soft p-5"
+          className="rounded-sm border border-danger-border border-l-[3px] border-l-danger bg-danger-soft p-5"
         >
           <p className="font-semibold text-danger">{state.message}</p>
           {errorList.length > 0 && (

@@ -147,7 +147,7 @@ export function PhotoPicker({
       role="group"
       aria-labelledby={labelId}
       tabIndex={-1}
-      className="flex scroll-mt-28 flex-col gap-1.5 focus:outline-none"
+      className="flex flex-col gap-1.5 focus:outline-none"
       onDragOver={(e) => {
         if (remaining <= 0 || processing || !e.dataTransfer.types.includes("Files")) return;
         e.preventDefault();

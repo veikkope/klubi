@@ -10,6 +10,15 @@
    ============================================================ */
 
 :root {
+  /* Sivustolla on vain vaalea teema: selain ei tummenna lomakekenttiä,
+     valintalistoja eikä vierityspalkkeja tumman käyttöjärjestelmän mukaan. */
+  color-scheme: light;
+
+  /* Sticky headerin korkeus (header.tsx): pystypehmuste + korkein sisältö
+     (mobiilissa 44 px:n valikkopainike, sm+ 50 px:n logo) + 1 px alaviiva.
+     Ankkurilinkit ja scrollIntoView pysähtyvät headerin alle. */
+  --header-korkeus: 73px;
+
   /* Brändivärit */
   --blue: #1a2cd8;          /* Klubinsininen: vain klikattava + logo */
   --navy: #141f4d;          /* Yönsininen: otsikot, footer, tummat osiot */
@@ -133,6 +142,23 @@
   --shadow-panel: var(--shadow-panel);
 }
 
+@media (min-width: 40rem) {
+  :root { --header-korkeus: 95px; }
+}
+
+html {
+  /* Ankkurikohde jää headerin alle väljästi, ei sen taakse. Koskee kaikkia
+     ankkureita ja scrollIntoView-kutsuja, joten elementtikohtaisia
+     scroll-mt-luokkia ei tarvita. */
+  scroll-padding-top: calc(var(--header-korkeus) + 1.5rem);
+}
+
+/* Sivun sisäiset hypyt (ankkurit, "Siirry sisältöön") liukuvat. Sivunvaihdoissa
+   Next hyppää silti heti (layout.tsx: data-scroll-behavior="smooth"). */
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
@@ -154,6 +180,27 @@ body {
   h1, h2, h3 {
     color: var(--heading);
     text-wrap: balance;
+  }
+
+  /* Suomen pitkät yhdyssanat ("Kannattajakulttuuri") eivät mahdu isoina
+     otsikkoina kapealle näytölle. Selain tavuttaa kielen (lang="fi") mukaan,
+     mutta vain vähintään 10 merkin sanat ja niin, että kummallekin riville
+     jää vähintään 4 merkkiä. Leipätekstiä ei tavuteta: se on kapeassa
+     palstassa luettavampaa ilman. */
+  h1, h2, h3, h4, .font-display {
+    hyphens: auto;
+    hyphenate-limit-chars: 10 4 4;
+  }
+
+  /* Kappaleen viimeiselle riville ei jää yksittäistä sanaa. */
+  p, li, dd, blockquote, figcaption {
+    text-wrap: pretty;
+  }
+
+  /* Varaverkko: URL tai sana, jota selain ei osaa tavuttaa, katkeaa
+     mieluummin kuin venyttää sivun ruutua leveämmäksi. */
+  body {
+    overflow-wrap: break-word;
   }
 
   /* Tekstilinkki: sininen, 600, alleviivaus 4 px:n etäisyydellä */

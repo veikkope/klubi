@@ -8,6 +8,7 @@
  */
 
 import { defineQuery } from "next-sanity";
+import { kuva, ruutukuva } from "@/sanity/lib/queries/kuvat";
 
 import type { AlbumCard, AlbumFull } from "@/lib/types";
 
@@ -19,7 +20,7 @@ export const galleriaAlbumitQuery = defineQuery(`
     "slug": slug.current,
     date,
     tiivistelma,
-    coverImage,
+    coverImage{${kuva}},
     "imageCount": count(images)
   }
 `);
@@ -33,7 +34,7 @@ export const etusivuGalleriaQuery = defineQuery(`
     "slug": slug.current,
     date,
     tiivistelma,
-    coverImage,
+    coverImage{${kuva}},
     "imageCount": count(images)
   }
 `);
@@ -46,8 +47,8 @@ export const galleriaAlbumiBySlugQuery = defineQuery(`
     "slug": slug.current,
     date,
     tiivistelma,
-    coverImage,
-    images,
+    coverImage{${kuva}},
+    images[]{${ruutukuva}},
     "event": event->{ title, "slug": slug.current }
   }
 `);

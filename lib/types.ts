@@ -12,6 +12,8 @@ export type SanityImage = {
   alt?: string | null;
   caption?: string | null;
   hotspot?: { x: number; y: number } | null;
+  /** Sumea esikatselu (Sanityn `metadata.lqip`), ks. sanity/lib/queries/kuvat.ts. */
+  lqip?: string | null;
 } | null;
 
 export type NavigationItem = {
@@ -221,6 +223,8 @@ export type AlbumImage = {
   asset?: { _ref?: string; _id?: string; url?: string } | null;
   alt?: string | null;
   caption?: string | null;
+  /** Kuvan hallitseva väri ruudun taustaksi latauksen ajaksi (`ruutukuva`). */
+  vari?: string | null;
 };
 
 export type AlbumFull = {
