@@ -77,7 +77,7 @@
 | Sisällön kattavuus (vanha sivusto) | lähes valmis | Migraatio on kattava (198/198, 308/308, 498/498). Nonni puuttuu, 29.9. ottelun aika on väärin ja perustiedot ovat tyhjiä. | Ottelun aika ei ollut virhe. ☐ Nonni ja jäädytys, ☐ perustiedot (isä). |
 | Blogi, veikkaus ja kommentit | lähes valmis | 528/528 kirjoitusta ja 502 kommenttia oikein. Kommentointi ei ole vielä päällä missään uutisessa, eikä `sync:blogspot` kirjoita productioniin. | ✅ 529/529 productionissa, tuotantopolku `sync:blogspot:production`. Kommentit käytössä ilman koodisanaa. |
 | Ohjaukset ja SEO/GEO | lähes valmis | Sitemap, canonicalit ja JSON-LD ovat kunnossa. Kaikki osoittaa www-domainiin, jossa vanha Apache vastaa yhä. MX-riski domainin siirrossa. | ✅ Vercel-osoitteet noindex. ☐ Domainin siirto (docs/17 §C). |
-| Saavutettavuus (WCAG 2.1 AA) | lähes valmis | Perusta on hyvä. Lomakekenttien reunat (1,1:1), pelkällä värillä erottuvat linkit ja tummien pintojen fokusrengas eivät täytä AA-tasoa. | ✅ Korjattu 30.9., axe-testi 48 sivua. Jäljellä korttilinkkien nimet ja Nextin 404-bugi. |
+| Saavutettavuus (WCAG 2.1 AA) | lähes valmis | Perusta on hyvä. Lomakekenttien reunat (1,1:1), pelkällä värillä erottuvat linkit ja tummien pintojen fokusrengas eivät täytä AA-tasoa. | ✅ Korjattu 30.9., axe-testi 48 sivua. Jäljellä vain Nextin 404-bugi. |
 | Suorituskyky ja tekninen laatu | lähes valmis | Next.js 16.2.6:ssa on haavoittuvuuksia, 404-sivu on oletussivu, webhook palauttaa 501 ja sanityFetch nielee virheet. | ✅ Next 16.3.7, oma 404, webhook, sanityFetch heittää virheen, kuvat Sanityn CDN:stä. |
 | Tietoturva ja tietosuoja | lähes valmis | Arvostelijoiden sähköpostit päätyisivät julkiseen API:in ja tietosuojaseloste puuttuu. Salaisuuksien käsittely on kunnossa. | ✅ Korjattu. ☐ Hallitus vahvistaa tietosuojaselosteen. |
 | CMS ja isän käytettävyys | **keskeneräinen** | Studio ei toimi tuotannossa (CORS). Kolme sisältötyyppiä puuttuu valikosta, tarkistusjonolla ei ole näkymää ja isän opas on virheellinen. | ✅ CORS, valikko, opas, taulukkoeditori, Studio-parannukset. ☐ Perehdytys. |
@@ -294,7 +294,7 @@ Eri osa-alueiden päällekkäiset löydökset on yhdistetty. Tunnukset ovat haka
 - ✅ *Korjattu 30.9.2026. sivulle kenttä "Sisällön kieli" (Studio). Tuotannon /english-sivulle valitaan Englanti deployn jälkeen.* /english on merkitty suomeksi. [saavutettavuus-4, seo-11]
 - ✅ *Korjattu 30.9.2026. fokus palautetaan siirretyn joukkueen painikkeeseen.* Sarjajärjestyskomponentin fokus katoaa (koodianalyysi). [saavutettavuus-5]
 - Taulukoita on kuvina ilman tekstivastinetta. [saavutettavuus-6]
-- Korttilinkkien nimet ovat pitkiä. [saavutettavuus-7]
+- ✅ *Korjattu 30.9.2026: stretched link -malli (`Card` liittää linkin `CardTitle`-otsikkoon). Yli 80 merkin linkkinimiä 56 → 0, pisin 272 → 60 merkkiä; kortit ovat yhä kokonaan klikattavia.* Korttilinkkien nimet ovat pitkiä. [saavutettavuus-7]
 - ✅ *Korjattu 30.9.2026. alt tyhjätään, kun se toistaa näkyvän kuvatekstin (`SanityImage kuvateksti`). Epävarmat alt-tekstit ovat sisältötyötä.* Otteluohjelmakuvien alt-tekstit ovat epävarmoja ja toistavat kuvatekstin. [saavutettavuus-8]
 - ✅ *Korjattu 30.9.2026. vain kuva haalistetaan (oli 3,72:1); "Toiminta loppunut" näkyy myös mobiilissa.* Lopettaneiden ravintoloiden kortit jäävät alle kontrastivaatimuksen. [saavutettavuus-9]
 - ✅ *Korjattu 30.9.2026. Esc palauttaa fokuksen, Tab ulos sulkee, aria-controls ja aria-current, ei aria-haspopupia (disclosure-malli).* Dropdownin Esc ja Tab-käytös on puutteellinen. [saavutettavuus-10]
