@@ -1,7 +1,7 @@
 import { cn } from "@/lib/cn";
 
 type RatingDotsProps = {
-  /** Arvosana 0–5. Pyöristetään lähimpään kokonaiseen pisteeseen. */
+  /** Arvosana 0–5. Pallo täyttyy kymmenyksen tarkkuudella: 4,4 = neljä täyttä ja 40 % viidennestä. */
   value: number;
   max?: number;
   size?: "sm" | "md" | "lg";
@@ -18,6 +18,12 @@ const dotSize = {
   lg: "size-3",
 };
 
+/** Pallon täyttöaste 0–100 % kymmenyksen portain (sama tarkkuus kuin näytetty luku). */
+function fillPercent(value: number, index: number): number {
+  const tenths = Math.round(value * 10) - index * 10;
+  return Math.max(0, Math.min(10, tenths)) * 10;
+}
+
 export function RatingDots({
   value,
   max = 5,
@@ -25,8 +31,8 @@ export function RatingDots({
   className,
   label,
 }: RatingDotsProps) {
-  const filled = Math.max(0, Math.min(max, Math.round(value)));
-  const exact = value.toFixed(1).replace(".", ",");
+  const clamped = Math.max(0, Math.min(max, value));
+  const exact = clamped.toFixed(1).replace(".", ",");
   return (
     <span
       role="img"
@@ -37,17 +43,25 @@ export function RatingDots({
         className,
       )}
     >
-      {Array.from({ length: max }, (_, i) => (
-        <span
-          key={i}
-          aria-hidden
-          className={cn(
-            "rounded-full border-[1.5px] border-brass",
-            dotSize[size],
-            i < filled && "bg-brass",
-          )}
-        />
-      ))}
+      {Array.from({ length: max }, (_, i) => {
+        const fill = fillPercent(clamped, i);
+        return (
+          <span
+            key={i}
+            aria-hidden
+            className={cn(
+              "rounded-full border-[1.5px] border-brass bg-origin-border",
+              dotSize[size],
+            )}
+            // Osittainen pallo täyttyy vasemmalta: kova raja gradientissa.
+            style={
+              fill > 0
+                ? { backgroundImage: `linear-gradient(to right, var(--brass) ${fill}%, transparent ${fill}%)` }
+                : undefined
+            }
+          />
+        );
+      })}
     </span>
   );
 }
