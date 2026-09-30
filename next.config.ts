@@ -12,6 +12,10 @@ const nextConfig: NextConfig = {
     },
   },
   images: {
+    // Kuvat skaalataan Sanityn CDN:ssä, ei Vercelin Image Optimizationissa
+    // (kiintiö, docs/16 suorituskyky-8). Ks. lib/sanity-image-loader.ts.
+    loader: "custom",
+    loaderFile: "./lib/sanity-image-loader.ts",
     remotePatterns: [
       {
         protocol: "https",

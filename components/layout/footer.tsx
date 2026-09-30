@@ -61,14 +61,14 @@ export async function Footer() {
           className="flex items-center gap-2.5 self-start sm:flex-col sm:items-start sm:gap-3.5"
         >
           <Image
-            src="/brand/mark-white.png"
+            src="/brand/web/mark-white.png"
             alt=""
             width={50}
             height={56}
             className="h-[38px] w-auto sm:h-14"
           />
           <Image
-            src="/brand/wordmark-white.png"
+            src="/brand/web/wordmark-white.png"
             alt="Lahden Suomalainen Klubi ry — etusivu"
             width={153}
             height={24}
