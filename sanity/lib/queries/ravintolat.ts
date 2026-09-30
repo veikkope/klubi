@@ -3,7 +3,7 @@ import { defineQuery, stegaClean } from "next-sanity";
 import { MAAKUNNAT, SUOMI, isMaakunta } from "@/lib/maakunnat";
 import { isCountryLevelPlace } from "@/lib/places";
 import { slugify } from "@/lib/slugify";
-import type { SanityImage } from "@/lib/types";
+import type { AlbumImage, SanityImage } from "@/lib/types";
 import type { PortableTextBlock } from "@portabletext/react";
 
 /**
@@ -83,6 +83,8 @@ export type RavintolaUserReview = {
   ratingPrice?: number | null;
   ratingAtmosphere?: number | null;
   comment?: string | null;
+  /** Kävijän liittämät kuvat (enintään 3, docs/18). */
+  kuvat?: AlbumImage[] | null;
   submittedAt?: string | null;
 };
 
@@ -353,6 +355,7 @@ export const ravintolaBySlugQuery = defineQuery(`
         ratingAtmosphere,
         "rating": math::avg([ratingFood, ratingPrice, ratingAtmosphere]),
         comment,
+        "kuvat": kuvat[defined(asset)]{ _key, alt, asset },
         submittedAt
       },
     "related": *[_type == "ravintola" && defined(slug.current)

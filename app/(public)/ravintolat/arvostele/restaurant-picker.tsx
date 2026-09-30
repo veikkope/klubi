@@ -364,7 +364,7 @@ function NewRestaurantFields({
   errors: Partial<Record<ReviewField, string>>;
   onCancel: () => void;
 }) {
-  const text = (field: ReviewField, props: React.InputHTMLAttributes<HTMLInputElement> = {}, required = true) => (
+  const text = (field: keyof ReviewValues & ReviewField, props: React.InputHTMLAttributes<HTMLInputElement> = {}, required = true) => (
     <div className="flex flex-col gap-1.5">
       <label htmlFor={reviewFieldId(field)} className={labelClass}>
         {REVIEW_FIELD_LABELS[field]}

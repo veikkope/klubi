@@ -182,3 +182,4 @@ riippuvainen web-muutoksesta C2:n jälkeen.
 | 13 | Jäsenhakemukset poistettu (ei Resendiä) | kehittäjä | ✅ 28.9. koodi · tietosuojaselosteen patch ☐ |
 | 14 | DNS C1–C4 | kehittäjä + int2000 | ☐ |
 | 15 | Blogin ohjaus (docs/14 §6) | kehittäjä | ☐ siirron jälkeen |
+| 16 | Arvostelukuvat: tietosuojaselosteen patch (docs/18 §7) | kehittäjä | ☐ |

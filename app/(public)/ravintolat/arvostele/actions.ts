@@ -4,6 +4,17 @@ import { randomUUID } from "node:crypto";
 
 import { createClient } from "next-sanity";
 
+import {
+  defaultPhotoAlt,
+  PHOTO_ALT_FIELD,
+  PHOTO_CONSENT_FIELD,
+  PHOTO_FIELD,
+  PHOTO_MAX_BYTES,
+  PHOTO_MAX_COUNT,
+  REVIEW_PHOTO_SOURCE,
+  validatePhotos,
+  type CleanPhoto,
+} from "@/lib/arvostelukuvat";
 import { apiVersion, dataset, hasSanity, projectId } from "@/sanity/env";
 import {
   COMMENT_MAX,
@@ -38,6 +49,13 @@ import {
  * Tietojen minimointi (GDPR art. 5): arvostelijalta kysytään vain julkaistava
  * nimi. Sähköpostia ei kerätä, koska sille ei ole välttämätöntä käyttötarkoitusta.
  *
+ * Kuvat (enintään 3, docs/18): selain pienentää ne JPEG:ksi, mutta palvelin
+ * tarkistaa tyypin tiedoston alusta, poistaa metatiedot ja lataa kuvat
+ * Sanityyn vasta, kun muu lomake on kunnossa. Sanityn kuvatiedostoilla ei ole
+ * luonnostilaa, joten moderoimaton kuva on teknisesti haettavissa satunnaisesta
+ * osoitteesta, kunnes sihteeri hylkää arvostelun ("Hylkää arvostelu" poistaa
+ * myös kuvat).
+ *
  * Validointi tehdään kokonaan palvelimella. Selaimen `required`-attribuutit
  * ovat käytettävyyttä varten, eivät suoja — lomakkeen voi lähettää suoraan
  * HTTP-pyyntönä ilman selainta.
@@ -47,6 +65,28 @@ function text(data: FormData, key: string): string {
   const value = data.get(key);
   return typeof value === "string" ? value.trim() : "";
 }
+
+/**
+ * Lomakkeen kuvat tavuiksi. Koko ja määrä tarkistetaan ennen lukemista, jotta
+ * poikkeavan suurta pyyntöä ei pureta muistiin turhaan. Tarkempi tarkistus
+ * (tyyppi, metatiedot, kuvaukset) tehdään `validatePhotos`-funktiossa.
+ */
+async function readPhotos(
+  data: FormData,
+): Promise<{ photos: { bytes: Uint8Array; alt: string }[] } | { error: string }> {
+  const files = data.getAll(PHOTO_FIELD).filter((v): v is File => typeof v !== "string" && v.size > 0);
+  const alts = data.getAll(PHOTO_ALT_FIELD).map((v) => (typeof v === "string" ? v : ""));
+  if (files.length > PHOTO_MAX_COUNT) return { error: `Voit liittää enintään ${PHOTO_MAX_COUNT} kuvaa.` };
+  const tooLarge = files.findIndex((f) => f.size > PHOTO_MAX_BYTES);
+  if (tooLarge >= 0) return { error: `Kuva ${tooLarge + 1} on liian suuri. Poista se ja lisää se uudelleen.` };
+  const photos = await Promise.all(
+    files.map(async (file, i) => ({ bytes: new Uint8Array(await file.arrayBuffer()), alt: alts[i] ?? "" })),
+  );
+  return { photos };
+}
+
+/** Satunnainen `_key` taulukon alkiolle. */
+const arrayKey = () => randomUUID().replace(/-/g, "").slice(0, 12);
 
 /** Sanity-dokumentti-id: kirjaimia, numeroita, väliviivoja ja pisteitä. */
 const DOCUMENT_ID = /^[A-Za-z0-9._-]{1,128}$/;
@@ -133,6 +173,16 @@ export async function submitReview(
     fieldErrors.kommentti = `Arvostelu saa olla enintään ${COMMENT_MAX} merkkiä.`;
   }
 
+  let photos: CleanPhoto[] = [];
+  const read = await readPhotos(formData);
+  if ("error" in read) {
+    fieldErrors.kuvat = read.error;
+  } else {
+    const checked = validatePhotos(read.photos, text(formData, PHOTO_CONSENT_FIELD) === "1");
+    if (checked.ok) photos = checked.photos;
+    else fieldErrors.kuvat = checked.error;
+  }
+
   if (Object.keys(fieldErrors).length > 0) {
     return {
       status: "error",
@@ -178,6 +228,9 @@ export async function submitReview(
 
   let restaurantName: string;
   let restaurantId: string | null = null;
+  const reviewId = randomUUID();
+  // Tässä pyynnössä ladatut kuvat, jotka poistetaan, jos tallennus epäonnistuu.
+  const uploadedAssetIds: string[] = [];
   try {
 
     if (isNew) {
@@ -211,9 +264,37 @@ export async function submitReview(
       restaurantName = found.name;
     }
 
+    // Kuvat ladataan rinnakkain; järjestys säilyy. Sanity tunnistaa saman
+    // tiedoston tiivisteestä ja palauttaa silloin olemassa olevan kuvan, joten
+    // peruutuksessa poistetaan vain tämän lomakkeen merkinnällä ladatut.
+    const uploads = await Promise.allSettled(
+      photos.map((photo, index) =>
+        writeClient.assets.upload("image", Buffer.from(photo.bytes), {
+          filename: `arvostelu-${reviewId}-${index + 1}.jpg`,
+          contentType: "image/jpeg",
+          source: { name: REVIEW_PHOTO_SOURCE, id: reviewId },
+          // Vain esikatselun sumennuskuva ja mitat; ei EXIF- eikä sijaintitietoja.
+          extract: ["lqip"],
+        }),
+      ),
+    );
+    for (const result of uploads) {
+      if (result.status === "fulfilled" && result.value.source?.name === REVIEW_PHOTO_SOURCE) {
+        uploadedAssetIds.push(result.value._id);
+      }
+    }
+    const failed = uploads.find((r): r is PromiseRejectedResult => r.status === "rejected");
+    if (failed) throw failed.reason;
+    const kuvat = uploads.map((result, index) => ({
+      _key: arrayKey(),
+      _type: "image",
+      asset: { _type: "reference", _ref: (result as PromiseFulfilledResult<{ _id: string }>).value._id },
+      alt: photos[index].alt || defaultPhotoAlt(restaurantName),
+    }));
+
     await writeClient.create<Record<string, unknown>>({
       // Luonnos: ei näy julkisesti ennen kuin sihteeri julkaisee sen Studiossa.
-      _id: `drafts.${randomUUID()}`,
+      _id: `drafts.${reviewId}`,
       _type: "ravintolaKayttajaArvostelu",
       reviewerName: values.nimi,
       ...(restaurantId
@@ -228,10 +309,14 @@ export async function submitReview(
           }),
       ...ratings,
       comment: values.kommentti,
+      ...(kuvat.length > 0 ? { kuvat } : {}),
       submittedAt: new Date().toISOString(),
     });
   } catch (error) {
     console.error("[submitReview] tallennus epäonnistui:", error);
+    // Peruutus: ladatut kuvat pois, ettei moderoimattomia orpoja jää. Jos
+    // poisto epäonnistuu, orvot voi poistaa: npm run siivoa:arvostelukuvat.
+    await Promise.allSettled(uploadedAssetIds.map((id) => writeClient.delete(id)));
     return {
       status: "error",
       message:

@@ -113,7 +113,7 @@ Listanäkymässä järjestys: `startsAt` desc (tulevat ensin).
 | vierasmatka | boolean | ei | "Vierasmatka"-merkki |
 
 ### 6. `ravintola-kayttaja-arvostelu`
-**Tarkoitus:** Yleisön jättämät arvostelut (`/ravintolat/arvostele`). Server Action tallentaa arvostelun **luonnoksena**. Isä hyväksyy julkaisemalla ja hylkää poistamalla luonnoksen, joten erillistä tilakenttää ei ole.
+**Tarkoitus:** Yleisön jättämät arvostelut (`/ravintolat/arvostele`). Server Action tallentaa arvostelun **luonnoksena**. Isä hyväksyy julkaisemalla ja hylkää toiminnolla **Hylkää arvostelu** (poistaa luonnoksen ja sen kuvat), joten erillistä tilakenttää ei ole. Julkaistun arvostelun poisto on **Poista arvostelu** (sama toiminto); Studion tavallinen Poista on piilotettu tältä tyypiltä.
 
 | Kenttä | Tyyppi | Pakollinen | Kuvaus |
 |---|---|---|---|
@@ -122,6 +122,7 @@ Listanäkymässä järjestys: `startsAt` desc (tulevat ensin).
 | ehdotettuRavintola | object { nimi, kaupunki, maa, lisatieto? } | ei | Kävijän ehdottama ravintola, jota ei ole hakemistossa. Vain luku |
 | ratingFood, ratingPrice, ratingAtmosphere | number 1,0–5,0 (yksi desimaali) | kyllä | Ruoka, hinta, viihtyvyys kuten klubin arvioissa. Kokonaisarvosana on keskiarvo, ja se lasketaan kyselyssä (`math::avg`) |
 | comment | text | kyllä | 10–1000 merkkiä |
+| kuvat | array of image { alt } | ei | Enintään 3 kävijän kuvaa. `alt` pakollinen (lomake täyttää oletuksen). Kuvatiedoston `source.name = "kavija-arvostelu"`. Ks. docs/18 |
 | submittedAt | datetime | kyllä | Lähetysaika |
 
 Vain julkaistut arvostelut näkyvät. Uuden ravintolan arvostelun julkaisu vaatii ravintolan. Studion toiminto **Hyväksy ja luo ravintola** (`sanity/actions/hyvaksy-ja-luo-ravintola.tsx`) etsii kaupungin nimellä tai luo sen, luo ravintolan (nimi, polku, kaupunki, osoite tai verkkosivu), liittää arvostelun ja julkaisee. Jos lomakkeen ehdotus vastaa olemassa olevaa ravintolaa (sama nimi ja kaupunki), arvostelu liitetään siihen jo lähetettäessä.

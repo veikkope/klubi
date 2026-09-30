@@ -33,7 +33,9 @@
     "verify:migration": "tsx scripts/verify-migration.ts",
     "verify:blogspot": "tsx scripts/verify-blogspot.ts",
     "test:kommentit": "tsx scripts/test-kommentit.ts",
-    "backup": "tsx scripts/varmuuskopio.ts"
+    "test:arvostelukuvat": "tsx scripts/test-arvostelukuvat.ts",
+    "backup": "tsx scripts/varmuuskopio.ts",
+    "siivoa:arvostelukuvat": "tsx scripts/siivoa-arvostelukuvat.ts"
   },
   "dependencies": {
     "@portabletext/react": "^6.2.0",
