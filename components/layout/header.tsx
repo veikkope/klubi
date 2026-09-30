@@ -32,7 +32,7 @@ export async function Header() {
       <Container size="wide" className="flex items-center justify-between gap-6 py-3.5 sm:py-[22px]">
         <Link href="/" className="flex shrink-0 items-center gap-2.5 sm:gap-3.5">
           <Image
-            src="/brand/mark-blue.png"
+            src="/brand/web/mark-blue.png"
             alt=""
             width={45}
             height={50}
@@ -40,7 +40,7 @@ export async function Header() {
             className="h-[38px] w-auto sm:h-[50px]"
           />
           <Image
-            src="/brand/wordmark-blue.png"
+            src="/brand/web/wordmark-blue.png"
             alt="Lahden Suomalainen Klubi ry — etusivu"
             width={159}
             height={25}
