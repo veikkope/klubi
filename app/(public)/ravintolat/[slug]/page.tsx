@@ -13,6 +13,7 @@ import { SanityImage } from "@/components/sanity-image";
 import { FramedImage } from "@/components/framed-image";
 import { PortableText } from "@/components/portable-text";
 import { AlbumGrid } from "@/components/gallery/album-grid";
+import { ReviewPhotos } from "@/components/gallery/review-photos";
 import {
   formatRating,
   overallRating,
@@ -303,6 +304,9 @@ export default async function RavintolaPage({ params }: PageProps) {
                       <p className="mt-3 whitespace-pre-line text-base leading-relaxed text-foreground">
                         {review.comment}
                       </p>
+                    )}
+                    {review.kuvat && review.kuvat.length > 0 && (
+                      <ReviewPhotos images={review.kuvat} reviewerName={review.reviewerName ?? "Nimetön"} />
                     )}
                   </li>
                 ))}

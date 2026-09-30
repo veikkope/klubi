@@ -158,9 +158,21 @@ yhteystietosivulla.
 Kävijöiden lähettämät arvostelut eivät näy sivulla ennen kuin hyväksyt ne.
 
 1. **Ravintolat → Arvostelut: odottavat hyväksyntää**.
-2. Avaa arvostelu ja lue se.
-3. **Hyväksy:** paina **Julkaise**. Arvostelu näkyy ravintolan sivulla.
-4. **Hylkää:** valikko **⋯** → **Poista** (Delete).
+2. Avaa arvostelu ja lue se. Katso myös kuvat, jos niitä on (listassa näkyy esim. "2 kuvaa").
+3. **Hyväksy:** paina **Julkaise**. Arvostelu ja sen kuvat näkyvät ravintolan sivulla.
+4. **Hylkää:** paina **Hylkää arvostelu** (Julkaise-painikkeen vieressä olevasta valikosta) → **Vahvista**.
+   Arvostelu ja sen kuvat poistetaan heti.
+
+**Kuvat.** Kävijä voi liittää arvosteluun enintään kolme kuvaa. Tarkista kuvat ennen julkaisua:
+
+- **Sopimaton kuva, muuten hyvä arvostelu:** vie hiiri kuvan päälle kohdassa **Kuvat** →
+  **⋯** → **Poista**, ja paina sitten **Julkaise**.
+- **Kuvaus** on teksti, jonka ruudunlukija lukee näkövammaiselle. Jos kävijä ei kirjoittanut
+  sitä, siinä lukee "Kävijän kuva ravintolasta …". Voit tarkentaa sitä, esim. "Paahdettu lohi".
+- Hylkää mieluummin **Hylkää arvostelu** -painikkeella kuin tavallisella Poista-toiminnolla:
+  vain se poistaa kuvat heti. Muulla tavalla poistetut kuvat poistuvat automaattisesti
+  seuraavana yönä.
+- Kuvia, joissa on tunnistettavia ihmisiä, ei kannata julkaista ilman syytä.
 
 **Uusi ravintola.** Kävijä voi arvostella myös ravintolan, jota hakemistossa ei vielä ole.
 Silloin listassa lukee **UUSI: ravintolan nimi**, ja arvostelussa näkyy laatikko
@@ -236,11 +248,11 @@ kävijälle asiallisen ilmoituksen.
 
 ## Tietosuojapyynnöt
 
-Jos joku pyytää poistamaan tietonsa (kommentti, veikkaus tai arvostelu):
+Jos joku pyytää poistamaan tietonsa (kommentti, veikkaus tai arvostelu kuvineen):
 
 1. Etsi viesti Studion hakukentällä nimellä.
 2. **⋯ → Poista** (Delete). Piilottaminen ei riitä poistopyyntöön, koska piilotettu viesti
-   säilyy järjestelmässä.
+   säilyy järjestelmässä. Arvostelun kuvat poistuvat automaattisesti seuraavana yönä.
 3. Vastaa pyytäjälle, että tieto on poistettu. Tietosuojaseloste on osoitteessa /tietosuoja.
 
 ## Tyypilliset tilanteet

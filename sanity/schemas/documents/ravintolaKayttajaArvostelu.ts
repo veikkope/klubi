@@ -16,6 +16,11 @@ import { defineField, defineType } from "sanity";
  * Arvostelua ei voi julkaista ilman ravintolaa: toiminto "Hyväksy ja luo
  * ravintola" (sanity/actions/hyvaksy-ja-luo-ravintola.tsx) luo ravintolan,
  * liittää arvostelun siihen ja julkaisee molemmat.
+ *
+ * Kuvat (enintään 3, docs/18): Sanityn kuvatiedostoilla ei ole luonnostilaa,
+ * joten hylkäys tehdään toiminnolla "Hylkää arvostelu", joka poistaa luonnoksen
+ * ja sen kuvat (sanity/actions/hylkaa-arvostelu.tsx). Muuten jäävät orvot kuvat
+ * poistaa päivittäinen siivous.
  */
 export const ravintolaKayttajaArvostelu = defineType({
   name: "ravintolaKayttajaArvostelu",
@@ -24,7 +29,7 @@ export const ravintolaKayttajaArvostelu = defineType({
   icon: CommentIcon,
   description:
     "Hyväksy arvostelu painamalla Julkaise. Jos kävijä ehdotti uutta ravintolaa, paina " +
-    "\"Hyväksy ja luo ravintola\". Hylkää poistamalla luonnos (valikko ⋯ → Poista). " +
+    "\"Hyväksy ja luo ravintola\". Hylkää painamalla \"Hylkää arvostelu\" (poistaa myös kuvat). " +
     "Julkaistu arvostelu näkyy ravintolan sivulla.",
   fields: [
     defineField({
@@ -91,6 +96,30 @@ export const ravintolaKayttajaArvostelu = defineType({
       validation: (rule) => rule.required().max(1000).error("Arvostelu on pakollinen (enintään 1000 merkkiä)."),
     }),
     defineField({
+      name: "kuvat",
+      title: "Kuvat",
+      description:
+        "Kävijän liittämät kuvat (enintään 3). Tarkista ne ennen julkaisua. Voit poistaa " +
+        "yksittäisen kuvan (⋯ → Poista) ja korjata kuvauksen. Kuvauksen lukee ruudunlukija.",
+      type: "array",
+      of: [
+        {
+          type: "image",
+          fields: [
+            defineField({
+              name: "alt",
+              title: "Kuvaus (alt-teksti)",
+              description: "Mitä kuvassa on, esim. \"Paahdettu lohi ja perunamuusi\".",
+              type: "string",
+              validation: (rule) =>
+                rule.required().max(150).error("Kuvaus on pakollinen (enintään 150 merkkiä)."),
+            }),
+          ],
+        },
+      ],
+      validation: (rule) => rule.max(3).error("Arvostelussa voi olla enintään 3 kuvaa."),
+    }),
+    defineField({
       name: "submittedAt",
       title: "Lähetysaika",
       type: "datetime",
@@ -111,14 +140,20 @@ export const ravintolaKayttajaArvostelu = defineType({
       price: "ratingPrice",
       atmosphere: "ratingAtmosphere",
       submittedAt: "submittedAt",
+      kuvat: "kuvat",
     },
-    prepare({ name, restaurant, uusi, food, price, atmosphere, submittedAt }) {
+    prepare({ name, restaurant, uusi, food, price, atmosphere, submittedAt, kuvat }) {
       const pvm = submittedAt ? new Date(submittedAt).toLocaleDateString("fi-FI") : "";
       const osat = [food, price, atmosphere].filter((v): v is number => typeof v === "number");
       const ka = osat.length === 3 ? `★ ${((food + price + atmosphere) / 3).toFixed(1).replace(".", ",")}` : "";
+      const kuvia = Array.isArray(kuvat) ? kuvat.length : 0;
       return {
         title: `${name ?? "?"} → ${restaurant ?? (uusi ? `UUSI: ${uusi}` : "?")}`,
-        subtitle: [ka, pvm].filter(Boolean).join(" · "),
+        subtitle: [ka, kuvia > 0 ? `${kuvia} ${kuvia === 1 ? "kuva" : "kuvaa"}` : "", pvm]
+          .filter(Boolean)
+          .join(" · "),
+        // Ensimmäinen kuva listan pikkukuvaksi, jotta kuvalliset erottuvat jonossa.
+        media: kuvia > 0 ? kuvat[0] : undefined,
       };
     },
   },

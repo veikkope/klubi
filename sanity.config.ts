@@ -8,6 +8,7 @@ import { apiVersion, dataset, projectId } from "./sanity/env";
 import { schemaTypes, singletonTypes } from "./sanity/schemas";
 import { structure } from "./sanity/structure";
 import { locations } from "./sanity/presentation";
+import { HylkaaArvostelu } from "./sanity/actions/hylkaa-arvostelu";
 import { HyvaksyJaLuoRavintola } from "./sanity/actions/hyvaksy-ja-luo-ravintola";
 
 export default defineConfig({
@@ -25,8 +26,13 @@ export default defineConfig({
   document: {
     actions: (input, context) => {
       if (context.schemaType === "ravintolaKayttajaArvostelu") {
-        // Ensisijainen toiminto, kun kävijä ehdotti uutta ravintolaa.
-        return [HyvaksyJaLuoRavintola, ...input];
+        // Ensisijainen toiminto, kun kävijä ehdotti uutta ravintolaa. "Hylkää
+        // arvostelu" heti julkaisun jälkeen, koska se poistaa myös kuvat (docs/18).
+        const publishAt = input.findIndex(({ action }) => action === "publish");
+        const actions = [...input];
+        // Jos julkaisutoimintoa ei ole, loppuun: hylkäys ei saa olla päätoiminto.
+        actions.splice(publishAt === -1 ? actions.length : publishAt + 1, 0, HylkaaArvostelu);
+        return [HyvaksyJaLuoRavintola, ...actions];
       }
       if (singletonTypes.has(context.schemaType)) {
         return input.filter(

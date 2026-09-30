@@ -5,6 +5,7 @@ import { useFormStatus } from "react-dom";
 import Link from "next/link";
 
 import { cn } from "@/lib/cn";
+import { PHOTO_ALT_FIELD, PHOTO_CONSENT_FIELD, PHOTO_FIELD } from "@/lib/arvostelukuvat";
 import type { RavintolaOption } from "@/sanity/lib/queries/ravintolat";
 import { submitReview } from "./actions";
 import {
@@ -22,6 +23,7 @@ import {
   type ReviewFormState,
 } from "./form-state";
 import { FieldMessages, fieldClass, labelClass, RequiredMark } from "./form-ui";
+import { PhotoPicker, type PhotoDraft } from "./photo-picker";
 import { RestaurantPicker } from "./restaurant-picker";
 
 /**
@@ -37,6 +39,10 @@ import { RestaurantPicker } from "./restaurant-picker";
  * - Osa-alueiden arvosanat (1,0–5,0) annetaan liukusäätimellä tai numerokentällä;
  *   säädin toimii nuolinäppäimillä ja kertoo arvon ruudunlukijalle.
  * - Merkkilaskuri kerrotaan ruudunlukijalle vasta, kun raja on lähellä.
+ *
+ * Kuvat (photo-picker.tsx) pidetään React-tilassa ja liitetään lähetykseen
+ * `submit`-funktiossa. Siksi ne säilyvät, vaikka palvelin palauttaisi lomakkeen
+ * virheiden kanssa, eikä React nollaa niitä lomakkeen lähetyksen jälkeen.
  */
 
 /** Välilyönnillä erotettu id-lista `aria-describedby`:lle; tyhjät pois. */
@@ -58,6 +64,22 @@ export function ReviewForm({
   );
   const summaryRef = useRef<HTMLDivElement>(null);
   const successRef = useRef<HTMLDivElement>(null);
+  const [photos, setPhotos] = useState<PhotoDraft[]>([]);
+  const [photoConsent, setPhotoConsent] = useState(false);
+  const processingPhotos = photos.some((p) => p.status === "processing");
+
+  function submit(formData: FormData) {
+    formData.delete(PHOTO_FIELD);
+    formData.delete(PHOTO_ALT_FIELD);
+    formData.delete(PHOTO_CONSENT_FIELD);
+    photos.forEach((photo, index) => {
+      if (!photo.blob) return;
+      formData.append(PHOTO_FIELD, photo.blob, `kuva-${index + 1}.jpg`);
+      formData.append(PHOTO_ALT_FIELD, photo.alt);
+    });
+    if (photoConsent) formData.set(PHOTO_CONSENT_FIELD, "1");
+    formAction(formData);
+  }
 
   // Lähetyksen jälkeen fokus sinne, missä vastaus on (virheet tai kiitos).
   useEffect(() => {
@@ -111,7 +133,7 @@ export function ReviewForm({
   const errorList = REVIEW_FIELDS.filter((field) => state.fieldErrors[field]);
 
   return (
-    <form action={formAction} noValidate className="flex flex-col gap-8">
+    <form action={submit} noValidate className="flex flex-col gap-8">
       {state.status === "error" && (
         <div
           ref={summaryRef}
@@ -147,6 +169,13 @@ export function ReviewForm({
         <div className="flex flex-col gap-6">
           <RatingsField values={state.values} errors={state.fieldErrors} />
           <CommentField error={state.fieldErrors.kommentti} defaultValue={state.values.kommentti} />
+          <PhotoPicker
+            photos={photos}
+            setPhotos={setPhotos}
+            consent={photoConsent}
+            setConsent={setPhotoConsent}
+            error={state.fieldErrors.kuvat}
+          />
         </div>
       </Step>
 
@@ -194,7 +223,7 @@ export function ReviewForm({
           </Link>
           .
         </p>
-        <SubmitButton />
+        <SubmitButton processingPhotos={processingPhotos} />
       </div>
     </form>
   );
@@ -435,22 +464,23 @@ function CommentField({ error, defaultValue }: { error?: string; defaultValue: s
   );
 }
 
-function SubmitButton() {
+function SubmitButton({ processingPhotos }: { processingPhotos: boolean }) {
   const { pending } = useFormStatus();
+  const busy = pending || processingPhotos;
   return (
     <button
       type="submit"
-      disabled={pending}
-      aria-disabled={pending}
+      disabled={busy}
+      aria-disabled={busy}
       className="inline-flex min-h-12 items-center justify-center gap-2 self-start rounded-sm bg-primary px-8 text-base font-semibold text-on-primary shadow-sm transition hover:bg-primary-hover hover:text-on-primary disabled:cursor-wait disabled:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 max-sm:w-full"
     >
-      {pending && (
+      {busy && (
         <svg aria-hidden viewBox="0 0 24 24" className="size-4 animate-spin motion-reduce:animate-none">
           <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeOpacity=".3" strokeWidth="3" />
           <path d="M21 12a9 9 0 0 0-9-9" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
         </svg>
       )}
-      {pending ? "Lähetetään…" : "Lähetä arvostelu"}
+      {pending ? "Lähetetään…" : processingPhotos ? "Käsitellään kuvia…" : "Lähetä arvostelu"}
     </button>
   );
 }

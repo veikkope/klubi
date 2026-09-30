@@ -3,7 +3,14 @@ import { blogspotRedirects, legacyRedirects } from "./lib/redirects";
 
 const nextConfig: NextConfig = {
   // Otetaan typedRoutes käyttöön sprintissä 2 kun kaikki reitit on luotu.
-  // experimental: { typedRoutes: true },
+  experimental: {
+    // typedRoutes: true,
+    serverActions: {
+      // Arvostelulomakkeen kuvat (docs/18): 3 × enintään 1,3 Mt (lib/arvostelukuvat.ts)
+      // + teksti. Oletus 1 Mt ei riitä; Vercelin kova raja on 4,5 Mt.
+      bodySizeLimit: "4mb",
+    },
+  },
   images: {
     remotePatterns: [
       {

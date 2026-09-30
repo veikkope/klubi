@@ -20,6 +20,7 @@ export const REVIEW_FIELDS = [
   "hinta",
   "viihtyvyys",
   "kommentti",
+  "kuvat",
   "nimi",
 ] as const;
 
@@ -35,10 +36,16 @@ export const REVIEW_FIELD_LABELS: Record<ReviewField, string> = {
   hinta: "Hinta",
   viihtyvyys: "Viihtyvyys",
   kommentti: "Arvostelu",
+  kuvat: "Kuvat",
   nimi: "Nimesi",
 };
 
-export type ReviewValues = Record<ReviewField, string> & {
+/**
+ * Lomakkeelle palautettavat tekstiarvot. Kuvat eivät kulje palvelimen kautta
+ * takaisin: ne pysyvät selaimen muistissa (review-form.tsx), joten virheen
+ * jälkeen kävijän ei tarvitse valita niitä uudelleen.
+ */
+export type ReviewValues = Record<Exclude<ReviewField, "kuvat">, string> & {
   /** "1", kun kävijä ehdottaa uutta ravintolaa. */
   uusi: string;
 };

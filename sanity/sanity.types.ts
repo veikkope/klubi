@@ -560,6 +560,15 @@ export type RavintolaKayttajaArvostelu = {
   ratingPrice?: number;
   ratingAtmosphere?: number;
   comment?: string;
+  kuvat?: Array<{
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+    _key: string;
+  }>;
   submittedAt?: string;
 };
 
@@ -2191,7 +2200,7 @@ export type RavintolatFacetsQueryResult = {
 
 // Source: sanity/lib/queries/ravintolat.ts
 // Variable: ravintolaBySlugQuery
-// Query: *[_type == "ravintola" && slug.current == $slug][0]{      _id,  name,  "slug": slug.current,  "city": city->{ name, "slug": slug.current, country },  stars,  ratingOverall,  ratingFood,  ratingPrice,  ratingAtmosphere,  priceLevel,  cuisine,  closed,  tiivistelma,  tuomio,  stadionHuomio,  "image": images[0],    _updatedAt,    address,    postalCode,    phone,    website,    location,    closedNote,    pros,    cons,    visitedAt,    visits,    visitContext,    review,    ottelupaivana,    images,    seoTitle,    seoDescription,    "userReviews": *[_type == "ravintolaKayttajaArvostelu"      && restaurant._ref == ^._id]      | order(submittedAt desc){        _id,        reviewerName,        ratingFood,        ratingPrice,        ratingAtmosphere,        "rating": math::avg([ratingFood, ratingPrice, ratingAtmosphere]),        comment,        submittedAt      },    "related": *[_type == "ravintola" && defined(slug.current)      && _id != ^._id && closed != true && city._ref == ^.city._ref]      | order(coalesce(ratingOverall, stars, 0) desc, name asc)[0...3]{  _id,  name,  "slug": slug.current,  "city": city->{ name, "slug": slug.current, country },  stars,  ratingOverall,  ratingFood,  ratingPrice,  ratingAtmosphere,  priceLevel,  cuisine,  closed,  tiivistelma,  tuomio,  stadionHuomio,  "image": images[0]}  }
+// Query: *[_type == "ravintola" && slug.current == $slug][0]{      _id,  name,  "slug": slug.current,  "city": city->{ name, "slug": slug.current, country },  stars,  ratingOverall,  ratingFood,  ratingPrice,  ratingAtmosphere,  priceLevel,  cuisine,  closed,  tiivistelma,  tuomio,  stadionHuomio,  "image": images[0],    _updatedAt,    address,    postalCode,    phone,    website,    location,    closedNote,    pros,    cons,    visitedAt,    visits,    visitContext,    review,    ottelupaivana,    images,    seoTitle,    seoDescription,    "userReviews": *[_type == "ravintolaKayttajaArvostelu"      && restaurant._ref == ^._id]      | order(submittedAt desc){        _id,        reviewerName,        ratingFood,        ratingPrice,        ratingAtmosphere,        "rating": math::avg([ratingFood, ratingPrice, ratingAtmosphere]),        comment,        "kuvat": kuvat[defined(asset)]{ _key, alt, asset },        submittedAt      },    "related": *[_type == "ravintola" && defined(slug.current)      && _id != ^._id && closed != true && city._ref == ^.city._ref]      | order(coalesce(ratingOverall, stars, 0) desc, name asc)[0...3]{  _id,  name,  "slug": slug.current,  "city": city->{ name, "slug": slug.current, country },  stars,  ratingOverall,  ratingFood,  ratingPrice,  ratingAtmosphere,  priceLevel,  cuisine,  closed,  tiivistelma,  tuomio,  stadionHuomio,  "image": images[0]}  }
 export type RavintolaBySlugQueryResult = {
   _id: string;
   name: string | null;
@@ -2246,6 +2255,11 @@ export type RavintolaBySlugQueryResult = {
     ratingAtmosphere: number | null;
     rating: number | null;
     comment: string | null;
+    kuvat: Array<{
+      _key: string;
+      alt: string | null;
+      asset: SanityImageAssetReference;
+    }> | null;
     submittedAt: string | null;
   }>;
   related: Array<{
@@ -2564,7 +2578,7 @@ declare module "@sanity/client" {
     '\n  *[_type == "ottelu" && defined(aika) && dateTime(aika) > dateTime(now()) - 60*60*24]\n    | order(aika asc){\n    _id,\n    aika,\n    koti,\n    vieras,\n    kilpailu,\n    stadion,\n    klubiPaikalla,\n    vierasmatka\n  }\n': TulevatOttelutQueryResult;
     '\n  count(*[\n  _type == "ravintola" && defined(slug.current)\n  && ($citySlug == null || city->slug.current == $citySlug)\n  && ($countryNames == null || city->country in $countryNames)\n  && ($maakuntaSlugs == null\n      || (city->country == "Suomi" && city->maakunta in $maakuntaSlugs))\n  && ($cuisine == null || $cuisine in cuisine)\n  && ($minRating == null || coalesce(ratingOverall, stars, 0) >= $minRating)\n  && ($includeClosed == true || closed != true)\n])\n': RavintolatCountQueryResult;
     '{\n  "places": *[_type == "kaupunki" && defined(slug.current)\n      && count(*[_type == "ravintola" && references(^._id)]) > 0]\n    | order(name asc){\n      name,\n      "slug": slug.current,\n      country,\n      maakunta,\n      "count": count(*[_type == "ravintola" && references(^._id) && closed != true])\n    },\n  "cuisines": array::unique(*[_type == "ravintola" && defined(cuisine)].cuisine[]),\n  "total": count(*[_type == "ravintola" && defined(slug.current) && closed != true]),\n  "closedCount": count(*[_type == "ravintola" && closed == true]),\n  "firstVisitYear": *[_type == "ravintola" && defined(visitedAt)]\n    | order(visitedAt asc)[0].visitedAt\n}': RavintolatFacetsQueryResult;
-    '\n  *[_type == "ravintola" && slug.current == $slug][0]{\n    \n  _id,\n  name,\n  "slug": slug.current,\n  "city": city->{ name, "slug": slug.current, country },\n  stars,\n  ratingOverall,\n  ratingFood,\n  ratingPrice,\n  ratingAtmosphere,\n  priceLevel,\n  cuisine,\n  closed,\n  tiivistelma,\n  tuomio,\n  stadionHuomio,\n  "image": images[0]\n,\n    _updatedAt,\n    address,\n    postalCode,\n    phone,\n    website,\n    location,\n    closedNote,\n    pros,\n    cons,\n    visitedAt,\n    visits,\n    visitContext,\n    review,\n    ottelupaivana,\n    images,\n    seoTitle,\n    seoDescription,\n    "userReviews": *[_type == "ravintolaKayttajaArvostelu"\n      && restaurant._ref == ^._id]\n      | order(submittedAt desc){\n        _id,\n        reviewerName,\n        ratingFood,\n        ratingPrice,\n        ratingAtmosphere,\n        "rating": math::avg([ratingFood, ratingPrice, ratingAtmosphere]),\n        comment,\n        submittedAt\n      },\n    "related": *[_type == "ravintola" && defined(slug.current)\n      && _id != ^._id && closed != true && city._ref == ^.city._ref]\n      | order(coalesce(ratingOverall, stars, 0) desc, name asc)[0...3]{\n  _id,\n  name,\n  "slug": slug.current,\n  "city": city->{ name, "slug": slug.current, country },\n  stars,\n  ratingOverall,\n  ratingFood,\n  ratingPrice,\n  ratingAtmosphere,\n  priceLevel,\n  cuisine,\n  closed,\n  tiivistelma,\n  tuomio,\n  stadionHuomio,\n  "image": images[0]\n}\n  }\n': RavintolaBySlugQueryResult;
+    '\n  *[_type == "ravintola" && slug.current == $slug][0]{\n    \n  _id,\n  name,\n  "slug": slug.current,\n  "city": city->{ name, "slug": slug.current, country },\n  stars,\n  ratingOverall,\n  ratingFood,\n  ratingPrice,\n  ratingAtmosphere,\n  priceLevel,\n  cuisine,\n  closed,\n  tiivistelma,\n  tuomio,\n  stadionHuomio,\n  "image": images[0]\n,\n    _updatedAt,\n    address,\n    postalCode,\n    phone,\n    website,\n    location,\n    closedNote,\n    pros,\n    cons,\n    visitedAt,\n    visits,\n    visitContext,\n    review,\n    ottelupaivana,\n    images,\n    seoTitle,\n    seoDescription,\n    "userReviews": *[_type == "ravintolaKayttajaArvostelu"\n      && restaurant._ref == ^._id]\n      | order(submittedAt desc){\n        _id,\n        reviewerName,\n        ratingFood,\n        ratingPrice,\n        ratingAtmosphere,\n        "rating": math::avg([ratingFood, ratingPrice, ratingAtmosphere]),\n        comment,\n        "kuvat": kuvat[defined(asset)]{ _key, alt, asset },\n        submittedAt\n      },\n    "related": *[_type == "ravintola" && defined(slug.current)\n      && _id != ^._id && closed != true && city._ref == ^.city._ref]\n      | order(coalesce(ratingOverall, stars, 0) desc, name asc)[0...3]{\n  _id,\n  name,\n  "slug": slug.current,\n  "city": city->{ name, "slug": slug.current, country },\n  stars,\n  ratingOverall,\n  ratingFood,\n  ratingPrice,\n  ratingAtmosphere,\n  priceLevel,\n  cuisine,\n  closed,\n  tiivistelma,\n  tuomio,\n  stadionHuomio,\n  "image": images[0]\n}\n  }\n': RavintolaBySlugQueryResult;
     '\n  *[_type == "ravintola" && defined(slug.current)].slug.current\n': RavintolaSlugsQueryResult;
     '\n  *[_type == "ravintola" && defined(slug.current)] | order(name asc){\n    _id,\n    name,\n    "slug": slug.current,\n    "city": city->name\n  }\n': RavintolaOptionsQueryResult;
     '\n  *[_type == $type && defined(slug.current)] | order(_updatedAt desc) {\n    "slug": slug.current,\n    "updatedAt": _updatedAt\n  }\n': SitemapByTypeQueryResult;
