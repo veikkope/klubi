@@ -169,17 +169,19 @@ riippuvainen web-muutoksesta C2:n jälkeen.
 |---|---|---|---|
 | 1 | CORS tuotanto-osoitteille | kehittäjä | ✅ 28.9. |
 | 2 | Webhook Sanityyn | kehittäjä | ✅ 28.9. |
-| 3 | Next.js 16.3.6 (tietoturva) | kehittäjä | ✅ 28.9. (odottaa deployta) |
-| 4 | Suomenkieliset 404- ja virhesivut | kehittäjä | ✅ 28.9. (odottaa deployta) |
-| 5 | Arvostelut: ei sähköpostia, luonnoksena | kehittäjä | ✅ 28.9. (odottaa deployta) |
+| 3 | Next.js 16.3.6 → 16.3.7 (tietoturva) | kehittäjä | ✅ 30.9., julkaistu |
+| 4 | Suomenkieliset 404- ja virhesivut | kehittäjä | ✅ 28.9., julkaistu |
+| 5 | Arvostelut: ei sähköpostia, luonnoksena | kehittäjä | ✅ 28.9., julkaistu |
 | 6 | Tietosuojaseloste /tietosuoja + linkit | kehittäjä | ✅ 28.9. Hallitus vahvistaa sisällön |
-| 7 | Studio: suomi, valikko, Tarkistettavat, syyt | kehittäjä | ✅ 28.9. (odottaa deployta) |
+| 7 | Studio: suomi, valikko, Tarkistettavat, syyt | kehittäjä | ✅ 28.9., julkaistu |
 | 8 | Vercel: `SANITY_API_READ_TOKEN`, `SANITY_REVALIDATE_SECRET` → redeploy | kehittäjä | ✅ 28.9. |
 | 9 | Tokenit: "Vercel – lomakkeet" ja "Vercel – esikatselu", migraatiotokenien poisto | kehittäjä | ✅ 28.9. (lomake testattu tuotannossa) |
-| 10 | Isän kutsu (Editor) ja perehdytys | kehittäjä + isä | kutsu lähetetty 28.9., perehdytys ☐ |
-| 11 | Perustiedot Studiossa (docs/09 "Täytä itse") | isä + hallitus | ☐ |
+| 10 | Isän kutsu (Editor) ja perehdytys | kehittäjä + isä | kutsu lähetetty 28.9., opas päivitetty 30.9., perehdytys ☐ |
+| 11 | Perustiedot Studiossa (docs/09 "Täytä itse") | isä + hallitus | ☐ 30.9.: sähköposti, osoite, Y-tunnus, hallitus (0), tapahtumat (0), etusivun kuvat, /english-kieli |
 | 12 | Tietosuojaselosteen vahvistus | hallitus | ☐ |
-| 13 | Jäsenhakemukset poistettu (ei Resendiä) | kehittäjä | ✅ 28.9. koodi · tietosuojaselosteen patch ☐ |
+| 13 | Jäsenhakemukset poistettu (ei Resendiä) | kehittäjä | ✅ 28.9. koodi · ✅ tietosuojaselosteessa ei mainintaa (tarkistettu 30.9.) |
 | 14 | DNS C1–C4 | kehittäjä + int2000 | ☐ |
-| 15 | Blogin ohjaus (docs/14 §6) | kehittäjä | ☐ siirron jälkeen |
+| 15 | Blogin ohjaus (docs/14 §6) | kehittäjä | ☐ siirron jälkeen (tuotantopolku ja dynaaminen /blogspot-reitti valmiit 30.9.) |
 | 16 | Arvostelukuvat: tietosuojaselosteen patch (docs/18 §7) | kehittäjä | ✅ 30.9. (varmuuskopio ensin) |
+| 17 | Vercel-osoitteet noindex (`X-Robots-Tag`) | kehittäjä | ✅ 30.9. |
+| 18 | Blogin 29.9. kirjoitus productioniin (`sync:blogspot:production`) | kehittäjä | ✅ 30.9. |

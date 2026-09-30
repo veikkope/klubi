@@ -23,6 +23,20 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async headers() {
+    return [
+      {
+        // Vercelin osoitteet (klubi-blond.vercel.app ja esikatselut) eivät saa
+        // päätyä hakukoneisiin: sama sisältö olisi kahdessa osoitteessa, ja
+        // väliaikainen osoite voisi kilpailla oikean domainin kanssa
+        // (docs/16, julkaisun tarkistuslista kohta 17). Oikea domain ei osu
+        // ehtoon, joten se pysyy indeksoitavana.
+        source: "/:path*",
+        has: [{ type: "host", value: ".*\\.vercel\\.app" }],
+        headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
+      },
+    ];
+  },
   async redirects() {
     return [
       ...legacyRedirects,
