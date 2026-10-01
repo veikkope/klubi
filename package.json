@@ -47,6 +47,8 @@
     "patch:tunnisteet": "tsx scripts/patch-tunnisteet.ts",
     "patch:kategoriat": "tsx scripts/patch-kategoriat.ts",
     "patch:palloveikkaus": "tsx scripts/jaa-palloveikkaus.ts",
+    "patch:litmanen": "tsx scripts/patch-litmanen.ts",
+    "patch:omat-sivut": "tsx scripts/patch-omat-sivut.ts",
     "backup": "tsx scripts/varmuuskopio.ts",
     "siivoa:arvostelukuvat": "tsx scripts/siivoa-arvostelukuvat.ts"
   },

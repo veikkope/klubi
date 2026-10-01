@@ -16,27 +16,27 @@ import { StatSections } from "../_tilastot/stat-sections";
 
 export const revalidate = 3600;
 
-const path = "/jalkapalloarkisto/saavutukset";
-const title = "Suomen jalkapallon TOP 10 saavutukset";
+const path = "/jalkapalloarkisto/maailman-parhaat";
+const title = "Maailman paras avaus";
 const description =
-  "Suomen jalkapallon kymmenen suurinta saavutusta: ottelu, turnaus, päivämäärä, paikka, tulos ja yleisömäärä.";
+  "Maailman paras avauskokoonpano vuosittain: jokaisen vuoden yksitoista pelaajaa pelipaikkoineen ja maineen sekä kenttäkaaviot.";
 const lead =
-  "Suomalaisen jalkapallon kymmenen suurinta saavutusta maajoukkueen " +
-  "ja seurojen otteluista.";
+  "Klubin valitsema maailman paras avauskokoonpano vuosi vuodelta: " +
+  "pelaajat pelipaikoittain taulukossa ja jokaisen vuoden kenttäkaavio.";
 
 export function generateMetadata(): Metadata {
   return buildMetadata({ title, description, path });
 }
 
-export default async function SaavutuksetPage() {
+export default async function MaailmanParhaatPage() {
   const tilastot = await sanityFetch<TilastoDoc[]>({
     query: tilastotByCategoryQuery,
-    params: { category: "saavutukset" },
+    params: { category: "maailman-parhaat" },
     tags: arkistoTags,
     fallback: [],
   });
 
-  const trail = arkistoTrail({ label: "TOP 10 saavutukset" });
+  const trail = arkistoTrail({ label: "Maailman parhaat" });
 
   return (
     <>
@@ -50,7 +50,7 @@ export default async function SaavutuksetPage() {
       <ArkistoPage title={title} lead={lead} breadcrumbs={trail}>
         <StatSections
           tilastot={tilastot}
-          emptyTitle="Ei vielä saavutustilastoja"
+          emptyTitle="Ei vielä maailman parhaita avauksia"
         />
       </ArkistoPage>
     </>

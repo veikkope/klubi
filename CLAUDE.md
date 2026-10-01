@@ -68,6 +68,8 @@ public/                Staattiset tiedostot (favicon, robots, kuvat joita Sanity
 | Blogin tunnisteet muokattavaan kenttään (kuivaharjoitus; `-- --vie` kirjoittaa, `-- --production` productioniin varmuuskopion kanssa) | `npm run patch:tunnisteet` (docs/14 §3.1) |
 | Yhdistettyjen uutiskategorioiden vanhat arvot uusiin (kuivaharjoitus; `-- --vie` kirjoittaa, `-- --production` varmuuskopion kanssa) | `npm run patch:kategoriat` |
 | Palloveikkaussivun jako veikkausten omiksi alasivuiksi (kuivaharjoitus; `-- --vie` kirjoittaa, `-- --production` varmuuskopion kanssa; kertaluonteinen) | `npm run patch:palloveikkaus` |
+| Litmanen-osio: päävalikon Pelaajat → Litmanen ja `litmanen.htm` loukkaantumissivulle (kuivaharjoitus; `-- --vie` kirjoittaa, `-- --production` varmuuskopion kanssa; kertaluonteinen) | `npm run patch:litmanen` |
+| Järkytykset ja maailman paras avaus omille sivuilleen (kategoriat `jarkytykset`, `maailman-parhaat`; kuivaharjoitus; `-- --vie` kirjoittaa, `-- --production` varmuuskopion kanssa; kertaluonteinen, productioniin vasta deployn jälkeen) | `npm run patch:omat-sivut` |
 
 **Datasetit:** migraatiot ja kehitys kirjoittavat aina `development`-datasettiin (`.env.local`). `production` on isän ylläpitämä tuotantodata, jota Vercel käyttää: sinne viedään vain puuttuvia dokumentteja (`--missing`) tai dokumenttikohtaisia patcheja, ja aina varmuuskopion jälkeen. Jos sisältö näyttää puuttuvan, tarkista ensin `NEXT_PUBLIC_SANITY_PROJECT_ID` ja `NEXT_PUBLIC_SANITY_DATASET`. Migraation sopimus ja tila: `docs/12-sisaltomigraatio.md`.
 

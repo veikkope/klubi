@@ -16,27 +16,27 @@ import { StatSections } from "../_tilastot/stat-sections";
 
 export const revalidate = 3600;
 
-const path = "/jalkapalloarkisto/saavutukset";
-const title = "Suomen jalkapallon TOP 10 saavutukset";
+const path = "/jalkapalloarkisto/jarkytykset";
+const title = "Suomen jalkapallon TOP 10 järkytykset";
 const description =
-  "Suomen jalkapallon kymmenen suurinta saavutusta: ottelu, turnaus, päivämäärä, paikka, tulos ja yleisömäärä.";
+  "Suomen jalkapallon suurimmat järkytykset: ottelu, turnaus, päivämäärä, paikka, tulos ja yleisömäärä.";
 const lead =
-  "Suomalaisen jalkapallon kymmenen suurinta saavutusta maajoukkueen " +
-  "ja seurojen otteluista.";
+  "Ottelut, joiden lopputulosta kukaan ei osannut odottaa: suomalaisen " +
+  "jalkapallon kymmenen suurinta järkytystä.";
 
 export function generateMetadata(): Metadata {
   return buildMetadata({ title, description, path });
 }
 
-export default async function SaavutuksetPage() {
+export default async function JarkytyksetPage() {
   const tilastot = await sanityFetch<TilastoDoc[]>({
     query: tilastotByCategoryQuery,
-    params: { category: "saavutukset" },
+    params: { category: "jarkytykset" },
     tags: arkistoTags,
     fallback: [],
   });
 
-  const trail = arkistoTrail({ label: "TOP 10 saavutukset" });
+  const trail = arkistoTrail({ label: "TOP 10 järkytykset" });
 
   return (
     <>
@@ -50,7 +50,7 @@ export default async function SaavutuksetPage() {
       <ArkistoPage title={title} lead={lead} breadcrumbs={trail}>
         <StatSections
           tilastot={tilastot}
-          emptyTitle="Ei vielä saavutustilastoja"
+          emptyTitle="Ei vielä järkytyksiä"
         />
       </ArkistoPage>
     </>

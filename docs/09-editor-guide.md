@@ -266,6 +266,27 @@ Arvostelijalta kysytään vain nimi, joka näkyy arvostelun yhteydessä. Sähkö
 Jos ravintolan kaupunkia ei tiedetä (esim. laiva), liitä se maan nimiseen "kaupunkiin"
 (esim. "Ruotsi").
 
+### Litmanen-osio
+
+Valikon **Litmanen** jakautuu kahteen sivuun: **Jari Litmanen** (`/jalkapalloarkisto/litmanen`)
+ja **Litmasen loukkaantumiset** (`/jalkapalloarkisto/litmanen/loukkaantumiset`). Molemmat
+muokataan samasta dokumentista: **Pelaajat → Jari Litmanen**. Profiilisivulle tulevat
+perustiedot, kuvaus ja kuvat; loukkaantumissivulle tulee kentän **Tilastotaulukot**
+taulukko (välilehti *Ura*).
+
+### Järkytykset
+
+**Suomen jalkapallon TOP 10 järkytykset** on omalla sivullaan (`/jalkapalloarkisto/jarkytykset`,
+arkiston valikossa *TOP 10 järkytykset*). Taulukko löytyy Studiosta **Jalkapallotilastot**-listasta;
+sivulle päätyvät kaikki taulukot, joiden kategoria on *Suomen jalkapallon järkytykset*.
+
+### Maailman parhaat
+
+**Maailman paras avaus vuosittain** on omalla sivullaan (`/jalkapalloarkisto/maailman-parhaat`,
+arkiston valikossa *Maailman parhaat*). Uuden vuoden kenttäkaavio lisätään Studiossa
+taulukon **Maailman paras avaus vuosittain** kenttään **Kuvat** (listan alkuun). Sivulle
+päätyvät kaikki taulukot, joiden kategoria on *Maailman paras avaus*.
+
 ### Palloveikkauksen sivut
 
 Jokaisella veikkauksella on oma sivunsa: **Sivut → Maaottelujen tulosveikkaus,

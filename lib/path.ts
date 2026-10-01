@@ -80,7 +80,9 @@ export const TILASTO_CATEGORY_PAGE: Record<string, string> = {
   "valmentajien-palkat": "/jalkapalloarkisto/valmentajat",
   "vuoden-pelaaja": "/jalkapalloarkisto/vuoden-pelaajat",
   "ballon-dor": "/jalkapalloarkisto/euroopan-paras",
+  "maailman-parhaat": "/jalkapalloarkisto/maailman-parhaat",
   saavutukset: "/jalkapalloarkisto/saavutukset",
+  jarkytykset: "/jalkapalloarkisto/jarkytykset",
   lupaavat: "/jalkapalloarkisto/lupaavat",
   "fifa-ranking": "/jalkapalloarkisto/fifa-ranking",
   eurocup: "/jalkapalloarkisto/eurocupit/champions-league",
@@ -94,6 +96,14 @@ export const TILASTO_CATEGORY_PAGE: Record<string, string> = {
 };
 
 export const HUUHKAJAT_PATH = "/jalkapalloarkisto/huuhkajat";
+
+/**
+ * Litmanen-osio: Jari Litmasen profiili ja hänen loukkaantumistaulukkonsa
+ * omina sivuinaan. Korvaa yleisen pelaajalistan valikossa.
+ */
+export const LITMANEN_SLUG = "jari-litmanen";
+export const LITMANEN_PATH = "/jalkapalloarkisto/litmanen";
+export const LITMANEN_LOUKKAANTUMISET_PATH = `${LITMANEN_PATH}/loukkaantumiset`;
 
 /** Huuhkajat-osion sivu, esim. `/jalkapalloarkisto/huuhkajat/pelaajatilastot`. */
 export function huuhkajatOsioPath(osio: string): string {
@@ -118,6 +128,8 @@ export function documentRoute(doc: RoutableDoc): DocumentRoute | null {
   // Singleton: vanha etusivu.htm → uusi etusivu.
   if (doc._type === "etusivu") return { path: "/" };
 
+  if (doc._type === "pelaaja" && slug === LITMANEN_SLUG) return { path: LITMANEN_PATH };
+
   const base = TYPE_BASE[doc._type];
   if (base) return slug ? { path: `${base}/${slug}` } : null;
 
@@ -125,6 +137,10 @@ export function documentRoute(doc: RoutableDoc): DocumentRoute | null {
 
   // Viitattu taulukko näkyy viittaajansa sivulla (lohkot, loukkaantumiset, mölkky…).
   if (doc.parent) {
+    // Litmasen taulukot ovat omalla loukkaantumissivullaan, eivät profiilissa.
+    if (doc.parent._type === "pelaaja" && doc.parent.slug === LITMANEN_SLUG) {
+      return { path: LITMANEN_LOUKKAANTUMISET_PATH, anchor: slug };
+    }
     const parentRoute = documentRoute({ _id: "", ...doc.parent });
     if (parentRoute) return { path: parentRoute.path, anchor: slug };
   }

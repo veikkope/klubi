@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { LITMANEN_PATH } from "./lib/path";
 import { blogspotRedirects, legacyRedirects } from "./lib/redirects";
 
 const nextConfig: NextConfig = {
@@ -43,6 +44,8 @@ const nextConfig: NextConfig = {
       ...blogspotRedirects,
       // Klubi ei ota jäsenhakemuksia sivuston kautta; lomakesivu poistettu.
       { source: "/klubi/liity", destination: "/klubi", permanent: true },
+      // Pelaajalista korvautui Litmanen-osiolla (profiili + loukkaantumiset).
+      { source: "/jalkapalloarkisto/pelaajat", destination: LITMANEN_PATH, permanent: true },
     ];
   },
 };

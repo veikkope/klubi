@@ -29,7 +29,13 @@ import { existsSync } from "node:fs";
 import { readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
-import { documentRoute, routableProjection, type RoutableDoc } from "../lib/path";
+import {
+  LITMANEN_LOUKKAANTUMISET_PATH,
+  LITMANEN_PATH,
+  documentRoute,
+  routableProjection,
+  type RoutableDoc,
+} from "../lib/path";
 import { MAAKUNNAT, SUOMI } from "../lib/maakunnat";
 import { isCountryLevelPlace } from "../lib/places";
 import { slugify as placeSlug } from "../lib/slugify";
@@ -72,9 +78,9 @@ const EXACT: Record<string, string> = {
   "FIFAvuodenpelaaja.htm": "/jalkapalloarkisto/vuoden-pelaajat",
   "/FIFAvuodenpelaaja.htm": "/jalkapalloarkisto/vuoden-pelaajat",
   "euroopan_paras_pelaaja.htm": "/jalkapalloarkisto/euroopan-paras",
-  "maailmanparhaat.htm": "/jalkapalloarkisto/euroopan-paras",
+  "maailmanparhaat.htm": "/jalkapalloarkisto/maailman-parhaat",
   "top10jalkapallosaavutukset.htm": "/jalkapalloarkisto/saavutukset",
-  "top10jalkapallojarkytykset.htm": "/jalkapalloarkisto/saavutukset",
+  "top10jalkapallojarkytykset.htm": "/jalkapalloarkisto/jarkytykset",
   "fifaranking.htm": "/jalkapalloarkisto/fifa-ranking",
   "lupaavia.htm": "/jalkapalloarkisto/lupaavat",
   "pikkuhuuhkajat.htm": "/jalkapalloarkisto/arvokisat/u21-em-2009",
@@ -128,9 +134,9 @@ const TOIMINTA: Record<string, string> = {
 
 /** Pelaajasivut. */
 const PELAAJAT: Record<string, string> = {
-  "litmanen.htm": "jari-litmanen",
-  "litmanenjari.htm": "jari-litmanen",
-  "litmanenjaripatsas.htm": "jari-litmanen",
+  "litmanen.htm": LITMANEN_LOUKKAANTUMISET_PATH,
+  "litmanenjari.htm": LITMANEN_PATH,
+  "litmanenjaripatsas.htm": LITMANEN_PATH,
 };
 
 /**
@@ -179,7 +185,7 @@ function resolveByRules(path: string): string | null {
   if (toiminta) return `/klubi/toiminta/${toiminta}`;
 
   const pelaaja = PELAAJAT[path];
-  if (pelaaja) return `/jalkapalloarkisto/pelaajat/${pelaaja}`;
+  if (pelaaja) return pelaaja;
 
   for (const rule of RULES) {
     const match = path.match(rule.pattern);

@@ -8,7 +8,7 @@ import {
   type SitemapRow,
   type SitemapTilastoRow,
 } from "@/sanity/lib/queries/sitemap";
-import { documentRoute } from "@/lib/path";
+import { LITMANEN_PATH, LITMANEN_SLUG, documentRoute } from "@/lib/path";
 import { TUNNISTE_INDEKSOI_VAHINTAAN, tunnisteSlug } from "@/lib/tunnisteet";
 import { uutisetTunnisteetQuery, type TunnisteRivi } from "@/sanity/lib/queries/uutiset";
 import { absoluteUrl } from "@/lib/site";
@@ -57,11 +57,13 @@ const STATIC_ROUTES: { path: string; priority: number; changeFrequency: Entry["c
   { path: "/jalkapalloarkisto/valmentajat", priority: 0.5, changeFrequency: "yearly" },
   { path: "/jalkapalloarkisto/vuoden-pelaajat", priority: 0.5, changeFrequency: "yearly" },
   { path: "/jalkapalloarkisto/euroopan-paras", priority: 0.5, changeFrequency: "yearly" },
+  { path: "/jalkapalloarkisto/maailman-parhaat", priority: 0.5, changeFrequency: "yearly" },
   { path: "/jalkapalloarkisto/saavutukset", priority: 0.5, changeFrequency: "yearly" },
+  { path: "/jalkapalloarkisto/jarkytykset", priority: 0.5, changeFrequency: "yearly" },
   { path: "/jalkapalloarkisto/fifa-ranking", priority: 0.5, changeFrequency: "monthly" },
   { path: "/jalkapalloarkisto/lupaavat", priority: 0.4, changeFrequency: "yearly" },
   { path: "/jalkapalloarkisto/eurocupit", priority: 0.5, changeFrequency: "yearly" },
-  { path: "/jalkapalloarkisto/pelaajat", priority: 0.5, changeFrequency: "monthly" },
+  { path: "/jalkapalloarkisto/litmanen/loukkaantumiset", priority: 0.4, changeFrequency: "yearly" },
   { path: "/jalkapalloarkisto/stadionit", priority: 0.5, changeFrequency: "yearly" },
   { path: "/jalkapalloarkisto/ulkomaiset-mestarit", priority: 0.4, changeFrequency: "yearly" },
   { path: "/jalkapalloarkisto/palloliitto", priority: 0.3, changeFrequency: "yearly" },
@@ -240,7 +242,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...toEntries(ravintolat, (s) => `/ravintolat/${s}`, 0.6, "yearly"),
     ...toEntries(stadionit, (s) => `/jalkapalloarkisto/stadionit/${s}`, 0.4, "yearly"),
     ...toEntries(arvokisat, (s) => `/jalkapalloarkisto/arvokisat/${s}`, 0.5, "yearly"),
-    ...toEntries(pelaajat, (s) => `/jalkapalloarkisto/pelaajat/${s}`, 0.5, "yearly"),
+    ...toEntries(pelaajat, (s) => (s === LITMANEN_SLUG ? LITMANEN_PATH : `/jalkapalloarkisto/pelaajat/${s}`), 0.5, "yearly"),
     ...toEntries(toiminta, (s) => `/klubi/toiminta/${s}`, 0.6, "yearly"),
     ...toEntries(albumit, (s) => `/galleria/${s}`, 0.4, "yearly"),
     ...osioEntries,

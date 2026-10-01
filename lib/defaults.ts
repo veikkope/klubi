@@ -22,7 +22,7 @@ export const defaultNavigation: NavigationData = {
         { label: "Huuhkajat", href: "/jalkapalloarkisto/huuhkajat" },
         { label: "Arvokisat", href: "/jalkapalloarkisto/arvokisat" },
         { label: "Suomen mestarit", href: "/jalkapalloarkisto/mestarit" },
-        { label: "Pelaajat", href: "/jalkapalloarkisto/pelaajat" },
+        { label: "Litmanen", href: "/jalkapalloarkisto/litmanen" },
         { label: "Stadionit", href: "/jalkapalloarkisto/stadionit" },
       ],
     },

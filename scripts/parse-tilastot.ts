@@ -1235,7 +1235,7 @@ const PAGES: PageSpec[] = [
       {
         slug: "maailman-parhaat-pelaajat",
         title: "Maailman paras avaus vuosittain",
-        category: "ballon-dor",
+        category: "maailman-parhaat",
         jarjestys: 1,
         rangeColumn: 0,
         tiivistelma:
@@ -1265,7 +1265,7 @@ const PAGES: PageSpec[] = [
       {
         slug: "top10-jarkytykset",
         title: "Suomen jalkapallon TOP 10 järkytykset",
-        category: "saavutukset",
+        category: "jarkytykset",
         jarjestys: 1,
         tiivistelma:
           "Suomen jalkapallon kymmenen suurinta järkytystä: ottelu, turnaus, päivämäärä, paikka, tulos ja yleisömäärä.",

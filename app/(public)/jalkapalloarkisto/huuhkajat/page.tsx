@@ -45,10 +45,10 @@ const lead =
 /** Sisarsivut, joilla Huuhkajien tilastot jatkuvat. */
 const relatedLinks = [
   {
-    href: "/jalkapalloarkisto/pelaajat",
-    title: "Pelaajat",
+    href: "/jalkapalloarkisto/litmanen",
+    title: "Litmanen",
     eyebrow: "Henkilöt",
-    body: "Litmanen ja Pikkuhuuhkajat omina koosteinaan sekä maailman parhaat pelaajat.",
+    body: "Jari Litmasen pelaajaprofiili ja ammattilaisuran merkittävimmät loukkaantumiset.",
   },
   {
     href: "/jalkapalloarkisto/valmentajat",

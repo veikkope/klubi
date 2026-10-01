@@ -80,10 +80,10 @@ const sections: ArkistoSection[] = [
     categories: eurocupCategories,
   },
   {
-    href: "/jalkapalloarkisto/pelaajat",
-    title: "Pelaajat",
+    href: "/jalkapalloarkisto/litmanen",
+    title: "Litmanen",
     eyebrow: "Henkilöt",
-    body: "Litmanen, Pikkuhuuhkajat ja maailman parhaat pelaajat omina koosteinaan.",
+    body: "Jari Litmasen pelaajaprofiili ja ammattilaisuran merkittävimmät loukkaantumiset.",
   },
   {
     href: "/jalkapalloarkisto/vuoden-pelaajat",
@@ -98,6 +98,13 @@ const sections: ArkistoSection[] = [
     eyebrow: "Palkinnot",
     body: "Ballon d'Or eli Euroopan parhaan pelaajan palkinto vuodesta 1956.",
     categories: ["ballon-dor"],
+  },
+  {
+    href: "/jalkapalloarkisto/maailman-parhaat",
+    title: "Maailman parhaat",
+    eyebrow: "Kokoonpanot",
+    body: "Maailman paras avauskokoonpano vuosittain kenttäkaavioina vuodesta 2006.",
+    categories: ["maailman-parhaat"],
   },
   {
     href: "/jalkapalloarkisto/valmentajat",
@@ -122,10 +129,17 @@ const sections: ArkistoSection[] = [
   },
   {
     href: "/jalkapalloarkisto/saavutukset",
-    title: "Saavutukset",
+    title: "TOP 10 saavutukset",
     eyebrow: "Historia",
-    body: "Suomalaisen jalkapallon merkittävimmät saavutukset aikajärjestyksessä.",
+    body: "Suomen jalkapallon kymmenen suurinta saavutusta.",
     categories: ["saavutukset"],
+  },
+  {
+    href: "/jalkapalloarkisto/jarkytykset",
+    title: "TOP 10 järkytykset",
+    eyebrow: "Historia",
+    body: "Suomen jalkapallon kymmenen suurinta järkytystä.",
+    categories: ["jarkytykset"],
   },
   {
     href: "/jalkapalloarkisto/ulkomaiset-mestarit",

@@ -9,6 +9,7 @@
  */
 
 import type { SectionNavItem } from "@/components/layout/section-nav";
+import { LITMANEN_LOUKKAANTUMISET_PATH, LITMANEN_PATH } from "@/lib/path";
 
 export const arkistoNav: SectionNavItem[] = [
   { label: "Yleiskatsaus", href: "/jalkapalloarkisto" },
@@ -16,17 +17,25 @@ export const arkistoNav: SectionNavItem[] = [
   { label: "Arvokisat", href: "/jalkapalloarkisto/arvokisat" },
   { label: "Suomen mestarit", href: "/jalkapalloarkisto/mestarit" },
   { label: "Eurocupit", href: "/jalkapalloarkisto/eurocupit" },
-  { label: "Pelaajat", href: "/jalkapalloarkisto/pelaajat" },
+  { label: "Litmanen", href: LITMANEN_PATH },
   { label: "Vuoden pelaajat", href: "/jalkapalloarkisto/vuoden-pelaajat" },
   { label: "Euroopan paras", href: "/jalkapalloarkisto/euroopan-paras" },
+  { label: "Maailman parhaat", href: "/jalkapalloarkisto/maailman-parhaat" },
   { label: "Valmentajat", href: "/jalkapalloarkisto/valmentajat" },
   { label: "FIFA-ranking", href: "/jalkapalloarkisto/fifa-ranking" },
   { label: "Lupaavat", href: "/jalkapalloarkisto/lupaavat" },
-  { label: "Saavutukset", href: "/jalkapalloarkisto/saavutukset" },
+  { label: "TOP 10 saavutukset", href: "/jalkapalloarkisto/saavutukset" },
+  { label: "TOP 10 järkytykset", href: "/jalkapalloarkisto/jarkytykset" },
   { label: "Ulkomaiset mestarit", href: "/jalkapalloarkisto/ulkomaiset-mestarit" },
   { label: "Palloliitto", href: "/jalkapalloarkisto/palloliitto" },
   { label: "Stadionit", href: "/jalkapalloarkisto/stadionit" },
   { label: "Muut tilastot", href: "/jalkapalloarkisto/tilastot" },
+];
+
+/** Litmanen-osion sivut (arkiston osionavigaation alla). */
+export const litmanenNav: SectionNavItem[] = [
+  { label: "Jari Litmanen", href: LITMANEN_PATH },
+  { label: "Litmasen loukkaantumiset", href: LITMANEN_LOUKKAANTUMISET_PATH },
 ];
 
 export const klubiNav: SectionNavItem[] = [
