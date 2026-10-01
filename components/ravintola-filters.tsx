@@ -35,12 +35,15 @@ export type RavintolaSort = (typeof RAVINTOLA_SORTS)[number]["value"];
  * Top-listat (`?lista=`): pikalinkit, jotka järjestävät ravintolat arvosanan
  * mukaan ja näyttävät kymmenen parasta. Muut rajaukset (esim. kaupunki)
  * pätevät myös listaan: "Lahti + Paras ruoka" = Lahden paras ruoka.
+ *
+ * `osa`: osa-arvosana, jonka kortti näyttää kokonaisarvosanan lisäksi
+ * (esim. "Ruoka 4,3"), koska lista on järjestetty sen mukaan.
  */
 export const RAVINTOLA_LISTAT = [
-  { value: "parhaat", label: "Parhaat", ordering: "arvosana" },
-  { value: "ruoka", label: "Paras ruoka", ordering: "ruoka" },
-  { value: "hinta", label: "Paras hinta", ordering: "hinta" },
-  { value: "viihtyvyys", label: "Paras viihtyvyys", ordering: "viihtyvyys" },
+  { value: "parhaat", label: "Parhaat", ordering: "arvosana", osa: null },
+  { value: "ruoka", label: "Paras ruoka", ordering: "ruoka", osa: "ratingFood" },
+  { value: "hinta", label: "Paras hinta", ordering: "hinta", osa: "ratingPrice" },
+  { value: "viihtyvyys", label: "Paras viihtyvyys", ordering: "viihtyvyys", osa: "ratingAtmosphere" },
 ] as const;
 
 export type RavintolaLista = (typeof RAVINTOLA_LISTAT)[number]["value"];

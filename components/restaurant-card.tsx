@@ -55,10 +55,17 @@ export function subRatings(r: {
  */
 export function RestaurantCard({
   restaurant: r,
+  korostus,
 }: {
   restaurant: RavintolaCardData;
+  /**
+   * Osa-arvosana, joka näytetään kokonaisarvosanan lisäksi, esim. "Ruoka 4,3"
+   * Paras ruoka -listalla (`?lista=ruoka`). Puuttuva arvo jätetään näyttämättä.
+   */
+  korostus?: SubRatingKey;
 }) {
   const rating = overallRating(r);
+  const osa = korostus && typeof r[korostus] === "number" ? r[korostus] : null;
   const isClosed = r.closed === true;
   const meta = [r.city?.name, r.priceLevel].filter(Boolean).join(" · ");
 
@@ -103,17 +110,26 @@ export function RestaurantCard({
 
       <div className="flex min-w-0 flex-col gap-1.5 sm:flex-1 sm:gap-2.5 sm:border-t-[3px] sm:border-t-brass sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
-          {rating !== null && (
-            <span className="inline-flex items-center gap-2 sm:gap-2.5">
-              <RatingDots value={rating} size="sm" className="sm:hidden" />
-              <RatingDots value={rating} size="lg" className="max-sm:hidden" />
-              {/* Pisteiden aria-label kertoo jo tarkan arvon ruudunlukijalle. */}
-              <span
-                aria-hidden
-                className="font-display text-[15px] font-semibold leading-none tabular-nums text-brass-text sm:text-lg"
-              >
-                {formatRating(rating)}
-              </span>
+          {(rating !== null || osa !== null) && (
+            <span className="inline-flex flex-wrap items-center gap-x-2 gap-y-1 sm:gap-x-2.5">
+              {rating !== null && (
+                <>
+                  <RatingDots value={rating} size="sm" className="sm:hidden" />
+                  <RatingDots value={rating} size="lg" className="max-sm:hidden" />
+                  {/* Pisteiden aria-label kertoo jo tarkan arvon ruudunlukijalle. */}
+                  <span
+                    aria-hidden
+                    className="font-display text-[15px] font-semibold leading-none tabular-nums text-brass-text sm:text-lg"
+                  >
+                    {formatRating(rating)}
+                  </span>
+                </>
+              )}
+              {osa !== null && korostus && (
+                <span className="rounded-xs bg-brass-tint px-2 py-1 text-xs font-semibold leading-none tabular-nums text-brass-tint-text sm:text-[13px]">
+                  {SUB_RATING_LABELS[korostus]} {formatRating(osa)}
+                </span>
+              )}
             </span>
           )}
           {meta && <span className="hidden text-sm text-muted-soft sm:inline">{meta}</span>}

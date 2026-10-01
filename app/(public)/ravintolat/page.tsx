@@ -190,7 +190,7 @@ export default async function RavintolatPage({ searchParams }: PageProps) {
                       <span aria-hidden className="font-display text-3xl leading-none text-accent">
                         {index + 1}.
                       </span>
-                      <RestaurantCard restaurant={restaurant} />
+                      <RestaurantCard restaurant={restaurant} korostus={lista.osa ?? undefined} />
                     </li>
                   ))}
                 </ol>
