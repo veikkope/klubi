@@ -144,6 +144,9 @@ export type PortableText = Array<
   | ({
       _key: string;
     } & ImageWithAlt)
+  | ({
+      _key: string;
+    } & Kokoonpano)
 >;
 
 export type Asetukset = {
@@ -795,6 +798,23 @@ export type Sivu = {
   muutLegacyUrlit?: Array<string>;
 };
 
+export type Kokoonpano = {
+  _type: "kokoonpano";
+  otsikko?: string;
+  rivit?: Array<{
+    nimi?: string;
+    pelaajat?: Array<{
+      nimi?: string;
+      luku?: number;
+      _type: "kokoonpanoPelaaja";
+      _key: string;
+    }>;
+    _type: "kokoonpanoRivi";
+    _key: string;
+  }>;
+  selite?: string;
+};
+
 export type GalleriaKuva = {
   _type: "galleriaKuva";
   asset?: SanityImageAssetReference;
@@ -930,6 +950,7 @@ export type AllSanitySchemaTypes =
   | Ottelu
   | Tapahtuma
   | Sivu
+  | Kokoonpano
   | GalleriaKuva
   | SanityImagePaletteSwatch
   | SanityImagePalette
@@ -1010,6 +1031,23 @@ export type ArvokisaBySlugQueryResult = {
         caption?: string;
         lqip: string | null;
       }
+    | {
+        _key: string;
+        _type: "kokoonpano";
+        otsikko?: string;
+        rivit?: Array<{
+          nimi?: string;
+          pelaajat?: Array<{
+            nimi?: string;
+            luku?: number;
+            _type: "kokoonpanoPelaaja";
+            _key: string;
+          }>;
+          _type: "kokoonpanoRivi";
+          _key: string;
+        }>;
+        selite?: string;
+      }
   > | null;
   tilastot: Array<{
     _id: string;
@@ -1071,6 +1109,23 @@ export type ArvokisaBySlugQueryResult = {
           caption?: string;
           lqip: string | null;
         }
+      | {
+          _key: string;
+          _type: "kokoonpano";
+          otsikko?: string;
+          rivit?: Array<{
+            nimi?: string;
+            pelaajat?: Array<{
+              nimi?: string;
+              luku?: number;
+              _type: "kokoonpanoPelaaja";
+              _key: string;
+            }>;
+            _type: "kokoonpanoRivi";
+            _key: string;
+          }>;
+          selite?: string;
+        }
     > | null;
     columns: Array<{
       key: string | null;
@@ -1113,6 +1168,23 @@ export type ArvokisaBySlugQueryResult = {
           alt?: string;
           caption?: string;
           lqip: string | null;
+        }
+      | {
+          _key: string;
+          _type: "kokoonpano";
+          otsikko?: string;
+          rivit?: Array<{
+            nimi?: string;
+            pelaajat?: Array<{
+              nimi?: string;
+              luku?: number;
+              _type: "kokoonpanoPelaaja";
+              _key: string;
+            }>;
+            _type: "kokoonpanoRivi";
+            _key: string;
+          }>;
+          selite?: string;
         }
     > | null;
     kuvat: Array<{
@@ -1204,6 +1276,23 @@ export type ArvokisaMitalitaulukotQueryResult = Array<{
         caption?: string;
         lqip: string | null;
       }
+    | {
+        _key: string;
+        _type: "kokoonpano";
+        otsikko?: string;
+        rivit?: Array<{
+          nimi?: string;
+          pelaajat?: Array<{
+            nimi?: string;
+            luku?: number;
+            _type: "kokoonpanoPelaaja";
+            _key: string;
+          }>;
+          _type: "kokoonpanoRivi";
+          _key: string;
+        }>;
+        selite?: string;
+      }
   > | null;
   columns: Array<{
     key: string | null;
@@ -1246,6 +1335,23 @@ export type ArvokisaMitalitaulukotQueryResult = Array<{
         alt?: string;
         caption?: string;
         lqip: string | null;
+      }
+    | {
+        _key: string;
+        _type: "kokoonpano";
+        otsikko?: string;
+        rivit?: Array<{
+          nimi?: string;
+          pelaajat?: Array<{
+            nimi?: string;
+            luku?: number;
+            _type: "kokoonpanoPelaaja";
+            _key: string;
+          }>;
+          _type: "kokoonpanoRivi";
+          _key: string;
+        }>;
+        selite?: string;
       }
   > | null;
   kuvat: Array<{
@@ -1354,6 +1460,23 @@ export type PelaajaBySlugQueryResult = {
         caption?: string;
         lqip: string | null;
       }
+    | {
+        _key: string;
+        _type: "kokoonpano";
+        otsikko?: string;
+        rivit?: Array<{
+          nimi?: string;
+          pelaajat?: Array<{
+            nimi?: string;
+            luku?: number;
+            _type: "kokoonpanoPelaaja";
+            _key: string;
+          }>;
+          _type: "kokoonpanoRivi";
+          _key: string;
+        }>;
+        selite?: string;
+      }
   > | null;
   tilastot: Array<{
     _id: string;
@@ -1415,6 +1538,23 @@ export type PelaajaBySlugQueryResult = {
           caption?: string;
           lqip: string | null;
         }
+      | {
+          _key: string;
+          _type: "kokoonpano";
+          otsikko?: string;
+          rivit?: Array<{
+            nimi?: string;
+            pelaajat?: Array<{
+              nimi?: string;
+              luku?: number;
+              _type: "kokoonpanoPelaaja";
+              _key: string;
+            }>;
+            _type: "kokoonpanoRivi";
+            _key: string;
+          }>;
+          selite?: string;
+        }
     > | null;
     columns: Array<{
       key: string | null;
@@ -1457,6 +1597,23 @@ export type PelaajaBySlugQueryResult = {
           alt?: string;
           caption?: string;
           lqip: string | null;
+        }
+      | {
+          _key: string;
+          _type: "kokoonpano";
+          otsikko?: string;
+          rivit?: Array<{
+            nimi?: string;
+            pelaajat?: Array<{
+              nimi?: string;
+              luku?: number;
+              _type: "kokoonpanoPelaaja";
+              _key: string;
+            }>;
+            _type: "kokoonpanoRivi";
+            _key: string;
+          }>;
+          selite?: string;
         }
     > | null;
     kuvat: Array<{
@@ -1589,6 +1746,23 @@ export type StadionBySlugQueryResult = {
         caption?: string;
         lqip: string | null;
       }
+    | {
+        _key: string;
+        _type: "kokoonpano";
+        otsikko?: string;
+        rivit?: Array<{
+          nimi?: string;
+          pelaajat?: Array<{
+            nimi?: string;
+            luku?: number;
+            _type: "kokoonpanoPelaaja";
+            _key: string;
+          }>;
+          _type: "kokoonpanoRivi";
+          _key: string;
+        }>;
+        selite?: string;
+      }
   > | null;
   images: Array<{
     _key: string;
@@ -1699,6 +1873,23 @@ export type TilastotByCategoryQueryResult = Array<{
         caption?: string;
         lqip: string | null;
       }
+    | {
+        _key: string;
+        _type: "kokoonpano";
+        otsikko?: string;
+        rivit?: Array<{
+          nimi?: string;
+          pelaajat?: Array<{
+            nimi?: string;
+            luku?: number;
+            _type: "kokoonpanoPelaaja";
+            _key: string;
+          }>;
+          _type: "kokoonpanoRivi";
+          _key: string;
+        }>;
+        selite?: string;
+      }
   > | null;
   columns: Array<{
     key: string | null;
@@ -1741,6 +1932,23 @@ export type TilastotByCategoryQueryResult = Array<{
         alt?: string;
         caption?: string;
         lqip: string | null;
+      }
+    | {
+        _key: string;
+        _type: "kokoonpano";
+        otsikko?: string;
+        rivit?: Array<{
+          nimi?: string;
+          pelaajat?: Array<{
+            nimi?: string;
+            luku?: number;
+            _type: "kokoonpanoPelaaja";
+            _key: string;
+          }>;
+          _type: "kokoonpanoRivi";
+          _key: string;
+        }>;
+        selite?: string;
       }
   > | null;
   kuvat: Array<{
@@ -1828,6 +2036,23 @@ export type TilastotByCategoriesQueryResult = Array<{
         caption?: string;
         lqip: string | null;
       }
+    | {
+        _key: string;
+        _type: "kokoonpano";
+        otsikko?: string;
+        rivit?: Array<{
+          nimi?: string;
+          pelaajat?: Array<{
+            nimi?: string;
+            luku?: number;
+            _type: "kokoonpanoPelaaja";
+            _key: string;
+          }>;
+          _type: "kokoonpanoRivi";
+          _key: string;
+        }>;
+        selite?: string;
+      }
   > | null;
   columns: Array<{
     key: string | null;
@@ -1870,6 +2095,23 @@ export type TilastotByCategoriesQueryResult = Array<{
         alt?: string;
         caption?: string;
         lqip: string | null;
+      }
+    | {
+        _key: string;
+        _type: "kokoonpano";
+        otsikko?: string;
+        rivit?: Array<{
+          nimi?: string;
+          pelaajat?: Array<{
+            nimi?: string;
+            luku?: number;
+            _type: "kokoonpanoPelaaja";
+            _key: string;
+          }>;
+          _type: "kokoonpanoRivi";
+          _key: string;
+        }>;
+        selite?: string;
       }
   > | null;
   kuvat: Array<{
@@ -1957,6 +2199,23 @@ export type TilastoBySlugQueryResult = {
         caption?: string;
         lqip: string | null;
       }
+    | {
+        _key: string;
+        _type: "kokoonpano";
+        otsikko?: string;
+        rivit?: Array<{
+          nimi?: string;
+          pelaajat?: Array<{
+            nimi?: string;
+            luku?: number;
+            _type: "kokoonpanoPelaaja";
+            _key: string;
+          }>;
+          _type: "kokoonpanoRivi";
+          _key: string;
+        }>;
+        selite?: string;
+      }
   > | null;
   columns: Array<{
     key: string | null;
@@ -1999,6 +2258,23 @@ export type TilastoBySlugQueryResult = {
         alt?: string;
         caption?: string;
         lqip: string | null;
+      }
+    | {
+        _key: string;
+        _type: "kokoonpano";
+        otsikko?: string;
+        rivit?: Array<{
+          nimi?: string;
+          pelaajat?: Array<{
+            nimi?: string;
+            luku?: number;
+            _type: "kokoonpanoPelaaja";
+            _key: string;
+          }>;
+          _type: "kokoonpanoRivi";
+          _key: string;
+        }>;
+        selite?: string;
       }
   > | null;
   kuvat: Array<{
@@ -2127,6 +2403,23 @@ export type HuuhkajatOsioQueryResult = Array<{
         caption?: string;
         lqip: string | null;
       }
+    | {
+        _key: string;
+        _type: "kokoonpano";
+        otsikko?: string;
+        rivit?: Array<{
+          nimi?: string;
+          pelaajat?: Array<{
+            nimi?: string;
+            luku?: number;
+            _type: "kokoonpanoPelaaja";
+            _key: string;
+          }>;
+          _type: "kokoonpanoRivi";
+          _key: string;
+        }>;
+        selite?: string;
+      }
   > | null;
   columns: Array<{
     key: string | null;
@@ -2169,6 +2462,23 @@ export type HuuhkajatOsioQueryResult = Array<{
         alt?: string;
         caption?: string;
         lqip: string | null;
+      }
+    | {
+        _key: string;
+        _type: "kokoonpano";
+        otsikko?: string;
+        rivit?: Array<{
+          nimi?: string;
+          pelaajat?: Array<{
+            nimi?: string;
+            luku?: number;
+            _type: "kokoonpanoPelaaja";
+            _key: string;
+          }>;
+          _type: "kokoonpanoRivi";
+          _key: string;
+        }>;
+        selite?: string;
       }
   > | null;
   kuvat: Array<{
@@ -2285,6 +2595,23 @@ export type EtusivuQueryResult = {
               alt?: string;
               caption?: string;
               lqip: string | null;
+            }
+          | {
+              _key: string;
+              _type: "kokoonpano";
+              otsikko?: string;
+              rivit?: Array<{
+                nimi?: string;
+                pelaajat?: Array<{
+                  nimi?: string;
+                  luku?: number;
+                  _type: "kokoonpanoPelaaja";
+                  _key: string;
+                }>;
+                _type: "kokoonpanoRivi";
+                _key: string;
+              }>;
+              selite?: string;
             }
         > | null;
         image: {
@@ -2608,6 +2935,23 @@ export type KlubiSivuQueryResult = {
         caption?: string;
         lqip: string | null;
       }
+    | {
+        _key: string;
+        _type: "kokoonpano";
+        otsikko?: string;
+        rivit?: Array<{
+          nimi?: string;
+          pelaajat?: Array<{
+            nimi?: string;
+            luku?: number;
+            _type: "kokoonpanoPelaaja";
+            _key: string;
+          }>;
+          _type: "kokoonpanoRivi";
+          _key: string;
+        }>;
+        selite?: string;
+      }
   > | null;
   tilastot: Array<{
     _id: string;
@@ -2669,6 +3013,23 @@ export type KlubiSivuQueryResult = {
           caption?: string;
           lqip: string | null;
         }
+      | {
+          _key: string;
+          _type: "kokoonpano";
+          otsikko?: string;
+          rivit?: Array<{
+            nimi?: string;
+            pelaajat?: Array<{
+              nimi?: string;
+              luku?: number;
+              _type: "kokoonpanoPelaaja";
+              _key: string;
+            }>;
+            _type: "kokoonpanoRivi";
+            _key: string;
+          }>;
+          selite?: string;
+        }
     > | null;
     columns: Array<{
       key: string | null;
@@ -2711,6 +3072,23 @@ export type KlubiSivuQueryResult = {
           alt?: string;
           caption?: string;
           lqip: string | null;
+        }
+      | {
+          _key: string;
+          _type: "kokoonpano";
+          otsikko?: string;
+          rivit?: Array<{
+            nimi?: string;
+            pelaajat?: Array<{
+              nimi?: string;
+              luku?: number;
+              _type: "kokoonpanoPelaaja";
+              _key: string;
+            }>;
+            _type: "kokoonpanoRivi";
+            _key: string;
+          }>;
+          selite?: string;
         }
     > | null;
     kuvat: Array<{
@@ -2792,6 +3170,23 @@ export type KlubiToimintaBySlugQueryResult = {
         alt?: string;
         caption?: string;
         lqip: string | null;
+      }
+    | {
+        _key: string;
+        _type: "kokoonpano";
+        otsikko?: string;
+        rivit?: Array<{
+          nimi?: string;
+          pelaajat?: Array<{
+            nimi?: string;
+            luku?: number;
+            _type: "kokoonpanoPelaaja";
+            _key: string;
+          }>;
+          _type: "kokoonpanoRivi";
+          _key: string;
+        }>;
+        selite?: string;
       }
   > | null;
   kuvat: Array<{
@@ -2892,6 +3287,23 @@ export type KlubiToimintaBySlugQueryResult = {
           caption?: string;
           lqip: string | null;
         }
+      | {
+          _key: string;
+          _type: "kokoonpano";
+          otsikko?: string;
+          rivit?: Array<{
+            nimi?: string;
+            pelaajat?: Array<{
+              nimi?: string;
+              luku?: number;
+              _type: "kokoonpanoPelaaja";
+              _key: string;
+            }>;
+            _type: "kokoonpanoRivi";
+            _key: string;
+          }>;
+          selite?: string;
+        }
     > | null;
     columns: Array<{
       key: string | null;
@@ -2934,6 +3346,23 @@ export type KlubiToimintaBySlugQueryResult = {
           alt?: string;
           caption?: string;
           lqip: string | null;
+        }
+      | {
+          _key: string;
+          _type: "kokoonpano";
+          otsikko?: string;
+          rivit?: Array<{
+            nimi?: string;
+            pelaajat?: Array<{
+              nimi?: string;
+              luku?: number;
+              _type: "kokoonpanoPelaaja";
+              _key: string;
+            }>;
+            _type: "kokoonpanoRivi";
+            _key: string;
+          }>;
+          selite?: string;
         }
     > | null;
     kuvat: Array<{
@@ -3381,6 +3810,23 @@ export type UutinenDetailQueryResult = {
         caption?: string;
         lqip: string | null;
       }
+    | {
+        _key: string;
+        _type: "kokoonpano";
+        otsikko?: string;
+        rivit?: Array<{
+          nimi?: string;
+          pelaajat?: Array<{
+            nimi?: string;
+            luku?: number;
+            _type: "kokoonpanoPelaaja";
+            _key: string;
+          }>;
+          _type: "kokoonpanoRivi";
+          _key: string;
+        }>;
+        selite?: string;
+      }
   > | null;
   lahde: {
     nimi: string | null;
@@ -3612,6 +4058,23 @@ export type TapahtumaDetailQueryResult = {
         alt?: string;
         caption?: string;
         lqip: string | null;
+      }
+    | {
+        _key: string;
+        _type: "kokoonpano";
+        otsikko?: string;
+        rivit?: Array<{
+          nimi?: string;
+          pelaajat?: Array<{
+            nimi?: string;
+            luku?: number;
+            _type: "kokoonpanoPelaaja";
+            _key: string;
+          }>;
+          _type: "kokoonpanoRivi";
+          _key: string;
+        }>;
+        selite?: string;
       }
   > | null;
   signupUrl: string | null;

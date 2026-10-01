@@ -275,6 +275,24 @@ body {
   }
 }
 
+/* Kokoonpano pelikentällä (components/kokoonpano.tsx): leikatun nurmen
+   raidat ja valkoiset viivat. Nurmi on tumma, jotta valkoinen teksti on AA. */
+.kokoonpano-kentta {
+  color: rgb(255 255 255 / 0.6);
+  background: repeating-linear-gradient(
+    to bottom,
+    #2f6b3c 0 9.0909%,
+    #2a6136 9.0909% 18.1818%
+  );
+}
+@media print {
+  .kokoonpano-kentta {
+    color: #555;
+    background: #fff;
+    border: 1px solid #555;
+  }
+}
+
 /* Sivunvaihdot (View Transitions, components/sivunvaihto.tsx, docs/04).
    - Sivun sisältö häivyttyy: vanha nopeasti ulos, uusi hieman limittäin sisään.
    - Kortin kuva liukuu kohdesivun isoksi kuvaksi (`.kuva-siirtyma`).

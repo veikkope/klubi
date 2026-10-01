@@ -310,6 +310,21 @@ Karsintasarjat (kategoria *Karsinta*) ovat omia sivujaan, ja ne listataan
 Huuhkajat-sivun alaosassa uusin ensin. Kansojen liigan kaudet näkyvät samassa
 kohdassa karsintasarjojen alla.
 
+### Kokoonpano pelikentälle
+
+Avauskokoonpanot (esim. Huuhkaja-arvostelun "Huuhkajat avauskokoonpano
+2005–2025") piirretään sivulle pelikentäksi.
+
+1. Avaa tilasto ja tekstikenttä, esim. **Lisätiedot taulukon jälkeen**.
+2. Valitse tekstieditorin **+**-valikosta **Kokoonpano pelikentällä**
+   (olemassa olevaa voi muokata klikkaamalla sitä).
+3. **Otsikko**, esim. "Huuhkajat avauskokoonpano 2005–2025 (91 ottelua)".
+4. **Rivit hyökkäyksestä maalivahtiin:** ylin rivi on hyökkäys, alin
+   maalivahti. Lisää jokaiselle riville pelaajat vasemmalta oikealle: nimi ja
+   luku (luku näkyy pelaajan pallossa).
+5. **Selite** (valinnainen) näkyy kentän alla, esim. mitä luku tarkoittaa.
+6. **Julkaise**. Studio varoittaa, jos kentällä on muu määrä kuin 11 pelaajaa.
+
 ## Tarkistettavat
 
 Migraatio ei arvannut asioita, joita se ei voinut päätellä varmasti. Se merkitsi

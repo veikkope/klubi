@@ -6,6 +6,7 @@ import {
 } from "@portabletext/react";
 import Link from "next/link";
 import { SanityImage } from "./sanity-image";
+import { Kokoonpano, type KokoonpanoData } from "./kokoonpano";
 import { UusiValilehti } from "@/components/ui/uusi-valilehti";
 import type { SanityImage as SanityImageData } from "@/lib/types";
 
@@ -115,13 +116,29 @@ const components: PortableTextComponents = {
         </figure>
       );
     },
+    kokoonpano: kokoonpanoLohko(0),
   },
 };
+
+/** Kokoonpanon otsikko on sisällössä h3-tasoinen otsikko (siirretään kuten muutkin). */
+function kokoonpanoLohko(siirto: number) {
+  const Otsikko = otsikko("h3", siirto);
+  function KokoonpanoLohko({ value }: { value: KokoonpanoData }) {
+    return <Kokoonpano value={value} Otsikko={Otsikko} />;
+  }
+  return KokoonpanoLohko;
+}
 
 /** Sisällön ylimmän otsikon taso (2–4), tai null jos otsikoita ei ole. */
 function ylinTaso(value: PortableTextBlock[]): number | null {
   const tasot = value
-    .map((b) => (typeof b.style === "string" && /^h[2-4]$/.test(b.style) ? Number(b.style.slice(1)) : null))
+    .map((b) =>
+      b._type === "kokoonpano"
+        ? 3
+        : typeof b.style === "string" && /^h[2-4]$/.test(b.style)
+          ? Number(b.style.slice(1))
+          : null,
+    )
     .filter((t): t is number => t !== null);
   return tasot.length > 0 ? Math.min(...tasot) : null;
 }
@@ -161,6 +178,9 @@ export function PortableText({
             }),
             ...(ingressi && { normal: kappaleIngressilla }),
           },
+          ...(siirto !== 0 && {
+            types: { ...(components.types as object), kokoonpano: kokoonpanoLohko(siirto) },
+          }),
         };
   return <PortableTextRaw value={value} components={kaytettavat} />;
 }

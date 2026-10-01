@@ -3,6 +3,7 @@ import type { SchemaTypeDefinition } from "sanity";
 import { imageWithAlt } from "./objects/imageWithAlt";
 import { galleriaKuva } from "./objects/galleriaKuva";
 import { portableText } from "./objects/portableText";
+import { kokoonpano } from "./objects/kokoonpano";
 
 import { sivu } from "./documents/sivu";
 import { tapahtuma } from "./documents/tapahtuma";
@@ -37,6 +38,7 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   imageWithAlt,
   galleriaKuva,
   portableText,
+  kokoonpano,
   sivu,
   tapahtuma,
   ottelu,

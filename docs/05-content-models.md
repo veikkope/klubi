@@ -18,6 +18,12 @@ Useimmissa julkaistavissa dokumenteissa on:
 - `seoTitle`, `seoDescription` (string, valinnaisia — käyttävät titlea jos tyhjät)
 - `publishedAt` (datetime, oletus: nyt)
 
+`portableText`-kenttiin voi lisätä tekstin ja kuvien (`imageWithAlt`) lisäksi
+lohkon `kokoonpano` (Kokoonpano pelikentällä, `components/kokoonpano.tsx`):
+`otsikko` (pakollinen), `rivit[]` hyökkäyksestä maalivahtiin (1–6 riviä, rivillä
+valinnainen `nimi` ruudunlukijalle ja `pelaajat[]` = `nimi` + valinnainen `luku`)
+ja valinnainen `selite`. Varoitus, jos pelaajia on muu määrä kuin 11.
+
 ## Sisältötyypit
 
 ### 1. `sivu` (julkinen vapaamuotoinen sivu)

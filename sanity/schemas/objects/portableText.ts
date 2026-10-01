@@ -58,5 +58,7 @@ export const portableText = defineType({
       },
     }),
     defineArrayMember({ type: "imageWithAlt" }),
+    // Avauskokoonpanot ym. pelikentälle piirrettynä (components/kokoonpano.tsx).
+    defineArrayMember({ type: "kokoonpano" }),
   ],
 });
