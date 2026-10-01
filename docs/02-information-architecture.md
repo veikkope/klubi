@@ -6,10 +6,10 @@
 
 | # | Linkki | Polku | Tyyppi |
 |---|---|---|---|
-| 1 | **Jalkapallo** ▾ | `/uutiset` | Dropdown: jutut + jalkapalloarkisto |
+| 1 | **Jalkapallo** ▾ | `/jalkapalloarkisto` | Dropdown: jalkapalloarkisto ja sen osiot |
 | 2 | **Ottelut** | `/ottelut` | Otteluohjelma (automaattinen, docs/13) |
 | 3 | **Ravintola-arviot** | `/ravintolat` | Hakemisto + yksittäiset arviot |
-| 4 | **Tapahtumat** | `/tapahtumat` | Klubin omat tapahtumat |
+| 4 | **Uutiset** | `/uutiset` | Jutut (1.10.2026 Tapahtumat-linkin tilalle; tapahtumat etusivulla ja footerissa) |
 | 5 | **Klubista** ▾ | `/klubi` | Dropdown |
 
 Logo viittaa etusivulle `/`. Aktiivinen kohta: sininen teksti + 2 px sininen alleviivaus. Valikko on Sanityssa (singleton `navigaatio`); oletukset `lib/defaults.ts`.

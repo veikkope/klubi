@@ -107,7 +107,7 @@ function HeaderClientInner({
             const listaId = `alavalikko-${index}`;
             return (
               <div
-                key={item.href}
+                key={`${item.label}|${item.href}`}
                 className="relative"
                 // Tab valikosta ulos sulkee sen, jottei se jää sisällön päälle.
                 onBlur={(e) => {
@@ -176,7 +176,7 @@ function HeaderClientInner({
           }
           return (
             <Link
-              key={item.href}
+              key={`${item.label}|${item.href}`}
               href={item.href}
               aria-current={pathname === item.href ? "page" : undefined}
               className={cn(
@@ -228,7 +228,7 @@ function HeaderClientInner({
               className="mx-auto flex max-w-6xl flex-col gap-1 px-6 py-4"
             >
               {items.map((item) => (
-                <MobileItem key={item.href} item={item} pathname={pathname} />
+                <MobileItem key={`${item.label}|${item.href}`} item={item} pathname={pathname} />
               ))}
             </nav>
           </div>

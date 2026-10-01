@@ -8,17 +8,16 @@
 
 import type { NavigationData, ContactData, EtusivuData } from "@/lib/types";
 
-// Tyyliopas (Sivut v3): Jalkapallo · Ottelut · Ravintola-arviot · Tapahtumat ·
-// Klubista. Ei "Liity jäseneksi" -korostusta. Jalkapalloarkisto on
+// Tyyliopas (Sivut v3): Jalkapallo · Ottelut · Ravintola-arviot · Uutiset ·
+// Klubista. Tapahtumat on etusivulla ja alatunnisteessa, ei päävalikossa. Ei "Liity jäseneksi" -korostusta. Jalkapalloarkisto on
 // Jalkapallo-valikon alla (docs/02).
 export const defaultNavigation: NavigationData = {
   items: [
     {
       label: "Jalkapallo",
-      href: "/uutiset",
+      href: "/jalkapalloarkisto",
       highlight: false,
       children: [
-        { label: "Uutiset", href: "/uutiset" },
         { label: "Jalkapalloarkisto", href: "/jalkapalloarkisto" },
         { label: "Huuhkajat", href: "/jalkapalloarkisto/huuhkajat" },
         { label: "Arvokisat", href: "/jalkapalloarkisto/arvokisat" },
@@ -29,7 +28,7 @@ export const defaultNavigation: NavigationData = {
     },
     { label: "Ottelut", href: "/ottelut", highlight: false },
     { label: "Ravintola-arviot", href: "/ravintolat", highlight: false },
-    { label: "Tapahtumat", href: "/tapahtumat", highlight: false },
+    { label: "Uutiset", href: "/uutiset", highlight: false },
     {
       label: "Klubista",
       href: "/klubi",
