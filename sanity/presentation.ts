@@ -36,6 +36,15 @@ export const locations: PresentationPluginOptions["resolve"] = {
         }),
       ]),
     ),
+    lehtileike: defineLocations({
+      select: { id: "_id", otsikko: "otsikko", osio: "osio", pelaajaSlug: "pelaaja.slug.current" },
+      resolve: (doc) => {
+        const href = doc?.id
+          ? documentHref({ _id: doc.id, _type: "lehtileike", osio: doc.osio, pelaajaSlug: doc.pelaajaSlug })
+          : null;
+        return href ? { locations: [{ title: doc?.otsikko ?? "Lehtileike", href }] } : null;
+      },
+    }),
     etusivu: defineLocations({ locations: [{ title: "Etusivu", href: "/" }] }),
   },
 };

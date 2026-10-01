@@ -37,6 +37,7 @@
     "test:arvostelukuvat": "tsx scripts/test-arvostelukuvat.ts",
     "test:taulukko": "tsx scripts/test-taulukko.ts",
     "test:joukkueet": "tsx scripts/test-joukkueet.ts",
+    "test:litmanen": "tsx scripts/test-litmanen.ts",
     "test:saavutettavuus": "tsx scripts/test-saavutettavuus.ts",
     "brandikuvat": "tsx scripts/brandikuvat.ts",
     "test:kuvat": "tsx scripts/test-kuvat.ts",
@@ -49,6 +50,7 @@
     "patch:palloveikkaus": "tsx scripts/jaa-palloveikkaus.ts",
     "patch:litmanen": "tsx scripts/patch-litmanen.ts",
     "patch:omat-sivut": "tsx scripts/patch-omat-sivut.ts",
+    "patch:litmanen-osio": "tsx scripts/uudista-litmanen.ts",
     "backup": "tsx scripts/varmuuskopio.ts",
     "siivoa:arvostelukuvat": "tsx scripts/siivoa-arvostelukuvat.ts"
   },

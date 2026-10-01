@@ -52,6 +52,7 @@ public/                Staattiset tiedostot (favicon, robots, kuvat joita Sanity
 | Testaa taulukkoeditorin säännöt | `npm run test:taulukko` |
 | Testaa joukkueiden nimivertailu (otteluohjelma) | `npm run test:joukkueet` |
 | Testaa kuvaloader (Sanityn CDN) | `npm run test:kuvat` |
+| Testaa Litmanen-osion säännöt (lehtileikkeiden ote, loukkaantumisyhteenveto) | `npm run test:litmanen` |
 | Brändikuvien verkkoversiot (vain kun logo muuttuu) | `npm run brandikuvat` → `public/brand/web/` |
 | Saavutettavuustesti (axe, WCAG 2.1 AA) | `npm run test:saavutettavuus` (sivusto käynnissä; `BASE_URL=…` muu osoite) |
 | Orpojen arvostelukuvien siivous (listaa; `-- --poista` poistaa) | `npm run siivoa:arvostelukuvat` (tarvittaessa; lisää `-- --production`) |
@@ -70,6 +71,7 @@ public/                Staattiset tiedostot (favicon, robots, kuvat joita Sanity
 | Palloveikkaussivun jako veikkausten omiksi alasivuiksi (kuivaharjoitus; `-- --vie` kirjoittaa, `-- --production` varmuuskopion kanssa; kertaluonteinen) | `npm run patch:palloveikkaus` |
 | Litmanen-osio: päävalikon Pelaajat → Litmanen ja `litmanen.htm` loukkaantumissivulle (kuivaharjoitus; `-- --vie` kirjoittaa, `-- --production` varmuuskopion kanssa; kertaluonteinen) | `npm run patch:litmanen` |
 | Järkytykset ja maailman paras avaus omille sivuilleen (kategoriat `jarkytykset`, `maailman-parhaat`; kuivaharjoitus; `-- --vie` kirjoittaa, `-- --production` varmuuskopion kanssa; kertaluonteinen, productioniin vasta deployn jälkeen) | `npm run patch:omat-sivut` |
+| Litmanen-osion uudistus: lehtijutut `lehtileike`-dokumenteiksi, faktat ja patsas omiin kenttiin (kuivaharjoitus → `data/litmanen-leikkeet.tsv`; `-- --vie` kirjoittaa, `-- --production` varmuuskopion kanssa; kertaluonteinen, productioniin vasta deployn jälkeen) | `npm run patch:litmanen-osio` (docs/20) |
 
 **Datasetit:** migraatiot ja kehitys kirjoittavat aina `development`-datasettiin (`.env.local`). `production` on isän ylläpitämä tuotantodata, jota Vercel käyttää: sinne viedään vain puuttuvia dokumentteja (`--missing`) tai dokumenttikohtaisia patcheja, ja aina varmuuskopion jälkeen. Jos sisältö näyttää puuttuvan, tarkista ensin `NEXT_PUBLIC_SANITY_PROJECT_ID` ja `NEXT_PUBLIC_SANITY_DATASET`. Migraation sopimus ja tila: `docs/12-sisaltomigraatio.md`.
 
@@ -137,6 +139,7 @@ Täydellinen työnkulku: `docs/10-agent-workflow.md`.
 | Blogspot-migraatio (blogi → uutiset) | `docs/14-blogspot-migraatio.md` |
 | Arvostelujen kuvat (moderointi, siivous) | `docs/18-arvostelukuvat.md` |
 | Tilastotaulukoiden editori | `docs/19-taulukkoeditori.md` |
+| Litmanen-osio (lehtileikkeet, patsas, loukkaantumiset) | `docs/20-litmanen-osio.md` |
 | Tyyliopas (lopullinen, HTML) | `docs/design-handoff/` |
 
 <!-- BEGIN:nextjs-agent-rules -->

@@ -34,6 +34,7 @@ const TARKISTETTAVAT: { tyyppi: string; otsikko: string }[] = [
   { tyyppi: "stadion", otsikko: "Stadionit" },
   { tyyppi: "klubiToiminta", otsikko: "Klubin toiminta" },
   { tyyppi: "pelaaja", otsikko: "Pelaajat" },
+  { tyyppi: "lehtileike", otsikko: "Lehtileikkeet" },
   { tyyppi: "arvokisa", otsikko: "Arvokisat" },
 ];
 
@@ -199,6 +200,14 @@ export const structure: StructureResolver = (S) =>
               lista(S, "jalkapalloTilasto", "Tilastot"),
               lista(S, "arvokisa", "Arvokisat"),
               lista(S, "pelaaja", "Pelaajat"),
+              S.listItem()
+                .title("Lehtileikkeet")
+                .schemaType("lehtileike")
+                .child(
+                  S.documentTypeList("lehtileike")
+                    .title("Lehtileikkeet")
+                    .defaultOrdering([{ field: "julkaistu", direction: "desc" }]),
+                ),
               lista(S, "stadion", "Stadionit"),
             ]),
         ),

@@ -288,6 +288,30 @@ export type Kommentti = {
   blogspotId?: string;
 };
 
+export type PelaajaReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "pelaaja";
+};
+
+export type Lehtileike = {
+  _id: string;
+  _type: "lehtileike";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  otsikko?: string;
+  pelaaja?: PelaajaReference;
+  osio?: "lehtileikkeet" | "patsas" | "terveys";
+  julkaistu?: string;
+  lahde?: string;
+  linkki?: string;
+  teksti?: PortableText;
+  needsReview?: boolean;
+  tarkistettavaa?: string;
+};
+
 export type JalkapalloTilastoReference = {
   _ref: string;
   _type: "reference";
@@ -305,6 +329,8 @@ export type Pelaaja = {
   slug?: Slug;
   tiivistelma?: string;
   syntymaaika?: string;
+  syntymapaikka?: string;
+  pituus?: number;
   pelipaikka?: "maalivahti" | "puolustaja" | "keskikentta" | "hyokkaaja";
   maaottelut?: number;
   maalit?: number;
@@ -314,7 +340,26 @@ export type Pelaaja = {
     loppuvuosi?: number;
     _key: string;
   }>;
+  saavutukset?: Array<{
+    ryhma?: "seurajoukkueet" | "maajoukkue" | "henkilokohtaiset";
+    nimi?: string;
+    vuodet?: string;
+    _type: "saavutus";
+    _key: string;
+  }>;
   kuvaus?: PortableText;
+  uutistunniste?: string;
+  patsas?: {
+    paljastettu?: string;
+    sijainti?: string;
+    esittely?: PortableText;
+    kuvat?: Array<
+      {
+        _key: string;
+      } & PaivattyKuva
+    >;
+    uutistunniste?: string;
+  };
   tilastot?: Array<
     {
       _key: string;
@@ -801,6 +846,17 @@ export type Sivu = {
   muutLegacyUrlit?: Array<string>;
 };
 
+export type PaivattyKuva = {
+  _type: "paivattyKuva";
+  asset?: SanityImageAssetReference;
+  media?: unknown;
+  hotspot?: SanityImageHotspot;
+  crop?: SanityImageCrop;
+  alt?: string;
+  caption?: string;
+  paivamaara?: string;
+};
+
 export type Kokoonpano = {
   _type: "kokoonpano";
   otsikko?: string;
@@ -934,6 +990,8 @@ export type AllSanitySchemaTypes =
   | Varmuuskopio
   | UutinenReference
   | Kommentti
+  | PelaajaReference
+  | Lehtileike
   | JalkapalloTilastoReference
   | Pelaaja
   | Slug
@@ -953,6 +1011,7 @@ export type AllSanitySchemaTypes =
   | Ottelu
   | Tapahtuma
   | Sivu
+  | PaivattyKuva
   | Kokoonpano
   | GalleriaKuva
   | SanityImagePaletteSwatch

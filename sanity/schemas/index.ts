@@ -4,6 +4,7 @@ import { imageWithAlt } from "./objects/imageWithAlt";
 import { galleriaKuva } from "./objects/galleriaKuva";
 import { portableText } from "./objects/portableText";
 import { kokoonpano } from "./objects/kokoonpano";
+import { paivattyKuva } from "./objects/paivattyKuva";
 
 import { sivu } from "./documents/sivu";
 import { tapahtuma } from "./documents/tapahtuma";
@@ -19,6 +20,7 @@ import { galleriaAlbumi } from "./documents/galleriaAlbumi";
 import { klubiToiminta } from "./documents/klubiToiminta";
 import { arvokisa } from "./documents/arvokisa";
 import { pelaaja } from "./documents/pelaaja";
+import { lehtileike } from "./documents/lehtileike";
 import { kommentti } from "./documents/kommentti";
 import { varmuuskopio } from "./documents/varmuuskopio";
 
@@ -39,6 +41,7 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   galleriaKuva,
   portableText,
   kokoonpano,
+  paivattyKuva,
   sivu,
   tapahtuma,
   ottelu,
@@ -53,6 +56,7 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   klubiToiminta,
   arvokisa,
   pelaaja,
+  lehtileike,
   kommentti,
   varmuuskopio,
   yhteystiedot,

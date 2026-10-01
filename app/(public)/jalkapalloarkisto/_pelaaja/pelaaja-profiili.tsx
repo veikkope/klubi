@@ -19,34 +19,31 @@ import {
 } from "@/sanity/lib/queries/arkisto-laajennus";
 
 import { StatSections } from "../_tilastot/stat-sections";
+import { Avainluvut, type Avainluku } from "./avainluvut";
+import { Saavutukset } from "./saavutukset";
+import { UranAikajana } from "./uran-aikajana";
 
 type Crumb = { label: string; href?: string };
 
-/** Seurahistoria aikajanalle: tuorein ensin, vuodettomat loppuun. */
-function sortSeurat(seurat: PelaajaSeura[]): PelaajaSeura[] {
-  return [...seurat].sort((a, b) => {
-    const aStart = a.alkuvuosi ?? Number.NEGATIVE_INFINITY;
-    const bStart = b.alkuvuosi ?? Number.NEGATIVE_INFINITY;
-    return bStart - aStart;
-  });
-}
-
-/** "1992–1999", "2015–" tai "2015" riippuen siitä mitä vuosia on tiedossa. */
-function seuraVuodet(seura: PelaajaSeura): string | null {
-  const { alkuvuosi, loppuvuosi } = seura;
-  if (alkuvuosi != null && loppuvuosi != null) {
-    return alkuvuosi === loppuvuosi
-      ? `${alkuvuosi}`
-      : `${alkuvuosi}–${loppuvuosi}`;
+/** Avainluvut perustietokentistä: vain ne, joille on arvo. */
+function avainluvut(pelaaja: PelaajaFull, seurat: PelaajaSeura[]): Avainluku[] {
+  const luvut: Avainluku[] = [];
+  if (pelaaja.maaottelut != null) luvut.push({ arvo: String(pelaaja.maaottelut), selite: "maaottelua" });
+  if (pelaaja.maalit != null) luvut.push({ arvo: String(pelaaja.maalit), selite: "maajoukkuemaalia" });
+  const seuroja = new Set(seurat.map((s) => s.seura?.trim().toLowerCase()).filter(Boolean)).size;
+  if (seuroja > 0) luvut.push({ arvo: String(seuroja), selite: seuroja === 1 ? "seura" : "seuraa" });
+  const alut = seurat.map((s) => s.alkuvuosi).filter((v): v is number => v != null);
+  const loput = seurat.map((s) => s.loppuvuosi ?? s.alkuvuosi).filter((v): v is number => v != null);
+  if (alut.length > 0 && loput.length > 0) {
+    const [a, b] = [Math.min(...alut), Math.max(...loput)];
+    luvut.push({ arvo: a === b ? `${a}` : `${a}–${b}`, selite: "seuraura" });
   }
-  if (alkuvuosi != null) return `${alkuvuosi}–`;
-  if (loppuvuosi != null) return `–${loppuvuosi}`;
-  return null;
+  return luvut;
 }
 
 /**
- * Pelaajaprofiilin sivu: perustiedot, kuvaus, seurahistoria ja kuvat.
- * Käytössä Litmanen-osiossa ja yleisellä pelaajasivulla.
+ * Pelaajaprofiilin sivu: pääkuva ja avainluvut, perustiedot, esittely, seurat ja
+ * saavutukset. Litmanen-osio lisää omat osionsa `children`-kohtaan (docs/20).
  */
 export function PelaajaProfiili({
   pelaaja,
@@ -56,6 +53,7 @@ export function PelaajaProfiili({
   naytaTilastot = true,
   related = [],
   relatedHref,
+  children,
 }: {
   pelaaja: PelaajaFull;
   path: string;
@@ -66,24 +64,25 @@ export function PelaajaProfiili({
   naytaTilastot?: boolean;
   related?: (PelaajaCard & { slug: string })[];
   relatedHref?: (slug: string) => string;
+  /** Sivukohtaiset osiot seurojen ja saavutusten alle. */
+  children?: React.ReactNode;
 }) {
   const paikka = pelipaikkaLabel(pelaaja.pelipaikka);
   const kuvat = (pelaaja.kuvat ?? []).filter(Boolean);
   const paakuva = kuvat[0];
   const lisakuvat = kuvat.slice(1);
-  const seurat = sortSeurat((pelaaja.seurat ?? []).filter(Boolean));
+  const seurat = (pelaaja.seurat ?? []).filter(Boolean);
+  const saavutukset = (pelaaja.saavutukset ?? []).filter(Boolean);
   const tilastot = naytaTilastot ? (pelaaja.tilastot ?? []).filter(Boolean) : [];
-  const description = resolveDescription(
-    pelaaja.seoDescription,
-    pelaaja.tiivistelma,
-  );
+  const description = resolveDescription(pelaaja.seoDescription, pelaaja.tiivistelma);
+  const luvut = avainluvut(pelaaja, seurat);
 
-  const hasFacts = Boolean(
-    pelaaja.syntymaaika ||
-      paikka ||
-      pelaaja.maaottelut != null ||
-      pelaaja.maalit != null,
-  );
+  const syntynyt = [formatDate(pelaaja.syntymaaika), pelaaja.syntymapaikka].filter(Boolean).join(", ");
+  const perustiedot = [
+    { label: "Syntynyt", value: syntynyt },
+    { label: "Pelipaikka", value: paikka },
+    { label: "Pituus", value: pelaaja.pituus ? `${pelaaja.pituus} cm` : null },
+  ].filter((f): f is { label: string; value: string } => Boolean(f.value));
 
   return (
     <Container className="py-12 sm:py-16">
@@ -95,9 +94,7 @@ export function PelaajaProfiili({
             description,
             path,
             birthDate: pelaaja.syntymaaika,
-            image: paakuva
-              ? (urlForImage(paakuva)?.width(1200).height(900).url() ?? null)
-              : null,
+            image: paakuva ? (urlForImage(paakuva)?.width(1200).height(900).url() ?? null) : null,
           }),
         ]}
       />
@@ -110,113 +107,67 @@ export function PelaajaProfiili({
         meta={paikka ? <Badge tone="brand">{paikka}</Badge> : undefined}
       />
 
-      <SectionNav
-        items={arkistoNav}
-        label="Jalkapalloarkiston osiot"
-        className="mt-8"
-      />
-      {subNav && (
-        <SectionNav items={subNav.items} label={subNav.label} className="mt-3" />
-      )}
+      <SectionNav items={arkistoNav} label="Jalkapalloarkiston osiot" className="mt-8" />
+      {subNav && <SectionNav items={subNav.items} label={subNav.label} className="mt-3" />}
 
-      <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:items-start">
+      <div className="mt-10 grid gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:items-start lg:gap-12">
         {paakuva?.asset && (
-          <figure className="overflow-hidden rounded-2xl">
+          <figure className="mx-auto w-full max-w-sm overflow-hidden rounded-sm lg:max-w-none">
             <FramedImage
               image={paakuva}
               kuvateksti={paakuva?.caption}
               width={900}
               sizes="(min-width: 1024px) 40vw, 100vw"
-              className="aspect-[9/11] w-full"
+              className="aspect-[4/5] w-full"
               priority
             />
-            {paakuva.caption && (
-              <figcaption className="mt-2 text-sm text-muted">
-                {paakuva.caption}
-              </figcaption>
-            )}
+            {paakuva.caption && <figcaption className="mt-2 text-sm text-muted">{paakuva.caption}</figcaption>}
           </figure>
         )}
 
-        <div>
-          {hasFacts && (
-            <dl className="grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-2">
-              <Fact label="Syntymäaika" value={formatDate(pelaaja.syntymaaika)} />
-              <Fact label="Pelipaikka" value={paikka} />
-              <Fact
-                label="Maaottelut"
-                value={pelaaja.maaottelut?.toString()}
-                numeric
-              />
-              <Fact
-                label="Maalit maajoukkueessa"
-                value={pelaaja.maalit?.toString()}
-                numeric
-              />
+        <div className="flex flex-col gap-8">
+          <Avainluvut luvut={luvut} />
+
+          {perustiedot.length > 0 && (
+            <dl className="grid gap-x-8 gap-y-3 sm:grid-cols-3">
+              {perustiedot.map((f) => (
+                <div key={f.label}>
+                  <dt className="text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-soft">{f.label}</dt>
+                  <dd className="mt-1 text-foreground">{f.value}</dd>
+                </div>
+              ))}
             </dl>
           )}
 
           {pelaaja.kuvaus && pelaaja.kuvaus.length > 0 && (
-            <div className="mt-8">
-              <PortableText value={pelaaja.kuvaus} />
+            <div className="max-w-prose">
+              <PortableText value={pelaaja.kuvaus} ylinOtsikko={2} />
             </div>
           )}
         </div>
       </div>
 
-      {seurat.length > 0 && (
-        <section aria-labelledby="seurahistoria" className="mt-16">
-          <h2
-            id="seurahistoria"
-            className="font-display text-2xl text-foreground sm:text-3xl"
-          >
-            Seurahistoria
-          </h2>
-          <ol className="mt-6 border-l border-border">
-            {seurat.map((seura, index) => {
-              const vuodet = seuraVuodet(seura);
-              return (
-                <li
-                  key={seura._key ?? `${seura.seura}-${index}`}
-                  className="relative py-3 pl-6"
-                >
-                  <span
-                    aria-hidden
-                    className="absolute left-0 top-5 h-2.5 w-2.5 -translate-x-1/2 rounded-full bg-accent"
-                  />
-                  <p className="font-medium text-foreground">{seura.seura}</p>
-                  {vuodet && (
-                    <p className="text-sm tabular-nums text-muted">{vuodet}</p>
-                  )}
-                </li>
-              );
-            })}
-          </ol>
-        </section>
+      {(seurat.length > 0 || saavutukset.length > 0) && (
+        <div className="mt-16 grid gap-12 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:gap-12">
+          <UranAikajana seurat={seurat} otsikkoId="pelaajan-seurat" />
+          <Saavutukset saavutukset={saavutukset} otsikkoId="pelaajan-saavutukset" />
+        </div>
       )}
+
+      {children}
 
       {tilastot.length > 0 && (
         <section aria-labelledby="pelaajan-tilastot" className="mt-16">
-          <h2
-            id="pelaajan-tilastot"
-            className="font-display text-2xl text-foreground sm:text-3xl"
-          >
+          <h2 id="pelaajan-tilastot" className="font-display text-2xl text-foreground sm:text-3xl">
             Tilastot
           </h2>
-          <StatSections
-            tilastot={tilastot}
-            headingLevel="h3"
-            className="mt-6"
-          />
+          <StatSections tilastot={tilastot} headingLevel="h3" className="mt-6" />
         </section>
       )}
 
       {lisakuvat.length > 0 && (
         <section aria-labelledby="pelaajan-kuvat" className="mt-16">
-          <h2
-            id="pelaajan-kuvat"
-            className="font-display text-2xl text-foreground sm:text-3xl"
-          >
+          <h2 id="pelaajan-kuvat" className="font-display text-2xl text-foreground sm:text-3xl">
             Kuvat
           </h2>
           <ul className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -228,13 +179,9 @@ export function PelaajaProfiili({
                     kuvateksti={kuva?.caption}
                     width={800}
                     sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw"
-                    className="aspect-[4/3] w-full rounded-2xl"
+                    className="aspect-[4/3] w-full rounded-sm"
                   />
-                  {kuva?.caption && (
-                    <figcaption className="mt-2 text-sm text-muted">
-                      {kuva.caption}
-                    </figcaption>
-                  )}
+                  {kuva?.caption && <figcaption className="mt-2 text-sm text-muted">{kuva.caption}</figcaption>}
                 </figure>
               </li>
             ))}
@@ -244,19 +191,14 @@ export function PelaajaProfiili({
 
       {related.length > 0 && relatedHref && (
         <section aria-labelledby="muut-pelaajat" className="mt-16">
-          <h2
-            id="muut-pelaajat"
-            className="font-display text-2xl text-foreground sm:text-3xl"
-          >
+          <h2 id="muut-pelaajat" className="font-display text-2xl text-foreground sm:text-3xl">
             Muita pelaajia arkistossa
           </h2>
           <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {related.map((item) => (
               <li key={item._id}>
                 <Card href={relatedHref(item.slug)} className="h-full">
-                  {pelipaikkaLabel(item.pelipaikka) && (
-                    <CardEyebrow>{pelipaikkaLabel(item.pelipaikka)}</CardEyebrow>
-                  )}
+                  {pelipaikkaLabel(item.pelipaikka) && <CardEyebrow>{pelipaikkaLabel(item.pelipaikka)}</CardEyebrow>}
                   <CardTitle className="mt-1">{item.name}</CardTitle>
                 </Card>
               </li>
@@ -265,32 +207,5 @@ export function PelaajaProfiili({
         </section>
       )}
     </Container>
-  );
-}
-
-function Fact({
-  label,
-  value,
-  numeric = false,
-}: {
-  label: string;
-  value?: string | null;
-  numeric?: boolean;
-}) {
-  return (
-    <div className="bg-surface px-5 py-4">
-      <dt className="font-sans text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-soft">
-        {label}
-      </dt>
-      <dd
-        className={
-          numeric
-            ? "mt-1 text-base tabular-nums text-foreground"
-            : "mt-1 text-base text-foreground"
-        }
-      >
-        {value?.trim() ? value : "—"}
-      </dd>
-    </div>
   );
 }

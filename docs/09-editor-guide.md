@@ -268,11 +268,27 @@ Jos ravintolan kaupunkia ei tiedetä (esim. laiva), liitä se maan nimiseen "kau
 
 ### Litmanen-osio
 
-Valikon **Litmanen** jakautuu kahteen sivuun: **Jari Litmanen** (`/jalkapalloarkisto/litmanen`)
-ja **Litmasen loukkaantumiset** (`/jalkapalloarkisto/litmanen/loukkaantumiset`). Molemmat
-muokataan samasta dokumentista: **Pelaajat → Jari Litmanen**. Profiilisivulle tulevat
-perustiedot, kuvaus ja kuvat; loukkaantumissivulle tulee kentän **Tilastotaulukot**
-taulukko (välilehti *Ura*).
+Valikon **Litmanen** alla on neljä sivua:
+
+| Sivu | Mistä sisältö tulee Studiossa |
+|---|---|
+| **Jari Litmanen** (yleiskatsaus) | **Jalkapalloarkisto → Pelaajat → Jari Litmanen**: perustiedot, pääkuva (Kuvat-kentän ensimmäinen), esittely, seurat ja saavutukset (välilehti *Ura*). Avainluvut lasketaan näistä automaattisesti. |
+| **Lehtileikkeet** | **Jalkapalloarkisto → Lehtileikkeet**: jutut, joiden *Sivu* on "Lehtileikkeet". |
+| **Patsas** | Jari Litmasen sivun välilehti *Patsas* (paljastuspäivä, sijainti, esittely, kuvat) + lehtileikkeet, joiden *Sivu* on "Patsas". |
+| **Litmasen loukkaantumiset** | Jari Litmasen sivun *Tilastotaulukot* (välilehti *Ura*) + lehtileikkeet, joiden *Sivu* on "Terveys ja loukkaantumiset". Yhteenveto ja kaavio lasketaan taulukosta automaattisesti. |
+
+**Uusi lehtijuttu:** Jalkapalloarkisto → Lehtileikkeet → **+**. Täytä otsikko, pelaaja
+(Jari Litmanen), sivu, julkaisupäivä, lähde (esim. *is.fi*) ja teksti. Linkki
+alkuperäiseen juttuun on valinnainen. Jutut järjestyvät sivulla julkaisupäivän mukaan
+uusin ensin, ja vuosilinkit päivittyvät itsestään. Sivulla näkyy jutun alku, ja loput
+avautuvat *Lue koko juttu* -painikkeesta.
+
+**Uusi patsaskuva:** Jari Litmanen → välilehti *Patsas* → Kuvat → lisää kuva, kirjoita
+alt-teksti ja valitse kuvauspäivä. Kuvat järjestyvät päivän mukaan uusin ensin.
+
+**Tarkistettavat:** siirrossa kahdelle jutulle ei löytynyt otsikkoa, joten otsikoksi on
+otettu jutun ensimmäinen virke. Ne löytyvät kohdasta **Tarkistettavat → Lehtileikkeet**:
+korjaa otsikko ja ota *Vaatii tarkistuksen* -rasti pois.
 
 ### Järkytykset
 

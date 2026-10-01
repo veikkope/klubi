@@ -254,9 +254,32 @@ export type PelaajaCard = {
   kuva?: SanityImage | null;
 };
 
+export type PelaajaSaavutus = {
+  _key: string;
+  ryhma?: "seurajoukkueet" | "maajoukkue" | "henkilokohtaiset" | null;
+  nimi?: string | null;
+  vuodet?: string | null;
+};
+
+/** Päivätty kuva (`paivattyKuva`), esim. patsaskuvat. */
+export type PaivattyKuva = SanityImage & { _key?: string; paivamaara?: string | null };
+
+export type PelaajaPatsas = {
+  paljastettu?: string | null;
+  sijainti?: string | null;
+  esittely?: PortableTextBlock[] | null;
+  kuvat?: PaivattyKuva[] | null;
+  uutistunniste?: string | null;
+};
+
 export type PelaajaFull = Omit<PelaajaCard, "kuva"> & {
   _updatedAt: string;
   syntymaaika?: string | null;
+  syntymapaikka?: string | null;
+  pituus?: number | null;
+  saavutukset?: PelaajaSaavutus[] | null;
+  uutistunniste?: string | null;
+  patsas?: PelaajaPatsas | null;
   seurat?: PelaajaSeura[] | null;
   kuvaus?: PortableTextBlock[] | null;
   /** Pelaajaan liittyvät taulukot, esim. loukkaantumiset. */
@@ -294,7 +317,18 @@ export const pelaajaBySlugQuery = defineQuery(`
     maaottelut,
     maalit,
     syntymaaika,
+    syntymapaikka,
+    pituus,
     seurat[]{ _key, seura, alkuvuosi, loppuvuosi },
+    saavutukset[]{ _key, ryhma, nimi, vuodet },
+    uutistunniste,
+    patsas{
+      paljastettu,
+      sijainti,
+      esittely[]{${runko}},
+      kuvat[]{ _key, alt, caption, paivamaara, asset, hotspot, crop, ${lqip} },
+      uutistunniste
+    },
     kuvaus[]{${runko}},
     tilastot[]->{
       _id,

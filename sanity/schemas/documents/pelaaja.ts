@@ -23,6 +23,7 @@ export const pelaaja = defineType({
   groups: [
     { name: "perustiedot", title: "Perustiedot", default: true },
     { name: "ura", title: "Ura" },
+    { name: "patsas", title: "Patsas" },
     { name: "seo", title: "SEO" },
   ],
   fields: [
@@ -46,6 +47,19 @@ export const pelaaja = defineType({
       name: "syntymaaika",
       title: "Syntymäaika",
       type: "date",
+      group: "perustiedot",
+    }),
+    defineField({
+      name: "syntymapaikka",
+      title: "Syntymäpaikka",
+      type: "string",
+      group: "perustiedot",
+    }),
+    defineField({
+      name: "pituus",
+      title: "Pituus (cm)",
+      type: "number",
+      validation: (rule) => rule.integer().min(140).max(220),
       group: "perustiedot",
     }),
     defineField({
@@ -105,10 +119,91 @@ export const pelaaja = defineType({
       group: "ura",
     }),
     defineField({
+      name: "saavutukset",
+      title: "Saavutukset ja palkinnot",
+      description: "Näkyvät pelaajasivulla ryhmiteltyinä. Järjestä raahaamalla.",
+      type: "array",
+      of: [
+        {
+          type: "object",
+          name: "saavutus",
+          fields: [
+            {
+              name: "ryhma",
+              title: "Ryhmä",
+              type: "string",
+              options: {
+                list: [
+                  { title: "Seurajoukkueissa", value: "seurajoukkueet" },
+                  { title: "Maajoukkueessa", value: "maajoukkue" },
+                  { title: "Henkilökohtaiset palkinnot", value: "henkilokohtaiset" },
+                ],
+                layout: "radio",
+              },
+              initialValue: "seurajoukkueet",
+              validation: (rule) => rule.required(),
+            },
+            {
+              name: "nimi",
+              title: "Saavutus",
+              description: "Esim. Hollannin mestaruus",
+              type: "string",
+              validation: (rule) => rule.required(),
+            },
+            {
+              name: "vuodet",
+              title: "Vuodet",
+              description: "Esim. 1994, 1995, 1996",
+              type: "string",
+            },
+          ],
+          preview: {
+            select: { title: "nimi", subtitle: "vuodet" },
+          },
+        },
+      ],
+      group: "ura",
+    }),
+    defineField({
       name: "kuvaus",
-      title: "Kuvaus",
+      title: "Esittely",
+      description: "Lyhyt esittely pelaajasivun alkuun (valinnainen). Lehtijutut lisätään Lehtileikkeet-listaan.",
       type: "portableText",
       group: "perustiedot",
+    }),
+    defineField({
+      name: "uutistunniste",
+      title: "Uutisten tunniste",
+      description:
+        "Uutiset, joilla on tämä tunniste, näkyvät pelaajasivulla (esim. litmanen). Jätä tyhjäksi, jos ei tarvita.",
+      type: "string",
+      group: "perustiedot",
+    }),
+    defineField({
+      name: "patsas",
+      title: "Patsas",
+      description: "Pelaajan patsas tai muistomerkki (valinnainen). Täytettynä sille tulee oma sivu.",
+      type: "object",
+      group: "patsas",
+      fields: [
+        { name: "paljastettu", title: "Paljastuspäivä", type: "date" },
+        { name: "sijainti", title: "Sijainti", description: "Esim. Kisapuisto, Lahti", type: "string" },
+        { name: "esittely", title: "Esittely", type: "portableText" },
+        {
+          name: "kuvat",
+          title: "Kuvat",
+          description: "Kuvat näytetään kuvauspäivän mukaan, tuorein ensin.",
+          type: "array",
+          of: [{ type: "paivattyKuva" }],
+          options: { layout: "grid" },
+        },
+        {
+          name: "uutistunniste",
+          title: "Uutisten tunniste",
+          description: "Esim. patsas: patsassivulla on linkki tämän tunnisteen uutisiin.",
+          type: "string",
+        },
+      ],
     }),
     defineField({
       name: "tilastot",

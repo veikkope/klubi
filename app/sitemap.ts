@@ -63,6 +63,8 @@ const STATIC_ROUTES: { path: string; priority: number; changeFrequency: Entry["c
   { path: "/jalkapalloarkisto/fifa-ranking", priority: 0.5, changeFrequency: "monthly" },
   { path: "/jalkapalloarkisto/lupaavat", priority: 0.4, changeFrequency: "yearly" },
   { path: "/jalkapalloarkisto/eurocupit", priority: 0.5, changeFrequency: "yearly" },
+  { path: "/jalkapalloarkisto/litmanen/lehtileikkeet", priority: 0.5, changeFrequency: "monthly" },
+  { path: "/jalkapalloarkisto/litmanen/patsas", priority: 0.4, changeFrequency: "yearly" },
   { path: "/jalkapalloarkisto/litmanen/loukkaantumiset", priority: 0.4, changeFrequency: "yearly" },
   { path: "/jalkapalloarkisto/stadionit", priority: 0.5, changeFrequency: "yearly" },
   { path: "/jalkapalloarkisto/ulkomaiset-mestarit", priority: 0.4, changeFrequency: "yearly" },

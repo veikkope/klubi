@@ -32,6 +32,7 @@ import { join } from "node:path";
 import {
   LITMANEN_LOUKKAANTUMISET_PATH,
   LITMANEN_PATH,
+  LITMANEN_PATSAS_PATH,
   documentRoute,
   routableProjection,
   type RoutableDoc,
@@ -136,7 +137,7 @@ const TOIMINTA: Record<string, string> = {
 const PELAAJAT: Record<string, string> = {
   "litmanen.htm": LITMANEN_LOUKKAANTUMISET_PATH,
   "litmanenjari.htm": LITMANEN_PATH,
-  "litmanenjaripatsas.htm": LITMANEN_PATH,
+  "litmanenjaripatsas.htm": LITMANEN_PATSAS_PATH,
 };
 
 /**

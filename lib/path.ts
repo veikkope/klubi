@@ -46,6 +46,10 @@ export interface RoutableDoc {
   huuhkajatOsio?: string | null;
   /** Ulkomaisten mestareiden maa (`lib/ulkomaiset-mestarit.ts`). */
   mestaruusmaa?: string | null;
+  /** Lehtileikkeen sivu (`lehtileike.osio`). */
+  osio?: string | null;
+  /** Lehtileikkeen pelaajan slug. */
+  pelaajaSlug?: string | null;
   /** Dokumentti, joka viittaa tähän (arvokisa, pelaaja, toimintamuoto, sivu). */
   parent?: { _type: string; slug?: string | null } | null;
 }
@@ -104,6 +108,20 @@ export const HUUHKAJAT_PATH = "/jalkapalloarkisto/huuhkajat";
 export const LITMANEN_SLUG = "jari-litmanen";
 export const LITMANEN_PATH = "/jalkapalloarkisto/litmanen";
 export const LITMANEN_LOUKKAANTUMISET_PATH = `${LITMANEN_PATH}/loukkaantumiset`;
+export const LITMANEN_LEHTILEIKKEET_PATH = `${LITMANEN_PATH}/lehtileikkeet`;
+export const LITMANEN_PATSAS_PATH = `${LITMANEN_PATH}/patsas`;
+
+/** Lehtileikkeen `osio` → Litmanen-osion sivu (docs/20). */
+const LEHTILEIKE_OSIO_PATH: Record<string, string> = {
+  lehtileikkeet: LITMANEN_LEHTILEIKKEET_PATH,
+  patsas: LITMANEN_PATSAS_PATH,
+  terveys: LITMANEN_LOUKKAANTUMISET_PATH,
+};
+
+/** Lehtileikkeen ankkuri sivulla: pysyvä, koska `_id` ei muutu. */
+export function lehtileikeAnkkuri(id: string): string {
+  return `leike-${id.replace(/^drafts\./, "").replace(/[^a-zA-Z0-9-]/g, "-")}`;
+}
 
 /** Huuhkajat-osion sivu, esim. `/jalkapalloarkisto/huuhkajat/pelaajatilastot`. */
 export function huuhkajatOsioPath(osio: string): string {
@@ -129,6 +147,13 @@ export function documentRoute(doc: RoutableDoc): DocumentRoute | null {
   if (doc._type === "etusivu") return { path: "/" };
 
   if (doc._type === "pelaaja" && slug === LITMANEN_SLUG) return { path: LITMANEN_PATH };
+
+  // Lehtileikkeillä on sivu vain Litmanen-osiossa; muiden pelaajien jutut näkyvät
+  // vasta, kun niille tehdään oma osio.
+  if (doc._type === "lehtileike") {
+    const path = doc.pelaajaSlug === LITMANEN_SLUG ? LEHTILEIKE_OSIO_PATH[doc.osio ?? "lehtileikkeet"] : null;
+    return path ? { path, anchor: lehtileikeAnkkuri(doc._id) } : null;
+  }
 
   const base = TYPE_BASE[doc._type];
   if (base) return slug ? { path: `${base}/${slug}` } : null;
@@ -184,6 +209,8 @@ export const routableProjection = /* groq */ `
   category,
   huuhkajatOsio,
   mestaruusmaa,
+  osio,
+  "pelaajaSlug": pelaaja->slug.current,
   "parent": *[
     _type in ["arvokisa", "pelaaja", "klubiToiminta", "sivu"]
     && references(^._id)

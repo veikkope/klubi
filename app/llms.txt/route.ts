@@ -62,7 +62,7 @@ kaupunkeja sekä ulkomaisia kohteita.
 - [Arvokisat](${siteUrl}/jalkapalloarkisto/arvokisat): MM- ja EM-kisat sekä Kansojen liiga
 - [Suomen mestarit](${siteUrl}/jalkapalloarkisto/mestarit)
 - [Eurocupit](${siteUrl}/jalkapalloarkisto/eurocupit): Mestarien liiga, Eurooppa-liiga, Konferenssiliiga, Super Cup
-- [Litmanen](${siteUrl}/jalkapalloarkisto/litmanen): Jari Litmasen profiili ja [loukkaantumiset](${siteUrl}/jalkapalloarkisto/litmanen/loukkaantumiset)
+- [Litmanen](${siteUrl}/jalkapalloarkisto/litmanen): Jari Litmasen profiili, [lehtileikkeet](${siteUrl}/jalkapalloarkisto/litmanen/lehtileikkeet), [patsas](${siteUrl}/jalkapalloarkisto/litmanen/patsas) ja [loukkaantumiset](${siteUrl}/jalkapalloarkisto/litmanen/loukkaantumiset)
 - [Vuoden pelaajat](${siteUrl}/jalkapalloarkisto/vuoden-pelaajat)
 - [Valmentajat](${siteUrl}/jalkapalloarkisto/valmentajat): Huuhkajien valmentajat vuodesta 1922
 - [FIFA-ranking](${siteUrl}/jalkapalloarkisto/fifa-ranking): Suomen sijoitus vuodesta 1992

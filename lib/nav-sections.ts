@@ -9,7 +9,12 @@
  */
 
 import type { SectionNavItem } from "@/components/layout/section-nav";
-import { LITMANEN_LOUKKAANTUMISET_PATH, LITMANEN_PATH } from "@/lib/path";
+import {
+  LITMANEN_LEHTILEIKKEET_PATH,
+  LITMANEN_LOUKKAANTUMISET_PATH,
+  LITMANEN_PATH,
+  LITMANEN_PATSAS_PATH,
+} from "@/lib/path";
 
 export const arkistoNav: SectionNavItem[] = [
   { label: "Yleiskatsaus", href: "/jalkapalloarkisto" },
@@ -35,6 +40,8 @@ export const arkistoNav: SectionNavItem[] = [
 /** Litmanen-osion sivut (arkiston osionavigaation alla). */
 export const litmanenNav: SectionNavItem[] = [
   { label: "Jari Litmanen", href: LITMANEN_PATH },
+  { label: "Lehtileikkeet", href: LITMANEN_LEHTILEIKKEET_PATH },
+  { label: "Patsas", href: LITMANEN_PATSAS_PATH },
   { label: "Litmasen loukkaantumiset", href: LITMANEN_LOUKKAANTUMISET_PATH },
 ];
 

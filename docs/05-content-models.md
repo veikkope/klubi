@@ -169,7 +169,7 @@ Vain julkaistut arvostelut näkyvät. Uuden ravintolan arvostelun julkaisu vaati
 |---|---|---|---|
 | title | string | kyllä | Esim. "Suomen FIFA-ranking" |
 | slug | slug | kyllä | |
-| category | string (enum: "fifa-ranking", "champions", "valmentajat", "vuoden-pelaaja", "ballon-dor", "saavutukset", "eurocup", "uefa-cup", "super-cup", "conference-league", "intercontinental", "karsinta") | kyllä | Vaikuttaa sivun renderöintiin |
+| category | string (enum: "fifa-ranking", "champions", "valmentajat", "vuoden-pelaaja", "ballon-dor", "saavutukset", "jarkytykset", "maailman-parhaat", "eurocup", "uefa-cup", "super-cup", "conference-league", "intercontinental", "karsinta") | kyllä | Vaikuttaa sivun renderöintiin |
 | huuhkajatOsio | string (enum `lib/huuhkajat-osiot.ts`: "pelaajatilastot", "huuhkaja-arvostelu", "kansojen-liiga", "avauskokoonpano", "englanti", "muut") | kyllä, kun category = "huuhkajat" | Osiosivu `/jalkapalloarkisto/huuhkajat/[osio]`. Arvo on pysyvä URL-segmentti. Puuttuva/tuntematon → "muut". |
 | mestaruusmaa | string (enum `lib/ulkomaiset-mestarit.ts`: "englanti", "venaja") | suositus (varoitus), kun category = "ulkomaiset-mestarit" | Maasivu `/jalkapalloarkisto/ulkomaiset-mestarit/[maa]`. Arvo on pysyvä URL-segmentti. Puuttuva → päätellään slugin etuliitteestä ("venajan-"), muuten "englanti". |
 | intro | portableText | ei | Johdanto |
@@ -188,6 +188,21 @@ Vain julkaistut arvostelut näkyvät. Uuden ravintolan arvostelun julkaisu vaati
 | event | reference→tapahtuma | ei | Linkki tapahtumaan |
 | coverImage | image (alt pakollinen) | kyllä | Kansikuva |
 | images | array of image (alt pakollinen, caption valinnainen) | kyllä | Albumin kuvat |
+
+### 10b. `lehtileike` (docs/20)
+**Tarkoitus:** Yksittäinen pelaajasta kertova lehtijuttu Litmanen-osiossa. Oma dokumentti (ei taulukko pelaajan sisällä): juttuja on kymmeniä, ja niitä lisätään ja järjestetään päivämäärän mukaan.
+
+| Kenttä | Tyyppi | Pakollinen | Kuvaus |
+|---|---|---|---|
+| otsikko | string | kyllä | |
+| pelaaja | reference→pelaaja | kyllä | Kenen sivulla näkyy |
+| osio | string (enum: "lehtileikkeet", "patsas", "terveys") | kyllä | Sivu: lehtileikkeet / patsas / loukkaantumiset |
+| julkaistu | date | kyllä | Järjestys, vuosiryhmät |
+| lahde | string | ei | Esim. "is.fi" |
+| linkki | url | ei | Alkuperäinen juttu |
+| teksti | portableText | kyllä | Listassa näkyy ote, koko teksti avautuu |
+
+`pelaaja`-tyypin lisäkentät (docs/20): `syntymapaikka`, `pituus`, `saavutukset[]` (`ryhma`, `nimi`, `vuodet`), `uutistunniste`, `patsas` (`paljastettu`, `sijainti`, `esittely`, `kuvat[]` = `paivattyKuva`, `uutistunniste`). `paivattyKuva` = kuva + alt (pakollinen) + kuvateksti + `paivamaara`.
 
 ### 11. `yhteystiedot` (singleton)
 **Tarkoitus:** Yhdistyksen yhteystiedot — yksi dokumentti, käytetään footerissa, /yhteystiedot-sivulla, sähköposteissa.

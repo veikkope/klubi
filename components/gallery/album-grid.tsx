@@ -19,12 +19,14 @@ type Props = {
   images: AlbumImage[];
   /** Ruudunlukijalle: mistä albumista kuva on. */
   albumTitle?: string;
+  /** Lyhyt teksti kuvaruudun alle (esim. kuvauspäivä), sama järjestys kuin `images`. */
+  merkinnat?: (string | null)[];
 };
 
 /** Ensimmäiset ruudut ovat näkyvissä heti — ne ladataan ilman viivettä. */
 const EAGER_COUNT = 4;
 
-export function AlbumGrid({ images, albumTitle }: Props) {
+export function AlbumGrid({ images, albumTitle, merkinnat }: Props) {
   const [active, setActive] = useState<number | null>(null);
   const triggersRef = useRef<(HTMLButtonElement | null)[]>([]);
 
@@ -75,6 +77,9 @@ export function AlbumGrid({ images, albumTitle }: Props) {
                   className="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-105"
                 />
               </button>
+              {merkinnat?.[index] && (
+                <p className="mt-2 text-sm tabular-nums text-muted">{merkinnat[index]}</p>
+              )}
             </li>
           );
         })}
