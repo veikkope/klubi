@@ -1,7 +1,7 @@
 import { EmptyState } from "./empty-state";
 import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
-import { SectionNav } from "@/components/layout/section-nav";
+import { SectionNav, type SectionNavItem } from "@/components/layout/section-nav";
 import { PortableText } from "@/components/portable-text";
 import { FramedImage } from "@/components/framed-image";
 import { JsonLd } from "@/components/seo/json-ld";
@@ -36,6 +36,8 @@ export function KlubiSivuPage({
   path,
   fallbackTitle,
   emptyDescription,
+  parent,
+  subNav,
   children,
 }: {
   sivu: KlubiSivu | null;
@@ -43,6 +45,10 @@ export function KlubiSivuPage({
   /** Otsikko kun dokumenttia ei vielä ole Studiossa. */
   fallbackTitle: string;
   emptyDescription: string;
+  /** Yläsivu murupolussa, kun sivu on alasivu (esim. Palloveikkaus). */
+  parent?: Crumb;
+  /** Sisarsivujen valikko klubin osionavigaation alla. */
+  subNav?: { items: SectionNavItem[]; label: string };
   /** Sivukohtainen lisäsisältö sisällön alle. */
   children?: React.ReactNode;
 }) {
@@ -51,9 +57,11 @@ export function KlubiSivuPage({
   const trail: Crumb[] = [
     rootCrumb,
     { label: "Klubi", href: "/klubi" },
+    ...(parent ? [parent] : []),
     { label: title },
   ];
   const hasBody = Boolean(sivu?.body && sivu.body.length > 0);
+  const tilastot = (sivu?.tilastot ?? []).filter(Boolean);
 
   return (
     <>
@@ -72,6 +80,9 @@ export function KlubiSivuPage({
       <Container className="py-12 sm:py-16">
         <PageHeader title={title} lead={lead} breadcrumbs={trail} />
         <SectionNav items={klubiNav} label="Klubin osiot" className="mt-8" />
+        {subNav && (
+          <SectionNav items={subNav.items} label={subNav.label} className="mt-3" />
+        )}
 
         {sivu?.hero?.asset && (
           <figure className="mt-10 overflow-hidden rounded-2xl">
@@ -91,21 +102,27 @@ export function KlubiSivuPage({
           </figure>
         )}
 
-        <div className="mt-10 max-w-3xl">
-          {hasBody ? (
+        {hasBody ? (
+          <div className="mt-10 max-w-3xl">
             <PortableText value={sivu?.body} />
-          ) : (
-            <EmptyState description={emptyDescription} />
-          )}
-        </div>
+          </div>
+        ) : (
+          // Taulukot tai alasivut ovat sisältöä: tyhjätila vain, kun ei ole mitään.
+          tilastot.length === 0 &&
+          !children && (
+            <div className="mt-10 max-w-3xl">
+              <EmptyState description={emptyDescription} />
+            </div>
+          )
+        )}
 
-        {(sivu?.tilastot ?? []).filter(Boolean).length > 0 && (
-          <section aria-labelledby="sivun-taulukot" className="mt-16">
+        {tilastot.length > 0 && (
+          <section aria-labelledby="sivun-taulukot" className={hasBody ? "mt-16" : "mt-10"}>
             <h2 id="sivun-taulukot" className="font-display text-3xl leading-tight">
               Taulukot
             </h2>
             <StatSections
-              tilastot={(sivu?.tilastot ?? []).filter(Boolean)}
+              tilastot={tilastot}
               headingLevel="h3"
               className="mt-6"
             />

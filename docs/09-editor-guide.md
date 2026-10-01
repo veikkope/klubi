@@ -266,6 +266,15 @@ Arvostelijalta kysytään vain nimi, joka näkyy arvostelun yhteydessä. Sähkö
 Jos ravintolan kaupunkia ei tiedetä (esim. laiva), liitä se maan nimiseen "kaupunkiin"
 (esim. "Ruotsi").
 
+### Palloveikkauksen sivut
+
+Jokaisella veikkauksella on oma sivunsa: **Sivut → Maaottelujen tulosveikkaus,
+Arvokisaveikkaus, Veikkausliigan palloveikkaus**. Säännöt kirjoitetaan sivun
+pääsisältöön, ja veikkauksen taulukot lisätään sivun kohtaan **Taulukot** (uusi kausi:
+tee taulukko ja lisää se listan alkuun). Palloveikkaus-sivu (`/klubi/palloveikkaus`)
+listaa veikkaukset automaattisesti. Uusi veikkaus tehdään luomalla uusi sivu, jonka
+polku alkaa `klubi/palloveikkaus/`, esimerkiksi `klubi/palloveikkaus/mestarisarja`.
+
 ### Taulukon muokkaaminen (tilastot, palloveikkaus, mölkky)
 
 Taulukot löytyvät kohdasta **Jalkapalloarkisto → Tilastot**. Avaa taulukko ja valitse

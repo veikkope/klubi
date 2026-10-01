@@ -3114,6 +3114,17 @@ export type KlubiSivuQueryResult = {
 } | null;
 
 // Source: sanity/lib/queries/klubi.ts
+// Variable: klubiAlasivutQuery
+// Query: *[_type == "sivu" && string::startsWith(slug.current, $prefix)] | order(_createdAt asc, title asc){    _id,    title,    "slug": slug.current,    tiivistelma,    "taulukoita": count(tilastot)  }
+export type KlubiAlasivutQueryResult = Array<{
+  _id: string;
+  title: string | null;
+  slug: string | null;
+  tiivistelma: string | null;
+  taulukoita: number | null;
+}>;
+
+// Source: sanity/lib/queries/klubi.ts
 // Variable: klubiToimintaListQuery
 // Query: *[_type == "klubiToiminta" && defined(slug.current)]    | order(jarjestys asc, title asc){    _id,    title,    "slug": slug.current,    tiivistelma,    "kuva": kuvat[0]{..., "lqip": asset->metadata.lqip},    "vuosiMaara": count(vuodet),    "uusinVuosi": math::max(vuodet[].vuosi)  }
 export type KlubiToimintaListQueryResult = Array<{
@@ -4120,6 +4131,7 @@ declare module "@sanity/client" {
     '\n  *[_type == "galleriaAlbumi" && defined(slug.current)]\n    | order(date desc)[0...$count]{\n    _id,\n    title,\n    "slug": slug.current,\n    date,\n    tiivistelma,\n    coverImage{..., "lqip": asset->metadata.lqip},\n    "imageCount": count(images)\n  }\n': EtusivuGalleriaQueryResult;
     '\n  *[_type == "galleriaAlbumi" && slug.current == $slug][0]{\n    _id,\n    _updatedAt,\n    title,\n    "slug": slug.current,\n    date,\n    tiivistelma,\n    coverImage{..., "lqip": asset->metadata.lqip},\n    images[]{..., "vari": asset->metadata.palette.dominant.background},\n    "event": event->{ title, "slug": slug.current }\n  }\n': GalleriaAlbumiBySlugQueryResult;
     '\n  *[_type == "sivu" && slug.current == $slug][0]{\n    _id,\n    _updatedAt,\n    title,\n    "slug": slug.current,\n    tiivistelma,\n    ingress,\n    hero{..., "lqip": asset->metadata.lqip},\n    body[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n    tilastot[]->{\n      _id,\n      _updatedAt,\n      title,\n      "slug": slug.current,\n      tiivistelma,\n      category,\n      intro[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n      columns[]{ key, label, type },\n      rows[]{ cells[]{ key, value } },\n      lisatiedot[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n      kuvat[]{ _key, alt, caption, asset, hotspot, crop, "lqip": asset->metadata.lqip },\n      paivitetty,\n      jarjestys,\n      "sources": coalesce(sources, [])\n    },\n    seoTitle,\n    seoDescription\n  }\n': KlubiSivuQueryResult;
+    '\n  *[_type == "sivu" && string::startsWith(slug.current, $prefix)] | order(_createdAt asc, title asc){\n    _id,\n    title,\n    "slug": slug.current,\n    tiivistelma,\n    "taulukoita": count(tilastot)\n  }\n': KlubiAlasivutQueryResult;
     '\n  *[_type == "klubiToiminta" && defined(slug.current)]\n    | order(jarjestys asc, title asc){\n    _id,\n    title,\n    "slug": slug.current,\n    tiivistelma,\n    "kuva": kuvat[0]{..., "lqip": asset->metadata.lqip},\n    "vuosiMaara": count(vuodet),\n    "uusinVuosi": math::max(vuodet[].vuosi)\n  }\n': KlubiToimintaListQueryResult;
     '\n  *[_type == "klubiToiminta" && slug.current == $slug][0]{\n    _id,\n    _updatedAt,\n    title,\n    "slug": slug.current,\n    tiivistelma,\n    kuvaus[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n    kuvat[]{..., "lqip": asset->metadata.lqip},\n    seoTitle,\n    seoDescription,\n    "vuodet": vuodet[] | order(vuosi desc, paivamaara desc){\n      _key,\n      vuosi,\n      paivamaara,\n      otsikko,\n      jarjestysnumero,\n      osallistujat,\n      paikka,\n      kuvaus,\n      linkki{ url, teksti },\n      kuvat[]{..., "lqip": asset->metadata.lqip}\n    },\n    tilastot[]->{\n      _id,\n      _updatedAt,\n      title,\n      "slug": slug.current,\n      tiivistelma,\n      category,\n      intro[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n      columns[]{ key, label, type },\n      rows[]{ cells[]{ key, value } },\n      lisatiedot[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n      kuvat[]{ _key, alt, caption, asset, hotspot, crop, "lqip": asset->metadata.lqip },\n      paivitetty,\n      jarjestys,\n      "sources": coalesce(sources, [])\n    }\n  }\n': KlubiToimintaBySlugQueryResult;
     '\n  *[_type == "klubiToiminta" && defined(slug.current) && slug.current != $slug]\n    | order(jarjestys asc, title asc)[0...4]{\n    _id,\n    title,\n    "slug": slug.current,\n    tiivistelma\n  }\n': KlubiToimintaSiblingsQueryResult;

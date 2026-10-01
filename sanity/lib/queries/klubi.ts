@@ -72,6 +72,30 @@ export const klubiSivuQuery = defineQuery(`
   }
 `);
 
+/** Sivun alasivu (esim. palloveikkauksen veikkaukset) kortiksi ja valikkoon. */
+export type KlubiAlasivu = {
+  _id: string;
+  title: string;
+  slug: string;
+  tiivistelma: string | null;
+  taulukoita: number | null;
+};
+
+/**
+ * Sivun alasivut: slug "klubi/palloveikkaus/arvokisat" on sivun
+ * "klubi/palloveikkaus" alasivu (`$prefix` = "klubi/palloveikkaus/").
+ * Järjestys on luontijärjestys.
+ */
+export const klubiAlasivutQuery = defineQuery(`
+  *[_type == "sivu" && string::startsWith(slug.current, $prefix)] | order(_createdAt asc, title asc){
+    _id,
+    title,
+    "slug": slug.current,
+    tiivistelma,
+    "taulukoita": count(tilastot)
+  }
+`);
+
 /* ── Toimintamuodot ──────────────────────────────────────────────────────── */
 
 export type KlubiToimintaCard = {
