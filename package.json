@@ -51,6 +51,7 @@
     "patch:litmanen": "tsx scripts/patch-litmanen.ts",
     "patch:omat-sivut": "tsx scripts/patch-omat-sivut.ts",
     "patch:litmanen-osio": "tsx scripts/uudista-litmanen.ts",
+    "siivoa:tarkistettavat": "tsx scripts/siivoa-tarkistettavat.ts",
     "backup": "tsx scripts/varmuuskopio.ts",
     "siivoa:arvostelukuvat": "tsx scripts/siivoa-arvostelukuvat.ts"
   },
