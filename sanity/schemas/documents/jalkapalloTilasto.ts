@@ -1,6 +1,7 @@
 import { BarChartIcon } from "@sanity/icons";
 import { defineField, defineType } from "sanity";
 import { HUUHKAJAT_OSIOT } from "../../../lib/huuhkajat-osiot";
+import { MESTARUUSMAAT } from "../../../lib/ulkomaiset-mestarit";
 import { TilastoDokumenttiInput } from "../../components/taulukkoeditori/konteksti";
 import { TaulukkoEditori } from "../../components/taulukkoeditori/TaulukkoEditori";
 import { seoFields } from "../objects/seoFields";
@@ -94,6 +95,27 @@ export const jalkapalloTilasto = defineType({
             ? "Valitse osio, jotta taulukko löytyy oikean otsikon alta."
             : true,
         ),
+      group: "perustiedot",
+    }),
+    defineField({
+      name: "mestaruusmaa",
+      title: "Maa Ulkomaiset mestarit -sivulla",
+      description:
+        "Minkä maan valikon alle taulukko kuuluu. Jokaisella maalla on oma sivunsa.",
+      type: "string",
+      options: {
+        list: MESTARUUSMAAT.map((maa) => ({ title: maa.title, value: maa.value })),
+        layout: "radio",
+      },
+      hidden: ({ document }) => document?.category !== "ulkomaiset-mestarit",
+      validation: (rule) =>
+        rule
+          .custom((value, context) =>
+            context.document?.category === "ulkomaiset-mestarit" && !value
+              ? "Valitse maa, jotta taulukko löytyy oikean valikon alta."
+              : true,
+          )
+          .warning(),
       group: "perustiedot",
     }),
     defineField({

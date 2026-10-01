@@ -34,6 +34,8 @@ export interface TilastoDoc {
   category: string | null;
   /** Huuhkajat-sivun osio (`lib/huuhkajat-osiot.ts`), vain kategoriassa "huuhkajat". */
   huuhkajatOsio: string | null;
+  /** Ulkomaisten mestareiden maa (`lib/ulkomaiset-mestarit.ts`). */
+  mestaruusmaa: string | null;
   intro: PortableTextBlock[] | null;
   columns: StatColumn[] | null;
   rows: StatRow[] | null;
@@ -60,6 +62,7 @@ const tilastoProjection = /* groq */ `
   tiivistelma,
   category,
   huuhkajatOsio,
+  mestaruusmaa,
   intro[]{${runko}},
   columns[]{ key, label, type },
   rows[]{ cells[]{ key, value } },

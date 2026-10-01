@@ -33,6 +33,7 @@ export interface SitemapTilastoRow {
   slug: string | null;
   category: string | null;
   huuhkajatOsio: string | null;
+  mestaruusmaa: string | null;
   parent: { _type: string; slug: string | null } | null;
   updatedAt: string | null;
 }
@@ -44,6 +45,7 @@ export const sitemapTilastotQuery = defineQuery(`
     "slug": slug.current,
     category,
     huuhkajatOsio,
+    mestaruusmaa,
     "parent": *[
       _type in ["arvokisa", "pelaaja", "klubiToiminta", "sivu"]
       && references(^._id)

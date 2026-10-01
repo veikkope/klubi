@@ -171,6 +171,7 @@ Vain julkaistut arvostelut näkyvät. Uuden ravintolan arvostelun julkaisu vaati
 | slug | slug | kyllä | |
 | category | string (enum: "fifa-ranking", "champions", "valmentajat", "vuoden-pelaaja", "ballon-dor", "saavutukset", "eurocup", "uefa-cup", "super-cup", "conference-league", "intercontinental", "karsinta") | kyllä | Vaikuttaa sivun renderöintiin |
 | huuhkajatOsio | string (enum `lib/huuhkajat-osiot.ts`: "pelaajatilastot", "huuhkaja-arvostelu", "kansojen-liiga", "avauskokoonpano", "englanti", "muut") | kyllä, kun category = "huuhkajat" | Osiosivu `/jalkapalloarkisto/huuhkajat/[osio]`. Arvo on pysyvä URL-segmentti. Puuttuva/tuntematon → "muut". |
+| mestaruusmaa | string (enum `lib/ulkomaiset-mestarit.ts`: "englanti", "venaja") | suositus (varoitus), kun category = "ulkomaiset-mestarit" | Maasivu `/jalkapalloarkisto/ulkomaiset-mestarit/[maa]`. Arvo on pysyvä URL-segmentti. Puuttuva → päätellään slugin etuliitteestä ("venajan-"), muuten "englanti". |
 | intro | portableText | ei | Johdanto |
 | columns | array of objects { key, label, type } | kyllä | Taulukon sarakkeet |
 | rows | array of objects (key-value) | kyllä | Taulukon rivit |

@@ -492,6 +492,7 @@ export type JalkapalloTilasto = {
     | "avauskokoonpano"
     | "englanti"
     | "muut";
+  mestaruusmaa?: "englanti" | "venaja";
   intro?: PortableText;
   columns?: Array<{
     key?: string;
@@ -1804,7 +1805,7 @@ export type StadionitRelatedQueryResult = Array<{
 
 // Source: sanity/lib/queries/arkisto.ts
 // Variable: tilastotByCategoryQuery
-// Query: *[_type == "jalkapalloTilasto" && category == $category]    | order(coalesce(jarjestys, 1000) asc, title asc){      _id,  _updatedAt,  title,  "slug": slug.current,  tiivistelma,  category,  huuhkajatOsio,  intro[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},  columns[]{ key, label, type },  rows[]{ cells[]{ key, value } },  lisatiedot[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},  kuvat[]{ _key, alt, caption, asset, hotspot, crop, "lqip": asset->metadata.lqip },  paivitetty,  jarjestys,  "sources": coalesce(sources, [])  }
+// Query: *[_type == "jalkapalloTilasto" && category == $category]    | order(coalesce(jarjestys, 1000) asc, title asc){      _id,  _updatedAt,  title,  "slug": slug.current,  tiivistelma,  category,  huuhkajatOsio,  mestaruusmaa,  intro[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},  columns[]{ key, label, type },  rows[]{ cells[]{ key, value } },  lisatiedot[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},  kuvat[]{ _key, alt, caption, asset, hotspot, crop, "lqip": asset->metadata.lqip },  paivitetty,  jarjestys,  "sources": coalesce(sources, [])  }
 export type TilastotByCategoryQueryResult = Array<{
   _id: string;
   _updatedAt: string;
@@ -1842,6 +1843,7 @@ export type TilastotByCategoryQueryResult = Array<{
     | "muut"
     | "pelaajatilastot"
     | null;
+  mestaruusmaa: "englanti" | "venaja" | null;
   intro: Array<
     | {
         children?: Array<{
@@ -1967,7 +1969,7 @@ export type TilastotByCategoryQueryResult = Array<{
 
 // Source: sanity/lib/queries/arkisto.ts
 // Variable: tilastotByCategoriesQuery
-// Query: *[_type == "jalkapalloTilasto" && category in $categories]    | order(coalesce(jarjestys, 1000) asc, title asc){      _id,  _updatedAt,  title,  "slug": slug.current,  tiivistelma,  category,  huuhkajatOsio,  intro[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},  columns[]{ key, label, type },  rows[]{ cells[]{ key, value } },  lisatiedot[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},  kuvat[]{ _key, alt, caption, asset, hotspot, crop, "lqip": asset->metadata.lqip },  paivitetty,  jarjestys,  "sources": coalesce(sources, [])  }
+// Query: *[_type == "jalkapalloTilasto" && category in $categories]    | order(coalesce(jarjestys, 1000) asc, title asc){      _id,  _updatedAt,  title,  "slug": slug.current,  tiivistelma,  category,  huuhkajatOsio,  mestaruusmaa,  intro[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},  columns[]{ key, label, type },  rows[]{ cells[]{ key, value } },  lisatiedot[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},  kuvat[]{ _key, alt, caption, asset, hotspot, crop, "lqip": asset->metadata.lqip },  paivitetty,  jarjestys,  "sources": coalesce(sources, [])  }
 export type TilastotByCategoriesQueryResult = Array<{
   _id: string;
   _updatedAt: string;
@@ -2005,6 +2007,7 @@ export type TilastotByCategoriesQueryResult = Array<{
     | "muut"
     | "pelaajatilastot"
     | null;
+  mestaruusmaa: "englanti" | "venaja" | null;
   intro: Array<
     | {
         children?: Array<{
@@ -2130,7 +2133,7 @@ export type TilastotByCategoriesQueryResult = Array<{
 
 // Source: sanity/lib/queries/arkisto.ts
 // Variable: tilastoBySlugQuery
-// Query: *[    _type == "jalkapalloTilasto"    && category == $category    && slug.current == $slug  ][0]{      _id,  _updatedAt,  title,  "slug": slug.current,  tiivistelma,  category,  huuhkajatOsio,  intro[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},  columns[]{ key, label, type },  rows[]{ cells[]{ key, value } },  lisatiedot[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},  kuvat[]{ _key, alt, caption, asset, hotspot, crop, "lqip": asset->metadata.lqip },  paivitetty,  jarjestys,  "sources": coalesce(sources, [])  }
+// Query: *[    _type == "jalkapalloTilasto"    && category == $category    && slug.current == $slug  ][0]{      _id,  _updatedAt,  title,  "slug": slug.current,  tiivistelma,  category,  huuhkajatOsio,  mestaruusmaa,  intro[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},  columns[]{ key, label, type },  rows[]{ cells[]{ key, value } },  lisatiedot[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},  kuvat[]{ _key, alt, caption, asset, hotspot, crop, "lqip": asset->metadata.lqip },  paivitetty,  jarjestys,  "sources": coalesce(sources, [])  }
 export type TilastoBySlugQueryResult = {
   _id: string;
   _updatedAt: string;
@@ -2168,6 +2171,7 @@ export type TilastoBySlugQueryResult = {
     | "muut"
     | "pelaajatilastot"
     | null;
+  mestaruusmaa: "englanti" | "venaja" | null;
   intro: Array<
     | {
         children?: Array<{
@@ -2334,7 +2338,7 @@ export type HuuhkajatHubQueryResult = {
 
 // Source: sanity/lib/queries/arkisto.ts
 // Variable: huuhkajatOsioQuery
-// Query: *[    _type == "jalkapalloTilasto"    && category == "huuhkajat"    && select(      $osio == $oletus => !(huuhkajatOsio in $tunnetut),      huuhkajatOsio == $osio    )  ] | order(coalesce(jarjestys, 1000) asc, title asc){      _id,  _updatedAt,  title,  "slug": slug.current,  tiivistelma,  category,  huuhkajatOsio,  intro[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},  columns[]{ key, label, type },  rows[]{ cells[]{ key, value } },  lisatiedot[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},  kuvat[]{ _key, alt, caption, asset, hotspot, crop, "lqip": asset->metadata.lqip },  paivitetty,  jarjestys,  "sources": coalesce(sources, [])  }
+// Query: *[    _type == "jalkapalloTilasto"    && category == "huuhkajat"    && select(      $osio == $oletus => !(huuhkajatOsio in $tunnetut),      huuhkajatOsio == $osio    )  ] | order(coalesce(jarjestys, 1000) asc, title asc){      _id,  _updatedAt,  title,  "slug": slug.current,  tiivistelma,  category,  huuhkajatOsio,  mestaruusmaa,  intro[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},  columns[]{ key, label, type },  rows[]{ cells[]{ key, value } },  lisatiedot[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},  kuvat[]{ _key, alt, caption, asset, hotspot, crop, "lqip": asset->metadata.lqip },  paivitetty,  jarjestys,  "sources": coalesce(sources, [])  }
 export type HuuhkajatOsioQueryResult = Array<{
   _id: string;
   _updatedAt: string;
@@ -2372,6 +2376,7 @@ export type HuuhkajatOsioQueryResult = Array<{
     | "muut"
     | "pelaajatilastot"
     | null;
+  mestaruusmaa: "englanti" | "venaja" | null;
   intro: Array<
     | {
         children?: Array<{
@@ -3630,7 +3635,7 @@ export type SitemapByTypeQueryResult = Array<{
 
 // Source: sanity/lib/queries/sitemap.ts
 // Variable: sitemapTilastotQuery
-// Query: *[_type == "jalkapalloTilasto" && defined(slug.current)] | order(_updatedAt desc) {    _id,    _type,    "slug": slug.current,    category,    huuhkajatOsio,    "parent": *[      _type in ["arvokisa", "pelaaja", "klubiToiminta", "sivu"]      && references(^._id)      && !(_id in path("drafts.**"))    ] | order(_type asc, _id asc)[0]{ _type, "slug": slug.current },    "updatedAt": _updatedAt  }
+// Query: *[_type == "jalkapalloTilasto" && defined(slug.current)] | order(_updatedAt desc) {    _id,    _type,    "slug": slug.current,    category,    huuhkajatOsio,    mestaruusmaa,    "parent": *[      _type in ["arvokisa", "pelaaja", "klubiToiminta", "sivu"]      && references(^._id)      && !(_id in path("drafts.**"))    ] | order(_type asc, _id asc)[0]{ _type, "slug": slug.current },    "updatedAt": _updatedAt  }
 export type SitemapTilastotQueryResult = Array<{
   _id: string;
   _type: "jalkapalloTilasto";
@@ -3666,6 +3671,7 @@ export type SitemapTilastotQueryResult = Array<{
     | "muut"
     | "pelaajatilastot"
     | null;
+  mestaruusmaa: "englanti" | "venaja" | null;
   parent:
     | {
         _type: "arvokisa";
@@ -4100,12 +4106,12 @@ declare module "@sanity/client" {
     '\n  *[_type == "stadion" && defined(slug.current)][].slug.current\n': StadionSlugsQueryResult;
     '\n  *[_type == "stadion" && slug.current == $slug][0]{\n    _id,\n    _updatedAt,\n    name,\n    "slug": slug.current,\n    tiivistelma,\n    capacity,\n    openedYear,\n    address,\n    "city": city->{ name, "slug": slug.current, country },\n    location{ lat, lng, alt },\n    description[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n    images[]{ _key, alt, caption, asset, hotspot, crop, "lqip": asset->metadata.lqip },\n    seoTitle,\n    seoDescription\n  }\n': StadionBySlugQueryResult;
     '\n  *[_type == "stadion" && defined(slug.current) && slug.current != $slug]\n    | order(select(city->name == $cityName => 0, 1) asc, name asc)[0...4]{\n    _id,\n    name,\n    "slug": slug.current,\n    tiivistelma,\n    capacity,\n    openedYear,\n    "city": city->{ name, "slug": slug.current, country },\n    "kuva": images[0]{ alt, caption, asset, hotspot, crop, "lqip": asset->metadata.lqip }\n  }\n': StadionitRelatedQueryResult;
-    '\n  *[_type == "jalkapalloTilasto" && category == $category]\n    | order(coalesce(jarjestys, 1000) asc, title asc){\n    \n  _id,\n  _updatedAt,\n  title,\n  "slug": slug.current,\n  tiivistelma,\n  category,\n  huuhkajatOsio,\n  intro[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n  columns[]{ key, label, type },\n  rows[]{ cells[]{ key, value } },\n  lisatiedot[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n  kuvat[]{ _key, alt, caption, asset, hotspot, crop, "lqip": asset->metadata.lqip },\n  paivitetty,\n  jarjestys,\n  "sources": coalesce(sources, [])\n\n  }\n': TilastotByCategoryQueryResult;
-    '\n  *[_type == "jalkapalloTilasto" && category in $categories]\n    | order(coalesce(jarjestys, 1000) asc, title asc){\n    \n  _id,\n  _updatedAt,\n  title,\n  "slug": slug.current,\n  tiivistelma,\n  category,\n  huuhkajatOsio,\n  intro[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n  columns[]{ key, label, type },\n  rows[]{ cells[]{ key, value } },\n  lisatiedot[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n  kuvat[]{ _key, alt, caption, asset, hotspot, crop, "lqip": asset->metadata.lqip },\n  paivitetty,\n  jarjestys,\n  "sources": coalesce(sources, [])\n\n  }\n': TilastotByCategoriesQueryResult;
-    '\n  *[\n    _type == "jalkapalloTilasto"\n    && category == $category\n    && slug.current == $slug\n  ][0]{\n    \n  _id,\n  _updatedAt,\n  title,\n  "slug": slug.current,\n  tiivistelma,\n  category,\n  huuhkajatOsio,\n  intro[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n  columns[]{ key, label, type },\n  rows[]{ cells[]{ key, value } },\n  lisatiedot[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n  kuvat[]{ _key, alt, caption, asset, hotspot, crop, "lqip": asset->metadata.lqip },\n  paivitetty,\n  jarjestys,\n  "sources": coalesce(sources, [])\n\n  }\n': TilastoBySlugQueryResult;
+    '\n  *[_type == "jalkapalloTilasto" && category == $category]\n    | order(coalesce(jarjestys, 1000) asc, title asc){\n    \n  _id,\n  _updatedAt,\n  title,\n  "slug": slug.current,\n  tiivistelma,\n  category,\n  huuhkajatOsio,\n  mestaruusmaa,\n  intro[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n  columns[]{ key, label, type },\n  rows[]{ cells[]{ key, value } },\n  lisatiedot[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n  kuvat[]{ _key, alt, caption, asset, hotspot, crop, "lqip": asset->metadata.lqip },\n  paivitetty,\n  jarjestys,\n  "sources": coalesce(sources, [])\n\n  }\n': TilastotByCategoryQueryResult;
+    '\n  *[_type == "jalkapalloTilasto" && category in $categories]\n    | order(coalesce(jarjestys, 1000) asc, title asc){\n    \n  _id,\n  _updatedAt,\n  title,\n  "slug": slug.current,\n  tiivistelma,\n  category,\n  huuhkajatOsio,\n  mestaruusmaa,\n  intro[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n  columns[]{ key, label, type },\n  rows[]{ cells[]{ key, value } },\n  lisatiedot[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n  kuvat[]{ _key, alt, caption, asset, hotspot, crop, "lqip": asset->metadata.lqip },\n  paivitetty,\n  jarjestys,\n  "sources": coalesce(sources, [])\n\n  }\n': TilastotByCategoriesQueryResult;
+    '\n  *[\n    _type == "jalkapalloTilasto"\n    && category == $category\n    && slug.current == $slug\n  ][0]{\n    \n  _id,\n  _updatedAt,\n  title,\n  "slug": slug.current,\n  tiivistelma,\n  category,\n  huuhkajatOsio,\n  mestaruusmaa,\n  intro[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n  columns[]{ key, label, type },\n  rows[]{ cells[]{ key, value } },\n  lisatiedot[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n  kuvat[]{ _key, alt, caption, asset, hotspot, crop, "lqip": asset->metadata.lqip },\n  paivitetty,\n  jarjestys,\n  "sources": coalesce(sources, [])\n\n  }\n': TilastoBySlugQueryResult;
     '\n  *[\n    _type == "jalkapalloTilasto"\n    && category == $category\n    && defined(slug.current)\n  ].slug.current\n': TilastoSlugsByCategoryQueryResult;
     '{\n  "taulukot": *[_type == "jalkapalloTilasto" && category == "huuhkajat"]\n    | order(coalesce(jarjestys, 1000) asc, title asc){ \n  _id,\n  _updatedAt,\n  title,\n  "slug": slug.current,\n  tiivistelma,\n  huuhkajatOsio\n },\n  "karsinnat": *[\n    _type == "jalkapalloTilasto" && category == "karsinta" && defined(slug.current)\n  ] | order(coalesce(jarjestys, 1000) asc, title asc){ \n  _id,\n  _updatedAt,\n  title,\n  "slug": slug.current,\n  tiivistelma,\n  huuhkajatOsio\n }\n}': HuuhkajatHubQueryResult;
-    '\n  *[\n    _type == "jalkapalloTilasto"\n    && category == "huuhkajat"\n    && select(\n      $osio == $oletus => !(huuhkajatOsio in $tunnetut),\n      huuhkajatOsio == $osio\n    )\n  ] | order(coalesce(jarjestys, 1000) asc, title asc){\n    \n  _id,\n  _updatedAt,\n  title,\n  "slug": slug.current,\n  tiivistelma,\n  category,\n  huuhkajatOsio,\n  intro[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n  columns[]{ key, label, type },\n  rows[]{ cells[]{ key, value } },\n  lisatiedot[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n  kuvat[]{ _key, alt, caption, asset, hotspot, crop, "lqip": asset->metadata.lqip },\n  paivitetty,\n  jarjestys,\n  "sources": coalesce(sources, [])\n\n  }\n': HuuhkajatOsioQueryResult;
+    '\n  *[\n    _type == "jalkapalloTilasto"\n    && category == "huuhkajat"\n    && select(\n      $osio == $oletus => !(huuhkajatOsio in $tunnetut),\n      huuhkajatOsio == $osio\n    )\n  ] | order(coalesce(jarjestys, 1000) asc, title asc){\n    \n  _id,\n  _updatedAt,\n  title,\n  "slug": slug.current,\n  tiivistelma,\n  category,\n  huuhkajatOsio,\n  mestaruusmaa,\n  intro[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n  columns[]{ key, label, type },\n  rows[]{ cells[]{ key, value } },\n  lisatiedot[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n  kuvat[]{ _key, alt, caption, asset, hotspot, crop, "lqip": asset->metadata.lqip },\n  paivitetty,\n  jarjestys,\n  "sources": coalesce(sources, [])\n\n  }\n': HuuhkajatOsioQueryResult;
     '\n  *[_type == "jalkapalloTilasto" && defined(category)]{\n    category,\n    "updatedAt": _updatedAt\n  }\n': ArkistoSummaryQueryResult;
     '\n  *[_type == "etusivu"][0]{\n    heroEyebrow,\n    heroTitle,\n    heroDescription,\n    heroImage{..., "lqip": asset->metadata.lqip},\n    heroCtas[]{ label, href, primary },\n    seuraavaOttelu{ ottelu, kilpailu, aika },\n    blocks[]{\n      _type,\n      _key,\n      eyebrow,\n      heading,\n      count,\n      ottelutHeading,\n      ottelutCount,\n      vainMaajoukkue,\n      seurat,\n      laskuri,\n      tapahtumatHeading,\n      tapahtumatCount,\n      body[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n      image{..., "lqip": asset->metadata.lqip},\n      ctaLabel,\n      ctaHref,\n      "city": city->{ "_ref": _id, name }\n    }\n  }\n': EtusivuQueryResult;
     '\n  *[_type == "ravintola" && defined(slug.current) && closed != true\n    && ($cityId == null || city._ref == $cityId)\n    && coalesce(ratingOverall, stars, 0) > 0]\n    | order(coalesce(ratingOverall, stars, 0) desc, name asc)[0...$count]{\n    _id,\n    name,\n    "slug": slug.current,\n    "city": city->{ name, "slug": slug.current },\n    stars,\n    ratingOverall,\n    priceLevel,\n    tuomio,\n    stadionHuomio,\n    "image": images[0]{..., "lqip": asset->metadata.lqip}\n  }\n': EtusivuRavintolatQueryResult;
@@ -4129,7 +4135,7 @@ declare module "@sanity/client" {
     '\n  *[_type == "ravintola" && defined(slug.current)].slug.current\n': RavintolaSlugsQueryResult;
     '\n  *[_type == "ravintola" && defined(slug.current)] | order(name asc){\n    _id,\n    name,\n    "slug": slug.current,\n    "city": city->name\n  }\n': RavintolaOptionsQueryResult;
     '\n  *[_type == $type && defined(slug.current)] | order(_updatedAt desc) {\n    "slug": slug.current,\n    "updatedAt": _updatedAt\n  }\n': SitemapByTypeQueryResult;
-    '\n  *[_type == "jalkapalloTilasto" && defined(slug.current)] | order(_updatedAt desc) {\n    _id,\n    _type,\n    "slug": slug.current,\n    category,\n    huuhkajatOsio,\n    "parent": *[\n      _type in ["arvokisa", "pelaaja", "klubiToiminta", "sivu"]\n      && references(^._id)\n      && !(_id in path("drafts.**"))\n    ] | order(_type asc, _id asc)[0]{ _type, "slug": slug.current },\n    "updatedAt": _updatedAt\n  }\n': SitemapTilastotQueryResult;
+    '\n  *[_type == "jalkapalloTilasto" && defined(slug.current)] | order(_updatedAt desc) {\n    _id,\n    _type,\n    "slug": slug.current,\n    category,\n    huuhkajatOsio,\n    mestaruusmaa,\n    "parent": *[\n      _type in ["arvokisa", "pelaaja", "klubiToiminta", "sivu"]\n      && references(^._id)\n      && !(_id in path("drafts.**"))\n    ] | order(_type asc, _id asc)[0]{ _type, "slug": slug.current },\n    "updatedAt": _updatedAt\n  }\n': SitemapTilastotQueryResult;
     '\n  *[_type == "uutinen" && defined(publishedAt)]\n    | order(publishedAt desc) {\n      "slug": string::split(publishedAt, "-")[0],\n      "updatedAt": _updatedAt\n    }\n': SitemapArchiveYearsQueryResult;
     '\n  {\n    "items": *[_type == "uutinen" && defined(slug.current) && ($category == null || $category in categories)] | order(publishedAt desc)[$start...$end]{\n      _id,\n      title,\n      "slug": slug.current,\n      publishedAt,\n      excerpt,\n      tiivistelma,\n      coverImage{..., "lqip": asset->metadata.lqip},\n      categories\n    },\n    "total": count(*[_type == "uutinen" && defined(slug.current) && ($category == null || $category in categories)])\n  }\n': UutisetPageQueryResult;
     '\n  {\n    "items": *[_type == "uutinen" && defined(slug.current) && ($category == null || $category in categories) && ([title, excerpt, pt::text(body)] + coalesce(tunnisteet, [])) match $terms]\n      | score(\n          boost(title match $terms, 3),\n          boost(tunnisteet match $terms, 2),\n          boost(excerpt match $terms, 2),\n          pt::text(body) match $terms\n        )\n      | order(_score desc, publishedAt desc)[$start...$end]{\n      _id,\n      title,\n      "slug": slug.current,\n      publishedAt,\n      excerpt,\n      tiivistelma,\n      coverImage{..., "lqip": asset->metadata.lqip},\n      categories\n    },\n    "total": count(*[_type == "uutinen" && defined(slug.current) && ($category == null || $category in categories) && ([title, excerpt, pt::text(body)] + coalesce(tunnisteet, [])) match $terms])\n  }\n': UutisetHakuQueryResult;

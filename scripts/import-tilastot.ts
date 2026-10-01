@@ -27,6 +27,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 
+import { resolveMestaruusmaa } from "../lib/ulkomaiset-mestarit";
 import type { ImageBlock, RichBlock, RichSpan, Tilasto } from "./parse-tilastot";
 
 const ROOT = process.cwd();
@@ -176,6 +177,7 @@ function toDocument(t: Tilasto): Record<string, unknown> {
   };
   // Tyhjät kentät jätetään pois (ei tyhjiä merkkijonoja eikä taulukoita).
   if (t.tiivistelma) doc.tiivistelma = t.tiivistelma;
+  if (t.category === "ulkomaiset-mestarit") doc.mestaruusmaa = resolveMestaruusmaa(null, t.slug);
   if (intro.length) doc.intro = intro;
   if (t.columns.length) {
     doc.columns = t.columns.map((c) => ({ _key: c.key, key: c.key, label: c.label, type: c.type }));

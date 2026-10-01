@@ -29,7 +29,7 @@ import {
 } from "../_tilastot/helpers";
 import { ArkistoEmpty } from "../_tilastot/stat-sections";
 import { groupByOsio } from "./osiot";
-import { VanhaAnkkuriOhjaus } from "./vanha-ankkuri";
+import { VanhaAnkkuriOhjaus } from "../_tilastot/vanha-ankkuri";
 
 export const revalidate = 3600;
 

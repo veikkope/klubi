@@ -212,17 +212,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ];
   });
 
-  // Huuhkajat-osioiden sivut: vain osiot, joissa on taulukoita. Muokkausaika
-  // on osion tuoreimman taulukon muokkausaika.
+  // Huuhkajat-osioiden ja ulkomaisten mestareiden maiden sivut: vain sivut,
+  // joilla on taulukoita. Muokkausaika on sivun tuoreimman taulukon.
   const osioUpdated = new Map<string, string>();
   for (const row of tilastot) {
-    if (row.category !== "huuhkajat") continue;
+    if (row.category !== "huuhkajat" && row.category !== "ulkomaiset-mestarit") continue;
     const route = documentRoute(row);
     if (!route) continue;
     const current = osioUpdated.get(route.path) ?? "";
     osioUpdated.set(route.path, row.updatedAt && row.updatedAt > current ? row.updatedAt : current);
   }
-  const huuhkajatEntries: Entry[] = [...osioUpdated.entries()].map(([path, updatedAt]) => ({
+  const osioEntries: Entry[] = [...osioUpdated.entries()].map(([path, updatedAt]) => ({
     url: absoluteUrl(path),
     lastModified: updatedAt ? new Date(updatedAt) : undefined,
     priority: 0.5,
@@ -243,7 +243,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...toEntries(pelaajat, (s) => `/jalkapalloarkisto/pelaajat/${s}`, 0.5, "yearly"),
     ...toEntries(toiminta, (s) => `/klubi/toiminta/${s}`, 0.6, "yearly"),
     ...toEntries(albumit, (s) => `/galleria/${s}`, 0.4, "yearly"),
-    ...huuhkajatEntries,
+    ...osioEntries,
     ...tilastoEntries,
     ...toEntries(sivuRows, (s) => `/${s}`, 0.5, "monthly"),
   ];

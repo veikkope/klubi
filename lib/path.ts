@@ -1,4 +1,5 @@
 import { resolveHuuhkajatOsio } from "./huuhkajat-osiot";
+import { mestaruusmaaPath, resolveMestaruusmaa } from "./ulkomaiset-mestarit";
 
 /**
  * Sivupolku-apurit. `sivu`-dokumenttien slug voi sisältää kauttaviivoja
@@ -43,6 +44,8 @@ export interface RoutableDoc {
   category?: string | null;
   /** Huuhkajat-tilaston osio (`lib/huuhkajat-osiot.ts`). */
   huuhkajatOsio?: string | null;
+  /** Ulkomaisten mestareiden maa (`lib/ulkomaiset-mestarit.ts`). */
+  mestaruusmaa?: string | null;
   /** Dokumentti, joka viittaa tähän (arvokisa, pelaaja, toimintamuoto, sivu). */
   parent?: { _type: string; slug?: string | null } | null;
 }
@@ -87,7 +90,6 @@ export const TILASTO_CATEGORY_PAGE: Record<string, string> = {
   intercontinental: "/jalkapalloarkisto/eurocupit/intercontinental",
   // Mitalitaulukot; lohkotaulukot näkyvät kisansa sivulla (parent).
   arvokisa: "/jalkapalloarkisto/arvokisat",
-  "ulkomaiset-mestarit": "/jalkapalloarkisto/ulkomaiset-mestarit",
   palloliitto: "/jalkapalloarkisto/palloliitto",
 };
 
@@ -134,6 +136,11 @@ export function documentRoute(doc: RoutableDoc): DocumentRoute | null {
     return { path: huuhkajatOsioPath(resolveHuuhkajatOsio(doc.huuhkajatOsio)), anchor: slug };
   }
 
+  // Ulkomaiset mestarit jakautuvat maiden sivuille.
+  if (category === "ulkomaiset-mestarit") {
+    return { path: mestaruusmaaPath(resolveMestaruusmaa(doc.mestaruusmaa, slug)), anchor: slug };
+  }
+
   const detail = TILASTO_CATEGORY_DETAIL[category];
   if (detail) return { path: `${detail}/${slug}` };
 
@@ -160,6 +167,7 @@ export const routableProjection = /* groq */ `
   "slug": slug.current,
   category,
   huuhkajatOsio,
+  mestaruusmaa,
   "parent": *[
     _type in ["arvokisa", "pelaaja", "klubiToiminta", "sivu"]
     && references(^._id)
