@@ -126,14 +126,14 @@ export function PelaajaProfiili({
         )}
 
         <div className="flex flex-col gap-8">
-          <Avainluvut luvut={luvut} />
+          <Avainluvut luvut={luvut} kapea={Boolean(paakuva?.asset)} />
 
           {perustiedot.length > 0 && (
-            <dl className="grid gap-x-8 gap-y-3 sm:grid-cols-3">
+            <dl className="divide-y divide-border border-y border-border">
               {perustiedot.map((f) => (
-                <div key={f.label}>
+                <div key={f.label} className="grid grid-cols-[6.5rem_minmax(0,1fr)] items-baseline gap-3 py-3 sm:grid-cols-[7.5rem_minmax(0,1fr)] sm:gap-4">
                   <dt className="text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-soft">{f.label}</dt>
-                  <dd className="mt-1 text-foreground">{f.value}</dd>
+                  <dd className="text-foreground">{f.value}</dd>
                 </div>
               ))}
             </dl>

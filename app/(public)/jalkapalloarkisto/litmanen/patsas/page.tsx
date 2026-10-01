@@ -77,12 +77,13 @@ export default async function LitmasenPatsasPage() {
           <h2 id="patsas-kuvat" className={osioOtsikko}>
             Patsaan vuodet kuvina
           </h2>
-          <p className="mt-2 text-muted">{kuvat.length} kuvaa, uusin ensin. Avaa kuva isommaksi napauttamalla.</p>
+          <p className="mt-2 text-muted">{kuvat.length} kuvaa, uusin ensin. Napauta kuvaa nähdäksesi sen isompana.</p>
           <div className="mt-6">
             <AlbumGrid
-              images={kuvat.map((k) => ({ _key: k._key, asset: k.asset, alt: k.alt, caption: k.caption ?? k.alt }))}
+              images={kuvat.map((k) => ({ _key: k._key, asset: k.asset, alt: k.alt, caption: k.caption ?? k.alt, lqip: k.lqip }))}
               albumTitle={TITLE}
               merkinnat={kuvat.map((k) => (k.paivamaara ? formatDate(k.paivamaara) : null))}
+              kokonaisena
             />
           </div>
         </section>

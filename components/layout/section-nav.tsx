@@ -43,16 +43,19 @@ export function SectionNav({ items, label, className }: SectionNavProps) {
       aria-label={label}
       className={cn("-mx-6 overflow-x-auto px-6 sm:mx-0 sm:px-0", className)}
     >
-      <ul className="flex gap-2 whitespace-nowrap pb-1">
+      {/* Painikkeet pysyvät yksirivisinä ja samankorkuisina: lista vierii
+          vaakasuunnassa, joten pitkän nimen ("Suomen mestarit") ei tarvitse
+          rivittyä eikä kutistaa painiketta muita korkeammaksi. */}
+      <ul className="flex items-stretch gap-2 pb-1">
         {items.map((item) => {
           const active = item.href === activeHref;
           return (
-            <li key={item.href}>
+            <li key={item.href} className="flex shrink-0">
               <Link
                 href={item.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "inline-flex min-h-11 items-center rounded-sm border px-4 text-sm transition",
+                  "inline-flex min-h-11 items-center whitespace-nowrap rounded-sm border px-4 text-sm transition",
                   active
                     ? "border-primary bg-primary text-on-primary"
                     : "border-border bg-surface text-muted hover:border-accent hover:text-foreground",

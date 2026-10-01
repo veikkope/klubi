@@ -225,6 +225,8 @@ export type AlbumImage = {
   caption?: string | null;
   /** Kuvan hallitseva väri ruudun taustaksi latauksen ajaksi (`ruutukuva`). */
   vari?: string | null;
+  /** Sumea esikatselu kokonaisena näytettävän kuvan kehykseen (`kuva`-projektio). */
+  lqip?: string | null;
 };
 
 export type AlbumFull = {

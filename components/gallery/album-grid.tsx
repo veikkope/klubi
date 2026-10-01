@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import Image from "next/image";
 
+import { FramedImage } from "@/components/framed-image";
 import { Lightbox } from "./lightbox";
 import { urlForImage } from "@/sanity/lib/image";
 import type { AlbumImage } from "@/lib/types";
@@ -21,12 +22,18 @@ type Props = {
   albumTitle?: string;
   /** Lyhyt teksti kuvaruudun alle (esim. kuvauspäivä), sama järjestys kuin `images`. */
   merkinnat?: (string | null)[];
+  /**
+   * Ruutu näyttää kuvan kokonaisena pystykehyksessä (`FramedImage`) eikä rajaa
+   * sitä neliöksi. Arkistokuville, joissa rajaus leikkaisi aiheen (patsaskuvat);
+   * albumien valokuvat rajataan edelleen tasaiseksi ruudukoksi.
+   */
+  kokonaisena?: boolean;
 };
 
 /** Ensimmäiset ruudut ovat näkyvissä heti — ne ladataan ilman viivettä. */
 const EAGER_COUNT = 4;
 
-export function AlbumGrid({ images, albumTitle, merkinnat }: Props) {
+export function AlbumGrid({ images, albumTitle, merkinnat, kokonaisena = false }: Props) {
   const [active, setActive] = useState<number | null>(null);
   const triggersRef = useRef<(HTMLButtonElement | null)[]>([]);
 
@@ -63,19 +70,34 @@ export function AlbumGrid({ images, albumTitle, merkinnat }: Props) {
                 onClick={() => setActive(index)}
                 aria-haspopup="dialog"
                 aria-label={label}
-                className="group relative block aspect-square w-full overflow-hidden rounded-lg bg-surface-strong"
+                className={
+                  kokonaisena
+                    ? "group/kortti relative block w-full overflow-hidden rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                    : "group relative block aspect-square w-full overflow-hidden rounded-lg bg-surface-strong"
+                }
                 // Kuvan hallitseva väri latauksen ajaksi (sanity/lib/queries/kuvat.ts).
-                style={image.vari ? { backgroundColor: image.vari } : undefined}
+                style={!kokonaisena && image.vari ? { backgroundColor: image.vari } : undefined}
               >
-                <Image
-                  src={src}
-                  alt={image.alt ?? ""}
-                  width={400}
-                  height={400}
-                  sizes="(min-width: 1024px) 264px, (min-width: 640px) 33vw, 50vw"
-                  loading={index < EAGER_COUNT ? "eager" : undefined}
-                  className="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-105"
-                />
+                {kokonaisena ? (
+                  <FramedImage
+                    image={image}
+                    alt={image.alt ?? ""}
+                    width={600}
+                    sizes="(min-width: 1024px) 264px, (min-width: 640px) 33vw, 50vw"
+                    eager={index < EAGER_COUNT}
+                    className="aspect-[4/5] w-full"
+                  />
+                ) : (
+                  <Image
+                    src={src}
+                    alt={image.alt ?? ""}
+                    width={400}
+                    height={400}
+                    sizes="(min-width: 1024px) 264px, (min-width: 640px) 33vw, 50vw"
+                    loading={index < EAGER_COUNT ? "eager" : undefined}
+                    className="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                  />
+                )}
               </button>
               {merkinnat?.[index] && (
                 <p className="mt-2 text-sm tabular-nums text-muted">{merkinnat[index]}</p>

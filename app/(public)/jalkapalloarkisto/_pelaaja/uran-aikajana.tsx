@@ -20,7 +20,15 @@ export function seuraVuodet(seura: PelaajaSeura): string | null {
   return null;
 }
 
-/** Seurahistoria pystysuorana aikajanana: vuodet vasemmalla, seura oikealla. */
+/**
+ * Seurahistoria pystysuorana aikajanana: pallo, vuodet ja seura samalla rivillä.
+ *
+ * Pallo ja viiva ovat omassa sarakkeessaan, joka venyy rivin korkuiseksi, joten
+ * pallo on aina rivin pystykeskellä eikä pikselisiirtojen varassa. Jokainen rivi
+ * piirtää oman viivanpätkänsä: ensimmäisellä viiva alkaa pallosta ja viimeisellä
+ * päättyy palloon, joten viiva ei jatku janan ohi. Pallon ympärillä on sivun
+ * taustan värinen rengas, joka erottaa sen viivasta.
+ */
 export function UranAikajana({ seurat, otsikkoId }: { seurat: PelaajaSeura[]; otsikkoId: string }) {
   if (seurat.length === 0) return null;
   return (
@@ -32,11 +40,14 @@ export function UranAikajana({ seurat, otsikkoId }: { seurat: PelaajaSeura[]; ot
         {jarjestaSeurat(seurat).map((seura, index) => (
           <li
             key={seura._key ?? `${seura.seura}-${index}`}
-            className="relative grid grid-cols-[6.5rem_minmax(0,1fr)] gap-4 border-l-2 border-border py-2.5 pl-5"
+            className="group grid min-h-11 grid-cols-[0.75rem_6.5rem_minmax(0,1fr)] items-center gap-x-4"
           >
-            <span aria-hidden className="absolute -left-[7px] top-[1.15rem] h-3 w-3 rounded-full border-2 border-surface bg-accent" />
-            <span className="text-sm tabular-nums text-muted">{seuraVuodet(seura) ?? "—"}</span>
-            <span className="font-medium text-foreground">{seura.seura}</span>
+            <span aria-hidden className="relative flex h-full items-center justify-center self-stretch">
+              <span className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-border-strong group-first:top-1/2 group-last:bottom-1/2" />
+              <span className="relative h-2.5 w-2.5 rounded-full bg-accent ring-4 ring-background" />
+            </span>
+            <span className="text-sm leading-6 tabular-nums text-muted">{seuraVuodet(seura) ?? "—"}</span>
+            <span className="py-2 leading-6 font-medium text-foreground">{seura.seura}</span>
           </li>
         ))}
       </ol>
