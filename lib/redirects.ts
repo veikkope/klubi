@@ -92,7 +92,7 @@ export const legacyRedirects: Redirect[] = [
   { source: "/links.htm", destination: "/", permanent: true },
   { source: "/litmanen.htm", destination: "/jalkapalloarkisto/litmanen/loukkaantumiset#jari-litmanen-loukkaantumiset", permanent: true },
   { source: "/litmanenjari.htm", destination: "/jalkapalloarkisto/litmanen", permanent: true },
-  { source: "/litmanenjaripatsas.htm", destination: "/jalkapalloarkisto/litmanen", permanent: true },
+  { source: "/litmanenjaripatsas.htm", destination: "/jalkapalloarkisto/litmanen/patsas", permanent: true },
   { source: "/Loiste.htm", destination: "/ravintolat/ravintola-loiste-vaakuna", permanent: true },
   { source: "/lupaavia.htm", destination: "/jalkapalloarkisto/lupaavat#lupaavat-1980-1986", permanent: true },
   { source: "/maailmanparhaat.htm", destination: "/jalkapalloarkisto/maailman-parhaat#maailman-parhaat-pelaajat", permanent: true },
