@@ -291,8 +291,11 @@ body {
   pointer-events: none;
 }
 
+/* Ulos häivyttäessä opasiteetti putoaa heti alussa (ease-out eteenpäin).
+   `reverse`-suunta kääntäisi käyrän: kuva pysyisi lähes täysin näkyvänä
+   suurimman osan ajasta ja katoaisi vasta lopussa. */
 ::view-transition-old(.sivu-ulos) {
-  animation: var(--sivu-ulos) ease-in both sivu-haivytys reverse;
+  animation: var(--sivu-ulos) ease-out both haivytys-ulos;
 }
 ::view-transition-new(.sivu-sisaan) {
   animation: var(--sivu-sisaan) ease-out 60ms both sivu-haivytys;
@@ -325,14 +328,18 @@ body {
 /* Kortin ja sivun kuvilla on eri mittasuhde: kuvat täyttävät ryhmän
    venymättä, ja ryhmä rajaa ylimenevän osan. Kuvat vaihtuvat nopeasti
    (150 ms) koon muutoksen alussa, jottei eri tavoin rajattuja kuvia näy
-   pitkään päällekkäin. */
+   pitkään päällekkäin. Vanha ja uusi kuva käyttävät samaa käyrää
+   vastakkaisiin suuntiin, joten niiden opasiteetit summautuvat aina yhteen
+   (selaimen plus-lighter-sekoitus): ei läpikuultavaa notkahdusta eikä
+   ylivalottunutta välähdystä. Ilman paria (kuva vain toisella sivulla)
+   vanha kuva häipyy heti alussa eikä jää muun sivun päälle. */
 ::view-transition-old(.kuva-siirtyma),
 ::view-transition-new(.kuva-siirtyma) {
   height: 100%;
   object-fit: cover;
 }
 ::view-transition-old(.kuva-siirtyma) {
-  animation: 150ms ease-out both sivu-haivytys reverse;
+  animation: 150ms ease-out both haivytys-ulos;
 }
 ::view-transition-new(.kuva-siirtyma) {
   animation: 150ms ease-out both sivu-haivytys;
@@ -341,6 +348,10 @@ body {
 @keyframes sivu-haivytys {
   from { opacity: 0; }
   to { opacity: 1; }
+}
+@keyframes haivytys-ulos {
+  from { opacity: 1; }
+  to { opacity: 0; }
 }
 
 /* Vähemmän liikettä: ei siirtymiä eikä kokomuutoksia, vain häivytys. */

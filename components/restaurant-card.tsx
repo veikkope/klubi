@@ -74,26 +74,29 @@ export function RestaurantCard({
       )}
     >
       {r.image?.asset ? (
-        <>
-          {/* Mobiilin 80 px pikkukuva rajataan neliöksi; isossa kortissa kuva näkyy kokonaan. */}
-          <SanityImage
-            image={r.image}
-            width={160}
-            height={160}
-            sizes="80px"
-            className={cn("aspect-square w-full rounded-sm object-cover sm:hidden", korttiZoom)}
-          />
-          {/* Vain ison kortin kuva siirtyy arviosivulle: nimi saa olla näkyvissä
-              kerran, ja mobiilin pikkukuva on piilossa isolla näytöllä. */}
-          <KuvaSiirtyma nimi={`ravintola-${r.slug}`}>
+        // Siirtymän nimi on yhteisellä kehyksellä, joka on aina näkyvissä:
+        // mobiilissa se on pikkukuvan ruutu, isolla näytöllä ison kuvan.
+        // Näin kuva liukuu arviosivun isoksi kuvaksi (ja takaisin) myös
+        // puhelimella. Jos nimi olisi vain piilotetulla isolla kuvalla,
+        // arviosivun kuva jäisi puhelimella yksinään kaiken päälle häipymään.
+        <KuvaSiirtyma nimi={`ravintola-${r.slug}`}>
+          <div className="sm:w-full">
+            {/* Mobiilin 80 px pikkukuva rajataan neliöksi; isossa kortissa kuva näkyy kokonaan. */}
+            <SanityImage
+              image={r.image}
+              width={160}
+              height={160}
+              sizes="80px"
+              className={cn("aspect-square w-full rounded-sm object-cover sm:hidden", korttiZoom)}
+            />
             <FramedImage
               image={r.image}
               width={840}
               sizes="(min-width: 1024px) 420px, 45vw"
               className="aspect-[4/3] w-full max-sm:hidden"
             />
-          </KuvaSiirtyma>
-        </>
+          </div>
+        </KuvaSiirtyma>
       ) : (
         <span aria-hidden className="aspect-square w-full rounded-sm bg-brass-tint sm:hidden" />
       )}
