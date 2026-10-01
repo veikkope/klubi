@@ -38,7 +38,7 @@ Maajoukkueen ottelut lisätään Studioon käsin, koska automaattinen syöte kat
 ## Etusivu: Huuhkajat, valitut seurat ja laskuri
 
 Etusivun otteluohjelmalohkossa on nämä Studion valinnat:
-- **Näytä vain Huuhkajien ja valittujen seurojen ottelut** (oletuksena päällä). Listassa ovat ottelut, joissa joukkue on tasan "Suomi", sekä **Näytä myös näiden seurojen ottelut** -listan seurojen ottelut. Nimi verrataan kuten Studion ja syötteen yhdistämisessä. Etusivulla listassa on "FC Lahti". Jos lista on tyhjä, ulkoisia syötteitä ei haeta. `/ottelut`-sivulla näkyy aina koko ohjelma.
+- **Näytä vain Huuhkajien ja valittujen seurojen ottelut** (oletuksena päällä). Listassa ovat ottelut, joissa joukkue on tasan "Suomi", sekä **Näytä myös näiden seurojen ottelut** -listan seurojen ottelut. Nimi verrataan kuten Studion ja syötteen yhdistämisessä. Etusivulla listassa on "FC Lahti". Jos lista on tyhjä, ulkoisia syötteitä ei haeta. Sama seuralista rajaa myös `/ottelut`-sivun: siellä näkyvät aina vain Huuhkajat ja listan seurat (kytkimestä riippumatta, `ottelujenSeuratQuery`). Ilman etusivun lohkoa oletus on "FC Lahti".
 - **Näytä laskuri seuraavaan Huuhkajien otteluun.** Laskuri on ottelulistan yläpuolella (`components/match-countdown.tsx`). Ottelu on sama, joka on listassa ensimmäisenä, joten laskurille ei ole omaa kenttää. Jos Huuhkajien ottelua ei ole tiedossa, laskuria ei näytetä.
 
 Kun ottelu alkaa, laskurin tilalle vaihtuu "Ottelu on alkanut". Seuraavaan otteluun laskuri siirtyy, kun etusivu päivittyy seuraavan kerran (tunnin välein tai heti Studion julkaisun jälkeen), kuitenkin aikaisintaan 2 tuntia alkamisen jälkeen.

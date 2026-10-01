@@ -18,3 +18,13 @@ export const tulevatOttelutQuery = defineQuery(`
     vierasmatka
   }
 `);
+
+/**
+ * Seurat, joiden ottelut näytetään Huuhkajien lisäksi: etusivun
+ * otteluohjelmalohkon "Näytä myös näiden seurojen ottelut" -lista. Sama lista
+ * rajaa /ottelut-sivun, joten seurat muokataan yhdestä paikasta.
+ * `null`, jos lohkoa tai kenttää ei ole.
+ */
+export const ottelujenSeuratQuery = defineQuery(`
+  *[_type == "etusivu"][0].blocks[_type == "otteluohjelma"][0].seurat
+`);

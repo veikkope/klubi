@@ -31,8 +31,8 @@ type Props = {
  * Ottelupuolen yläreunassa on laskuri seuraavaan Huuhkajien otteluun. Se
  * lasketaan samoista Studion otteluista kuin lista, joten erillistä
  * ylläpitoa ei ole. Etusivu näyttää oletuksena Huuhkajien ja Studiossa
- * valittujen seurojen (esim. FC Lahti) ottelut; /ottelut-sivulla näkyy aina
- * koko ohjelma.
+ * valittujen seurojen (esim. FC Lahti) ottelut. Sama seuralista rajaa
+ * /ottelut-sivun, jossa on pidempi lista.
  */
 export async function OtteluohjelmaBlock({
   ottelutHeading = "Tulevat ottelut",

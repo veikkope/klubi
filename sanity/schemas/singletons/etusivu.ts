@@ -142,7 +142,7 @@ export const etusivu = defineType({
               name: "vainMaajoukkue",
               title: "Näytä vain Huuhkajien ja valittujen seurojen ottelut",
               description:
-                "Päällä: listassa miesten maajoukkueen (Suomi) ja alla lueteltujen seurojen ottelut. Pois: kaikki Veikkausliigan ja Ottelut-osion ottelut. Koskee vain etusivua; /ottelut-sivulla näkyy aina koko ohjelma.",
+                "Päällä: listassa miesten maajoukkueen (Suomi) ja alla lueteltujen seurojen ottelut. Pois: kaikki Veikkausliigan ja Ottelut-osion ottelut. Koskee vain etusivua; /ottelut-sivulla näkyvät aina vain Huuhkajat ja alla luetellut seurat.",
               type: "boolean",
               initialValue: true,
             },
@@ -150,12 +150,11 @@ export const etusivu = defineType({
               name: "seurat",
               title: "Näytä myös näiden seurojen ottelut",
               description:
-                'Kirjoita seuran nimi kuten Veikkausliigan sivuilla, esim. "FC Lahti". Ottelut haetaan automaattisesti. Tyhjä lista = vain Huuhkajat.',
+                'Kirjoita seuran nimi kuten Veikkausliigan sivuilla, esim. "FC Lahti". Ottelut haetaan automaattisesti. Sama lista rajaa myös /ottelut-sivun. Tyhjä lista = vain Huuhkajat.',
               type: "array",
               of: [{ type: "string" }],
               options: { layout: "tags" },
               initialValue: ["FC Lahti"],
-              hidden: ({ parent }) => parent?.vainMaajoukkue === false,
             },
             {
               name: "laskuri",
