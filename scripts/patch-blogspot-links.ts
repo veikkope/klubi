@@ -99,8 +99,11 @@ async function main() {
     `*[!(_type match "sanity.*") && !(_id in path("drafts.**")) && !defined(blogspot.id)]`,
   );
 
+  // Uutinen ilman tunnisteita tuottaa listaan nullin: vain tekstit mukaan.
   const slugit = new Set(
-    (await client.fetch<string[]>(`*[_type == "uutinen" && !(_id in path("drafts.**"))].tunnisteet[]`)).map(tunnisteSlug),
+    (await client.fetch<(string | null)[]>(`*[_type == "uutinen" && !(_id in path("drafts.**"))].tunnisteet[]`))
+      .filter((nimi): nimi is string => typeof nimi === "string")
+      .map(tunnisteSlug),
   );
 
   const unresolved: string[] = [];
