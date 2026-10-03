@@ -31,6 +31,10 @@ Laskennan käynnistää Sanityn webhook (`app/api/revalidate`) aina, kun
 
 ## Sivulla
 
+- **/ravintolat/odottavat**: toista arvioijaa odottavat (ei lopettaneita), ensimmäisen
+  arvioijan nimi ja pisteet, painike arvostelulomakkeelle ravintola valmiiksi valittuna.
+  Linkki ja määrä arvostelulomakkeen yläosassa. `noindex`, ei sivukartassa.
+
 - Arvosanakortissa: "Keskiarvo N klubilaisen arvosanasta".
 - Taulukko **Klubilaisten arvosanat**: nimi, päivä, ruoka, hinta, viihtyvyys,
   keskiarvo (kunkin klubilaisen voimassa oleva arvosana).

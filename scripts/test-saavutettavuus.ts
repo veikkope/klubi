@@ -29,6 +29,8 @@ const KIINTEAT = [
   "/",
   "/english",
   "/tama-sivu-ei-ole-olemassa",
+  "/ravintolat/odottavat",
+  "/ravintolat/arvostele",
   "/uutiset?q=m%C3%B6lkky",
   "/uutiset?q=zzqqxx",
   "/uutiset/tunnisteet",

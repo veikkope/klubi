@@ -246,6 +246,8 @@ kirjoiteta käsin, ja ravintolan arvosanakentät ovat lukittuja.
 **Kahden klubilaisen sääntö:** ravintola näkyy sivustolla vasta, kun vähintään kaksi
 klubilaista on arvioinut sen. Siihen asti se odottaa listassa **Ravintolat → Odottavat
 toista arvioijaa**, ja se tulee sivulle itsestään, kun toinen arvosana lisätään.
+Klubilaiset näkevät samat paikat sivulla **/ravintolat/odottavat** (linkki
+arvostelulomakkeen yläosassa) ja voivat arvostella ne sieltä suoraan.
 
 Ravintolasivulla näkyy taulukko **Klubilaisten arvosanat** ja arvosanan alla
 esim. "Keskiarvo 10 klubilaisen arvosanasta". Tuoreimmin arvioidut näkyvät

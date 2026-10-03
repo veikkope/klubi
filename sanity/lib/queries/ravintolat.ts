@@ -434,6 +434,37 @@ export const ravintolaKlubiArviotQuery = /* groq */ `
   *[_type == "ravintola" && _id == $id][0]{ "arviot": ${KLUBILAISTEN_ARVIOT} }.arviot
 `;
 
+/**
+ * Toista klubilaista arvioijaa odottavat ravintolat (`/ravintolat/odottavat`):
+ * ei näy hakemistossa kahden arvioijan säännön takia. Lopettaneet jätetään pois,
+ * koska niissä ei voi enää käydä. Tuoreimmin arvioidut ensin.
+ */
+export const odottavatRavintolatQuery = /* groq */ `
+  *[_type == "ravintola" && defined(slug.current) && closed != true && !${JULKINEN_RAVINTOLA}]
+    | order(coalesce(${TUOREIN_ARVIO}, "0000-00-00") desc, name asc){
+    _id,
+    name,
+    "slug": slug.current,
+    "city": city->{ name, country },
+    visitedAt,
+    "arviot": ${KLUBILAISTEN_ARVIOT}
+  }
+`;
+
+/** Montako ravintolaa odottaa toista arvioijaa (vinkki arvostelulomakkeella). */
+export const odottavatRavintolatMaaraQuery = /* groq */ `
+  count(*[_type == "ravintola" && defined(slug.current) && closed != true && !${JULKINEN_RAVINTOLA}])
+`;
+
+export type OdottavaRavintola = {
+  _id: string;
+  name: string;
+  slug: string;
+  city?: { name: string; country?: string | null } | null;
+  visitedAt?: string | null;
+  arviot: KlubilaisenArvio[];
+};
+
 export const ravintolaSlugsQuery = defineQuery(`
   *[_type == "ravintola" && defined(slug.current) && ${JULKINEN_RAVINTOLA}].slug.current
 `);

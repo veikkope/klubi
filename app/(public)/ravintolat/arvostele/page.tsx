@@ -9,7 +9,9 @@ import { rootCrumb } from "@/lib/nav-sections";
 import { breadcrumbSchema, webPageSchema } from "@/lib/schema-org";
 import { getYhteysSahkoposti } from "@/lib/yhteystiedot";
 import { sanityFetch } from "@/sanity/lib/fetch";
+import { Nuoli } from "@/components/ui/nuoli";
 import {
+  odottavatRavintolatMaaraQuery,
   ravintolaOptionsQuery,
   type RavintolaOption,
 } from "@/sanity/lib/queries/ravintolat";
@@ -48,13 +50,14 @@ export default async function ArvostelePage({
   const sp = await searchParams;
   const wanted = Array.isArray(sp.ravintola) ? sp.ravintola[0] : sp.ravintola;
 
-  const [restaurants, email] = await Promise.all([
+  const [restaurants, email, odottavia] = await Promise.all([
     sanityFetch<RavintolaOption[]>({
       query: ravintolaOptionsQuery,
       tags: ["ravintola"],
       fallback: [],
     }),
     getYhteysSahkoposti(),
+    sanityFetch<number>({ query: odottavatRavintolatMaaraQuery, tags: ["ravintola"], fallback: 0 }),
   ]);
 
   const preselected = wanted
@@ -78,6 +81,19 @@ export default async function ArvostelePage({
           topic="food"
           breadcrumbs={trail}
         />
+
+        {odottavia > 0 && (
+          <p className="mt-8 rounded-sm border-l-[3px] border-l-brass bg-surface px-5 py-4 text-[15px] leading-relaxed text-foreground">
+            <span className="font-semibold">Klubilaiselle:</span> {odottavia} ravintolaa odottaa toista
+            arvioijaa. Ne tulevat sivuille, kun toinen klubilainen arvioi ne.{" "}
+            <Link
+              href="/ravintolat/odottavat"
+              className="group/linkki font-semibold text-accent underline decoration-1 underline-offset-[4px] hover:decoration-2"
+            >
+              Katso lista&nbsp;<Nuoli />
+            </Link>
+          </p>
+        )}
 
         <div className="mt-10">
           {restaurants.length === 0 ? (
