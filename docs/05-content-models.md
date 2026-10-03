@@ -244,13 +244,16 @@ Vain julkaistut arvostelut näkyvät. Uuden ravintolan arvostelun julkaisu vaati
 
 | Kenttä | Tyyppi | Pakollinen | Kuvaus |
 |---|---|---|---|
-| heroTitle | string | kyllä | Hero-otsikko |
-| heroEyebrow | string | ei | Pieni teksti otsikon yläpuolella |
-| heroDescription | text | kyllä | |
-| heroImage | imageWithAlt | ei | Pystykuva heron oikealla puolella (4:5) |
-| heroCtas | array of { label, href, primary } (max 2) | ei | Näkyvät alleviivattuina tekstilinkkeinä (tyyliopas) |
+| heroEyebrow | string | ei | Klubin nimi yläosan pienellä rivillä (etusivun H1) |
+| heroNosto | reference → uutinen | ei | Yläosan pääjuttu. Tyhjä = uusin juttu automaattisesti |
+| heroNostoAsti | datetime | ei | Nosto voimassa asti; sen jälkeen taas uusin juttu. Näkyy vain kun heroNosto on valittu |
+| heroLaskuri | boolean | ei | Seuraava Huuhkajien ottelu + laskuri yläosan Seuraavaksi-kortissa (oletus päällä) |
+| heroImage | imageWithAlt | ei | Yläosan taustakuva (harmaasävy + 85 % yönsininen) ja jakokuva (Open Graph). Ilman kuvaa logo vesileimana |
+| heroCtas | array of { label, href } (max 4) | ei | Pikalinkit Seuraavaksi-kortissa. `primary` piilotettu (vanha) |
+| heroDescription | text | kyllä | SEO-ryhmässä: etusivun meta-kuvaus, ei näy sivulla |
+| heroTitle | string | ei | **Piilotettu** — vanhan kuvaheron otsikko. Säilyy, jotta vanha data on validia. |
 | seuraavaOttelu | object | ei | **Piilotettu** — korvattu otteluohjelmalla. Säilyy, jotta vanha data on validia. |
-| blocks | array (multi-type: otteluohjelma, uutiset, tapahtumat, esittely, ravintolatSpotlight, jalkapalloarkisto, galleria, cta) | ei | Etusivun lohkot järjestyksessä. Tyylioppaan järjestys: otteluohjelma, uutiset, ravintolatSpotlight, esittely. `uutiset`, `esittely` ja `ravintolatSpotlight` saavat `eyebrow`-kentän. `otteluohjelma`: ottelutHeading, ottelutCount, vainMaajoukkue (boolean, oletus true), seurat (string[], tags, oletus ["FC Lahti"]), laskuri (boolean, oletus true), tapahtumatHeading, tapahtumatCount. `cta` on vanha — tyyliopas kieltää liittymiskehotteet. |
+| blocks | array (multi-type: otteluohjelma, uutiset, tapahtumat, esittely, ravintolatSpotlight, jalkapalloarkisto, galleria, cta) | ei | Etusivun lohkot järjestyksessä. Tyylioppaan järjestys: otteluohjelma, uutiset, ravintolatSpotlight, esittely. `uutiset`, `esittely` ja `ravintolatSpotlight` saavat `eyebrow`-kentän. `otteluohjelma`: ottelutHeading, ottelutCount, vainMaajoukkue (boolean, oletus true), seurat (string[], tags, oletus ["FC Lahti"]), laskuri (boolean, **piilotettu** — laskuri on yläosassa, etusivu ohittaa arvon), tapahtumatHeading, tapahtumatCount. `cta` on vanha — tyyliopas kieltää liittymiskehotteet. |
 
 ## Singletonien hallinta Studiossa
 

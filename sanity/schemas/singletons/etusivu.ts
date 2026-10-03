@@ -8,47 +8,61 @@ export const etusivu = defineType({
   type: "document",
   icon: HomeIcon,
   groups: [
-    { name: "hero", title: "Hero-alue", default: true },
+    { name: "hero", title: "Yläosa", default: true },
     { name: "blocks", title: "Lohkot" },
     { name: "seo", title: "SEO" },
   ],
   fields: [
     defineField({
       name: "heroEyebrow",
-      title: "Hero — yläteksti",
-      description: 'Pieni teksti otsikon yläpuolella, esim. "Lahden Suomalainen Klubi ry"',
+      title: "Klubin nimi yläosassa",
+      description:
+        'Pieni rivi sivun yläreunassa, esim. "Lahden Suomalainen Klubi ry". Tämä on etusivun pääotsikko hakukoneille.',
       type: "string",
+      initialValue: "Lahden Suomalainen Klubi ry",
       group: "hero",
     }),
     defineField({
-      name: "heroTitle",
-      title: "Hero — pääotsikko",
-      type: "string",
-      initialValue: "Lahden Suomalainen Klubi",
-      validation: (rule) => rule.required(),
+      name: "heroNosto",
+      title: "Pääjuttu (valinnainen)",
+      description:
+        "Jätä tyhjäksi, niin yläosassa näkyy aina automaattisesti uusin juttu. Valitse juttu vain, jos haluat nostaa jonkin tietyn (esim. vuosikokouskutsun) uusimman tilalle.",
+      type: "reference",
+      to: [{ type: "uutinen" }],
+      options: { disableNew: true },
       group: "hero",
     }),
     defineField({
-      name: "heroDescription",
-      title: "Hero — kuvaus",
-      type: "text",
-      rows: 3,
-      validation: (rule) => rule.required(),
+      name: "heroNostoAsti",
+      title: "Pääjuttu näkyy asti",
+      description:
+        "Valinnainen. Tämän jälkeen yläosassa näkyy taas uusin juttu, eikä valintaa tarvitse muistaa poistaa.",
+      type: "datetime",
+      hidden: ({ parent }) => !(parent as { heroNosto?: unknown } | undefined)?.heroNosto,
+      group: "hero",
+    }),
+    defineField({
+      name: "heroLaskuri",
+      title: "Näytä seuraava Huuhkajien ottelu ja laskuri",
+      description:
+        "Ottelu haetaan automaattisesti Ottelut-osiosta. Jos ottelua ei ole tiedossa, kohtaa ei näytetä.",
+      type: "boolean",
+      initialValue: true,
       group: "hero",
     }),
     defineField({
       name: "heroImage",
-      title: "Hero — kuva (valinnainen)",
+      title: "Taustakuva (valinnainen)",
       description:
-        "Koko heron taustakuva omissa väreissään. Tekstin takana on kevyt tummennus, jotta teksti erottuu. Teksti on vasemmalla, joten kuvan tärkein kohta kannattaa olla keskellä tai oikealla. Käytä vaakakuvaa, vähintään 2000 px leveää. Valitse polttopiste (Hotspot), niin kapealla näytöllä rajaus osuu oikeaan kohtaan.",
+        "Näkyy yläosan taustalla mustavalkoisena ja tummansinisen sävyn alla, joten tekstit erottuvat aina. Sama kuva näkyy, kun etusivu jaetaan somessa. Vaakakuva, vähintään 2000 px leveä; esim. katsomo- tai tifokuva. Ilman kuvaa taustalla on klubin logo.",
       type: "imageWithAlt",
       group: "hero",
     }),
     defineField({
       name: "heroCtas",
-      title: "Hero — linkit",
+      title: "Pikalinkit",
       description:
-        "Näkyvät alleviivattuina tekstilinkkeinä (esim. \"Tulevat ottelut\", \"Lue klubista\"). Pääpainike-valinta näyttää linkin valkoisena, muut vaaleampina.",
+        'Näkyvät yläosassa tuoreimpien juttujen alla, esim. "Palloveikkaus" → /palloveikkaus. Enintään neljä.',
       type: "array",
       of: [
         {
@@ -56,13 +70,33 @@ export const etusivu = defineType({
           fields: [
             { name: "label", title: "Teksti", type: "string", validation: (rule) => rule.required() },
             { name: "href", title: "Linkki", type: "string", validation: (rule) => rule.required() },
-            { name: "primary", title: "Korostettu (valkoinen)", type: "boolean", initialValue: false },
+            // Vanhan heron korostusvalinta: uusi yläosa ei käytä sitä.
+            { name: "primary", title: "Korostettu", type: "boolean", hidden: true },
           ],
           preview: { select: { title: "label", subtitle: "href" } },
         },
       ],
-      validation: (rule) => rule.max(2),
+      validation: (rule) => rule.max(4),
       group: "hero",
+    }),
+    defineField({
+      name: "heroTitle",
+      title: "Vanha pääotsikko",
+      // Vanhan kuvaheron otsikko. Uusi yläosa ei näytä sitä; kenttä säilyy,
+      // jotta vanha data pysyy validina.
+      type: "string",
+      hidden: true,
+      group: "hero",
+    }),
+    defineField({
+      name: "heroDescription",
+      title: "Etusivun kuvaus hakukoneille",
+      description:
+        "Lyhyt kuvaus klubista. Näkyy Googlen hakutuloksissa ja kun etusivu jaetaan somessa. Ei näy itse sivulla.",
+      type: "text",
+      rows: 3,
+      validation: (rule) => rule.required(),
+      group: "seo",
     }),
     defineField({
       name: "seuraavaOttelu",
@@ -159,10 +193,10 @@ export const etusivu = defineType({
             {
               name: "laskuri",
               title: "Näytä laskuri seuraavaan Huuhkajien otteluun",
-              description:
-                "Laskuri lasketaan automaattisesti Ottelut-osion seuraavasta Suomen ottelusta. Jos ottelua ei ole tiedossa, laskuria ei näytetä.",
+              // Laskuri on siirtynyt etusivun yläosaan (Yläosa-välilehti).
+              // Kenttä säilyy, jotta vanha data pysyy validina.
               type: "boolean",
-              initialValue: true,
+              hidden: true,
             },
             { name: "tapahtumatHeading", title: "Tapahtumien otsikko", type: "string", initialValue: "Nähdään" },
             { name: "tapahtumatCount", title: "Tapahtumien määrä", type: "number", initialValue: 3, validation: (r) => r.min(1).max(6) },

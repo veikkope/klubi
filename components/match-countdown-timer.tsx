@@ -2,6 +2,8 @@
 
 import { useSyncExternalStore } from "react";
 
+import { cn } from "@/lib/cn";
+
 /**
  * Laskurin juokseva osa (ks. components/match-countdown.tsx).
  *
@@ -39,7 +41,11 @@ function split(diff: number): number[] {
   });
 }
 
-export function MatchCountdownTimer({ aika }: { aika: string }) {
+/**
+ * `pieni`: etusivun yläosan kapea palsta, jossa laskuri on yksi monesta
+ * asiasta eikä osion pääosa.
+ */
+export function MatchCountdownTimer({ aika, pieni = false }: { aika: string; pieni?: boolean }) {
   const target = new Date(aika).getTime();
   const now = useSyncExternalStore(subscribe, getNow, getServerNow);
 
@@ -51,16 +57,29 @@ export function MatchCountdownTimer({ aika }: { aika: string }) {
   const values = now === null ? null : split(target - now);
 
   return (
-    <div aria-hidden="true" className="grid grid-cols-4 gap-2 sm:gap-3">
+    <div aria-hidden="true" className={cn("grid grid-cols-4", pieni ? "gap-2" : "gap-2 sm:gap-3")}>
       {UNITS.map(({ label }, i) => (
         <div
           key={label}
-          className="flex flex-col items-center rounded-xs bg-white/10 px-1 py-2.5 sm:py-3.5"
+          className={cn(
+            "flex flex-col items-center rounded-xs bg-white/10 px-1",
+            pieni ? "py-2.5" : "py-2.5 sm:py-3.5",
+          )}
         >
-          <span className="font-display text-[1.75rem] leading-none font-semibold tabular-nums text-on-chrome sm:text-[2.5rem]">
+          <span
+            className={cn(
+              "font-display leading-none font-semibold tabular-nums text-on-chrome",
+              pieni ? "text-2xl" : "text-[1.75rem] sm:text-[2.5rem]",
+            )}
+          >
             {values ? String(values[i]).padStart(i === 0 ? 1 : 2, "0") : "–"}
           </span>
-          <span className="mt-1.5 text-xs uppercase tracking-[0.1em] text-on-chrome-muted sm:text-[13px]">
+          <span
+            className={cn(
+              "mt-1.5 uppercase tracking-[0.1em] text-on-chrome-muted",
+              pieni ? "text-[11px]" : "text-xs sm:text-[13px]",
+            )}
+          >
             {label}
           </span>
         </div>

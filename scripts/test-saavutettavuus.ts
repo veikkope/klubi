@@ -4,6 +4,7 @@
  * Ajo: käynnistä sivusto (`npm run dev` tai `npm run build && npm start`) ja
  *   npm run test:saavutettavuus                    # http://localhost:3000
  *   BASE_URL=https://… npm run test:saavutettavuus # muu osoite
+ *   SIVUT="/,/uutiset" npm run test:saavutettavuus # vain nämä polut
  *
  * Sivut valitaan sitemapista: kaikki yksitasoiset sivut ja kolme edustajaa
  * kustakin syvemmästä sivutyypistä (ensimmäinen, keskimmäinen ja viimeinen,
@@ -87,7 +88,8 @@ async function main() {
     process.exit(2);
   }
 
-  const sivut = await haeSivut();
+  // SIVUT="/a,/b?x=1": vain nämä polut (esim. etusivun yläosan versiot).
+  const sivut = process.env.SIVUT ? process.env.SIVUT.split(",").map((p) => p.trim()) : await haeSivut();
   console.log(`Tarkistetaan ${sivut.length} sivua osoitteessa ${BASE_URL}\n`);
   let virheita = 0;
   for (const polku of sivut) {

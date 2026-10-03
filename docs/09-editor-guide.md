@@ -44,7 +44,7 @@ voi muuttaa projektin asetuksia tai käyttöoikeuksia. Kehittäjä hoitaa ne.
 ## Studion valikko
 
 - **Sivun asetukset**
-  - **Etusivu:** etusivun iso otsikko, kuva ja lohkot
+  - **Etusivu:** etusivun yläosa (pääjuttu, pikalinkit) ja lohkot
   - **Navigaatio:** yläpalkin linkit
   - **Yhteystiedot:** osoite, sähköposti, puhelin ja some. Näkyvät footerissa ja yhteystietosivulla
   - **Varmuuskopiot:** automaattiset viikkokopiot (ks. alla). Sinun ei tarvitse tehdä niille mitään.
@@ -155,7 +155,7 @@ ottelut, joihin klubi lähtee.
 3. Valinnaiset: kilpailu, stadion, **Klubi paikalla** tai **Vierasmatka**.
 4. **Julkaise**.
 
-Etusivulla näkyvät Huuhkajien ja FC Lahden ottelut, ja niiden yläpuolella on
+Etusivulla näkyvät Huuhkajien ja FC Lahden ottelut, ja sivun yläosassa on
 laskuri seuraavaan Huuhkajien otteluun. Laskuri päivittyy itsestään, kun lisäät
 ottelun, eikä sitä tarvitse muuttaa erikseen. FC Lahden ottelut tulevat
 automaattisesti. Valinnat löytyvät kohdasta **Etusivu → Otteluohjelma ja
@@ -201,11 +201,24 @@ Pakkaa yli 5 Mt:n kuvat ensin (esim. tinypng.com).
 
 ### Etusivun muokkaaminen
 
-1. **Sivun asetukset → Etusivu**.
-2. Muuta otsikkoa, kuvausta ja kuvaa.
-3. **Lohkot:** vedä kahvasta muuttaaksesi järjestystä ja lisää uusi **+**-painikkeella.
+Etusivun yläosa päivittyy itsestään: siinä näkyy aina **uusin juttu** isona,
+ja oikealla **Seuraavaksi**-kortissa seuraava Huuhkajien ottelu laskurin kanssa
+ja seuraava klubin tapahtuma. Kun julkaiset uutisen, se nousee yläosaan.
+
+1. **Sivun asetukset → Etusivu → Yläosa**.
+2. Halutessasi:
+   - **Pääjuttu:** valitse juttu, jos haluat nostaa jonkin muun kuin uusimman
+     (esim. vuosikokouskutsun). Anna **Pääjuttu näkyy asti** -päivä, niin yläosa
+     palaa siitä eteenpäin uusimpaan juttuun itsestään.
+   - **Taustakuva:** näkyy mustavalkoisena tummansinisen sävyn alla. Vaihda
+     kuva vaikka kauden mukaan; tekstit erottuvat aina. Sama kuva näkyy somejaoissa.
+   - **Pikalinkit:** enintään neljä linkkiä Seuraavaksi-korttiin, esim.
+     "Palloveikkaus" → `/palloveikkaus`.
+   - **Näytä seuraava Huuhkajien ottelu ja laskuri:** pois päältä, jos et halua sitä.
+3. Hakukoneiden kuvaus on **SEO**-välilehdellä. Se ei näy sivulla.
+4. **Lohkot:** vedä kahvasta muuttaaksesi järjestystä ja lisää uusi **+**-painikkeella.
    Roskakori **poistaa** lohkon. Voit palauttaa sen versiohistoriasta.
-4. **Julkaise**.
+5. **Julkaise**.
 
 ### Yhteystiedot
 
@@ -397,7 +410,7 @@ kävijälle asiallisen ilmoituksen.
 | 3 | Sosiaalinen media | Sivun asetukset → Yhteystiedot | puuttuu |
 | 4 | Hallituksen jäsenet | Hallitus → + | 0 jäsentä |
 | 6 | Tulevat tapahtumat | Tapahtumat → + | 0 |
-| 7 | Etusivun kuvat (iso kuva ja Klubista-kuva) | Sivun asetukset → Etusivu | puuttuvat |
+| 7 | Etusivun kuvat (taustakuva ja Klubista-kuva) | Sivun asetukset → Etusivu | puuttuvat |
 | 8 | Tietosuojaselosteen vahvistus (hallitus) | Sivut → Tietosuojaseloste | luonnos, ks. Mitä tarkistaa |
 
 ## Tietosuojapyynnöt

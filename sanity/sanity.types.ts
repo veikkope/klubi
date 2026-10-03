@@ -15,6 +15,13 @@
 export declare const internalGroqTypeReferenceTo: unique symbol;
 
 // Source: sanity/extract.json
+export type UutinenReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "uutinen";
+};
+
 export type KaupunkiReference = {
   _ref: string;
   _type: "reference";
@@ -29,8 +36,9 @@ export type Etusivu = {
   _updatedAt: string;
   _rev: string;
   heroEyebrow?: string;
-  heroTitle?: string;
-  heroDescription?: string;
+  heroNosto?: UutinenReference;
+  heroNostoAsti?: string;
+  heroLaskuri?: boolean;
   heroImage?: ImageWithAlt;
   heroCtas?: Array<{
     label?: string;
@@ -38,6 +46,8 @@ export type Etusivu = {
     primary?: boolean;
     _key: string;
   }>;
+  heroTitle?: string;
+  heroDescription?: string;
   seuraavaOttelu?: {
     ottelu?: string;
     kilpailu?: string;
@@ -260,13 +270,6 @@ export type Varmuuskopio = {
     _type: "file";
   };
   dokumentteja?: number;
-};
-
-export type UutinenReference = {
-  _ref: string;
-  _type: "reference";
-  _weak?: boolean;
-  [internalGroqTypeReferenceTo]?: "uutinen";
 };
 
 export type Kommentti = {
@@ -975,6 +978,7 @@ export type SanityImageAsset = {
 };
 
 export type AllSanitySchemaTypes =
+  | UutinenReference
   | KaupunkiReference
   | Etusivu
   | SanityImageAssetReference
@@ -988,7 +992,6 @@ export type AllSanitySchemaTypes =
   | Geopoint
   | SanityFileAssetReference
   | Varmuuskopio
-  | UutinenReference
   | Kommentti
   | PelaajaReference
   | Lehtileike
@@ -1478,7 +1481,7 @@ export type PelaajaSlugsQueryResult = Array<string | null>;
 
 // Source: sanity/lib/queries/arkisto-laajennus.ts
 // Variable: pelaajaBySlugQuery
-// Query: *[_type == "pelaaja" && slug.current == $slug][0]{    _id,    _updatedAt,    name,    "slug": slug.current,    tiivistelma,    pelipaikka,    maaottelut,    maalit,    syntymaaika,    seurat[]{ _key, seura, alkuvuosi, loppuvuosi },    kuvaus[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},    tilastot[]->{      _id,      _updatedAt,      title,      "slug": slug.current,      tiivistelma,      category,      intro[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},      columns[]{ key, label, type },      rows[]{ cells[]{ key, value } },      lisatiedot[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},      kuvat[]{ _key, alt, caption, asset, hotspot, crop, "lqip": asset->metadata.lqip },      paivitetty,      jarjestys,      "sources": coalesce(sources, [])    },    kuvat[]{ _key, alt, caption, asset, hotspot, crop, "lqip": asset->metadata.lqip },    seoTitle,    seoDescription  }
+// Query: *[_type == "pelaaja" && slug.current == $slug][0]{    _id,    _updatedAt,    name,    "slug": slug.current,    tiivistelma,    pelipaikka,    maaottelut,    maalit,    syntymaaika,    syntymapaikka,    pituus,    seurat[]{ _key, seura, alkuvuosi, loppuvuosi },    saavutukset[]{ _key, ryhma, nimi, vuodet },    uutistunniste,    patsas{      paljastettu,      sijainti,      esittely[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},      kuvat[]{ _key, alt, caption, paivamaara, asset, hotspot, crop, "lqip": asset->metadata.lqip },      uutistunniste    },    kuvaus[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},    tilastot[]->{      _id,      _updatedAt,      title,      "slug": slug.current,      tiivistelma,      category,      intro[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},      columns[]{ key, label, type },      rows[]{ cells[]{ key, value } },      lisatiedot[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},      kuvat[]{ _key, alt, caption, asset, hotspot, crop, "lqip": asset->metadata.lqip },      paivitetty,      jarjestys,      "sources": coalesce(sources, [])    },    kuvat[]{ _key, alt, caption, asset, hotspot, crop, "lqip": asset->metadata.lqip },    seoTitle,    seoDescription  }
 export type PelaajaBySlugQueryResult = {
   _id: string;
   _updatedAt: string;
@@ -1489,12 +1492,85 @@ export type PelaajaBySlugQueryResult = {
   maaottelut: number | null;
   maalit: number | null;
   syntymaaika: string | null;
+  syntymapaikka: string | null;
+  pituus: number | null;
   seurat: Array<{
     _key: string;
     seura: string | null;
     alkuvuosi: number | null;
     loppuvuosi: number | null;
   }> | null;
+  saavutukset: Array<{
+    _key: string;
+    ryhma: "henkilokohtaiset" | "maajoukkue" | "seurajoukkueet" | null;
+    nimi: string | null;
+    vuodet: string | null;
+  }> | null;
+  uutistunniste: string | null;
+  patsas: {
+    paljastettu: string | null;
+    sijainti: string | null;
+    esittely: Array<
+      | {
+          children?: Array<{
+            marks?: Array<string>;
+            text?: string;
+            _type: "span";
+            _key: string;
+          }>;
+          style?: "blockquote" | "h2" | "h3" | "h4" | "normal";
+          listItem?: "bullet" | "number";
+          markDefs?: Array<{
+            href?: string;
+            newTab?: boolean;
+            _type: "link";
+            _key: string;
+          }>;
+          level?: number;
+          _type: "block";
+          _key: string;
+        }
+      | {
+          _key: string;
+          _type: "imageWithAlt";
+          asset?: SanityImageAssetReference;
+          media?: unknown;
+          hotspot?: SanityImageHotspot;
+          crop?: SanityImageCrop;
+          alt?: string;
+          caption?: string;
+          lqip: string | null;
+        }
+      | {
+          _key: string;
+          _type: "kokoonpano";
+          otsikko?: string;
+          rivit?: Array<{
+            nimi?: string;
+            pelaajat?: Array<{
+              nimi?: string;
+              luku?: number;
+              _type: "kokoonpanoPelaaja";
+              _key: string;
+            }>;
+            _type: "kokoonpanoRivi";
+            _key: string;
+          }>;
+          selite?: string;
+        }
+    > | null;
+    kuvat: Array<{
+      _key: string;
+      alt: string | null;
+      caption: string | null;
+      paivamaara: string | null;
+      asset: SanityImageAssetReference | null;
+      hotspot: SanityImageHotspot | null;
+      crop: SanityImageCrop | null;
+      lqip: string | null;
+    }> | null;
+    uutistunniste: string | null;
+  } | null;
   kuvaus: Array<
     | {
         children?: Array<{
@@ -2608,7 +2684,7 @@ export type ArkistoSummaryQueryResult = Array<{
 
 // Source: sanity/lib/queries/etusivu.ts
 // Variable: etusivuQuery
-// Query: *[_type == "etusivu"][0]{    heroEyebrow,    heroTitle,    heroDescription,    heroImage{..., "lqip": asset->metadata.lqip},    heroCtas[]{ label, href, primary },    seuraavaOttelu{ ottelu, kilpailu, aika },    blocks[]{      _type,      _key,      eyebrow,      heading,      count,      ottelutHeading,      ottelutCount,      vainMaajoukkue,      seurat,      laskuri,      tapahtumatHeading,      tapahtumatCount,      body[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},      image{..., "lqip": asset->metadata.lqip},      ctaLabel,      ctaHref,      "city": city->{ "_ref": _id, name }    }  }
+// Query: *[_type == "etusivu"][0]{    heroEyebrow,    heroTitle,    heroDescription,    heroImage{..., "lqip": asset->metadata.lqip},    heroLaskuri,    "heroNosto": coalesce(      select(        defined(heroNosto->slug.current)          && (!defined(heroNostoAsti) || dateTime(heroNostoAsti) > dateTime(now()))          => heroNosto->{  _id,  title,  "slug": slug.current,  publishedAt,  excerpt,  coverImage{..., "lqip": asset->metadata.lqip},  categories}      ),      *[_type == "uutinen" && defined(slug.current)] | order(publishedAt desc)[0]{  _id,  title,  "slug": slug.current,  publishedAt,  excerpt,  coverImage{..., "lqip": asset->metadata.lqip},  categories}    ),    heroCtas[]{ label, href, primary },    seuraavaOttelu{ ottelu, kilpailu, aika },    blocks[]{      _type,      _key,      eyebrow,      heading,      count,      ottelutHeading,      ottelutCount,      vainMaajoukkue,      seurat,      laskuri,      tapahtumatHeading,      tapahtumatCount,      body[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},      image{..., "lqip": asset->metadata.lqip},      ctaLabel,      ctaHref,      "city": city->{ "_ref": _id, name }    }  }
 export type EtusivuQueryResult = {
   heroEyebrow: string | null;
   heroTitle: string | null;
@@ -2622,6 +2698,25 @@ export type EtusivuQueryResult = {
     alt?: string;
     caption?: string;
     lqip: string | null;
+  } | null;
+  heroLaskuri: boolean | null;
+  heroNosto: {
+    _id: string;
+    title: string | null;
+    slug: string | null;
+    publishedAt: string | null;
+    excerpt: string | null;
+    coverImage: {
+      _type: "imageWithAlt";
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      alt?: string;
+      caption?: string;
+      lqip: string | null;
+    } | null;
+    categories: Array<string> | null;
   } | null;
   heroCtas: Array<{
     label: string | null;
@@ -3529,6 +3624,122 @@ export type KommentitQueryResult = Array<{
   lahde: "blogspot" | "sivusto" | null;
 }>;
 
+// Source: sanity/lib/queries/lehtileikkeet.ts
+// Variable: lehtileikkeetQuery
+// Query: *[_type == "lehtileike" && pelaaja._ref == $pelaaja && osio == $osio && defined(julkaistu)]    | order(julkaistu desc, otsikko asc){    _id,    otsikko,    julkaistu,    lahde,    linkki,    teksti[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }}  }
+export type LehtileikkeetQueryResult = Array<{
+  _id: string;
+  otsikko: string | null;
+  julkaistu: string | null;
+  lahde: string | null;
+  linkki: string | null;
+  teksti: Array<
+    | {
+        children?: Array<{
+          marks?: Array<string>;
+          text?: string;
+          _type: "span";
+          _key: string;
+        }>;
+        style?: "blockquote" | "h2" | "h3" | "h4" | "normal";
+        listItem?: "bullet" | "number";
+        markDefs?: Array<{
+          href?: string;
+          newTab?: boolean;
+          _type: "link";
+          _key: string;
+        }>;
+        level?: number;
+        _type: "block";
+        _key: string;
+      }
+    | {
+        _key: string;
+        _type: "imageWithAlt";
+        asset?: SanityImageAssetReference;
+        media?: unknown;
+        hotspot?: SanityImageHotspot;
+        crop?: SanityImageCrop;
+        alt?: string;
+        caption?: string;
+        lqip: string | null;
+      }
+    | {
+        _key: string;
+        _type: "kokoonpano";
+        otsikko?: string;
+        rivit?: Array<{
+          nimi?: string;
+          pelaajat?: Array<{
+            nimi?: string;
+            luku?: number;
+            _type: "kokoonpanoPelaaja";
+            _key: string;
+          }>;
+          _type: "kokoonpanoRivi";
+          _key: string;
+        }>;
+        selite?: string;
+      }
+  > | null;
+}>;
+
+// Source: sanity/lib/queries/lehtileikkeet.ts
+// Variable: lehtileikeYhteenvetoQuery
+// Query: {    "lehtileikkeet": {      "maara": count(*[_type == "lehtileike" && pelaaja._ref == $pelaaja && osio == "lehtileikkeet" && defined(julkaistu)]),      "ensimmainen": *[_type == "lehtileike" && pelaaja._ref == $pelaaja && osio == "lehtileikkeet" && defined(julkaistu)] | order(julkaistu asc)[0].julkaistu,      "viimeisin": *[_type == "lehtileike" && pelaaja._ref == $pelaaja && osio == "lehtileikkeet" && defined(julkaistu)] | order(julkaistu desc)[0].julkaistu    },    "patsas": {      "maara": count(*[_type == "lehtileike" && pelaaja._ref == $pelaaja && osio == "patsas" && defined(julkaistu)]),      "ensimmainen": *[_type == "lehtileike" && pelaaja._ref == $pelaaja && osio == "patsas" && defined(julkaistu)] | order(julkaistu asc)[0].julkaistu,      "viimeisin": *[_type == "lehtileike" && pelaaja._ref == $pelaaja && osio == "patsas" && defined(julkaistu)] | order(julkaistu desc)[0].julkaistu    },    "terveys": {      "maara": count(*[_type == "lehtileike" && pelaaja._ref == $pelaaja && osio == "terveys" && defined(julkaistu)]),      "ensimmainen": *[_type == "lehtileike" && pelaaja._ref == $pelaaja && osio == "terveys" && defined(julkaistu)] | order(julkaistu asc)[0].julkaistu,      "viimeisin": *[_type == "lehtileike" && pelaaja._ref == $pelaaja && osio == "terveys" && defined(julkaistu)] | order(julkaistu desc)[0].julkaistu    },    "uusimmat": *[_type == "lehtileike" && pelaaja._ref == $pelaaja && defined(julkaistu)]      | order(julkaistu desc)[0...3]{      _id,      otsikko,      julkaistu,      lahde,      linkki,      osio,      "ote": pt::text(teksti[_type == "block"][0])    }  }
+export type LehtileikeYhteenvetoQueryResult = {
+  lehtileikkeet: {
+    maara: number;
+    ensimmainen: string | null;
+    viimeisin: string | null;
+  };
+  patsas: {
+    maara: number;
+    ensimmainen: string | null;
+    viimeisin: string | null;
+  };
+  terveys: {
+    maara: number;
+    ensimmainen: string | null;
+    viimeisin: string | null;
+  };
+  uusimmat: Array<{
+    _id: string;
+    otsikko: string | null;
+    julkaistu: string | null;
+    lahde: string | null;
+    linkki: string | null;
+    osio: "lehtileikkeet" | "patsas" | "terveys" | null;
+    ote: string;
+  }>;
+};
+
+// Source: sanity/lib/queries/lehtileikkeet.ts
+// Variable: uutisetTunnisteenMukaanQuery
+// Query: {    "items": *[_type == "uutinen" && defined(slug.current) && count((tunnisteet[])[lower(@) == $tunniste]) > 0      && ($otsikossa == null || title match $otsikossa)]      | order(publishedAt desc)[0...$maara]{      _id,      title,      "slug": slug.current,      publishedAt,      excerpt,      tiivistelma,      coverImage{..., "lqip": asset->metadata.lqip},      categories    },    "total": count(*[_type == "uutinen" && defined(slug.current) && count((tunnisteet[])[lower(@) == $tunniste]) > 0])  }
+export type UutisetTunnisteenMukaanQueryResult = {
+  items: Array<{
+    _id: string;
+    title: string | null;
+    slug: string | null;
+    publishedAt: string | null;
+    excerpt: string | null;
+    tiivistelma: string | null;
+    coverImage: {
+      _type: "imageWithAlt";
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      alt?: string;
+      caption?: string;
+      lqip: string | null;
+    } | null;
+    categories: Array<string> | null;
+  }>;
+  total: number;
+};
+
 // Source: sanity/lib/queries/ottelut.ts
 // Variable: tulevatOttelutQuery
 // Query: *[_type == "ottelu" && defined(aika) && dateTime(aika) > dateTime(now()) - 60*60*24]    | order(aika asc){    _id,    aika,    koti,    vieras,    kilpailu,    stadion,    klubiPaikalla,    vierasmatka  }
@@ -4194,7 +4405,7 @@ declare module "@sanity/client" {
     '\n  *[_type == "arvokisa" && defined(slug.current)\n    && slug.current != $slug\n    && kisatyyppi == $kisatyyppi] | order(vuosi desc)[0...4]{\n    _id,\n    title,\n    "slug": slug.current,\n    tiivistelma,\n    kisatyyppi,\n    vuosi,\n    isantamaat,\n    voittaja,\n    suomenSijoitus\n  }\n': ArvokisatRelatedQueryResult;
     '\n  *[_type == "pelaaja" && defined(slug.current)] | order(name asc){\n    _id,\n    name,\n    "slug": slug.current,\n    tiivistelma,\n    pelipaikka,\n    maaottelut,\n    maalit,\n    "kuva": kuvat[0]{ alt, caption, asset, hotspot, crop, "lqip": asset->metadata.lqip }\n  }\n': PelaajatListQueryResult;
     '\n  *[_type == "pelaaja" && defined(slug.current)][].slug.current\n': PelaajaSlugsQueryResult;
-    '\n  *[_type == "pelaaja" && slug.current == $slug][0]{\n    _id,\n    _updatedAt,\n    name,\n    "slug": slug.current,\n    tiivistelma,\n    pelipaikka,\n    maaottelut,\n    maalit,\n    syntymaaika,\n    seurat[]{ _key, seura, alkuvuosi, loppuvuosi },\n    kuvaus[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n    tilastot[]->{\n      _id,\n      _updatedAt,\n      title,\n      "slug": slug.current,\n      tiivistelma,\n      category,\n      intro[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n      columns[]{ key, label, type },\n      rows[]{ cells[]{ key, value } },\n      lisatiedot[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n      kuvat[]{ _key, alt, caption, asset, hotspot, crop, "lqip": asset->metadata.lqip },\n      paivitetty,\n      jarjestys,\n      "sources": coalesce(sources, [])\n    },\n    kuvat[]{ _key, alt, caption, asset, hotspot, crop, "lqip": asset->metadata.lqip },\n    seoTitle,\n    seoDescription\n  }\n': PelaajaBySlugQueryResult;
+    '\n  *[_type == "pelaaja" && slug.current == $slug][0]{\n    _id,\n    _updatedAt,\n    name,\n    "slug": slug.current,\n    tiivistelma,\n    pelipaikka,\n    maaottelut,\n    maalit,\n    syntymaaika,\n    syntymapaikka,\n    pituus,\n    seurat[]{ _key, seura, alkuvuosi, loppuvuosi },\n    saavutukset[]{ _key, ryhma, nimi, vuodet },\n    uutistunniste,\n    patsas{\n      paljastettu,\n      sijainti,\n      esittely[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n      kuvat[]{ _key, alt, caption, paivamaara, asset, hotspot, crop, "lqip": asset->metadata.lqip },\n      uutistunniste\n    },\n    kuvaus[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n    tilastot[]->{\n      _id,\n      _updatedAt,\n      title,\n      "slug": slug.current,\n      tiivistelma,\n      category,\n      intro[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n      columns[]{ key, label, type },\n      rows[]{ cells[]{ key, value } },\n      lisatiedot[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n      kuvat[]{ _key, alt, caption, asset, hotspot, crop, "lqip": asset->metadata.lqip },\n      paivitetty,\n      jarjestys,\n      "sources": coalesce(sources, [])\n    },\n    kuvat[]{ _key, alt, caption, asset, hotspot, crop, "lqip": asset->metadata.lqip },\n    seoTitle,\n    seoDescription\n  }\n': PelaajaBySlugQueryResult;
     '\n  *[_type == "pelaaja" && defined(slug.current) && slug.current != $slug]\n    | order(coalesce(maaottelut, 0) desc, name asc)[0...4]{\n    _id,\n    name,\n    "slug": slug.current,\n    tiivistelma,\n    pelipaikka,\n    maaottelut,\n    maalit,\n    "kuva": kuvat[0]{ alt, caption, asset, hotspot, crop, "lqip": asset->metadata.lqip }\n  }\n': PelaajatRelatedQueryResult;
     '\n  *[_type == "stadion" && defined(slug.current)]\n    | order(city->country asc, name asc){\n    _id,\n    name,\n    "slug": slug.current,\n    tiivistelma,\n    capacity,\n    openedYear,\n    "city": city->{ name, "slug": slug.current, country },\n    "kuva": images[0]{ alt, caption, asset, hotspot, crop, "lqip": asset->metadata.lqip }\n  }\n': StadionitListQueryResult;
     '\n  *[_type == "stadion" && defined(slug.current)][].slug.current\n': StadionSlugsQueryResult;
@@ -4207,7 +4418,7 @@ declare module "@sanity/client" {
     '{\n  "taulukot": *[_type == "jalkapalloTilasto" && category == "huuhkajat"]\n    | order(coalesce(jarjestys, 1000) asc, title asc){ \n  _id,\n  _updatedAt,\n  title,\n  "slug": slug.current,\n  tiivistelma,\n  huuhkajatOsio\n },\n  "karsinnat": *[\n    _type == "jalkapalloTilasto" && category == "karsinta" && defined(slug.current)\n  ] | order(coalesce(jarjestys, 1000) asc, title asc){ \n  _id,\n  _updatedAt,\n  title,\n  "slug": slug.current,\n  tiivistelma,\n  huuhkajatOsio\n }\n}': HuuhkajatHubQueryResult;
     '\n  *[\n    _type == "jalkapalloTilasto"\n    && category == "huuhkajat"\n    && select(\n      $osio == $oletus => !(huuhkajatOsio in $tunnetut),\n      huuhkajatOsio == $osio\n    )\n  ] | order(coalesce(jarjestys, 1000) asc, title asc){\n    \n  _id,\n  _updatedAt,\n  title,\n  "slug": slug.current,\n  tiivistelma,\n  category,\n  huuhkajatOsio,\n  mestaruusmaa,\n  intro[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n  columns[]{ key, label, type },\n  rows[]{ cells[]{ key, value } },\n  lisatiedot[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n  kuvat[]{ _key, alt, caption, asset, hotspot, crop, "lqip": asset->metadata.lqip },\n  paivitetty,\n  jarjestys,\n  "sources": coalesce(sources, [])\n\n  }\n': HuuhkajatOsioQueryResult;
     '\n  *[_type == "jalkapalloTilasto" && defined(category)]{\n    category,\n    "updatedAt": _updatedAt\n  }\n': ArkistoSummaryQueryResult;
-    '\n  *[_type == "etusivu"][0]{\n    heroEyebrow,\n    heroTitle,\n    heroDescription,\n    heroImage{..., "lqip": asset->metadata.lqip},\n    heroCtas[]{ label, href, primary },\n    seuraavaOttelu{ ottelu, kilpailu, aika },\n    blocks[]{\n      _type,\n      _key,\n      eyebrow,\n      heading,\n      count,\n      ottelutHeading,\n      ottelutCount,\n      vainMaajoukkue,\n      seurat,\n      laskuri,\n      tapahtumatHeading,\n      tapahtumatCount,\n      body[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n      image{..., "lqip": asset->metadata.lqip},\n      ctaLabel,\n      ctaHref,\n      "city": city->{ "_ref": _id, name }\n    }\n  }\n': EtusivuQueryResult;
+    '\n  *[_type == "etusivu"][0]{\n    heroEyebrow,\n    heroTitle,\n    heroDescription,\n    heroImage{..., "lqip": asset->metadata.lqip},\n    heroLaskuri,\n    "heroNosto": coalesce(\n      select(\n        defined(heroNosto->slug.current)\n          && (!defined(heroNostoAsti) || dateTime(heroNostoAsti) > dateTime(now()))\n          => heroNosto->{\n  _id,\n  title,\n  "slug": slug.current,\n  publishedAt,\n  excerpt,\n  coverImage{..., "lqip": asset->metadata.lqip},\n  categories\n}\n      ),\n      *[_type == "uutinen" && defined(slug.current)] | order(publishedAt desc)[0]{\n  _id,\n  title,\n  "slug": slug.current,\n  publishedAt,\n  excerpt,\n  coverImage{..., "lqip": asset->metadata.lqip},\n  categories\n}\n    ),\n    heroCtas[]{ label, href, primary },\n    seuraavaOttelu{ ottelu, kilpailu, aika },\n    blocks[]{\n      _type,\n      _key,\n      eyebrow,\n      heading,\n      count,\n      ottelutHeading,\n      ottelutCount,\n      vainMaajoukkue,\n      seurat,\n      laskuri,\n      tapahtumatHeading,\n      tapahtumatCount,\n      body[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n      image{..., "lqip": asset->metadata.lqip},\n      ctaLabel,\n      ctaHref,\n      "city": city->{ "_ref": _id, name }\n    }\n  }\n': EtusivuQueryResult;
     '\n  *[_type == "ravintola" && defined(slug.current) && closed != true\n    && ($cityId == null || city._ref == $cityId)\n    && coalesce(ratingOverall, stars, 0) > 0]\n    | order(coalesce(ratingOverall, stars, 0) desc, name asc)[0...$count]{\n    _id,\n    name,\n    "slug": slug.current,\n    "city": city->{ name, "slug": slug.current },\n    stars,\n    ratingOverall,\n    priceLevel,\n    tuomio,\n    stadionHuomio,\n    "image": images[0]{..., "lqip": asset->metadata.lqip}\n  }\n': EtusivuRavintolatQueryResult;
     '\n  {\n    "arvokisat": count(*[_type == "arvokisa" && defined(slug.current)]),\n    "pelaajat": count(*[_type == "pelaaja" && defined(slug.current)]),\n    "stadionit": count(*[_type == "stadion" && defined(slug.current)]),\n    "tilastot": count(*[_type == "jalkapalloTilasto" && defined(slug.current)]),\n    "fifa": *[_type == "jalkapalloTilasto" && category == "fifa-ranking"\n      && defined(slug.current)] | order(_updatedAt desc)[0]{\n      title,\n      "slug": slug.current,\n      _updatedAt,\n      columns[]{ key, label, type },\n      "rows": rows[0...5]{ cells[]{ key, value } }\n    }\n  }\n': EtusivuArkistoQueryResult;
     '\n  *[_type == "galleriaAlbumi" && defined(slug.current)]\n    | order(date desc){\n    _id,\n    title,\n    "slug": slug.current,\n    date,\n    tiivistelma,\n    coverImage{..., "lqip": asset->metadata.lqip},\n    "imageCount": count(images)\n  }\n': GalleriaAlbumitQueryResult;
@@ -4221,6 +4432,9 @@ declare module "@sanity/client" {
     '\n  *[_type == "klubiToiminta" && defined(slug.current)][].slug.current\n': KlubiToimintaSlugsQueryResult;
     '\n  *[_type == "hallitusJasen"] | order(order asc, name asc){\n    _id,\n    name,\n    role,\n    image{..., "lqip": asset->metadata.lqip},\n    bio,\n    email,\n    phone\n  }\n': HallitusListQueryResult;
     '\n  *[_type == "kommentti" && uutinen._ref == $uutinenId && piilotettu != true]\n    | order(lahetetty asc){\n      _id,\n      nimi,\n      teksti,\n      veikkaus{ jarjestys, maalikuningas },\n      lahetetty,\n      lahde\n    }\n': KommentitQueryResult;
+    '\n  *[_type == "lehtileike" && pelaaja._ref == $pelaaja && osio == $osio && defined(julkaistu)]\n    | order(julkaistu desc, otsikko asc){\n    _id,\n    otsikko,\n    julkaistu,\n    lahde,\n    linkki,\n    teksti[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }}\n  }\n': LehtileikkeetQueryResult;
+    '\n  {\n    "lehtileikkeet": {\n      "maara": count(*[_type == "lehtileike" && pelaaja._ref == $pelaaja && osio == "lehtileikkeet" && defined(julkaistu)]),\n      "ensimmainen": *[_type == "lehtileike" && pelaaja._ref == $pelaaja && osio == "lehtileikkeet" && defined(julkaistu)] | order(julkaistu asc)[0].julkaistu,\n      "viimeisin": *[_type == "lehtileike" && pelaaja._ref == $pelaaja && osio == "lehtileikkeet" && defined(julkaistu)] | order(julkaistu desc)[0].julkaistu\n    },\n    "patsas": {\n      "maara": count(*[_type == "lehtileike" && pelaaja._ref == $pelaaja && osio == "patsas" && defined(julkaistu)]),\n      "ensimmainen": *[_type == "lehtileike" && pelaaja._ref == $pelaaja && osio == "patsas" && defined(julkaistu)] | order(julkaistu asc)[0].julkaistu,\n      "viimeisin": *[_type == "lehtileike" && pelaaja._ref == $pelaaja && osio == "patsas" && defined(julkaistu)] | order(julkaistu desc)[0].julkaistu\n    },\n    "terveys": {\n      "maara": count(*[_type == "lehtileike" && pelaaja._ref == $pelaaja && osio == "terveys" && defined(julkaistu)]),\n      "ensimmainen": *[_type == "lehtileike" && pelaaja._ref == $pelaaja && osio == "terveys" && defined(julkaistu)] | order(julkaistu asc)[0].julkaistu,\n      "viimeisin": *[_type == "lehtileike" && pelaaja._ref == $pelaaja && osio == "terveys" && defined(julkaistu)] | order(julkaistu desc)[0].julkaistu\n    },\n    "uusimmat": *[_type == "lehtileike" && pelaaja._ref == $pelaaja && defined(julkaistu)]\n      | order(julkaistu desc)[0...3]{\n      _id,\n      otsikko,\n      julkaistu,\n      lahde,\n      linkki,\n      osio,\n      "ote": pt::text(teksti[_type == "block"][0])\n    }\n  }\n': LehtileikeYhteenvetoQueryResult;
+    '\n  {\n    "items": *[_type == "uutinen" && defined(slug.current) && count((tunnisteet[])[lower(@) == $tunniste]) > 0\n      && ($otsikossa == null || title match $otsikossa)]\n      | order(publishedAt desc)[0...$maara]{\n      _id,\n      title,\n      "slug": slug.current,\n      publishedAt,\n      excerpt,\n      tiivistelma,\n      coverImage{..., "lqip": asset->metadata.lqip},\n      categories\n    },\n    "total": count(*[_type == "uutinen" && defined(slug.current) && count((tunnisteet[])[lower(@) == $tunniste]) > 0])\n  }\n': UutisetTunnisteenMukaanQueryResult;
     '\n  *[_type == "ottelu" && defined(aika) && dateTime(aika) > dateTime(now()) - 60*60*24]\n    | order(aika asc){\n    _id,\n    aika,\n    koti,\n    vieras,\n    kilpailu,\n    stadion,\n    klubiPaikalla,\n    vierasmatka\n  }\n': TulevatOttelutQueryResult;
     '\n  *[_type == "etusivu"][0].blocks[_type == "otteluohjelma"][0].seurat\n': OttelujenSeuratQueryResult;
     '\n  count(*[\n  _type == "ravintola" && defined(slug.current)\n  && ($citySlug == null || city->slug.current == $citySlug)\n  && ($countryNames == null || city->country in $countryNames)\n  && ($maakuntaSlugs == null\n      || (city->country == "Suomi" && city->maakunta in $maakuntaSlugs))\n  && ($minRating == null || coalesce(ratingOverall, stars, 0) >= $minRating)\n  && ($terms == null || [name, city->name, city->country] match $terms)\n  && ($includeClosed == true || $terms != null || closed != true)\n])\n': RavintolatCountQueryResult;

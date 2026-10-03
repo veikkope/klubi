@@ -14,6 +14,8 @@ type Props = {
   eyebrow?: string;
   heading?: string;
   count?: number;
+  /** Etusivun yläosan jutut: jätetään pois, ettei sama juttu näy kahdesti. */
+  ohita?: string[];
 };
 
 const monthYear = new Intl.DateTimeFormat("fi-FI", {
@@ -35,17 +37,21 @@ function formatMonth(iso: string): string {
  * serif 40 px otsikko, ingressi), seuraavat listana oikealla (serif 25 px).
  * Ilman juttuja lohkoa ei renderöidä.
  *
+ * Yläosan jutut (`ohita`) jätetään pois, joten lohko jatkaa siitä, mihin
+ * yläosa jää. Siksi haetaan niiden verran ylimääräisiä ja rajataan jälkikäteen.
+ *
  * Otsikko ja yläotsake tulevat Studiosta. Tyhjä otsikko = ei näkyvää
  * otsikkoriviä: ruudunlukijalle jää piilotettu "Uutiset", jotta osiolla on
  * nimi, ja "Kaikki jutut" -linkki on juttujen alla kaikilla näytöillä.
  */
-export async function UutisetBlock({ eyebrow, heading, count = 4 }: Props) {
-  const items = await sanityFetch<UutinenCard[]>({
+export async function UutisetBlock({ eyebrow, heading, count = 4, ohita = [] }: Props) {
+  const haetut = await sanityFetch<UutinenCard[]>({
     query: recentUutisetQuery,
-    params: { count },
+    params: { count: count + ohita.length },
     tags: ["uutinen"],
     fallback: [],
   });
+  const items = haetut.filter((news) => !ohita.includes(news._id)).slice(0, count);
 
   if (items.length === 0) return null;
   const [featured, ...rest] = items;

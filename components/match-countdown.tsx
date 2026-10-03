@@ -18,7 +18,8 @@ const dateFormat = new Intl.DateTimeFormat("fi-FI", {
 });
 const timeFormat = new Intl.DateTimeFormat("fi-FI", { hour: "2-digit", minute: "2-digit", timeZone: TZ });
 
-function formatStart(iso: string): string {
+/** "la 3.10. klo 16.00" (Helsingin aikaa). Käytössä myös etusivun yläosassa. */
+export function formatStart(iso: string): string {
   const d = new Date(iso);
   return `${dateFormat.format(d)} klo ${timeFormat.format(d).replace(":", ".")}`;
 }

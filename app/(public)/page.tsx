@@ -70,7 +70,10 @@ function withoutNulls<T extends object>(block: T): T {
   ) as T;
 }
 
-function renderBlock(block: EtusivuBlock) {
+/** Mitä yläosa jo näyttää: lohkot eivät toista sitä. */
+type Ylaosa = { paajuttuId?: string };
+
+function renderBlock(block: EtusivuBlock, ylaosa: Ylaosa) {
   switch (block._type) {
     case "uutiset":
       return (
@@ -79,10 +82,12 @@ function renderBlock(block: EtusivuBlock) {
           eyebrow={block.eyebrow}
           heading={block.heading}
           count={block.count}
+          ohita={ylaosa.paajuttuId ? [ylaosa.paajuttuId] : []}
         />
       );
     case "otteluohjelma":
-      return <OtteluohjelmaBlock key={block._key} {...block} />;
+      // Laskuri on yläosassa (Hero), joten lohko näyttää pelkän listan.
+      return <OtteluohjelmaBlock key={block._key} {...block} laskuri={false} />;
     case "tapahtumat":
       return (
         <TapahtumatBlock
@@ -145,7 +150,9 @@ export default async function Home() {
       />
 
       <Hero data={data} />
-      {blocks.map((block) => renderBlock(withoutNulls(block)))}
+      {blocks.map((block) =>
+        renderBlock(withoutNulls(block), { paajuttuId: data.heroNosto?._id }),
+      )}
       {/* Viimeinen osio liittyy suoraan footeriin (tyyliopas). */}
       <span data-flush-footer hidden />
     </>

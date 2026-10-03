@@ -106,10 +106,19 @@ export type EtusivuBlock =
     };
 
 export type EtusivuData = {
+  /** Klubin nimi yläosan pienellä rivillä (etusivun H1). */
   heroEyebrow?: string;
-  heroTitle: string;
+  /** Vanhan kuvaheron otsikko. Ei enää näytetä. */
+  heroTitle?: string | null;
+  /** Etusivun meta-kuvaus (ei näy sivulla). */
   heroDescription: string;
+  /** Jakokuva (Open Graph). Ei näy sivulla. */
   heroImage?: SanityImage;
+  /** Yläosan pääjuttu: Studiossa valittu (voimassa oleva) tai uusin juttu. */
+  heroNosto?: UutinenCard | null;
+  /** Seuraava Huuhkajien ottelu ja laskuri yläosassa. Oletuksena päällä. */
+  heroLaskuri?: boolean | null;
+  /** Yläosan pikalinkit. */
   heroCtas?: HeroCta[];
   /** Vanhan etusivun "Seuraavaksi"-nosto. Ei enää näytetä (otteluohjelma korvaa). */
   seuraavaOttelu?: { ottelu?: string | null; kilpailu?: string | null; aika?: string | null } | null;

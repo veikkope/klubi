@@ -18,8 +18,23 @@ import { kuva, runko } from "@/sanity/lib/queries/kuvat";
 
 import type { StatColumn, StatRow } from "@/components/ui/stat-table";
 
+/** Yläosan pääjutun projektio: sama muoto kuin `recentUutisetQuery` (UutinenCard). */
+const nostoKortti = `
+  _id,
+  title,
+  "slug": slug.current,
+  publishedAt,
+  excerpt,
+  coverImage{${kuva}},
+  categories
+`;
+
 /**
  * Etusivun singleton.
+ *
+ * Yläosan pääjutuksi valitaan Studiossa nostettu juttu, kun se on voimassa
+ * (`heroNostoAsti` puuttuu tai ei ole mennyt), muuten uusin juttu. Näin
+ * yläosa vaihtuu itsestään, kun uusi juttu julkaistaan.
  *
  * Kaupunkiviittauksesta otetaan sekä dokumentin id (`_ref`, jolla ravintolat
  * suodatetaan) että nimi. Ilman `_id`-projektiota dereferoidussa objektissa ei
@@ -31,6 +46,15 @@ export const etusivuQuery = defineQuery(`
     heroTitle,
     heroDescription,
     heroImage{${kuva}},
+    heroLaskuri,
+    "heroNosto": coalesce(
+      select(
+        defined(heroNosto->slug.current)
+          && (!defined(heroNostoAsti) || dateTime(heroNostoAsti) > dateTime(now()))
+          => heroNosto->{${nostoKortti}}
+      ),
+      *[_type == "uutinen" && defined(slug.current)] | order(publishedAt desc)[0]{${nostoKortti}}
+    ),
     heroCtas[]{ label, href, primary },
     seuraavaOttelu{ ottelu, kilpailu, aika },
     blocks[]{
