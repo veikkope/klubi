@@ -69,6 +69,7 @@ public/                Staattiset tiedostot (favicon, robots, kuvat joita Sanity
 | Testaa ravintolan arvosanalaskenta (klubilaisten arvosanat) | `npm run test:arvosana` |
 | Ruokailutaulukon arvosanat Sanityyn (kuivaharjoitus + tarkistuslista; `-- --vie`, `-- --production --vie` varmuuskopion kanssa) | `npm run tuo:klubiarviot` (docs/21) |
 | Ravintoloiden arvosanat uudelleen klubilaisten arvosanoista (webhook tekee tämän itse; kuivaharjoitus, `-- --vie`, `-- --production --vie`) | `npm run laske:arvosanat` |
+| Päästä päähän -testi productionissa: kahden klubilaisen sääntö webhookin kautta (luo ja poistaa testiravintolan; varmuuskopio ensin, webhook-jono tyhjänä) | `npm run e2e:arvioijasaanto` |
 | Blogin tunnisteet muokattavaan kenttään (kuivaharjoitus; `-- --vie` kirjoittaa, `-- --production` productioniin varmuuskopion kanssa) | `npm run patch:tunnisteet` (docs/14 §3.1) |
 | Yhdistettyjen uutiskategorioiden vanhat arvot uusiin (kuivaharjoitus; `-- --vie` kirjoittaa, `-- --production` varmuuskopion kanssa) | `npm run patch:kategoriat` |
 | Palloveikkaussivun jako veikkausten omiksi alasivuiksi (kuivaharjoitus; `-- --vie` kirjoittaa, `-- --production` varmuuskopion kanssa; kertaluonteinen) | `npm run patch:palloveikkaus` |

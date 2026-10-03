@@ -48,6 +48,7 @@
     "test:arvosana": "tsx scripts/test-arvosana.ts",
     "laske:arvosanat": "tsx scripts/laske-arvosanat.ts",
     "tuo:klubiarviot": "tsx scripts/tuo-klubiarviot.ts",
+    "e2e:arvioijasaanto": "tsx scripts/e2e-arvioijasaanto.ts",
     "patch:tunnisteet": "tsx scripts/patch-tunnisteet.ts",
     "patch:kategoriat": "tsx scripts/patch-kategoriat.ts",
     "patch:palloveikkaus": "tsx scripts/jaa-palloveikkaus.ts",
