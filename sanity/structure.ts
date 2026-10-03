@@ -10,6 +10,7 @@ import {
   WarningOutlineIcon,
 } from "@sanity/icons";
 import type { StructureBuilder, StructureResolver } from "sanity/structure";
+import { JULKINEN_RAVINTOLA } from "../lib/ravintola-arvosana";
 
 
 /**
@@ -164,6 +165,17 @@ export const structure: StructureResolver = (S) =>
             .items([
               lista(S, "ravintola", "Kaikki ravintolat"),
               S.listItem()
+                .title("Ravintolat: odottavat toista arvioijaa")
+                .schemaType("ravintola")
+                .child(
+                  // Klubin sääntö: sivustolla vasta kahden klubilaisen arvosanan jälkeen.
+                  S.documentList()
+                    .title("Odottavat toista arvioijaa")
+                    .schemaType("ravintola")
+                    .filter(`_type == "ravintola" && !${JULKINEN_RAVINTOLA}`)
+                    .defaultOrdering([{ field: "visitedAt", direction: "desc" }]),
+                ),
+              S.listItem()
                 .title("Arvostelut: odottavat hyväksyntää")
                 .schemaType("ravintolaKayttajaArvostelu")
                 .child(
@@ -186,6 +198,15 @@ export const structure: StructureResolver = (S) =>
                     .title("Kaikki arvostelut")
                     .defaultOrdering([{ field: "submittedAt", direction: "desc" }]),
                 ),
+              S.listItem()
+                .title("Klubilaisten arvosanat")
+                .schemaType("klubiArvio")
+                .child(
+                  S.documentTypeList("klubiArvio")
+                    .title("Klubilaisten arvosanat")
+                    .defaultOrdering([{ field: "paiva", direction: "desc" }]),
+                ),
+              lista(S, "klubilainen", "Klubilaiset"),
               lista(S, "kaupunki", "Kaupungit"),
             ]),
         ),

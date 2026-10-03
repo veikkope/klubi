@@ -67,3 +67,8 @@ next-env.d.ts
 
 # Sanityn varmuuskopiot (npm run backup)
 /varmuuskopiot/
+
+# Klubin ruokailutaulukko (jäsenten nimet ja arvosanat): ei versionhallintaan
+*.xls
+*.xlsx
+/data/klubiarviot-*.csv

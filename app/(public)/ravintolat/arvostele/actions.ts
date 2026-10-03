@@ -283,6 +283,13 @@ export async function submitReview(
     }
     const failed = uploads.find((r): r is PromiseRejectedResult => r.status === "rejected");
     if (failed) throw failed.reason;
+    // Klubilainen, jos nimi täsmää täsmälleen yhteen (kirjainkoko ja välit ohitetaan).
+    const klubilaiset = await writeClient.fetch<string[]>(
+      /* groq */ `*[_type == "klubilainen" && lower(nimi) == lower($nimi)]._id`,
+      { nimi: values.nimi.trim() },
+    );
+    const arvioijaId = klubilaiset.length === 1 ? klubilaiset[0] : null;
+
     const kuvat = uploads.map((result, index) => ({
       _key: arrayKey(),
       _type: "image",
@@ -295,6 +302,8 @@ export async function submitReview(
       _id: `drafts.${reviewId}`,
       _type: "ravintolaKayttajaArvostelu",
       reviewerName: values.nimi,
+      // Klubilainen nimen perusteella; sihteeri tarkistaa hyväksyessään.
+      ...(arvioijaId ? { arvioija: { _type: "reference", _ref: arvioijaId } } : {}),
       ...(restaurantId
         ? { restaurant: { _type: "reference", _ref: restaurantId } }
         : {

@@ -45,6 +45,12 @@ export function subRatings(r: {
   return result;
 }
 
+/** Tuorein arvio kortissa: "2026-08-29" → "arvioitu 8/2026". */
+function arvioituKuukausi(iso: string | null | undefined): string | null {
+  const osat = iso?.match(/^(\d{4})-(\d{2})/);
+  return osat ? `arvioitu ${Number(osat[2])}/${osat[1]}` : null;
+}
+
 /**
  * Arviokortti (tyyliopas Sivut v3: "Ravintola-arviot").
  *
@@ -67,7 +73,8 @@ export function RestaurantCard({
   const rating = overallRating(r);
   const osa = korostus && typeof r[korostus] === "number" ? r[korostus] : null;
   const isClosed = r.closed === true;
-  const meta = [r.city?.name, r.priceLevel].filter(Boolean).join(" · ");
+  const kayty = arvioituKuukausi(r.tuoreinArvio);
+  const meta = [r.city?.name, r.priceLevel, kayty].filter(Boolean).join(" · ");
 
   return (
     <Link
@@ -138,7 +145,7 @@ export function RestaurantCard({
           {r.name}
         </h3>
         <p className="text-[13px] text-muted-soft sm:hidden">
-          {[r.city?.name, isClosed ? "Toiminta loppunut" : (r.stadionHuomio ?? r.priceLevel)]
+          {[r.city?.name, isClosed ? "Toiminta loppunut" : (r.stadionHuomio ?? r.priceLevel), kayty]
             .filter(Boolean)
             .join(" · ")}
         </p>

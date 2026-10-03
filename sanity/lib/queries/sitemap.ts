@@ -1,3 +1,4 @@
+import { JULKINEN_RAVINTOLA } from "@/lib/ravintola-arvosana";
 import { defineQuery } from "next-sanity";
 
 /**
@@ -16,7 +17,8 @@ export interface SitemapRow {
 
 /** Dokumenttityypit joilla on yksi sivu per dokumentti. */
 export const sitemapByTypeQuery = defineQuery(`
-  *[_type == $type && defined(slug.current)] | order(_updatedAt desc) {
+  *[_type == $type && defined(slug.current) && ($type != "ravintola" || ${JULKINEN_RAVINTOLA})]
+    | order(_updatedAt desc) {
     "slug": slug.current,
     "updatedAt": _updatedAt
   }

@@ -253,7 +253,7 @@ Vain julkaistut arvostelut näkyvät. Uuden ravintolan arvostelun julkaisu vaati
 | heroDescription | text | kyllä | SEO-ryhmässä: etusivun meta-kuvaus, ei näy sivulla |
 | heroTitle | string | ei | **Piilotettu** — vanhan kuvaheron otsikko. Säilyy, jotta vanha data on validia. |
 | seuraavaOttelu | object | ei | **Piilotettu** — korvattu otteluohjelmalla. Säilyy, jotta vanha data on validia. |
-| blocks | array (multi-type: otteluohjelma, uutiset, tapahtumat, esittely, ravintolatSpotlight, jalkapalloarkisto, galleria, cta) | ei | Etusivun lohkot järjestyksessä. Tyylioppaan järjestys: otteluohjelma, uutiset, ravintolatSpotlight, esittely. `uutiset`, `esittely` ja `ravintolatSpotlight` saavat `eyebrow`-kentän. `otteluohjelma`: ottelutHeading, ottelutCount, vainMaajoukkue (boolean, oletus true), seurat (string[], tags, oletus ["FC Lahti"]), laskuri (boolean, **piilotettu** — laskuri on yläosassa, etusivu ohittaa arvon), tapahtumatHeading, tapahtumatCount. `cta` on vanha — tyyliopas kieltää liittymiskehotteet. |
+| blocks | array (multi-type: otteluohjelma, uutiset, tapahtumat, esittely, ravintolatSpotlight, jalkapalloarkisto, galleria, cta) | ei | Etusivun lohkot järjestyksessä. Tyylioppaan järjestys: otteluohjelma, uutiset, ravintolatSpotlight, esittely. `uutiset`, `esittely` ja `ravintolatSpotlight` saavat `eyebrow`-kentän. `ravintolatSpotlight` näyttää tuoreimmin arvioidut (`visits[0]`, varalla `visitedAt`). `otteluohjelma`: ottelutHeading, ottelutCount, vainMaajoukkue (boolean, oletus true), seurat (string[], tags, oletus ["FC Lahti"]), laskuri (boolean, **piilotettu** — laskuri on yläosassa, etusivu ohittaa arvon), tapahtumatHeading, tapahtumatCount. `cta` on vanha — tyyliopas kieltää liittymiskehotteet. |
 
 ## Singletonien hallinta Studiossa
 
@@ -304,3 +304,14 @@ uudelleen. Skeemat ovat jäädytettyjä vaiheen 1 ajan.
 yhä `title asc`), `arvokisa.alkuPvm/loppuPvm/hopea/pronssi`, `pelaaja.tilastot`,
 `stadion.address`, `klubiToiminta.vuodet[].otsikko/jarjestysnumero/osallistujat` ja
 `tilastot`, `sivu.tilastot`, `etusivu.seuraavaOttelu`, `muutLegacyUrlit`.
+
+### Klubilaisten arvosanat (docs/21)
+
+**`klubilainen`** (dokumentti): `nimi` (pakollinen), `taulukkoNumero` (vain luku, ruokailutaulukon arvioijanumero).
+
+**`klubiArvio`** (dokumentti): `ravintola` (viite, pakollinen), `arvioija` (viite `klubilainen`, pakollinen; varoitus jos klubilaisella on jo arvosana samaan ravintolaan), `ratingFood`/`ratingPrice`/`ratingAtmosphere` (1–5, pakollinen), `paiva` (pakollinen; uusin voimassa), `kaynnit` (date[], tiedoksi), `tuotu` (vain luku: ruokailutaulukosta).
+
+**`ravintolaKayttajaArvostelu.arvioija`**: viite `klubilainen`. Lomake täyttää, kun nimi täsmää; puuttuessa varoitus. Klubilaiseen liitetty arvostelu on klubilaisen arvosana.
+
+**`ravintola`**: `automaattinenArvosana` { `arvioijia`, `viimeisinArvio` } (vain luku; kun asetettu, arvosanakentät ovat lukittuja), `alkuperainenArvio` { ratingOverall, ratingFood, ratingPrice, ratingAtmosphere } (vain luku, vanhan sivuston arvo vertailuun). `visits` validoidaan uusin ensin.
+

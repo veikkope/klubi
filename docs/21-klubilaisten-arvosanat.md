@@ -1,0 +1,86 @@
+# 21 — Klubilaisten arvosanat ravintoloille
+
+Päätetty 3.10.2026. Ravintolan arvosana lasketaan klubilaisten arvosanoista
+automaattisesti, eikä sitä enää kirjoiteta käsin. Lähtödata on klubin
+ruokailutaulukko (`ruokailu2026.xls`, ei versionhallinnassa: jäsenten nimet).
+
+## Säännöt
+
+| Sääntö | Toteutus |
+|---|---|
+| Arvioijat ovat klubilaisia | `klubilainen`-dokumentit (Studio: Ravintolat → Klubilaiset). Taulukon 12 arvioijaa: `klubilainen-<taulukon numero>` |
+| Yksi voimassa oleva arvosana klubilaista ja ravintolaa kohden | Uusin (päivä) korvaa vanhemman. Samana päivänä lomakkeen arvostelu voittaa taulukon rivin |
+| Klubilaisen arvosana | `klubiArvio` (taulukosta tuotu tai Studiossa lisätty) **tai** hyväksytty lomakkeen arvostelu, joka on liitetty klubilaiseen (`arvioija`) |
+| Ei painotuksia | Klubilaisen kokonaisarvosana = (ruoka + hinta + viihtyvyys) / 3. Taulukon henkilökohtaiset painot (Painot-välilehti) jätettiin pois |
+| Ravintolan arvosana | Ruoka, hinta ja viihtyvyys = klubilaisten keskiarvot; kokonaisarvosana = klubilaisten kokonaisarvosanojen keskiarvo. Yksi desimaali |
+| Ulkopuoliset | Lomakkeen arvostelu ilman klubilaista näkyy sivulla, mutta ei vaikuta arvosanaan |
+| Vanha arvosana ilman taulukkodataa | Pysyy ennallaan (yksi uusi arvio ei korvaa usean arvioijan keskiarvoa). Automaattinen laskenta alkaa, kun ravintolalla on taulukon arvosanoja tai sillä ei ole vanhaa arvosanaa (uusi ravintola) |
+| Kahden klubilaisen sääntö | Ravintola näkyy sivustolla (lista, suodattimet, etusivu, oma sivu, samankaltaiset, sivukartta) vasta, kun sillä on vähintään 2 klubilaisen arvosanaa (`JULKINEN_RAVINTOLA`). Yhden arvioijan ravintola odottaa Studiossa (Ravintolat → Odottavat toista arvioijaa) ja tulee näkyviin itsestään. Vanhan sivuston ravintola ilman taulukkodataa näkyy edelleen. Lomakkeen ravintolavalikossa piilossa olevatkin ovat valittavissa |
+| Tuorein arvio | `automaattinenArvosana.viimeisinArvio`; järjestys "Tuorein arvostelu ensin" ja etusivun ravintolanosto käyttävät uudempaa tästä ja klubin käyntipäivästä (`TUOREIN_ARVIO`) |
+
+Laskenta: `lib/ravintola-arvosana.ts` (testit `npm run test:arvosana`).
+Tulos tallennetaan ravintolan kenttiin (`ratingOverall`, `ratingFood`,
+`ratingPrice`, `ratingAtmosphere`, `automaattinenArvosana`), joten listat,
+suodattimet, top-listat ja JSON-LD toimivat ilman muutoksia. Vanhan sivuston
+arvosana tallentuu ensimmäisellä laskennalla kenttään `alkuperainenArvio`
+(vain vertailuun) ja palautuu, jos ravintolan klubilaisten arvosanat poistetaan.
+
+Laskennan käynnistää Sanityn webhook (`app/api/revalidate`) aina, kun
+`klubiArvio` tai `ravintolaKayttajaArvostelu` muuttuu, sekä
+`npm run laske:arvosanat`. Webhook tarvitsee Vercelissä `SANITY_API_WRITE_TOKEN`in.
+
+## Sivulla
+
+- Arvosanakortissa: "Keskiarvo N klubilaisen arvosanasta".
+- Taulukko **Klubilaisten arvosanat**: nimi, päivä, ruoka, hinta, viihtyvyys,
+  keskiarvo (kunkin klubilaisen voimassa oleva arvosana).
+- **Kävijöiden arviot**: lomakkeen arvostelut kommentteineen; klubilaiseen
+  liitetyssä merkki "Klubilainen".
+- Kortit: "arvioitu 8/2026".
+
+## Ruokailutaulukon tuonti
+
+1. `pip install xlrd` ja `python scripts/klubiarviot-excel.py ruokailu2026.xls`
+   → `data/normalized/klubiarviot.json`
+2. `npm run tuo:klubiarviot` (kuivaharjoitus) → `data/klubiarviot-tarkistus.csv`
+3. Täytä tarkistuslistan sarake **päätös** (`ok`, ravintolan `_id` tai `ohita`) ja
+   tallenna nimellä `data/klubiarviot-paatokset.csv`. Aja uudelleen kuivaharjoitus.
+   Päätös `uusi` luo ravintolan (ja tarvittaessa kaupungin); uudelleenajo tunnistaa
+   jo luodun nimen ja kaupungin perusteella eikä luo kaksoiskappaletta.
+4. `npm run tuo:klubiarviot -- --vie` (development) ja tarkistus sivulla
+5. `npm run tuo:klubiarviot -- --production --vie` (varmuuskopio ensin), **vasta
+   deployn jälkeen**, jotta Studio ja webhook tuntevat uudet tyypit
+
+Täsmäys: sama nimi samassa kaupungissa, tai sama ensimmäinen käyntipäivä ja
+lähes sama nimi, tai lähes sama nimi samassa kaupungissa ja sama päivä tai
+osoite. Pelkkä osoite ei riitä. Kaksi taulukon riviä samaan ravintolaan menee
+tarkistukseen. Uudelleenajo korvaa vain tuodut (`tuotu: true`) ja poistaa
+tuodut, joiden riviä ei enää täsmäytetä; Studiossa lisättyihin ei kosketa.
+Samalla lomakkeen arvostelut ilman klubilaista liitetään, kun nimi täsmää
+täsmälleen yhteen klubilaiseen.
+
+### Tila 3.10.2026
+
+- Taulukko: 570 ravintolaa, 12 arvioijaa, 1 545 arvosanaa. Vanha sivusto noudatti
+  kahden arvioijan sääntöä: taulukon 67 yhden arvioijan ravintolasta 66 puuttui
+  sivustolta (poikkeus Torero, Lahti 2004, nyt piilotettu)
+- Täsmäys: 487 automaattisesti, 10 päätöksellä (mm. Rax Tampere/Helsinki, Leon de
+  Bruxelles = "Bryssel", Huviretki Mikkeli = "Cumulus", Moskovan kaksi McDonald'sia),
+  73 uutta: 6 näkyviin (Nonni, Love Berlin Döner, Burger King Mäntsälä, Heila
+  Kauppahalli, Factory Kamppi, Amarillo Flamingo) ja 67 piiloon (myös Rosso, ks. alla)
+- Ainoa sivuston ravintola ilman taulukkodataa: Olivia Centralstation (Helsinki 2023,
+  vanhalla sivustolla, ei taulukossa). Pidetään näkyvissä vanhalla arvosanalla 3,4
+- Taulukon virheet, jotka tuonti käsittelee säännöllä:
+  - arvosana, jonka kaikki päivät ovat ennen ravintolan 1. käyntiä, hylätään: ainoa on
+    Rosso (Imatra 2024), Simo 2,0/2,0/2,0 päivällä 9.10.1999; taulukon Lkm-sarake on 1
+    ja R/H/V-sarakkeet (5,1) rikki saman virheen takia. Rosso jää piiloon (1 arvioija)
+  - "Mannerheimintie 50, 00260" + "Suomi – Pohjois-Irlanti" on kopioitu 7 riville eri
+    kaupungeissa: uuteen ravintolaan ei oteta kopioitua osoitetta, tapahtumaa eikä T/L-tietoa
+  - 8 arvioijalta puuttuu päivä (esim. Factory Kamppi / Veikko): käytetään rivin päivää
+- Riippumaton tarkistus (Excel luettuna uudelleen suoraan, ei välivaiheen kautta):
+  arvioijanumerot = Painot-välilehti (1 Ilpo … 11 Veikko, 13 Elias), kaikki 570 riviä ja
+  4 635 pistesolua oikeissa ravintoloissa oikeilla nimillä, käyntipäivät täsmäävät, ja
+  ravintolan ruoka/hinta/viihtyvyys = taulukon R/H/V-sarakkeet (paitsi rikkinäinen Rosso).
+  Pyöristys puoli ylöspäin (2,85 → 2,9)
+- Painotusten poisto: 320 ravintolan arvosana ennallaan, 150 muuttui ±0,1
+- Development tuotu ja tarkistettu (uudelleenajo ei muuta mitään). Production odottaa deployta

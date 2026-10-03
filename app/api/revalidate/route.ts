@@ -1,6 +1,10 @@
 import { revalidateTag } from "next/cache";
 import type { NextRequest } from "next/server";
+import { createClient } from "next-sanity";
 import { parseBody } from "next-sanity/webhook";
+
+import { paivitaArvosanat } from "@/lib/ravintola-arvosana";
+import { apiVersion, dataset, projectId } from "@/sanity/env";
 
 /**
  * Sanity-webhook: tyhjentää välimuistin kun sisältö muuttuu.
@@ -24,12 +28,35 @@ const secret = process.env.SANITY_REVALIDATE_SECRET;
 /** Tyyppi → muut tagit, joiden sivuilla tyypin sisältö näkyy. */
 const RIIPPUVAT: Record<string, string[]> = {
   ravintolaKayttajaArvostelu: ["ravintola"],
+  klubiArvio: ["ravintola"],
+  klubilainen: ["ravintola"],
   kaupunki: ["ravintola"],
 };
 
 interface WebhookPayload {
   _type?: string;
   slug?: string;
+}
+
+/** Tyypit, joiden muutos voi muuttaa ravintolan arvosanaa. */
+const ARVOSANAAN_VAIKUTTAVAT = new Set(["ravintolaKayttajaArvostelu", "klubiArvio"]);
+
+/** Virhe ei kaada välimuistin tyhjennystä: arvosana korjaantuu seuraavalla ajolla. */
+async function laskeArvosanat(): Promise<void> {
+  const token = process.env.SANITY_API_WRITE_TOKEN;
+  if (!token || !projectId) {
+    console.error("[revalidate] arvosanoja ei laskettu: SANITY_API_WRITE_TOKEN puuttuu.");
+    return;
+  }
+  try {
+    const client = createClient({ projectId, dataset, apiVersion, token, useCdn: false, perspective: "raw" });
+    const muutokset = await paivitaArvosanat(client);
+    if (muutokset.length > 0) {
+      console.log(`[revalidate] arvosana päivitetty: ${muutokset.map((m) => m.name).join(", ")}`);
+    }
+  } catch (error) {
+    console.error("[revalidate] arvosanojen laskenta epäonnistui:", error instanceof Error ? error.message : error);
+  }
 }
 
 export async function POST(request: NextRequest): Promise<Response> {
@@ -60,6 +87,11 @@ export async function POST(request: NextRequest): Promise<Response> {
     // kaupungin nimi näkyvät ravintolasivulla, joka hakee tagilla "ravintola".
     const NAKYY_MYOS = RIIPPUVAT[body._type];
     if (NAKYY_MYOS) tags.push(...NAKYY_MYOS);
+
+    // Klubilaisen arvosana tai arvostelu muuttui: ravintolan arvosana on
+    // klubilaisten arvosanojen keskiarvo (lib/ravintola-arvosana.ts).
+    // Ravintolan päivitys laukaisee oman webhookinsa, joka tyhjentää sen sivut.
+    if (ARVOSANAAN_VAIKUTTAVAT.has(body._type)) await laskeArvosanat();
 
     // Next 16 vaatii cache-profiilin toisena argumenttina. "max" tarkoittaa
     // tässä: mitätöi riippumatta siitä, kuinka pitkä välimuistin elinikä oli —

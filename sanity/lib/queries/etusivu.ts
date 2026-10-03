@@ -15,6 +15,8 @@
 
 import { defineQuery } from "next-sanity";
 import { kuva, runko } from "@/sanity/lib/queries/kuvat";
+import { JULKINEN_RAVINTOLA } from "@/lib/ravintola-arvosana";
+import { TUOREIN_ARVIO } from "@/sanity/lib/queries/ravintolat";
 
 import type { StatColumn, StatRow } from "@/components/ui/stat-table";
 
@@ -80,18 +82,17 @@ export const etusivuQuery = defineQuery(`
 `);
 
 /**
- * Ravintolat-spotlight: parhaiten arvioidut ensin.
+ * Ravintolat-spotlight: tuoreimmin arvioidut ensin (klubin käynti tai
+ * klubilaisen arvostelu, ks. TUOREIN_ARVIO).
  *
- * Järjestysperuste on `ratingOverall` (0–5, yksi desimaali) — se on tarkin
- * arvo. `stars` on karkeampi pikavalinta ja toimii varalla, jotta vanhat
- * ravintolat joilta puuttuu kokonaisarvosana eivät katoa listalta.
+ * Vain arvosanan saaneet (`ratingOverall`, tai vanhoissa `stars`).
  * Lopettaneita ravintoloita ei nosteta etusivulle.
  */
 export const etusivuRavintolatQuery = defineQuery(`
-  *[_type == "ravintola" && defined(slug.current) && closed != true
+  *[_type == "ravintola" && defined(slug.current) && closed != true && ${JULKINEN_RAVINTOLA}
     && ($cityId == null || city._ref == $cityId)
     && coalesce(ratingOverall, stars, 0) > 0]
-    | order(coalesce(ratingOverall, stars, 0) desc, name asc)[0...$count]{
+    | order(coalesce(${TUOREIN_ARVIO}, "0000-00-00") desc, name asc)[0...$count]{
     _id,
     name,
     "slug": slug.current,

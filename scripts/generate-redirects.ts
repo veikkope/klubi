@@ -40,6 +40,7 @@ import {
 import { MAAKUNNAT, SUOMI } from "../lib/maakunnat";
 import { isCountryLevelPlace } from "../lib/places";
 import { slugify as placeSlug } from "../lib/slugify";
+import { JULKINEN_RAVINTOLA } from "../lib/ravintola-arvosana";
 
 const STATUS_FILE = join(process.cwd(), "data", "crawl-status.tsv");
 const MANUAL_FILE = join(process.cwd(), "data", "manual-redirects.csv");
@@ -224,6 +225,11 @@ interface LegacyDoc extends RoutableDoc {
   city?: { slug?: string | null; name?: string | null; country?: string | null; maakunta?: string | null } | null;
   /** Vain ravintoloilla. */
   closed?: boolean | null;
+  /**
+   * Vain ravintoloilla: ei näy sivustolla (alle kaksi klubilaista arvioijaa,
+   * lib/ravintola-arvosana.ts). Ei omaa sivua eikä kuulu aluenäkymiin.
+   */
+  piilotettu?: boolean | null;
 }
 
 interface Candidate {
@@ -343,7 +349,7 @@ function ravintolaPageDestinations(docs: LegacyDoc[]): {
   destinations: Map<string, { to: string; why: string }>;
   report: RavintolaPageReport[];
 } {
-  const all = docs.filter((d) => d._type === "ravintola");
+  const all = docs.filter((d) => d._type === "ravintola" && !d.piilotettu);
   const byPage = new Map<string, LegacyDoc[]>();
   for (const doc of all) {
     const pages = new Set(
@@ -392,7 +398,8 @@ async function fetchLegacyDocs(): Promise<LegacyDoc[]> {
     publishedAt,
     jarjestys,
     "city": select(_type == "ravintola" => city->{ "slug": slug.current, name, country, maakunta }),
-    "closed": select(_type == "ravintola" => closed)
+    "closed": select(_type == "ravintola" => closed),
+    "piilotettu": select(_type == "ravintola" => !${JULKINEN_RAVINTOLA})
   }`;
   const url =
     `https://${projectId}.api.sanity.io/v2024-10-01/data/query/${dataset}` +
@@ -470,6 +477,8 @@ function buildCandidates(docs: LegacyDoc[]): Map<string, Candidate[]> {
     byUrl.set(key, list);
   };
   for (const doc of docs) {
+    // Piilotetulla ravintolalla ei ole sivua; sen aluesivu ohjautuu aluenäkymään muiden mukana.
+    if (doc.piilotettu) continue;
     if (doc.legacyUrl && !SHARED_LEGACY_TYPES.has(doc._type)) add(doc.legacyUrl, doc, true);
     for (const other of doc.muutLegacyUrlit ?? []) {
       // Ravintolan muu osoite, joka on aluesivu, ohjautuu aluenäkymään (ravintolaPageDestinations).

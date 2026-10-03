@@ -32,10 +32,12 @@ import { hasSanity } from "@/sanity/env";
 import {
   ravintolaArvostelutQuery,
   ravintolaBySlugQuery,
+  ravintolaKlubiArviotQuery,
   ravintolaSlugsQuery,
   type RavintolaDetail,
   type RavintolaUserReview,
 } from "@/sanity/lib/queries/ravintolat";
+import { voimassaOlevat, type KlubilaisenArvio, type VoimassaOlevaArvio } from "@/lib/ravintola-arvosana";
 import type { AlbumImage } from "@/lib/types";
 
 export const revalidate = 3600;
@@ -54,7 +56,7 @@ export async function generateStaticParams(): Promise<Params[]> {
 }
 
 async function getRavintola(slug: string): Promise<RavintolaDetail | null> {
-  const r = await sanityFetch<Omit<RavintolaDetail, "userReviews"> | null>({
+  const r = await sanityFetch<Omit<RavintolaDetail, "userReviews" | "klubiArviot"> | null>({
     query: ravintolaBySlugQuery,
     params: { slug },
     tags: ["ravintola", `ravintola:${slug}`],
@@ -63,14 +65,24 @@ async function getRavintola(slug: string): Promise<RavintolaDetail | null> {
   if (!r) return null;
   // Kävijäarvostelut aina julkaistuina, myös esikatselussa: luonnos on
   // hyväksymätön arvostelu (moderointi, ravintolaKayttajaArvostelu.ts).
-  const userReviews = await sanityFetch<RavintolaUserReview[]>({
-    query: ravintolaArvostelutQuery,
-    params: { id: r._id.replace(/^drafts\./, "") },
-    tags: ["ravintola", `ravintola:${slug}`],
-    fallback: [],
-    vainJulkaistu: true,
-  });
-  return { ...r, userReviews };
+  const id = r._id.replace(/^drafts\./, "");
+  const [userReviews, klubiArviot] = await Promise.all([
+    sanityFetch<RavintolaUserReview[]>({
+      query: ravintolaArvostelutQuery,
+      params: { id },
+      tags: ["ravintola", `ravintola:${slug}`],
+      fallback: [],
+      vainJulkaistu: true,
+    }),
+    sanityFetch<KlubilaisenArvio[] | null>({
+      query: ravintolaKlubiArviotQuery,
+      params: { id },
+      tags: ["ravintola", `ravintola:${slug}`],
+      fallback: [],
+      vainJulkaistu: true,
+    }),
+  ]);
+  return { ...r, userReviews, klubiArviot: klubiArviot ?? [] };
 }
 
 /** Sivun kuvaus: kirjoitettu SEO-teksti, muuten tiivistelmä, muuten koottu fakta. */
@@ -155,7 +167,8 @@ export default async function RavintolaPage({ params }: PageProps) {
             website: r.website,
             image: heroUrl,
             rating,
-            reviewCount: r.userReviews.length,
+            // Arvosanan takana olevat klubilaiset, muuten julkaistut arvostelut.
+            reviewCount: r.automaattinenArvosana?.arvioijia ?? r.userReviews.length,
             closed: isClosed,
           }),
         ]}
@@ -283,6 +296,8 @@ export default async function RavintolaPage({ params }: PageProps) {
             </section>
           )}
 
+          <KlubilaistenArvosanat arviot={voimassaOlevat(r.klubiArviot)} />
+
           {r.userReviews.length > 0 && (
             <section aria-labelledby="kavijat-otsikko" className="mt-4">
               <h2 id="kavijat-otsikko" className="text-2xl">
@@ -293,8 +308,13 @@ export default async function RavintolaPage({ params }: PageProps) {
                   <li key={review._id} className="rounded-sm bg-surface p-6">
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div>
-                        <p className="font-semibold text-foreground">
+                        <p className="flex flex-wrap items-center gap-x-2.5 gap-y-1 font-semibold text-foreground">
                           {review.reviewerName ?? "Nimetön"}
+                          {review.klubilainen && (
+                            <span className="rounded-xs bg-blue-tint px-2 py-0.5 text-xs font-semibold text-navy">
+                              Klubilainen
+                            </span>
+                          )}
                         </p>
                         {review.submittedAt && (
                           <p className="text-sm text-muted-soft">{formatDate(review.submittedAt)}</p>
@@ -375,6 +395,57 @@ export default async function RavintolaPage({ params }: PageProps) {
   );
 }
 
+const arvosana = (x: number | null | undefined) => (typeof x === "number" ? formatRating(x) : "–");
+
+/**
+ * Klubilaisten arvosanat taulukkona (kunkin klubilaisen voimassa oleva eli
+ * uusin arvosana). Ravintolan arvosana on näiden keskiarvo.
+ */
+function KlubilaistenArvosanat({ arviot }: { arviot: VoimassaOlevaArvio[] }) {
+  if (arviot.length === 0) return null;
+  return (
+    <section aria-labelledby="klubilaiset-otsikko" className="mt-4">
+      <h2 id="klubilaiset-otsikko" className="text-2xl">
+        Klubilaisten arvosanat
+      </h2>
+      <div className="mt-5 overflow-x-auto rounded-sm bg-surface">
+        <table className="w-full min-w-[420px] border-collapse text-[15px]">
+          <caption className="sr-only">
+            Klubilaisten arvosanat: ruoka, hinta, viihtyvyys ja niiden keskiarvo asteikolla 1–5
+          </caption>
+          <thead>
+            <tr className="border-b border-border text-left text-[13px] font-semibold uppercase tracking-[0.08em] text-muted-soft">
+              <th scope="col" className="px-4 py-3 sm:px-6">Klubilainen</th>
+              <th scope="col" className="px-2 py-3 text-right">Ruoka</th>
+              <th scope="col" className="px-2 py-3 text-right">Hinta</th>
+              <th scope="col" className="px-2 py-3 text-right">Viihtyvyys</th>
+              <th scope="col" className="px-4 py-3 text-right sm:px-6">Keskiarvo</th>
+            </tr>
+          </thead>
+          <tbody>
+            {arviot.map((a) => (
+              <tr key={a.arvioija} className="border-b border-border last:border-b-0">
+                <th scope="row" className="px-4 py-3 text-left font-semibold text-foreground sm:px-6">
+                  {a.nimi ?? "Klubilainen"}
+                  {a.pvm && (
+                    <span className="block text-[13px] font-normal text-muted-soft">{formatDate(a.pvm)}</span>
+                  )}
+                </th>
+                <td className="px-2 py-3 text-right tabular-nums">{arvosana(a.ratingFood)}</td>
+                <td className="px-2 py-3 text-right tabular-nums">{arvosana(a.ratingPrice)}</td>
+                <td className="px-2 py-3 text-right tabular-nums">{arvosana(a.ratingAtmosphere)}</td>
+                <td className="px-4 py-3 text-right font-display text-lg font-semibold tabular-nums text-brass-text sm:px-6">
+                  {arvosana(a.kokonais)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+}
+
 /**
  * Arvosanakortti (tyyliopas): 4 px messinkinen yläreuna, varjo. Kokonaisarvosana
  * isona, ala-arvosanat pisteinä (Ruoka / Hinta / Viihtyvyys), yhteystiedot,
@@ -407,6 +478,11 @@ function ScoreCard({
           </p>
         ) : (
           <p className="text-[15px] text-muted">Ei numeerista arviota.</p>
+        )}
+        {r.automaattinenArvosana && rating !== null && (
+          <p className="text-sm text-muted-soft">
+            Keskiarvo {r.automaattinenArvosana.arvioijia} klubilaisen arvosanasta
+          </p>
         )}
       </div>
 

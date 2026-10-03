@@ -113,7 +113,8 @@ export const HyvaksyJaLuoRavintola: DocumentActionComponent = (props) => {
       message: virhe
         ? "Ravintolan luonti epäonnistui, eikä arvostelua julkaistu. Yritä uudelleen tai luo ravintola käsin Kaikki ravintolat -listassa."
         : `Ravintola "${nimi}" (${kaupunki}, ${maa}) lisätään hakemistoon ja tämä arvostelu julkaistaan sen sivulle. ` +
-          "Jos kaupunkia ei vielä ole, sekin luodaan: valitse sille myöhemmin maakunta Kaupungit-listassa. Jatketaanko?",
+          "Jos kaupunkia ei vielä ole, sekin luodaan: valitse sille myöhemmin maakunta Kaupungit-listassa. " +
+          "Ravintola näkyy sivustolla, kun vähintään kaksi klubilaista on arvioinut sen. Jatketaanko?",
       onCancel: () => {
         setDialogOpen(false);
         setVirhe(false);

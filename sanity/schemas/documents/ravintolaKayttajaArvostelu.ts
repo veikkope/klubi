@@ -40,6 +40,22 @@ export const ravintolaKayttajaArvostelu = defineType({
       validation: (rule) => rule.required().error("Nimi on pakollinen."),
     }),
     defineField({
+      name: "arvioija",
+      title: "Klubilainen",
+      description:
+        "Lomake valitsee klubilaisen itse, kun nimi täsmää. Klubilaisen arvostelu saa sivulla merkin " +
+        "\"Klubilainen\", ja se korvaa hänen aiemman arvosanansa ravintolalle. Jätä tyhjäksi, jos " +
+        "arvostelija ei ole klubilainen: arvostelu näkyy silti, mutta ei vaikuta ravintolan arvosanaan.",
+      type: "reference",
+      to: [{ type: "klubilainen" }],
+      validation: (rule) =>
+        rule.custom((arvioija) =>
+          arvioija
+            ? true
+            : "Arvostelijaa ei ole liitetty klubilaiseen. Valitse klubilainen, jos arvostelija on klubin jäsen.",
+        ).warning(),
+    }),
+    defineField({
       name: "ehdotettuRavintola",
       title: "Kävijän ehdottama uusi ravintola",
       description:
@@ -141,15 +157,21 @@ export const ravintolaKayttajaArvostelu = defineType({
       atmosphere: "ratingAtmosphere",
       submittedAt: "submittedAt",
       kuvat: "kuvat",
+      arvioija: "arvioija._ref",
     },
-    prepare({ name, restaurant, uusi, food, price, atmosphere, submittedAt, kuvat }) {
+    prepare({ name, restaurant, uusi, food, price, atmosphere, submittedAt, kuvat, arvioija }) {
       const pvm = submittedAt ? new Date(submittedAt).toLocaleDateString("fi-FI") : "";
       const osat = [food, price, atmosphere].filter((v): v is number => typeof v === "number");
       const ka = osat.length === 3 ? `★ ${((food + price + atmosphere) / 3).toFixed(1).replace(".", ",")}` : "";
       const kuvia = Array.isArray(kuvat) ? kuvat.length : 0;
       return {
         title: `${name ?? "?"} → ${restaurant ?? (uusi ? `UUSI: ${uusi}` : "?")}`,
-        subtitle: [ka, kuvia > 0 ? `${kuvia} ${kuvia === 1 ? "kuva" : "kuvaa"}` : "", pvm]
+        subtitle: [
+          arvioija ? "" : "Ei klubilainen",
+          ka,
+          kuvia > 0 ? `${kuvia} ${kuvia === 1 ? "kuva" : "kuvaa"}` : "",
+          pvm,
+        ]
           .filter(Boolean)
           .join(" · "),
         // Ensimmäinen kuva listan pikkukuvaksi, jotta kuvalliset erottuvat jonossa.

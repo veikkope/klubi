@@ -3,6 +3,7 @@ import { kuva, vari } from "@/sanity/lib/queries/kuvat";
 
 import { MAAKUNNAT, SUOMI, isMaakunta } from "@/lib/maakunnat";
 import { isCountryLevelPlace } from "@/lib/places";
+import { JULKINEN_RAVINTOLA, KLUBILAISTEN_ARVIOT, type KlubilaisenArvio } from "@/lib/ravintola-arvosana";
 import { slugify } from "@/lib/slugify";
 import type { AlbumImage, SanityImage } from "@/lib/types";
 import type { PortableTextBlock } from "@portabletext/react";
@@ -49,6 +50,8 @@ export type RavintolaCardData = {
   tuomio?: string | null;
   /** Esim. "15 min stadionille". */
   stadionHuomio?: string | null;
+  /** Tuoreimman arvostelun päivä (ISO): käynti tai klubilaisen arvostelu. */
+  tuoreinArvio?: string | null;
   image?: SanityImage;
 };
 
@@ -72,12 +75,18 @@ export type RavintolaDetail = RavintolaCardData & {
   seoDescription?: string | null;
   /** Haetaan erikseen (`ravintolaArvostelutQuery`), vain hyväksytyt. */
   userReviews: RavintolaUserReview[];
+  /** Arvosana on klubilaisten arvosanojen keskiarvo (lib/ravintola-arvosana.ts). */
+  automaattinenArvosana?: { arvioijia: number; viimeisinArvio: string | null } | null;
+  /** Klubilaisten arvosanat, haetaan erikseen (`ravintolaKlubiArviotQuery`). */
+  klubiArviot: KlubilaisenArvio[];
   related: RavintolaCardData[];
 };
 
 export type RavintolaUserReview = {
   _id: string;
   reviewerName?: string | null;
+  /** Liitetty klubilaiseen: merkki nimen viereen, arvosana lasketaan ravintolalle. */
+  klubilainen: boolean;
   /** Osa-alueiden keskiarvo 1–5. */
   rating?: number | null;
   ratingFood?: number | null;
@@ -150,6 +159,22 @@ export type RavintolaOption = {
 
 // ── Projektiot ────────────────────────────────────────────────────────────────
 
+/**
+ * Tuoreimman arvostelun päivä: uudempi näistä
+ *  - klubin viimeisin käynti (`visits` on uusin ensin, Studio vaatii sen;
+ *    `visitedAt` on ensimmäinen käynti vanhoissa tiedoissa)
+ *  - tuorein klubilaisen arvostelu (`automaattinenArvosana.viimeisinArvio`,
+ *    lib/ravintola-arvosana.ts).
+ * Molemmat ovat ISO-päiviä, joten merkkijonovertailu riittää. `order()` ei
+ * hyväksy putkea (`visits | order(@ desc)`), joten järjestys nojaa Studion
+ * validointiin.
+ */
+const KAYNTI = /* groq */ `coalesce(visits[0], visitedAt)`;
+export const TUOREIN_ARVIO = /* groq */ `select(
+  automaattinenArvosana.viimeisinArvio > coalesce(${KAYNTI}, "") => automaattinenArvosana.viimeisinArvio,
+  ${KAYNTI}
+)`;
+
 const cardProjection = /* groq */ `
   _id,
   name,
@@ -165,6 +190,7 @@ const cardProjection = /* groq */ `
   tiivistelma,
   tuomio,
   stadionHuomio,
+  "tuoreinArvio": ${TUOREIN_ARVIO},
   "image": images[0]{${kuva}}
 `;
 
@@ -188,7 +214,7 @@ const cardProjection = /* groq */ `
  *                 näytetään, vaikka se olisi suljettu (kortti kertoo sen).
  */
 const directoryFilter = /* groq */ `
-  _type == "ravintola" && defined(slug.current)
+  _type == "ravintola" && defined(slug.current) && ${JULKINEN_RAVINTOLA}
   && ($citySlug == null || city->slug.current == $citySlug)
   && ($countryNames == null || city->country in $countryNames)
   && ($maakuntaSlugs == null
@@ -207,6 +233,8 @@ const OVERALL = "coalesce(ratingOverall, stars, 0) desc, name asc";
 
 /** Osa-arvosanan puuttuminen lajitellaan loppuun (`null` olisi GROQ:ssa ensin). */
 const ORDERINGS = {
+  // Ilman käyntipäivää loppuun (null olisi laskevassa järjestyksessä ensin).
+  uusin: `coalesce(${TUOREIN_ARVIO}, "0000-00-00") desc, name asc`,
   arvosana: OVERALL,
   nimi: "name asc",
   ruoka: `coalesce(ratingFood, -1) desc, ${OVERALL}`,
@@ -269,17 +297,17 @@ export const ravintolatCountQuery = defineQuery(`
  */
 export const ravintolatFacetsQuery = defineQuery(`{
   "places": *[_type == "kaupunki" && defined(slug.current)
-      && count(*[_type == "ravintola" && references(^._id)]) > 0]
+      && count(*[_type == "ravintola" && references(^._id) && ${JULKINEN_RAVINTOLA}]) > 0]
     | order(name asc){
       name,
       "slug": slug.current,
       country,
       maakunta,
-      "count": count(*[_type == "ravintola" && references(^._id) && closed != true])
+      "count": count(*[_type == "ravintola" && references(^._id) && closed != true && ${JULKINEN_RAVINTOLA}])
     },
-  "total": count(*[_type == "ravintola" && defined(slug.current) && closed != true]),
-  "closedCount": count(*[_type == "ravintola" && closed == true]),
-  "firstVisitYear": *[_type == "ravintola" && defined(visitedAt)]
+  "total": count(*[_type == "ravintola" && defined(slug.current) && closed != true && ${JULKINEN_RAVINTOLA}]),
+  "closedCount": count(*[_type == "ravintola" && closed == true && ${JULKINEN_RAVINTOLA}]),
+  "firstVisitYear": *[_type == "ravintola" && defined(visitedAt) && ${JULKINEN_RAVINTOLA}]
     | order(visitedAt asc)[0].visitedAt
 }`);
 
@@ -347,7 +375,7 @@ export function countryNamesForSlug(facets: RavintolatFacetData, slug: string | 
 }
 
 export const ravintolaBySlugQuery = defineQuery(`
-  *[_type == "ravintola" && slug.current == $slug][0]{
+  *[_type == "ravintola" && slug.current == $slug && ${JULKINEN_RAVINTOLA}][0]{
     ${cardProjection},
     _updatedAt,
     address,
@@ -361,12 +389,13 @@ export const ravintolaBySlugQuery = defineQuery(`
     visitedAt,
     visits,
     visitContext,
+    automaattinenArvosana,
     review,
     ottelupaivana,
     images[]{${kuva}},
     seoTitle,
     seoDescription,
-    "related": *[_type == "ravintola" && defined(slug.current)
+    "related": *[_type == "ravintola" && defined(slug.current) && ${JULKINEN_RAVINTOLA}
       && _id != ^._id && closed != true && city._ref == ^.city._ref]
       | order(coalesce(ratingOverall, stars, 0) desc, name asc)[0...3]{${cardProjection}}
   }
@@ -383,6 +412,8 @@ export const ravintolaArvostelutQuery = defineQuery(`
     | order(submittedAt desc){
       _id,
       reviewerName,
+      // Liitetty klubilaiseen: merkki nimen viereen, arvosana lasketaan mukaan.
+      "klubilainen": defined(arvioija),
       ratingFood,
       ratingPrice,
       ratingAtmosphere,
@@ -393,11 +424,24 @@ export const ravintolaArvostelutQuery = defineQuery(`
     }
 `);
 
+/**
+ * Ravintolan klubilaisten arvosanat (taulukosta tuodut ja Studiossa lisätyt
+ * sekä klubilaisiin liitetyt arvostelut). Sivu valitsee kunkin klubilaisen
+ * uusimman samalla säännöllä kuin arvosanan laskenta (lib/ravintola-arvosana.ts).
+ * Parametri: $id (ravintolan julkaistu _id).
+ */
+export const ravintolaKlubiArviotQuery = /* groq */ `
+  *[_type == "ravintola" && _id == $id][0]{ "arviot": ${KLUBILAISTEN_ARVIOT} }.arviot
+`;
+
 export const ravintolaSlugsQuery = defineQuery(`
-  *[_type == "ravintola" && defined(slug.current)].slug.current
+  *[_type == "ravintola" && defined(slug.current) && ${JULKINEN_RAVINTOLA}].slug.current
 `);
 
-/** Arvostelulomakkeen ravintolavalikko — myös lopettaneet, käynti on voinut olla ennen. */
+/**
+ * Arvostelulomakkeen ravintolavalikko — myös lopettaneet (käynti on voinut
+ * olla ennen) ja toista arvioijaa odottavat (toinen klubilainen arvioi ne).
+ */
 export const ravintolaOptionsQuery = defineQuery(`
   *[_type == "ravintola" && defined(slug.current)] | order(name asc){
     _id,

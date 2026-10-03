@@ -105,6 +105,41 @@ export const ravintola = defineType({
 
     // ── Arvostelu ───────────────────────────────────────────────────────────
     defineField({
+      name: "automaattinenArvosana",
+      title: "Arvosana lasketaan klubilaisten arvosanoista",
+      description:
+        "Ruoka, hinta ja viihtyvyys ovat klubilaisten arvosanojen keskiarvo (kunkin klubilaisen uusin " +
+        "arvosana), ja kokonaisarvosana on niiden keskiarvo. Ne päivittyvät itsestään, kun arvosana " +
+        "tai klubilaisen arvostelu lisätään, muutetaan tai poistetaan. Kenttiä ei voi muokata käsin: " +
+        "muokkaa klubilaisen arvosanaa (Ravintolat → Klubilaisten arvosanat).",
+      type: "object",
+      readOnly: true,
+      hidden: ({ value }) => !value,
+      group: "arvostelu",
+      fields: [
+        defineField({ name: "arvioijia", title: "Klubilaisia", type: "number" }),
+        defineField({ name: "viimeisinArvio", title: "Tuorein arvosana", type: "date" }),
+      ],
+    }),
+    defineField({
+      name: "alkuperainenArvio",
+      title: "Aiempi arvosana",
+      description:
+        "Vanhan sivuston arvosana ennen automaattista laskentaa (painotettu Excelin kaava). Vain " +
+        "vertailua varten: ei vaikuta arvosanaan. Palautuu käyttöön, jos klubilaisten arvosanat poistetaan.",
+      type: "object",
+      readOnly: true,
+      hidden: ({ value }) => !value,
+      group: "arvostelu",
+      options: { collapsible: true, collapsed: true },
+      fields: [
+        defineField({ name: "ratingOverall", title: "Kokonaisarvosana", type: "number" }),
+        defineField({ name: "ratingFood", title: "Ruoka", type: "number" }),
+        defineField({ name: "ratingPrice", title: "Hinta", type: "number" }),
+        defineField({ name: "ratingAtmosphere", title: "Viihtyvyys", type: "number" }),
+      ],
+    }),
+    defineField({
       name: "stars",
       title: "Tähdet (1–5)",
       description:
@@ -116,9 +151,10 @@ export const ravintola = defineType({
     defineField({
       name: "ratingOverall",
       title: "Kokonaisarvosana",
-      description: "0–5, yksi desimaali. Esim. 3,6.",
+      description: "0–5, yksi desimaali. Esim. 3,6. Lasketaan automaattisesti, kun ravintolalla on klubilaisten arvosanoja.",
       type: "number",
       validation: (rule) => rule.min(0).max(5).precision(2),
+      readOnly: ({ document }) => Boolean(document?.automaattinenArvosana),
       group: "arvostelu",
     }),
     defineField({
@@ -126,6 +162,7 @@ export const ravintola = defineType({
       title: "Ruoka",
       type: "number",
       validation: (rule) => rule.min(0).max(5).precision(2),
+      readOnly: ({ document }) => Boolean(document?.automaattinenArvosana),
       group: "arvostelu",
     }),
     defineField({
@@ -133,6 +170,7 @@ export const ravintola = defineType({
       title: "Hinta",
       type: "number",
       validation: (rule) => rule.min(0).max(5).precision(2),
+      readOnly: ({ document }) => Boolean(document?.automaattinenArvosana),
       group: "arvostelu",
     }),
     defineField({
@@ -140,6 +178,7 @@ export const ravintola = defineType({
       title: "Viihtyvyys",
       type: "number",
       validation: (rule) => rule.min(0).max(5).precision(2),
+      readOnly: ({ document }) => Boolean(document?.automaattinenArvosana),
       group: "arvostelu",
     }),
     defineField({
@@ -202,9 +241,17 @@ export const ravintola = defineType({
     defineField({
       name: "visits",
       title: "Käynnit",
-      description: "Kaikki klubin käynnit tässä ravintolassa, uusin ensin.",
+      description:
+        "Kaikki klubin käynnit tässä ravintolassa, uusin ensin. Lisää uusi käynti listan alkuun: " +
+        "uusin käynti määrää, missä kohtaa ravintola näkyy etusivulla ja ravintolalistassa.",
       type: "array",
       of: [{ type: "date" }],
+      validation: (rule) =>
+        rule.custom((kaynnit) => {
+          const paivat = ((kaynnit ?? []) as unknown[]).filter((p): p is string => typeof p === "string");
+          const jarjestyksessa = paivat.every((paiva, i) => i === 0 || paivat[i - 1] >= paiva);
+          return jarjestyksessa || "Järjestä käynnit uusin ensin: vedä uusin käynti listan alkuun.";
+        }),
       group: "arvostelu",
     }),
     defineField({
@@ -269,14 +316,22 @@ export const ravintola = defineType({
       stars: "stars",
       closed: "closed",
       needsReview: "needsReview",
+      arvioijia: "automaattinenArvosana.arvioijia",
       media: "images.0",
     },
-    prepare({ title, city, rating, stars, closed, needsReview, media }) {
+    prepare({ title, city, rating, stars, closed, needsReview, arvioijia, media }) {
       const starString =
         typeof stars === "number" ? "★".repeat(stars) + "☆".repeat(5 - stars) : "";
       const ratingString =
         typeof rating === "number" ? rating.toFixed(1).replace(".", ",") : "";
-      const flags = [closed ? "päättynyt" : null, needsReview ? "tarkista" : null]
+      // Sama sääntö kuin JULKINEN_RAVINTOLA (lib/ravintola-arvosana.ts).
+      const piilossa =
+        typeof arvioijia === "number" ? arvioijia < 2 : typeof rating !== "number" && typeof stars !== "number";
+      const flags = [
+        piilossa ? "piilossa: odottaa toista arvioijaa" : null,
+        closed ? "päättynyt" : null,
+        needsReview ? "tarkista" : null,
+      ]
         .filter(Boolean)
         .join(", ");
       return {

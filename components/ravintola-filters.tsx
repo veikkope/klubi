@@ -25,6 +25,7 @@ import { RAVINTOLAT_TOP_SIZE, type RavintolatFacetData } from "@/sanity/lib/quer
  */
 
 export const RAVINTOLA_SORTS = [
+  { value: "uusin", label: "Tuorein arvostelu ensin" },
   { value: "arvosana", label: "Arvosana (paras ensin)" },
   { value: "nimi", label: "Nimi (A–Ö)" },
 ] as const;
@@ -82,7 +83,7 @@ export const RAVINTOLA_DEFAULT_FILTERS: RavintolaFilterValues = {
   maakunta: [],
   arvosana: null,
   lopettaneet: false,
-  jarjesta: "arvosana",
+  jarjesta: "uusin",
   sivu: 1,
 };
 
@@ -131,7 +132,7 @@ export function parseRavintolaFilters(
         ? arvosana
         : null,
     lopettaneet: first(sp.lopettaneet) === "1",
-    jarjesta: jarjesta === "nimi" ? "nimi" : "arvosana",
+    jarjesta: RAVINTOLA_SORTS.find((s) => s.value === jarjesta)?.value ?? RAVINTOLA_DEFAULT_FILTERS.jarjesta,
     sivu: Number.isInteger(sivu) && sivu > 1 ? sivu : 1,
   };
 }
@@ -150,7 +151,7 @@ export function buildRavintolaHref(
   if (merged.maakunta.length) params.set("maakunta", merged.maakunta.join(","));
   if (merged.arvosana) params.set("arvosana", String(merged.arvosana));
   if (merged.lopettaneet) params.set("lopettaneet", "1");
-  if (merged.jarjesta !== "arvosana") params.set("jarjesta", merged.jarjesta);
+  if (merged.jarjesta !== RAVINTOLA_DEFAULT_FILTERS.jarjesta) params.set("jarjesta", merged.jarjesta);
   if (merged.sivu > 1) params.set("sivu", String(merged.sivu));
   // Pilkku on sallittu kyselymerkkijonossa (RFC 3986); arvot ovat muuten slugeja.
   const qs = params.toString().replace(/%2C/g, ",");
@@ -165,7 +166,7 @@ export function hasActiveRavintolaFilters(f: RavintolaFilterValues): boolean {
 /** "Lisää rajauksia" -osion rajaukset: osio avautuu, kun jokin on voimassa. */
 export function hasAdvancedRavintolaFilters(f: RavintolaFilterValues): boolean {
   return Boolean(
-    f.kaupunki || f.maa || f.maakunta.length || f.arvosana || f.lopettaneet || f.jarjesta !== "arvosana",
+    f.kaupunki || f.maa || f.maakunta.length || f.arvosana || f.lopettaneet || f.jarjesta !== RAVINTOLA_DEFAULT_FILTERS.jarjesta,
   );
 }
 
@@ -210,7 +211,7 @@ export function RavintolaFilterBar({ active, facets, resultCount }: Props) {
 
   const advanced = hasAdvancedRavintolaFilters(active);
   const advancedCount =
-    [active.kaupunki, active.maa, active.arvosana, active.lopettaneet, active.jarjesta !== "arvosana"].filter(Boolean)
+    [active.kaupunki, active.maa, active.arvosana, active.lopettaneet, active.jarjesta !== RAVINTOLA_DEFAULT_FILTERS.jarjesta].filter(Boolean)
       .length + active.maakunta.length;
 
   return (

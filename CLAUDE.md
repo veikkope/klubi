@@ -66,6 +66,9 @@ public/                Staattiset tiedostot (favicon, robots, kuvat joita Sanity
 | Testaa uutishaun hakusanat | `npm run test:haku` |
 | Testaa lukuaika ja ingressisääntö (uutiset, ravintola-arviot) | `npm run test:artikkeli` |
 | Testaa uutisten tunnisteet | `npm run test:tunnisteet` |
+| Testaa ravintolan arvosanalaskenta (klubilaisten arvosanat) | `npm run test:arvosana` |
+| Ruokailutaulukon arvosanat Sanityyn (kuivaharjoitus + tarkistuslista; `-- --vie`, `-- --production --vie` varmuuskopion kanssa) | `npm run tuo:klubiarviot` (docs/21) |
+| Ravintoloiden arvosanat uudelleen klubilaisten arvosanoista (webhook tekee tämän itse; kuivaharjoitus, `-- --vie`, `-- --production --vie`) | `npm run laske:arvosanat` |
 | Blogin tunnisteet muokattavaan kenttään (kuivaharjoitus; `-- --vie` kirjoittaa, `-- --production` productioniin varmuuskopion kanssa) | `npm run patch:tunnisteet` (docs/14 §3.1) |
 | Yhdistettyjen uutiskategorioiden vanhat arvot uusiin (kuivaharjoitus; `-- --vie` kirjoittaa, `-- --production` varmuuskopion kanssa) | `npm run patch:kategoriat` |
 | Palloveikkaussivun jako veikkausten omiksi alasivuiksi (kuivaharjoitus; `-- --vie` kirjoittaa, `-- --production` varmuuskopion kanssa; kertaluonteinen) | `npm run patch:palloveikkaus` |
@@ -141,6 +144,7 @@ Täydellinen työnkulku: `docs/10-agent-workflow.md`.
 | Arvostelujen kuvat (moderointi, siivous) | `docs/18-arvostelukuvat.md` |
 | Tilastotaulukoiden editori | `docs/19-taulukkoeditori.md` |
 | Litmanen-osio (lehtileikkeet, patsas, loukkaantumiset) | `docs/20-litmanen-osio.md` |
+| Klubilaisten arvosanat (ruokailutaulukko, laskenta) | `docs/21-klubilaisten-arvosanat.md` |
 | Tyyliopas (lopullinen, HTML) | `docs/design-handoff/` |
 
 <!-- BEGIN:nextjs-agent-rules -->

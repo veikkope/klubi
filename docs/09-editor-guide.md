@@ -225,6 +225,36 @@ ja seuraava klubin tapahtuma. Kun julkaiset uutisen, se nousee yläosaan.
 **Sivun asetukset → Yhteystiedot** → muokkaa → **Julkaise**. Muutos näkyy footerissa ja
 yhteystietosivulla.
 
+### Ravintolan arvosana ja klubilaisten pisteet
+
+Ravintolan arvosana lasketaan **automaattisesti** klubilaisten pisteistä, kuten
+ennen ruokailutaulukossa: jokaisen klubilaisen ruoka, hinta ja viihtyvyys, ja
+ravintolan arvosana on niiden keskiarvo (ilman painotuksia). Arvosanaa ei
+kirjoiteta käsin, ja ravintolan arvosanakentät ovat lukittuja.
+
+- **Pisteiden lisääminen:** Ravintolat → **Klubilaisten arvosanat** → **+**. Valitse
+  ravintola ja klubilainen, anna pisteet ja päivä → **Julkaise**. Arvosana päivittyy
+  sivulle itsestään.
+- **Uusintakäynti:** avaa klubilaisen arvosana (sama lista, hae ravintolan nimellä),
+  muuta pisteet ja päivä → **Julkaise**. Uusin arvosana korvaa vanhan, joten
+  samaa klubilaista ei lasketa kahdesti. Studio varoittaa, jos yrität lisätä
+  klubilaiselle toisen arvosanan samaan ravintolaan.
+- **Uusi klubilainen:** Ravintolat → **Klubilaiset** → **+**.
+- Lomakkeelta tullut arvostelu on myös klubilaisen arvosana, kun se on liitetty
+  klubilaiseen (ks. alla).
+
+**Kahden klubilaisen sääntö:** ravintola näkyy sivustolla vasta, kun vähintään kaksi
+klubilaista on arvioinut sen. Siihen asti se odottaa listassa **Ravintolat → Odottavat
+toista arvioijaa**, ja se tulee sivulle itsestään, kun toinen arvosana lisätään.
+
+Ravintolasivulla näkyy taulukko **Klubilaisten arvosanat** ja arvosanan alla
+esim. "Keskiarvo 10 klubilaisen arvosanasta". Tuoreimmin arvioidut näkyvät
+etusivulla ja ravintolalistan alussa.
+
+**Käynnit:** kun klubi käy ravintolassa, lisää päivä myös ravintolan kohtaan
+**Arvostelu → Käynnit listan alkuun** (uusin ensin). Studio huomauttaa, jos
+järjestys on väärä.
+
 ### Ravintola-arvostelun hyväksyminen
 
 Kävijöiden lähettämät arvostelut eivät näy sivulla ennen kuin hyväksyt ne.
@@ -236,6 +266,11 @@ Hyväksymätön arvostelu ei näy sivulla edes esikatselussa, vain tässä jonos
 > esikatselusta**, niin näet sivun kuten kävijät.
 
 1. **Ravintolat → Arvostelut: odottavat hyväksyntää**.
+   Tarkista kohta **Klubilainen**: lomake valitsee sen itse, kun arvostelijan nimi
+   on sama kuin klubilaisen. Jos arvostelija on klubilainen eri nimellä, valitse
+   hänet. Jos hän ei ole klubilainen, jätä tyhjäksi: arvostelu näkyy silti, mutta
+   ei vaikuta ravintolan arvosanaan. Klubilaisen arvostelu korvaa hänen aiemman
+   arvosanansa ravintolalle.
 2. Avaa arvostelu ja lue se. Katso myös kuvat, jos niitä on (listassa näkyy esim. "2 kuvaa").
 3. **Hyväksy:** paina **Julkaise**. Arvostelu ja sen kuvat näkyvät ravintolan sivulla.
 4. **Hylkää:** paina **Hylkää arvostelu** (Julkaise-painikkeen vieressä olevasta valikosta) → **Vahvista**.

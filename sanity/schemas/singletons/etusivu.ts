@@ -232,7 +232,7 @@ export const etusivu = defineType({
           name: "ravintolatSpotlight",
           title: "Ravintola-arviot",
           type: "object",
-          description: "Parhaiten arvioidut ravintolat kortteina.",
+          description: "Tuoreimmin arvioidut ravintolat kortteina (viimeisin käynti ensin).",
           fields: [
             { name: "eyebrow", title: "Yläotsake", type: "string", description: "Pieni versaaliteksti otsikon yläpuolella.", initialValue: "Ravintola-arviot" },
             { name: "heading", title: "Otsikko", type: "string", initialValue: "Missä pelipäivänä syödään" },

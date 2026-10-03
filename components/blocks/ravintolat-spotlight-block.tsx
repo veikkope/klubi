@@ -13,8 +13,8 @@ type Props = {
 };
 
 /**
- * Ravintola-arviot etusivulla (tyyliopas Sivut v3, osio 4) — parhaiten
- * arvioidut ensin. Messinkinen yläotsake kertoo aihepiirin (ruoka).
+ * Ravintola-arviot etusivulla (tyyliopas Sivut v3, osio 4) — tuoreimmin
+ * arvioidut ensin (viimeisin käynti). Messinkinen yläotsake kertoo aihepiirin (ruoka).
  */
 export async function RavintolatSpotlightBlock({
   eyebrow = "Ravintola-arviot",

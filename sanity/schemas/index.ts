@@ -14,6 +14,8 @@ import { hallitusJasen } from "./documents/hallitusJasen";
 import { kaupunki } from "./documents/kaupunki";
 import { ravintola } from "./documents/ravintola";
 import { ravintolaKayttajaArvostelu } from "./documents/ravintolaKayttajaArvostelu";
+import { klubilainen } from "./documents/klubilainen";
+import { klubiArvio } from "./documents/klubiArvio";
 import { stadion } from "./documents/stadion";
 import { jalkapalloTilasto } from "./documents/jalkapalloTilasto";
 import { galleriaAlbumi } from "./documents/galleriaAlbumi";
@@ -50,6 +52,8 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   kaupunki,
   ravintola,
   ravintolaKayttajaArvostelu,
+  klubilainen,
+  klubiArvio,
   stadion,
   jalkapalloTilasto,
   galleriaAlbumi,
