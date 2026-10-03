@@ -5,6 +5,7 @@ import { HakuNakyma, HakuTulokset } from "@/components/hakunakyma";
 import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
 import { JsonLd } from "@/components/seo/json-ld";
+import { OdottavaRavintolaKortti } from "@/components/odottava-ravintola";
 import { RestaurantCard } from "@/components/restaurant-card";
 import { Nuoli } from "@/components/ui/nuoli";
 import {
@@ -26,8 +27,10 @@ import {
   RAVINTOLAT_TOP_SIZE,
   buildRavintolatFacets,
   countryNamesForSlug,
+  odottavatRajauksellaQuery,
   ravintolatCountQuery,
   ravintolatDirectoryQuery,
+  type OdottavaRavintola,
   ravintolatFacetsQuery,
   type RavintolaCardData,
   type RavintolatFacetData,
@@ -115,7 +118,10 @@ export default async function RavintolatPage({ searchParams }: PageProps) {
   const params = queryParams(filters, facets);
   const lista = ravintolaLista(filters.lista);
 
-  const [items, total] = await Promise.all([
+  // Alue- tai hakunäkymässä myös toista arvioijaa odottavat (klubilainen kaupungissa:
+  // mitä on arvioitu ja missä kannattaa käydä). Top-listoissa ei.
+  const alueTaiHaku = Boolean(filters.kaupunki || filters.maa || filters.maakunta.length || filters.q);
+  const [items, total, odottavat] = await Promise.all([
     sanityFetch<RavintolaCardData[]>({
       query: ravintolatDirectoryQuery(
         lista
@@ -132,6 +138,14 @@ export default async function RavintolatPage({ searchParams }: PageProps) {
       tags: ["ravintola", "kaupunki"],
       fallback: 0,
     }),
+    alueTaiHaku && !lista && filters.sivu === 1
+      ? sanityFetch<OdottavaRavintola[]>({
+          query: odottavatRajauksellaQuery,
+          params,
+          tags: ["ravintola", "kaupunki"],
+          fallback: [],
+        })
+      : Promise.resolve([] as OdottavaRavintola[]),
   ]);
 
   // Top-listaa ei sivuteta.
@@ -208,6 +222,33 @@ export default async function RavintolatPage({ searchParams }: PageProps) {
               )}
             </HakuTulokset>
           </section>
+
+          {odottavat.length > 0 && (
+            <section aria-labelledby="odottavat-otsikko" className="mt-14 flex flex-col gap-4">
+              <div className="flex flex-col gap-1.5 border-b border-border pb-3">
+                <h2 id="odottavat-otsikko" className="text-2xl">
+                  Odottavat toista arvioijaa <span className="text-lg font-normal text-muted-soft">({odottavat.length})</span>
+                </h2>
+                <p className="max-w-2xl text-[15px] leading-relaxed text-muted">
+                  Näissä paikoissa on käynyt yksi klubilainen. Ravintola tulee hakemistoon, kun toinen
+                  klubilainen arvioi sen.{" "}
+                  <Link
+                    href="/ravintolat/odottavat"
+                    className="group/linkki font-semibold text-accent underline decoration-1 underline-offset-[4px] hover:decoration-2"
+                  >
+                    Kaikki odottavat&nbsp;<Nuoli />
+                  </Link>
+                </p>
+              </div>
+              <ul className="flex flex-col gap-3">
+                {odottavat.map((r) => (
+                  <li key={r._id}>
+                    <OdottavaRavintolaKortti ravintola={r} naytaPaikka={!filters.kaupunki} tiivis />
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
         </HakuNakyma>
       </Container>
     </>

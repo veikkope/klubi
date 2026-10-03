@@ -434,33 +434,56 @@ export const ravintolaKlubiArviotQuery = /* groq */ `
   *[_type == "ravintola" && _id == $id][0]{ "arviot": ${KLUBILAISTEN_ARVIOT} }.arviot
 `;
 
+const odottavaProjection = /* groq */ `
+  _id,
+  name,
+  "slug": slug.current,
+  "city": city->{ name, "slug": slug.current, country },
+  visitedAt,
+  "arviot": ${KLUBILAISTEN_ARVIOT}
+`;
+
+/** Toista arvioijaa odottava: piilossa kahden arvioijan säännön takia, ei lopettanut. */
+const odottavaFilter = /* groq */ `_type == "ravintola" && defined(slug.current) && closed != true && !${JULKINEN_RAVINTOLA}`;
+
 /**
- * Toista klubilaista arvioijaa odottavat ravintolat (`/ravintolat/odottavat`):
- * ei näy hakemistossa kahden arvioijan säännön takia. Lopettaneet jätetään pois,
- * koska niissä ei voi enää käydä. Tuoreimmin arvioidut ensin.
+ * Toista klubilaista arvioijaa odottavat ravintolat (`/ravintolat/odottavat`).
+ * Lopettaneet jätetään pois, koska niissä ei voi enää käydä. Sivu ryhmittelee
+ * kaupungeittain; `julkisiaKaupungissa` kertoo, onko kaupungissa klubin
+ * arvioimia ravintoloita hakemistossa (linkki niihin).
  */
 export const odottavatRavintolatQuery = /* groq */ `
-  *[_type == "ravintola" && defined(slug.current) && closed != true && !${JULKINEN_RAVINTOLA}]
-    | order(coalesce(${TUOREIN_ARVIO}, "0000-00-00") desc, name asc){
-    _id,
-    name,
-    "slug": slug.current,
-    "city": city->{ name, country },
-    visitedAt,
-    "arviot": ${KLUBILAISTEN_ARVIOT}
+  *[${odottavaFilter}] | order(coalesce(${TUOREIN_ARVIO}, "0000-00-00") desc, name asc){
+    ${odottavaProjection},
+    "julkisiaKaupungissa": count(*[_type == "ravintola" && defined(slug.current) && city._ref == ^.city._ref
+      && closed != true && ${JULKINEN_RAVINTOLA}])
   }
 `;
 
-/** Montako ravintolaa odottaa toista arvioijaa (vinkki arvostelulomakkeella). */
-export const odottavatRavintolatMaaraQuery = /* groq */ `
-  count(*[_type == "ravintola" && defined(slug.current) && closed != true && !${JULKINEN_RAVINTOLA}])
+/**
+ * Hakemiston kaupunki-, maa-, maakunta- ja hakunäkymän odottavat ravintolat:
+ * samat rajaukset kuin `directoryFilter` (ilman vähimmäisarvosanaa, koska
+ * arvosanaa ei vielä julkaista). Parametrit kuten hakemistossa.
+ */
+export const odottavatRajauksellaQuery = /* groq */ `
+  *[${odottavaFilter}
+    && ($citySlug == null || city->slug.current == $citySlug)
+    && ($countryNames == null || city->country in $countryNames)
+    && ($maakuntaSlugs == null || (city->country == "Suomi" && city->maakunta in $maakuntaSlugs))
+    && ($terms == null || [name, city->name, city->country] match $terms)]
+    | order(coalesce(${TUOREIN_ARVIO}, "0000-00-00") desc, name asc)[0...60]{ ${odottavaProjection} }
 `;
+
+/** Montako ravintolaa odottaa toista arvioijaa (vinkki arvostelulomakkeella). */
+export const odottavatRavintolatMaaraQuery = /* groq */ `count(*[${odottavaFilter}])`;
 
 export type OdottavaRavintola = {
   _id: string;
   name: string;
   slug: string;
-  city?: { name: string; country?: string | null } | null;
+  city?: { name: string; slug?: string | null; country?: string | null } | null;
+  /** Vain /ravintolat/odottavat: kaupungin hakemistossa näkyvät ravintolat. */
+  julkisiaKaupungissa?: number;
   visitedAt?: string | null;
   arviot: KlubilaisenArvio[];
 };
