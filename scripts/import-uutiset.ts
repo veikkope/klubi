@@ -31,6 +31,7 @@ import type { KuvaRecord } from "./download-images";
 import { deriveAltFromFilename } from "./lib/derive-alt";
 import { leadSentences } from "./lib/summary";
 import type { Block, OtsikkoarkistoLinkki, Span, Uutinen, UutinenImage } from "./parse-uutiset";
+import { KATEGORIASIEMENET, kategoriaDokumentti, kategoriaViittaukset } from "./lib/uutiskategoriat";
 
 const SOURCE = join(process.cwd(), "data", "normalized", "uutiset.json");
 const ARCHIVE = join(process.cwd(), "data", "normalized", "uutiset-otsikkoarkisto.json");
@@ -316,7 +317,8 @@ function buildDoc(e: Uutinen, slug: string, stats: ImportStats): Record<string, 
   if (coverImage) doc.coverImage = coverImage;
   doc.body = body;
   if (e.sourceName) doc.lahde = { nimi: e.sourceName };
-  if (e.categories.length) doc.categories = e.categories;
+  const kategoriat = kategoriaViittaukset(e.categories);
+  if (kategoriat.length) doc.kategoriat = kategoriat;
   doc.needsReview = reasons.length > 0;
   doc.legacyUrl = `/${e.sourcePage}`;
   // Sama merkintä usealla vuosisivulla (kommentit2017 + kommentit2018): muut sivut
@@ -334,11 +336,10 @@ function buildStub(a: OtsikkoarkistoLinkki, slug: string): Record<string, unknow
     slug: { _type: "slug", current: slug },
     publishedAt: noonHelsinki(a.date!),
     ulkoinenLinkki: a.url,
-    categories: a.tag === "KLUBI" ? [] : a.tag === "HISTORIA" ? ["jalkapallo"] : [],
     needsReview: a.needsReview,
     legacyUrl: "/otsikkoarkisto.htm",
   };
-  if ((doc.categories as string[]).length === 0) delete doc.categories;
+  if (a.tag === "HISTORIA") doc.kategoriat = kategoriaViittaukset(["jalkapallo"]);
   return doc;
 }
 
@@ -418,7 +419,9 @@ async function main() {
     }
   }
 
-  await writeFile(OUT, `${lines.join("\n")}\n`, "utf-8");
+  // Kategoriat ensin: uutiset viittaavat niihin (scripts/lib/uutiskategoriat.ts).
+  const kategoriaRivit = KATEGORIASIEMENET.map((s) => JSON.stringify(kategoriaDokumentti(s)));
+  await writeFile(OUT, `${[...kategoriaRivit, ...lines].join("\n")}\n`, "utf-8");
   await writeFile(
     SLUG_REPORT,
     `${JSON.stringify({ dokumentteja: lines.length, tynkia: stubs, altLahteet: stats.altSources, slugTormaykset: stats.slugCollisions, linkkihuomiot: stats.linkNotes, tulevaisuudenPaivayksia: stats.futureDates, dokumentit: mapping }, null, 2)}\n`,

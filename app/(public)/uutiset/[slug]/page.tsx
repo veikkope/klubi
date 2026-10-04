@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { UusiValilehti } from "@/components/ui/uusi-valilehti";
 import Link from "next/link";
+import { stegaClean } from "next-sanity";
 import { notFound } from "next/navigation";
 
 import { Container } from "@/components/layout/container";
@@ -23,7 +24,6 @@ import { rootCrumb } from "@/lib/nav-sections";
 import { siteUrl } from "@/lib/site";
 import { articleSchema, breadcrumbSchema } from "@/lib/schema-org";
 import { buildMetadata, resolveDescription } from "@/lib/seo";
-import { categoryLabel } from "@/lib/uutinen-categories";
 import { KommentitOsio } from "../_kommentit/kommentit-osio";
 import { hasSanity } from "@/sanity/env";
 import { sanityFetch } from "@/sanity/lib/fetch";
@@ -109,7 +109,7 @@ export default async function UutinenPage({
 
   const related = await sanityFetch<UutinenListItem[]>({
     query: relatedUutisetQuery,
-    params: { slug: news.slug, categories: news.categories ?? [], count: 3 },
+    params: { slug: news.slug, categories: (news.categories ?? []).map((k) => k._id), count: 3 },
     tags: ["uutinen"],
     fallback: [],
   });
@@ -186,12 +186,12 @@ export default async function UutinenPage({
           <nav aria-label="Uutisen kategoriat" className="mt-6">
             <ul className="flex list-none flex-wrap gap-2 p-0">
               {news.categories.map((category) => (
-                <li key={category}>
+                <li key={category._id}>
                   <Link
-                    href={`/uutiset?kategoria=${category}`}
+                    href={`/uutiset?kategoria=${encodeURIComponent(stegaClean(category.value))}`}
                     className="inline-flex min-h-11 items-center rounded-sm border border-border bg-surface px-4 text-sm font-medium text-foreground transition hover:border-accent hover:text-accent"
                   >
-                    {categoryLabel(category)}
+                    {category.label}
                   </Link>
                 </li>
               ))}

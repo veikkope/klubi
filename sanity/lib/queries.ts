@@ -18,6 +18,7 @@
  */
 
 import { kuva, runko, ruutukuva } from "@/sanity/lib/queries/kuvat";
+import { uutisenKategoriat } from "@/sanity/lib/queries/kategoriat";
 
 export const navigationQuery = /* groq */ `
   *[_type == "navigaatio"][0]{
@@ -83,7 +84,7 @@ export const recentUutisetQuery = /* groq */ `
     excerpt,
     tiivistelma,
     coverImage{${kuva}},
-    categories
+    ${uutisenKategoriat}
   }
 `;
 

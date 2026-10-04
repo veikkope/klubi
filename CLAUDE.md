@@ -76,7 +76,7 @@ public/                Staattiset tiedostot (favicon, robots, kuvat joita Sanity
 | Ravintoloiden arvosanat uudelleen klubilaisten arvosanoista (webhook tekee tämän itse; kuivaharjoitus, `-- --vie`, `-- --production --vie`) | `npm run laske:arvosanat` |
 | Päästä päähän -testi productionissa: kahden klubilaisen sääntö webhookin kautta (luo ja poistaa testiravintolan; varmuuskopio ensin, webhook-jono tyhjänä) | `npm run e2e:arvioijasaanto` |
 | Blogin tunnisteet muokattavaan kenttään (kuivaharjoitus; `-- --vie` kirjoittaa, `-- --production` productioniin varmuuskopion kanssa) | `npm run patch:tunnisteet` (docs/14 §3.1) |
-| Yhdistettyjen uutiskategorioiden vanhat arvot uusiin (kuivaharjoitus; `-- --vie` kirjoittaa, `-- --production` varmuuskopion kanssa) | `npm run patch:kategoriat` |
+| Uutiskategoriat koodista Sanityyn: kategoriadokumentit ja uutisten viittaukset (kuivaharjoitus; `-- --vie`, `-- --production --vie` varmuuskopion kanssa; `--poista-vanhat` poistaa vanhan `categories`-kentän deployn jälkeen; ajettu 4.10.2026) | `npm run patch:uutiskategoriat` |
 | Palloveikkaussivun jako veikkausten omiksi alasivuiksi (kuivaharjoitus; `-- --vie` kirjoittaa, `-- --production` varmuuskopion kanssa; kertaluonteinen) | `npm run patch:palloveikkaus` |
 | Litmanen-osio: päävalikon Pelaajat → Litmanen ja `litmanen.htm` loukkaantumissivulle (kuivaharjoitus; `-- --vie` kirjoittaa, `-- --production` varmuuskopion kanssa; kertaluonteinen) | `npm run patch:litmanen` |
 | Järkytykset ja maailman paras avaus omille sivuilleen (kategoriat `jarkytykset`, `maailman-parhaat`; kuivaharjoitus; `-- --vie` kirjoittaa, `-- --production` varmuuskopion kanssa; kertaluonteinen, productioniin vasta deployn jälkeen) | `npm run patch:omat-sivut` |

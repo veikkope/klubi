@@ -53,7 +53,7 @@
     "tuo:klubiarviot": "tsx scripts/tuo-klubiarviot.ts",
     "e2e:arvioijasaanto": "tsx scripts/e2e-arvioijasaanto.ts",
     "patch:tunnisteet": "tsx scripts/patch-tunnisteet.ts",
-    "patch:kategoriat": "tsx scripts/patch-kategoriat.ts",
+    "patch:uutiskategoriat": "tsx scripts/patch-uutiskategoriat.ts",
     "patch:palloveikkaus": "tsx scripts/jaa-palloveikkaus.ts",
     "patch:litmanen": "tsx scripts/patch-litmanen.ts",
     "patch:omat-sivut": "tsx scripts/patch-omat-sivut.ts",

@@ -1,8 +1,7 @@
 import Link from "next/link";
 
 import { cn } from "@/lib/cn";
-import { UUTINEN_CATEGORIES } from "@/lib/uutinen-categories";
-import type { UutinenCategory } from "@/lib/types";
+import type { UutinenKategoria } from "@/lib/types";
 
 /**
  * Kategoriasuodatin uutislistaukselle.
@@ -14,12 +13,12 @@ import type { UutinenCategory } from "@/lib/types";
  */
 
 type Props = {
-  /** Aktiivinen kategoria URL-parametrista, tai null kaikille. */
-  active: UutinenCategory | null;
+  /** Aktiivisen kategorian polku URL-parametrista, tai null kaikille. */
+  active: string | null;
   /** Pohjapolku jolle suodatin lähettää (esim. "/uutiset"). */
   basePath: string;
-  /** Vain ne kategoriat joista on sisältöä. Jos puuttuu, näytetään kaikki. */
-  available?: Set<string>;
+  /** Näytettävät kategoriat järjestyksessä (Sanitysta, vain ne joissa on uutisia). */
+  kategoriat: Pick<UutinenKategoria, "value" | "label">[];
   /** Kyselyparametrin nimi. */
   paramName?: string;
   /** Aktiivinen hakusana (uutishaku): säilyy, kun kategoriaa vaihdetaan. */
@@ -38,15 +37,11 @@ const chipIdle =
 export function CategoryFilter({
   active,
   basePath,
-  available,
+  kategoriat: items,
   paramName = "kategoria",
   haku,
   className,
 }: Props) {
-  const items = available
-    ? UUTINEN_CATEGORIES.filter((c) => available.has(c.value))
-    : UUTINEN_CATEGORIES;
-
   if (items.length === 0) return null;
 
   return (

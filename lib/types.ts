@@ -155,16 +155,8 @@ export type SivuWithAncestors = {
   ancestors: SivuAncestor[];
 };
 
-export type UutinenCategory =
-  | "otteluraportti"
-  | "kannattajakulttuuri"
-  | "tiedote"
-  | "tapahtumaraportti"
-  | "jalkapallo"
-  | "ravintola"
-  | "blogi"
-  | "palloveikkaus"
-  | "matkakuvaus";
+/** Uutiskategoria (Sanity `uutisKategoria`): `value` on polku (?kategoria=…), `label` nimi. */
+export type UutinenKategoria = { _id: string; value: string; label: string };
 
 export type UutinenCard = {
   _id: string;
@@ -173,7 +165,7 @@ export type UutinenCard = {
   publishedAt: string;
   excerpt: string;
   coverImage?: SanityImage;
-  categories?: UutinenCategory[] | null;
+  categories?: UutinenKategoria[] | null;
 };
 
 export type UutinenAuthor = {

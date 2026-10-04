@@ -9,6 +9,7 @@ import {
   tiivistelmaField,
   polkuMuuttunut,
 } from "../objects/contentMeta";
+import { KategoriatInput } from "../../components/kategoriat/KategoriatInput";
 import { TunnisteetInput } from "../../components/tunnisteet/TunnisteetInput";
 import { tarkistaTunnisteet } from "../../../lib/tunnisteet";
 
@@ -138,27 +139,15 @@ export const uutinen = defineType({
       group: "sisalto",
     }),
     defineField({
-      name: "categories",
+      name: "kategoriat",
       title: "Kategoriat",
+      description:
+        "Uutislistan suodatin (/uutiset). Uusia kategorioita lisätään valikosta Uutiskategoriat.",
       type: "array",
-      of: [{ type: "string" }],
-      options: {
-        list: [
-          { title: "Ottelutapahtuma", value: "otteluraportti" },
-          { title: "Kannattajakulttuuri", value: "kannattajakulttuuri" },
-          { title: "Tiedote", value: "tiedote" },
-          // Entinen "Jäsentieto" (jasentieto) yhdistetty tähän 30.9.2026.
-          { title: "Tapahtumat", value: "tapahtumaraportti" },
-          { title: "Jalkapallo", value: "jalkapallo" },
-          { title: "Ravintola", value: "ravintola" },
-          { title: "Blogikirjoitus", value: "blogi" },
-          { title: "Palloveikkaus", value: "palloveikkaus" },
-          { title: "Matkakuvaus", value: "matkakuvaus" },
-        ],
-        // Valintaruudut: "tags"-asettelu ohitti listan, ja vapaasti kirjoitetut
-        // kategoriat rikkoivat uutislistan suodattimen (docs/16 §5).
-        layout: "grid",
-      },
+      of: [{ type: "reference", to: [{ type: "uutisKategoria" }] }],
+      // Valintaruudut: kaikki kategoriat näkyvät kerralla (sanity/components/kategoriat).
+      components: { input: KategoriatInput },
+      validation: (rule) => rule.unique().error("Sama kategoria on valittu kahdesti."),
       group: "sisalto",
     }),
     defineField({

@@ -7,6 +7,7 @@ import {
   HomeIcon,
   LemonIcon,
   MenuIcon,
+  TagIcon,
   WarningOutlineIcon,
 } from "@sanity/icons";
 import type { StructureBuilder, StructureResolver } from "sanity/structure";
@@ -106,6 +107,18 @@ export const structure: StructureResolver = (S) =>
           S.documentTypeList("uutinen")
             .title("Uutiset")
             .defaultOrdering([{ field: "publishedAt", direction: "desc" }]),
+        ),
+      S.listItem()
+        .title("Uutiskategoriat")
+        .icon(TagIcon)
+        .schemaType("uutisKategoria")
+        .child(
+          S.documentTypeList("uutisKategoria")
+            .title("Uutiskategoriat")
+            .defaultOrdering([
+              { field: "jarjestys", direction: "asc" },
+              { field: "nimi", direction: "asc" },
+            ]),
         ),
       S.listItem()
         .title("Kommentit ja veikkaukset")

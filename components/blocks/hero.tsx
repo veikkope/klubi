@@ -11,7 +11,6 @@ import { Nuoli } from "@/components/ui/nuoli";
 import { cn } from "@/lib/cn";
 import { getTulevatOttelut } from "@/lib/ottelut";
 import { siteName } from "@/lib/site";
-import { categoryLabel } from "@/lib/uutinen-categories";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import { upcomingTapahtumatQuery } from "@/sanity/lib/queries";
 import type { EtusivuData, HeroCta, TapahtumaCard, UutinenCard } from "@/lib/types";
@@ -192,7 +191,7 @@ function Paajuttu({ juttu, lcp }: { juttu: UutinenCard; lcp: boolean }) {
       <p className="flex gap-3 text-xs sm:text-sm">
         {kategoria && (
           <span className="font-semibold uppercase tracking-[0.1em] text-on-chrome-eyebrow">
-            {categoryLabel(kategoria)}
+            {kategoria.label}
           </span>
         )}
         <time dateTime={juttu.publishedAt} className="text-on-chrome-muted">

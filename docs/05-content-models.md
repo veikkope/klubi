@@ -67,7 +67,7 @@ Listanäkymässä järjestys: `startsAt` desc (tulevat ensin).
 | excerpt | text | kyllä | Lyhenne listoja varten (max 200 merkkiä) |
 | coverImage | image (alt pakollinen) | ei | Kansikuva |
 | body | portableText | kyllä | Sisältö |
-| categories | array of string | ei | Tyyliopas (Sivut v3): jalkapallojuttujen pääkategoriat **otteluraportti** (Studiossa "Ottelutapahtuma") ja **kannattajakulttuuri**. Lisäksi tiedote, tapahtumaraportti (Studiossa "Tapahtumat"; entinen jäsentieto yhdistetty tähän 30.9.2026), jalkapallo, ravintola, blogi. Ensimmäinen kategoria näkyy etusivun jutuissa sinisenä yläotsakkeena. |
+| kategoriat | array of reference → `uutisKategoria` | ei | Sihteeri hallitsee kategoriat Studiossa (4.10.2026 asti merkkijonolista `categories` koodissa). Valintaruudut: `sanity/components/kategoriat/KategoriatInput.tsx`. Ensimmäinen kategoria näkyy etusivun jutuissa sinisenä yläotsakkeena. Kyselyt palauttavat `categories: { _id, value, label }[]` (`sanity/lib/queries/kategoriat.ts`). |
 | tunnisteet | array of string | ei | Blogin "labels": aiheet, paikat, henkilöt (vapaa teksti, enintään 30 kpl, 50 merkkiä). Sama tunniste = sama slug (`lib/tunnisteet.ts`), joten "Huuhkajat" ja "huuhkajat" eivät saa olla samassa uutisessa. Studiossa oma syöttö ehdotuksineen (`sanity/components/tunnisteet/`). Jokaisella tunnisteella sivu `/uutiset/tunniste/<slug>`, hakemisto `/uutiset/tunnisteet`. Blogista tuoduissa täytetty `blogspot.tunnisteet`-kentästä (docs/14 §3). |
 | author | reference→hallitus-jasen | ei | Kirjoittaja |
 
@@ -314,4 +314,16 @@ yhä `title asc`), `arvokisa.alkuPvm/loppuPvm/hopea/pronssi`, `pelaaja.tilastot`
 **`ravintolaKayttajaArvostelu.arvioija`**: viite `klubilainen`. Lomake täyttää, kun arvostelija valitsee nimensä klubilaisten listasta (muistetaan laitteelle) tai kirjoittaa täsmälleen saman nimen; puuttuessa varoitus. `comment` on vapaaehtoinen (4.10.2026): pelkät arvosanat riittävät. Klubilaiseen liitetty arvostelu on klubilaisen arvosana.
 
 **`ravintola`**: `automaattinenArvosana` { `arvioijia`, `viimeisinArvio` } (vain luku; kun asetettu, arvosanakentät ovat lukittuja), `alkuperainenArvio` { ratingOverall, ratingFood, ratingPrice, ratingAtmosphere } (vain luku, vanhan sivuston arvo vertailuun). `visits` validoidaan uusin ensin.
+
+## uutisKategoria (4.10.2026)
+
+| Kenttä | Tyyppi | Pakollinen | Huomio |
+|---|---|---|---|
+| nimi | string 2–40 | kyllä | Uniikki (kirjainkoosta riippumatta) |
+| slug | slug (nimestä) | kyllä | Suodattimen osoite `/uutiset?kategoria=<slug>`. Siirretyt kategoriat säilyttivät vanhat arvot (`otteluraportti`, `tapahtumaraportti` …), id `uutisKategoria-<vanha arvo>` |
+| kuvaus | text ≤ 200 | ei | Kategoriasivun meta description |
+| jarjestys | number | ei | Suodattimen järjestys, tyhjät viimeisenä aakkosjärjestyksessä |
+| aiemmatPolut | string[] | ei | Vanhat polut ohjataan 308:lla nykyiseen (esim. `jasentieto` → `tapahtumaraportti`) |
+
+Siirto: `npm run patch:uutiskategoriat` (scripts/lib/uutiskategoriat.ts). Webhook tyhjentää `uutisKategoria`-muutoksessa myös `uutinen`-tagin.
 

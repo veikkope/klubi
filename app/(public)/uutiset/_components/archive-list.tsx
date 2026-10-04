@@ -2,7 +2,6 @@ import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/format";
-import { categoryLabel } from "@/lib/uutinen-categories";
 import type { UutinenListItem } from "@/sanity/lib/queries/uutiset";
 
 /**
@@ -38,8 +37,8 @@ export function ArchiveList({ items }: { items: UutinenListItem[] }) {
               {item.categories && item.categories.length > 0 && (
                 <span className="mt-2 flex flex-wrap gap-1.5">
                   {item.categories.map((category) => (
-                    <Badge key={category} tone="muted">
-                      {categoryLabel(category)}
+                    <Badge key={category._id} tone="muted">
+                      {category.label}
                     </Badge>
                   ))}
                 </span>

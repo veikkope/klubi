@@ -15,6 +15,7 @@
 
 import { defineQuery } from "next-sanity";
 import { kuva, runko } from "@/sanity/lib/queries/kuvat";
+import { uutisenKategoriat } from "@/sanity/lib/queries/kategoriat";
 import { JULKINEN_RAVINTOLA } from "@/lib/ravintola-arvosana";
 import { TUOREIN_ARVIO } from "@/sanity/lib/queries/ravintolat";
 
@@ -28,7 +29,7 @@ const nostoKortti = `
   publishedAt,
   excerpt,
   coverImage{${kuva}},
-  categories
+  ${uutisenKategoriat}
 `;
 
 /**

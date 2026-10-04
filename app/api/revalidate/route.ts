@@ -31,6 +31,8 @@ const RIIPPUVAT: Record<string, string[]> = {
   klubiArvio: ["ravintola"],
   klubilainen: ["ravintola"],
   kaupunki: ["ravintola"],
+  // Kategorian nimi näkyy uutiskorteissa ja uutissivuilla.
+  uutisKategoria: ["uutinen"],
 };
 
 interface WebhookPayload {

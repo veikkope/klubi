@@ -1,41 +1,39 @@
 import { stegaClean } from "next-sanity";
 
-import type { UutinenCategory } from "@/lib/types";
+import type { UutinenKategoria } from "@/lib/types";
+import { sanityFetch } from "@/sanity/lib/fetch";
+import { kaytetytKategoriatQuery, kategoriaPolullaQuery } from "@/sanity/lib/queries/kategoriat";
 
 /**
- * Uutiskategorioiden metadata. Synkronoi `sanity/schemas/documents/uutinen.ts`
- * -tiedoston `categories.options.list` -taulukon kanssa.
+ * Uutiskategoriat tulevat Sanitysta (`uutisKategoria`, docs/09): sihteeri
+ * lisää ja nimeää ne Studiossa. Välimuistitagi "uutisKategoria" tyhjenee
+ * webhookista; nimet näkyvät uutissivuilla, joten webhook tyhjentää samalla
+ * myös "uutinen"-tagin (app/api/revalidate).
  */
-export const UUTINEN_CATEGORIES: {
-  value: UutinenCategory;
-  label: string;
-}[] = [
-  // Tyyliopas (Sivut v3): jalkapallojuttujen pääkategoriat
-  { value: "otteluraportti", label: "Ottelutapahtuma" },
-  { value: "kannattajakulttuuri", label: "Kannattajakulttuuri" },
-  { value: "tiedote", label: "Tiedote" },
-  { value: "tapahtumaraportti", label: "Tapahtumat" },
-  { value: "jalkapallo", label: "Jalkapallo" },
-  { value: "ravintola", label: "Ravintola" },
-  { value: "blogi", label: "Blogikirjoitus" },
-  { value: "palloveikkaus", label: "Palloveikkaus" },
-  { value: "matkakuvaus", label: "Matkakuvaus" },
-];
 
-/** Yhdistetyt kategoriat: vanha arvo → nykyinen (vanhat linkit ohjataan). */
-export const MERGED_CATEGORIES = new Map<string, UutinenCategory>([
-  ["jasentieto", "tapahtumaraportti"],
-]);
+export type KategoriaSivulle = UutinenKategoria & { kuvaus?: string | null };
 
-const labelMap = new Map(UUTINEN_CATEGORIES.map((c) => [c.value, c.label]));
-
-// Arvot tulevat Sanitysta: luonnosnäkymän stega-merkit poistetaan ennen
-// hakua, muuten Map ei löydä avainta.
-export function categoryLabel(value: string): string {
-  return labelMap.get(stegaClean(value) as UutinenCategory) ?? value;
+/** Kategoriat, joissa on uutisia (suodatin). */
+export function haeKaytetytKategoriat(): Promise<UutinenKategoria[]> {
+  return sanityFetch<UutinenKategoria[]>({
+    query: kaytetytKategoriatQuery,
+    tags: ["uutisKategoria", "uutinen"],
+    fallback: [],
+  });
 }
 
-export function isValidCategory(value: string | undefined | null): value is UutinenCategory {
-  if (!value) return false;
-  return labelMap.has(stegaClean(value) as UutinenCategory);
+/**
+ * Kategoria osoitteen `?kategoria=` arvolla. Löytyy myös aiemmalla polulla
+ * (esim. yhdistetty "jasentieto"), jolloin `value` on nykyinen polku ja
+ * kutsuja ohjaa sinne.
+ */
+export async function haeKategoria(polku: string | null | undefined): Promise<KategoriaSivulle | null> {
+  const puhdas = stegaClean(polku ?? "").trim();
+  if (!puhdas || puhdas.length > 96) return null;
+  return sanityFetch<KategoriaSivulle | null>({
+    query: kategoriaPolullaQuery,
+    params: { polku: puhdas },
+    tags: ["uutisKategoria"],
+    fallback: null,
+  });
 }

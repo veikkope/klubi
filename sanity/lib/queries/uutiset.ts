@@ -13,6 +13,7 @@
 
 import { defineQuery } from "next-sanity";
 import { kuva, runko } from "@/sanity/lib/queries/kuvat";
+import { uutisenKategoriat } from "@/sanity/lib/queries/kategoriat";
 import type { PortableTextBlock } from "@portabletext/react";
 
 import type { Kommentointi, TapahtumaCard, UutinenCard } from "@/lib/types";
@@ -81,7 +82,7 @@ const uutinenCardFields = `
       excerpt,
       tiivistelma,
       coverImage{${kuva}},
-      categories`;
+      ${uutisenKategoriat}`;
 
 const tapahtumaCardFields = `
       _id,
@@ -97,8 +98,8 @@ const tapahtumaCardFields = `
 /** Julkaistu, näkyvä uutinen. */
 const uutinenFilter = `_type == "uutinen" && defined(slug.current)`;
 
-/** Kategoriasuodatin on valinnainen: null = kaikki. */
-const uutinenListFilter = `${uutinenFilter} && ($category == null || $category in categories)`;
+/** Kategoriasuodatin on valinnainen: null = kaikki. `$category` = kategorian _id. */
+const uutinenListFilter = `${uutinenFilter} && ($category == null || references($category))`;
 
 const tapahtumaFilter = `_type == "tapahtuma" && defined(slug.current)`;
 
@@ -138,11 +139,6 @@ export const uutisetHakuQuery = defineQuery(`
   }
 `);
 
-/** Ne kategoriat joista on vähintään yksi uutinen — suodattimen sisältö. */
-export const uutisetCategoriesQuery = defineQuery(`
-  array::unique(*[${uutinenFilter}].categories[])
-`);
-
 export const uutinenSlugsQuery = defineQuery(`
   *[${uutinenFilter}].slug.current
 `);
@@ -176,10 +172,10 @@ export const uutinenDetailQuery = defineQuery(`
   }
 `);
 
-/** Saman kategorian uutisia. Parametrit: $slug, $categories, $count. */
+/** Saman kategorian uutisia. Parametrit: $slug, $categories (kategorioiden _id:t), $count. */
 export const relatedUutisetQuery = defineQuery(`
   *[${uutinenFilter} && slug.current != $slug
-    && count((categories[])[@ in $categories]) > 0]
+    && count((kategoriat[]._ref)[@ in $categories]) > 0]
     | order(publishedAt desc)[0...$count]{${uutinenCardFields}
   }
 `);

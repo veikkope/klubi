@@ -15,11 +15,9 @@ import { breadcrumbSchema, collectionPageSchema } from "@/lib/schema-org";
 import { hakusanat, siistiHaku } from "@/lib/haku";
 import { buildMetadata } from "@/lib/seo";
 import { tunnisteHref, tunnisteSlug, TUNNISTEET_POLKU } from "@/lib/tunnisteet";
-import { categoryLabel, isValidCategory, MERGED_CATEGORIES } from "@/lib/uutinen-categories";
-import type { UutinenCategory } from "@/lib/types";
+import { haeKategoria, haeKaytetytKategoriat, type KategoriaSivulle } from "@/lib/uutinen-categories";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import {
-  uutisetCategoriesQuery,
   uutisetHakuQuery,
   uutisetPageQuery,
   type Paged,
@@ -47,10 +45,12 @@ const LEAD =
 
 type SearchParams = Record<string, SearchParamValue>;
 
-/** Yhteinen luku kyselystä ja metadatasta, jotta ne eivät voi erkaantua. */
-function readParams(searchParams: SearchParams) {
-  const raw = firstParam(searchParams.kategoria);
-  const category: UutinenCategory | null = isValidCategory(raw) ? raw : null;
+/**
+ * Yhteinen luku kyselystä ja metadatasta, jotta ne eivät voi erkaantua.
+ * Kategoria haetaan Sanitysta (`uutisKategoria`); tuntematon arvo = kaikki.
+ */
+async function readParams(searchParams: SearchParams) {
+  const category: KategoriaSivulle | null = await haeKategoria(firstParam(searchParams.kategoria));
   const page = parsePage(searchParams.sivu);
   // Haku (lib/haku.ts): `haku` näytetään, `terms` menee kyselyyn. Liian lyhyt
   // syöte (esim. "a") antaa tyhjät termit, jolloin näytetään tavallinen lista.
@@ -59,17 +59,17 @@ function readParams(searchParams: SearchParams) {
   return { category, page, haku, terms };
 }
 
-function pathFor(category: UutinenCategory | null, page: number, haku = "") {
+function pathFor(category: { value: string } | null, page: number, haku = "") {
   return buildPath("/uutiset", {
     q: haku || null,
-    kategoria: category,
+    kategoria: category?.value ?? null,
     sivu: page > 1 ? page : null,
   });
 }
 
-function titleFor(category: UutinenCategory | null, page: number, haku = "") {
-  const aihe = category ? `Uutiset: ${categoryLabel(category)}` : "Uutiset";
-  const base = haku ? `Haku “${haku}”${category ? ` (${categoryLabel(category)})` : ""}` : aihe;
+function titleFor(category: KategoriaSivulle | null, page: number, haku = "") {
+  const aihe = category ? `Uutiset: ${category.label}` : "Uutiset";
+  const base = haku ? `Haku “${haku}”${category ? ` (${category.label})` : ""}` : aihe;
   return page > 1 ? `${base} — sivu ${page}` : base;
 }
 
@@ -78,7 +78,7 @@ export async function generateMetadata({
 }: {
   searchParams: Promise<SearchParams>;
 }): Promise<Metadata> {
-  const { category, page, haku, terms } = readParams(await searchParams);
+  const { category, page, haku, terms } = await readParams(await searchParams);
 
   // Hakutulokset eivät ole omaa sisältöä: ei hakukoneisiin, mutta linkit seurataan.
   if (terms.length > 0) {
@@ -93,7 +93,8 @@ export async function generateMetadata({
   return buildMetadata({
     title: titleFor(category, page),
     description: category
-      ? `Lahden Suomalainen Klubi ry:n uutiset aiheesta ${categoryLabel(category).toLowerCase()}. Uusimmat kirjoitukset ensin.`
+      ? category.kuvaus?.trim() ||
+        `Lahden Suomalainen Klubi ry:n uutiset aiheesta ${category.label.toLowerCase()}. Uusimmat kirjoitukset ensin.`
       : LEAD,
     // Sivutetut näkymät ovat aitoja osajoukkoja, joten kanoninen osoite
     // osoittaa sivuun itseensä. Niitä ei merkitä noindexiksi, koska
@@ -109,25 +110,24 @@ export default async function UutisetPage({
   searchParams: Promise<SearchParams>;
 }) {
   const params = await searchParams;
-  // Yhdistetyn kategorian vanha linkki (esim. ?kategoria=jasentieto) → uusi.
-  const merged = MERGED_CATEGORIES.get(firstParam(params.kategoria) ?? "");
-  if (merged) permanentRedirect(pathFor(merged, 1, siistiHaku(firstParam(params.q))));
-  const { category, page, haku, terms } = readParams(params);
+  const { category, page, haku, terms } = await readParams(params);
+  // Kategorian aiempi polku (esim. yhdistetty ?kategoria=jasentieto) → nykyinen.
+  if (category && category.value !== firstParam(params.kategoria)) {
+    permanentRedirect(pathFor(category, 1, siistiHaku(firstParam(params.q))));
+  }
   const { start, end } = pageRange(page, PER_PAGE);
   const hakee = terms.length > 0;
 
-  const [result, categoryValues, hakuTunniste] = await Promise.all([
+  const [result, kategoriat, hakuTunniste] = await Promise.all([
     sanityFetch<Paged<UutinenListItem>>({
       query: hakee ? uutisetHakuQuery : uutisetPageQuery,
-      params: hakee ? { category, terms, start, end } : { category, start, end },
-      tags: ["uutinen"],
+      params: hakee
+        ? { category: category?._id ?? null, terms, start, end }
+        : { category: category?._id ?? null, start, end },
+      tags: ["uutinen", "uutisKategoria"],
       fallback: { items: [], total: 0 },
     }),
-    sanityFetch<string[]>({
-      query: uutisetCategoriesQuery,
-      tags: ["uutinen"],
-      fallback: [],
-    }),
+    haeKaytetytKategoriat(),
     // Haku on täsmälleen jokin tunniste ("huuhkajat") → vinkki sen sivulle.
     hakee && tunnisteSlug(haku) ? haeTunniste(tunnisteSlug(haku)) : null,
   ]);
@@ -140,7 +140,7 @@ export default async function UutisetPage({
     ? [
         rootCrumb,
         { label: "Uutiset", href: "/uutiset" },
-        { label: categoryLabel(category) },
+        { label: category.label },
       ]
     : [rootCrumb, { label: "Uutiset" }];
 
@@ -179,14 +179,14 @@ export default async function UutisetPage({
       <HakuNakyma polku="/uutiset" tila={pathFor(category, page, haku)}>
         <Container>
           <div className="mt-8">
-            <Uutishaku haku={haku} kategoria={category} />
+            <Uutishaku haku={haku} kategoria={category?.value ?? null} />
           </div>
 
           <div className="mt-6">
             <CategoryFilter
-              active={category}
+              active={category?.value ?? null}
               basePath="/uutiset"
-              available={new Set(categoryValues)}
+              kategoriat={kategoriat}
               haku={hakee ? haku : undefined}
             />
           </div>
@@ -198,7 +198,7 @@ export default async function UutisetPage({
               {hakee
                 ? `Hakutulokset: “${haku}”`
                 : category
-                  ? categoryLabel(category)
+                  ? category.label
                   : "Kaikki uutiset"}
             </h2>
             <p aria-live="polite" className="mt-2 text-sm text-muted">
@@ -208,7 +208,7 @@ export default async function UutisetPage({
                 : total === 1
                   ? "1 kirjoitus."
                   : `${total} kirjoitusta.`}
-              {hakee && total > 0 && ` Osuvimmat ensin${category ? `, kategoriassa ${categoryLabel(category).toLowerCase()}` : ""}.`}
+              {hakee && total > 0 && ` Osuvimmat ensin${category ? `, kategoriassa ${category.label.toLowerCase()}` : ""}.`}
             </p>
 
             {hakuTunniste && (
@@ -253,7 +253,7 @@ export default async function UutisetPage({
   );
 }
 
-function HakuEiTuloksia({ haku, category }: { haku: string; category: UutinenCategory | null }) {
+function HakuEiTuloksia({ haku, category }: { haku: string; category: KategoriaSivulle | null }) {
   return (
     <div className="mt-8 rounded-2xl border border-dashed border-border bg-surface p-10 text-center">
       <p className="font-display text-2xl">Haulla “{haku}” ei löytynyt uutisia</p>
@@ -276,7 +276,7 @@ function HakuEiTuloksia({ haku, category }: { haku: string; category: UutinenCat
   );
 }
 
-function EmptyState({ category }: { category: UutinenCategory | null }) {
+function EmptyState({ category }: { category: KategoriaSivulle | null }) {
   return (
     <div className="mt-8 rounded-2xl border border-dashed border-border bg-surface p-10 text-center">
       <p className="font-display text-2xl">

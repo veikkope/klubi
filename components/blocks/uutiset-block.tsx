@@ -7,7 +7,6 @@ import { KuvaSiirtyma } from "@/components/sivunvaihto";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import { recentUutisetQuery } from "@/sanity/lib/queries";
 import { cn } from "@/lib/cn";
-import { categoryLabel } from "@/lib/uutinen-categories";
 import type { UutinenCard } from "@/lib/types";
 
 type Props = {
@@ -143,7 +142,7 @@ function Meta({ news, small = false }: { news: UutinenCard; small?: boolean }) {
     <p className={small ? "flex gap-3 text-xs sm:text-[13px]" : "flex gap-3 text-xs sm:text-sm"}>
       {category && (
         <span className="font-semibold uppercase tracking-[0.1em] text-accent">
-          {categoryLabel(category)}
+          {category.label}
         </span>
       )}
       <time dateTime={news.publishedAt} className="text-muted-soft">

@@ -10,6 +10,7 @@ import { sivu } from "./documents/sivu";
 import { tapahtuma } from "./documents/tapahtuma";
 import { ottelu } from "./documents/ottelu";
 import { uutinen } from "./documents/uutinen";
+import { uutisKategoria } from "./documents/uutisKategoria";
 import { hallitusJasen } from "./documents/hallitusJasen";
 import { kaupunki } from "./documents/kaupunki";
 import { ravintola } from "./documents/ravintola";
@@ -48,6 +49,7 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   tapahtuma,
   ottelu,
   uutinen,
+  uutisKategoria,
   hallitusJasen,
   kaupunki,
   ravintola,

@@ -28,6 +28,7 @@ import { slugify } from "../lib/slugify";
 import { bloginTunniste, siistiTunnisteLista, tunnisteHref, tunnisteSlug } from "../lib/tunnisteet";
 import { deriveAltFromFilename, hasCorruptChars, isJammedCamelCase, looksLikeFilename, splitCamelCase } from "./lib/derive-alt";
 import type { BlogspotEntry, BlogspotKommentti, BodyNode, ImageNode, Span } from "./parse-blogspot";
+import { KATEGORIASIEMENET, kategoriaDokumentti, kategoriaViittaukset } from "./lib/uutiskategoriat";
 
 const SOURCE = join(process.cwd(), "data", "normalized", "blogspot.json");
 const IMAGES_DIR = join(process.cwd(), "data", "blogspot", "images");
@@ -232,7 +233,8 @@ function buildDoc(e: BlogspotEntry, slug: string, links: LinkContext, stats: Sta
   if (e.tiivistelma) doc.tiivistelma = e.tiivistelma;
   if (e.cover) doc.coverImage = imageValue(e.cover, e.title, null, stats, reasons);
   doc.body = body;
-  if (e.categories.length) doc.categories = e.categories;
+  const kategoriat = kategoriaViittaukset(e.categories);
+  if (kategoriat.length) doc.kategoriat = kategoriat;
   // Muokattava kenttä; alkuperäiset jäävät sellaisinaan `blogspot.tunnisteet`-kenttään.
   const tunnisteet = siistiTunnisteLista(e.labels);
   if (tunnisteet.length) doc.tunnisteet = tunnisteet;
@@ -279,7 +281,9 @@ async function main() {
   };
 
   const docs = ordered.map((e) => buildDoc(e, slugs.get(e.id)!, links, stats));
-  await writeFile(OUT, `${docs.map((d) => JSON.stringify(d)).join("\n")}\n`, "utf-8");
+  // Kategoriat ensin: uutiset viittaavat niihin (scripts/lib/uutiskategoriat.ts).
+  const kaikki = [...KATEGORIASIEMENET.map(kategoriaDokumentti), ...docs];
+  await writeFile(OUT, `${kaikki.map((d) => JSON.stringify(d)).join("\n")}\n`, "utf-8");
 
   const map = ordered.map((e) => ({ url: e.url, polku: e.path, uusi: `/uutiset/${slugs.get(e.id)}` }));
   await writeFile(MAP_FILE, `${JSON.stringify(map, null, 2)}\n`, "utf-8");

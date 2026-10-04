@@ -9,7 +9,6 @@ import { Badge } from "@/components/ui/badge";
 import { FramedImage } from "@/components/framed-image";
 import { KuvaSiirtyma } from "@/components/sivunvaihto";
 import { formatDate } from "@/lib/format";
-import { categoryLabel } from "@/lib/uutinen-categories";
 import type { UutinenCard } from "@/lib/types";
 
 type Props = {
@@ -44,8 +43,8 @@ export function NewsCard({ news, feature = false, eager = false }: Props) {
       {news.categories && news.categories.length > 0 && (
         <div className="mt-4 flex flex-wrap gap-1.5">
           {news.categories.map((c) => (
-            <Badge key={c} tone="brand">
-              {categoryLabel(c)}
+            <Badge key={c._id} tone="brand">
+              {c.label}
             </Badge>
           ))}
         </div>

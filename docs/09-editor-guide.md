@@ -70,8 +70,25 @@ toimii niiden varassa. Kehittäjä hoitaa ne.
 3. **Lyhenne** (enintään 200 merkkiä) näkyy uutislistalla.
 4. **Kansikuva** ja **Sisältö**. Sisältöön voi lisätä otsikoita, listoja, linkkejä ja
    **kuvia tekstin sekaan**: paina **+** tekstin kohdalla → *Kuva*.
-5. **Kategoriat:** valitse listalta (esim. Palloveikkaus, Matkakuvaus, Tapahtumat).
+5. **Kategoriat:** rastita sopivat (esim. Palloveikkaus, Matkakuvaus, Tapahtumat).
 6. **Julkaise**.
+
+### Uusi uutiskategoria
+
+Kategoriat näkyvät uutisten yhteydessä ja uutislistan suodattimessa (/uutiset).
+
+1. **Uutiskategoriat** → **+**. Toinen tapa: uutisen Kategoriat-kohdan linkki
+   **Lisää uusi kategoria** (aukeaa uuteen välilehteen).
+2. **Nimi**, esim. *Vierasmatkat*. **Polku** → *Luo*.
+3. Valinnainen **Järjestys suodattimessa**: pienin numero ensin. Nykyiset ovat
+   10, 20, 30 … 90, joten esim. 45 sijoittuu Tapahtumien ja Jalkapallon väliin.
+4. **Julkaise**. Kategoria ilmestyy uutisten valintaruutuihin heti, ja suodattimeen
+   kun ensimmäinen uutinen on merkitty siihen.
+
+**Nimen voi vaihtaa** milloin tahansa: uusi nimi näkyy kaikissa uutisissa. **Älä muuta
+julkaistun kategorian polkua**, koska vanhat linkit lakkaisivat toimimasta.
+**Kategorian poisto** onnistuu vasta, kun mikään uutinen ei käytä sitä; Studio kertoo,
+mitkä uutiset siihen viittaavat. Poista rasti niistä ensin.
 
 Palloveikkauksen tilanne on tavallinen uutinen. Kirjoita sarjataulukko riveinä:
 **Shift + Enter** vaihtaa rivin saman kappaleen sisällä, kuten blogissa ennen.
