@@ -168,17 +168,17 @@ export function PhotoPicker({
         <span className="font-normal text-muted">(valinnainen)</span>
       </p>
       <p id={hintId} className="text-sm text-muted">
-        Enintään {PHOTO_MAX_COUNT} kuvaa ruoasta tai paikasta. Kuvat pienennetään ennen lähetystä, ja
-        niistä poistetaan sijaintitiedot. Vältä kuvia, joissa muut ihmiset ovat tunnistettavissa.
+        Ruoasta tai paikasta. Vältä tunnistettavia ihmisiä; sijaintitiedot poistetaan.
       </p>
 
       {photos.length > 0 && (
-        <ul className="mt-2 grid gap-4 sm:grid-cols-3">
+        <ul className="mt-2 grid gap-3 sm:grid-cols-3">
           {photos.map((photo, index) => {
             const altId = `${fieldId}-kuvaus-${photo.id}`;
             return (
-              <li key={photo.id} className="flex flex-col gap-2 rounded-sm border border-border bg-background p-2.5">
-                <div className="relative aspect-[4/3] overflow-hidden rounded-sm bg-surface-strong">
+              // Puhelimella rivi (kuva vasemmalla, kuvaus oikealla), leveämmällä kortti.
+              <li key={photo.id} className="flex gap-3 rounded-sm border border-border bg-surface p-2.5 sm:flex-col sm:gap-2">
+                <div className="relative aspect-[4/3] w-32 shrink-0 overflow-hidden rounded-sm bg-surface-strong sm:w-auto">
                   {photo.previewUrl ? (
                     // Paikallinen esikatselu (blob:-osoite), jota next/image ei käsittele.
                     // eslint-disable-next-line @next/next/no-img-element
@@ -209,19 +209,21 @@ export function PhotoPicker({
                     </svg>
                   </button>
                 </div>
-                <label htmlFor={altId} className="text-[13px] font-semibold text-foreground">
-                  Mitä kuvassa on? <span className="font-normal text-muted">(valinnainen)</span>
-                </label>
-                <input
-                  id={altId}
-                  type="text"
-                  value={photo.alt}
-                  maxLength={PHOTO_ALT_MAX}
-                  onChange={(e) => setAlt(photo.id, e.target.value)}
-                  placeholder="esim. Paahdettu lohi"
-                  autoComplete="off"
-                  className={cn(fieldClass, "px-3 py-2 text-[15px]")}
-                />
+                <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+                  <label htmlFor={altId} className="text-[13px] font-semibold text-foreground">
+                    Mitä kuvassa on? <span className="font-normal text-muted">(valinnainen)</span>
+                  </label>
+                  <input
+                    id={altId}
+                    type="text"
+                    value={photo.alt}
+                    maxLength={PHOTO_ALT_MAX}
+                    onChange={(e) => setAlt(photo.id, e.target.value)}
+                    placeholder="esim. Paahdettu lohi"
+                    autoComplete="off"
+                    className={cn(fieldClass, "px-3 py-2 text-[15px]")}
+                  />
+                </div>
               </li>
             );
           })}
@@ -231,7 +233,8 @@ export function PhotoPicker({
       {remaining > 0 && (
         <div
           className={cn(
-            "mt-2 flex flex-col items-start gap-2 rounded-sm border border-dashed border-border-strong p-4 transition sm:flex-row sm:items-center sm:gap-4",
+            // Puhelimella pelkkä painike; leveämmällä myös pudotusalue.
+            "mt-1 flex flex-col items-start gap-2 rounded-sm transition sm:flex-row sm:items-center sm:gap-4 sm:border sm:border-dashed sm:border-border-strong sm:p-4",
             dragging && "border-accent bg-accent/5",
           )}
         >

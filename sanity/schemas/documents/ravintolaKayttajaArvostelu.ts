@@ -43,7 +43,7 @@ export const ravintolaKayttajaArvostelu = defineType({
       name: "arvioija",
       title: "Klubilainen",
       description:
-        "Lomake valitsee klubilaisen itse, kun nimi täsmää. Klubilaisen arvostelu saa sivulla merkin " +
+        "Lomake liittää klubilaisen itse, kun arvostelija valitsee nimensä listasta tai kirjoittaa saman nimen. Klubilaisen arvostelu saa sivulla merkin " +
         "\"Klubilainen\", ja se korvaa hänen aiemman arvosanansa ravintolalle. Jätä tyhjäksi, jos " +
         "arvostelija ei ole klubilainen: arvostelu näkyy silti, mutta ei vaikuta ravintolan arvosanaan.",
       type: "reference",
@@ -123,9 +123,10 @@ export const ravintolaKayttajaArvostelu = defineType({
     defineField({
       name: "comment",
       title: "Arvostelu",
+      description: "Vapaaehtoinen: arvostelija voi antaa pelkät arvosanat.",
       type: "text",
       rows: 5,
-      validation: (rule) => rule.required().max(1000).error("Arvostelu on pakollinen (enintään 1000 merkkiä)."),
+      validation: (rule) => rule.max(1000).error("Arvostelu saa olla enintään 1000 merkkiä."),
     }),
     defineField({
       name: "kuvat",

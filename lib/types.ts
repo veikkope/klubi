@@ -264,7 +264,7 @@ export type UserReview = {
   _id: string;
   reviewerName: string;
   stars: number;
-  comment: string;
+  comment?: string | null;
   submittedAt: string;
 };
 

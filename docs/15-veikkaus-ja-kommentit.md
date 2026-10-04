@@ -114,7 +114,7 @@ kenttä on poistettu. Suojana ovat piilokenttä, tulvasuoja ja jälkimoderointi.
 
 ## 4. Tekninen toteutus
 
-Sama malli kuin nykyiset lomakkeet (`app/(public)/ravintolat/arvostele/actions.ts`,
+Sama malli kuin nykyiset lomakkeet (`app/(sovellus)/ravintolat/arvostele/actions.ts`,
 jäsenhakemus): **Server Action**, validointi kokonaan palvelimella, kirjoitustoken
 vain palvelimella.
 

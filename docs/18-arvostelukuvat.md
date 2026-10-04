@@ -32,10 +32,10 @@ valinta (enint. 3)
 | Tiedosto | Tehtävä |
 |---|---|
 | `lib/arvostelukuvat.ts` | Rajat, kenttänimet, JPEG-tunnistus, metatietojen poisto, `validatePhotos`. Puhdas moduuli |
-| `app/(public)/ravintolat/arvostele/resize-photo.ts` | Pienennys selaimessa (canvas → JPEG, EXIF-suunta huomioidaan) |
-| `app/(public)/ravintolat/arvostele/photo-picker.tsx` | Valinta, vedä ja pudota, esikatselu, poisto, kuvaus, lupa |
-| `app/(public)/ravintolat/arvostele/review-form.tsx` | Kuvat React-tilassa; `submit` liittää ne FormDataan |
-| `app/(public)/ravintolat/arvostele/actions.ts` | Tarkistus, lataus, peruutus virheessä |
+| `app/(sovellus)/ravintolat/arvostele/resize-photo.ts` | Pienennys selaimessa (canvas → JPEG, EXIF-suunta huomioidaan) |
+| `app/(sovellus)/ravintolat/arvostele/photo-picker.tsx` | Valinta, vedä ja pudota, esikatselu, poisto, kuvaus, lupa |
+| `app/(sovellus)/ravintolat/arvostele/review-form.tsx` | Kuvat React-tilassa; `submit` liittää ne FormDataan |
+| `app/(sovellus)/ravintolat/arvostele/actions.ts` | Tarkistus, lataus, peruutus virheessä |
 | `sanity/schemas/documents/ravintolaKayttajaArvostelu.ts` | Kenttä `kuvat` (enint. 3, `alt` pakollinen), esikatselukuva jonossa |
 | `sanity/actions/hylkaa-arvostelu.tsx` | Studio: "Hylkää arvostelu" / julkaistussa "Poista arvostelu" poistaa arvostelun ja sen kuvat. Korvaa tavallisen Poista-toiminnon (`sanity.config.ts`) |
 | `sanity/lib/arvostelukuvat-siivous.ts` | Orpojen kuvien haku ja poisto (`raw`-näkökulma) |

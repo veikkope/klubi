@@ -19,8 +19,8 @@ export const klubilainen = defineType({
       name: "nimi",
       title: "Nimi",
       description:
-        "Näkyy ravintolasivun Klubilaisten arvosanat -taulukossa. Lomakkeen arvostelu liitetään " +
-        "klubilaiseen automaattisesti, kun arvostelija kirjoittaa saman nimen.",
+        "Näkyy ravintolasivun Klubilaisten arvosanat -taulukossa ja arvostelulomakkeen nimivalinnassa. " +
+        "Lomakkeen arvostelu liitetään klubilaiseen, kun arvostelija valitsee nimensä.",
       type: "string",
       validation: (rule) => rule.required().error("Nimi on pakollinen."),
     }),

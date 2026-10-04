@@ -46,6 +46,7 @@
     "test:artikkeli": "tsx scripts/test-artikkeli.ts",
     "test:tunnisteet": "tsx scripts/test-tunnisteet.ts",
     "test:arvosana": "tsx scripts/test-arvosana.ts",
+    "test:arvostelu": "tsx scripts/test-arvostelu.ts",
     "laske:arvosanat": "tsx scripts/laske-arvosanat.ts",
     "tuo:klubiarviot": "tsx scripts/tuo-klubiarviot.ts",
     "e2e:arvioijasaanto": "tsx scripts/e2e-arvioijasaanto.ts",

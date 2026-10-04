@@ -19,7 +19,6 @@ import { ilmoitaOsoitteeseen } from "@/lib/yhteystiedot";
 import { apiVersion, dataset, hasSanity, projectId } from "@/sanity/env";
 import {
   COMMENT_MAX,
-  COMMENT_MIN,
   EMPTY_REVIEW_VALUES,
   kayntipaivaVirhe,
   normalizeSearch,
@@ -50,7 +49,8 @@ import {
  * hakemistossa (sama nimi ja kaupunki), arvostelu liitetään siihen suoraan.
  *
  * Tietojen minimointi (GDPR art. 5): arvostelijalta kysytään vain julkaistava
- * nimi. Sähköpostia ei kerätä, koska sille ei ole välttämätöntä käyttötarkoitusta.
+ * nimi (klubilainen valitsee omansa listasta). Sähköpostia ei kerätä, koska
+ * sille ei ole välttämätöntä käyttötarkoitusta.
  *
  * Kuvat (enintään 3, docs/18): selain pienentää ne JPEG:ksi, mutta palvelin
  * tarkistaa tyypin tiedoston alusta, poistaa metatiedot ja lataa kuvat
@@ -106,6 +106,7 @@ export async function submitReview(
     uusiMaa: text(formData, "uusiMaa"),
     uusiLisatieto: text(formData, "uusiLisatieto"),
     nimi: text(formData, "nimi"),
+    klubilainen: text(formData, "klubilainen"),
     // Puuttuva päivä (esim. selain ilman JavaScriptiä) = tämä päivä.
     kayntipaiva: text(formData, "kayntipaiva") || tanaan(),
     ruoka: text(formData, "ruoka"),
@@ -152,8 +153,9 @@ export async function submitReview(
     fieldErrors.ravintola = "Hae ravintola ja valitse se listasta, tai lisää uusi ravintola.";
   }
 
+  if (values.klubilainen && !DOCUMENT_ID.test(values.klubilainen)) values.klubilainen = "";
   if (values.nimi.length < 2) {
-    fieldErrors.nimi = "Kirjoita nimesi (vähintään 2 merkkiä).";
+    fieldErrors.nimi = "Valitse nimesi tai kirjoita se (vähintään 2 merkkiä).";
   } else if (values.nimi.length > 80) {
     fieldErrors.nimi = "Nimi saa olla enintään 80 merkkiä.";
   }
@@ -173,9 +175,8 @@ export async function submitReview(
     }
   }
 
-  if (values.kommentti.length < COMMENT_MIN) {
-    fieldErrors.kommentti = `Kerro kokemuksestasi vähintään ${COMMENT_MIN} merkillä.`;
-  } else if (values.kommentti.length > COMMENT_MAX) {
+  // Vapaaehtoinen: pelkät arvosanat riittävät.
+  if (values.kommentti.length > COMMENT_MAX) {
     fieldErrors.kommentti = `Arvostelu saa olla enintään ${COMMENT_MAX} merkkiä.`;
   }
 
@@ -290,12 +291,23 @@ export async function submitReview(
     }
     const failed = uploads.find((r): r is PromiseRejectedResult => r.status === "rejected");
     if (failed) throw failed.reason;
-    // Klubilainen, jos nimi täsmää täsmälleen yhteen (kirjainkoko ja välit ohitetaan).
-    const klubilaiset = await writeClient.fetch<string[]>(
-      /* groq */ `*[_type == "klubilainen" && lower(nimi) == lower($nimi)]._id`,
-      { nimi: values.nimi.trim() },
-    );
-    const arvioijaId = klubilaiset.length === 1 ? klubilaiset[0] : null;
+    // Klubilainen: lomakkeelta valittu, tai nimen perusteella, jos nimi
+    // täsmää täsmälleen yhteen (kirjainkoko ja välit ohitetaan). Valitun
+    // klubilaisen nimi otetaan Studiosta, jotta se on sama kaikissa arvosteluissa.
+    const valittu = values.klubilainen
+      ? await writeClient.fetch<{ _id: string; nimi: string | null } | null>(
+          /* groq */ `*[_type == "klubilainen" && _id == $id][0]{ _id, nimi }`,
+          { id: values.klubilainen },
+        )
+      : null;
+    const nimenMukaan = valittu
+      ? []
+      : await writeClient.fetch<string[]>(
+          /* groq */ `*[_type == "klubilainen" && lower(nimi) == lower($nimi)]._id`,
+          { nimi: values.nimi.trim() },
+        );
+    const arvioijaId = valittu?._id ?? (nimenMukaan.length === 1 ? nimenMukaan[0] : null);
+    const reviewerName = valittu?.nimi || values.nimi;
 
     const kuvat = uploads.map((result, index) => ({
       _key: arrayKey(),
@@ -308,8 +320,8 @@ export async function submitReview(
       // Luonnos: ei näy julkisesti ennen kuin sihteeri julkaisee sen Studiossa.
       _id: `drafts.${reviewId}`,
       _type: "ravintolaKayttajaArvostelu",
-      reviewerName: values.nimi,
-      // Klubilainen nimen perusteella; sihteeri tarkistaa hyväksyessään.
+      reviewerName,
+      // Klubilainen valinnan tai nimen perusteella; sihteeri tarkistaa hyväksyessään.
       ...(arvioijaId ? { arvioija: { _type: "reference", _ref: arvioijaId } } : {}),
       ...(restaurantId
         ? { restaurant: { _type: "reference", _ref: restaurantId } }
@@ -322,7 +334,7 @@ export async function submitReview(
             },
           }),
       ...ratings,
-      comment: values.kommentti,
+      ...(values.kommentti ? { comment: values.kommentti } : {}),
       kayntipaiva: values.kayntipaiva,
       ...(kuvat.length > 0 ? { kuvat } : {}),
       submittedAt: new Date().toISOString(),

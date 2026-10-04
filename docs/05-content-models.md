@@ -311,7 +311,7 @@ yhä `title asc`), `arvokisa.alkuPvm/loppuPvm/hopea/pronssi`, `pelaaja.tilastot`
 
 **`klubiArvio`** (dokumentti): `ravintola` (viite, pakollinen), `arvioija` (viite `klubilainen`, pakollinen; varoitus jos klubilaisella on jo arvosana samaan ravintolaan), `ratingFood`/`ratingPrice`/`ratingAtmosphere` (1–5, pakollinen), `paiva` (pakollinen; uusin voimassa), `kaynnit` (date[], tiedoksi), `tuotu` (vain luku: ruokailutaulukosta).
 
-**`ravintolaKayttajaArvostelu.arvioija`**: viite `klubilainen`. Lomake täyttää, kun nimi täsmää; puuttuessa varoitus. Klubilaiseen liitetty arvostelu on klubilaisen arvosana.
+**`ravintolaKayttajaArvostelu.arvioija`**: viite `klubilainen`. Lomake täyttää, kun arvostelija valitsee nimensä klubilaisten listasta (muistetaan laitteelle) tai kirjoittaa täsmälleen saman nimen; puuttuessa varoitus. `comment` on vapaaehtoinen (4.10.2026): pelkät arvosanat riittävät. Klubilaiseen liitetty arvostelu on klubilaisen arvosana.
 
 **`ravintola`**: `automaattinenArvosana` { `arvioijia`, `viimeisinArvio` } (vain luku; kun asetettu, arvosanakentät ovat lukittuja), `alkuperainenArvio` { ratingOverall, ratingFood, ratingPrice, ratingAtmosphere } (vain luku, vanhan sivuston arvo vertailuun). `visits` validoidaan uusin ensin.
 

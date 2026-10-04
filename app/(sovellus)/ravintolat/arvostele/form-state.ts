@@ -50,6 +50,8 @@ export const REVIEW_FIELD_LABELS: Record<ReviewField, string> = {
 export type ReviewValues = Record<Exclude<ReviewField, "kuvat">, string> & {
   /** "1", kun kävijä ehdottaa uutta ravintolaa. */
   uusi: string;
+  /** Valitun klubilaisen `_id`; tyhjä, kun arvostelija ei ole klubilainen. */
+  klubilainen: string;
 };
 
 export type ReviewFormState = {
@@ -77,6 +79,7 @@ export const EMPTY_REVIEW_VALUES: ReviewValues = {
   viihtyvyys: "",
   kommentti: "",
   nimi: "",
+  klubilainen: "",
 };
 
 export const INITIAL_REVIEW_STATE: ReviewFormState = {
@@ -92,14 +95,23 @@ export const INITIAL_REVIEW_STATE: ReviewFormState = {
  * `schemaField` on vastaava kenttä Sanityn `ravintolaKayttajaArvostelu`-tyypissä.
  */
 export const RATING_FIELDS = [
-  { field: "ruoka", schemaField: "ratingFood", hint: "Maku, laatu ja annokset" },
-  { field: "hinta", schemaField: "ratingPrice", hint: "Vastine rahalle: 5,0 = erinomainen hinta-laatusuhde" },
-  { field: "viihtyvyys", schemaField: "ratingAtmosphere", hint: "Tunnelma, palvelu ja miljöö" },
+  { field: "ruoka", schemaField: "ratingFood", hint: "Maku, laatu, annokset" },
+  { field: "hinta", schemaField: "ratingPrice", hint: "Hinta-laatu, 5 = erinomainen" },
+  { field: "viihtyvyys", schemaField: "ratingAtmosphere", hint: "Tunnelma, palvelu, miljöö" },
 ] as const satisfies readonly { field: ReviewField; schemaField: string; hint: string }[];
 
 /** Osa-alueen arvosana 1,0–5,0 yhden desimaalin tarkkuudella. */
 export const RATING_MIN = 1;
 export const RATING_MAX = 5;
+
+/** Laitteelle muistettu arvostelija (localStorage), ettei nimeä kysytä joka kerta. */
+export const ARVOSTELIJA_AVAIN = "klubi.arvostelija";
+
+export type Arvostelija = {
+  /** Klubilaisen `_id`; tyhjä, kun arvostelija ei ole klubilainen. */
+  klubilainen: string;
+  nimi: string;
+};
 
 /** Vanhin hyväksyttävä käyntipäivä (klubin ensimmäiset ravintolakäynnit). */
 export const KAYNTIPAIVA_MIN = "1990-01-01";
@@ -129,7 +141,7 @@ export function kayntipaivaVirhe(arvo: string, tama = tanaan()): string | null {
   return null;
 }
 
-export const COMMENT_MIN = 10;
+/** Arvosteluteksti on vapaaehtoinen; pelkät arvosanat riittävät. */
 export const COMMENT_MAX = 1000;
 
 /** Lomakekentän id — sama sekä `<label for>`:ssä että virhelinkissä. */

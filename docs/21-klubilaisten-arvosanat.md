@@ -30,11 +30,37 @@ Laskennan käynnistää Sanityn webhook (`app/api/revalidate`) aina, kun
 `klubiArvio` tai `ravintolaKayttajaArvostelu` muuttuu, sekä
 `npm run laske:arvosanat`. Webhook tarvitsee Vercelissä `SANITY_API_WRITE_TOKEN`in.
 
+## Arvostelu puhelimella (4.10.2026)
+
+Arvostelu on sovellusmainen näkymä `app/(sovellus)/ravintolat/arvostele/` (oma
+reittiryhmä ilman sivuston ylä- ja alapalkkia). Yksi asia ruudulla kerrallaan,
+yläpalkissa takaisin, vaihe ja sulje, alapalkissa aina sama painike. Vaiheet
+mahtuvat iPhone 13 -kokoiselle ruudulle ilman vieritystä (mitattu).
+
+| Vaihe | Sisältö |
+|---|---|
+| Kuka arvostelee | Vain kun laite ei muista nimeä. Klubilaisen nimen napautus vie eteenpäin ja muistetaan (`localStorage` `klubi.arvostelija`); lomake lähettää klubilaisen `_id`:n, joten liitos ei riipu kirjoitusasusta. "En ole klubilainen" → nimikenttä |
+| Ravintola | Haku ylhäällä, "Lisää uusi ravintola" heti sen alla. Ennen kirjoittamista toista arvioijaa odottavat (ilman arvostelijan itse jo arvioimia). Napautus vie eteenpäin. Uudesta ravintolasta nimi ja kaupunki; maa (oletus Suomi) ja osoite "Maa ja osoite" -kohdan takana |
+| Arvosanat | Napit 1–5 ja −/+ (0,1), numeron voi myös kirjoittaa. Ei liukusäädintä (vieritys siirsi sitä). Kokonaisarvosana näkyy heti |
+| Kerro lisää | Teksti (vapaaehtoinen), kuvat, käyntipäivä yhtenä rivinä ("Käynti tänään · Vaihda"), arvostelija ("Vaihda") ja Lähetä |
+
+- **Vaihe osoitteessa** (`?vaihe=arvosanat`, `history.pushState`): puhelimen
+  takaisin-ele siirtyy edelliseen vaiheeseen. Eteenpäin ei pääse keskeneräisen
+  vaiheen yli. Palvelimen virhe vie vaiheeseen, jossa virhe on.
+- **Luonnos**: keskeneräinen arvostelu tallentuu laitteelle (`klubi.arvostelu-luonnos`,
+  14 päivää) ja jatkuu samasta kohdasta ("Jatkat keskeneräistä arvostelua · Aloita
+  alusta"). Kuvat eivät tallennu.
+- **Kotinäytön kuvake** (`app/manifest.ts`, PWA): avaa suoraan arvostelun ilman
+  selaimen palkkeja. Kiitosnäkymä ohjaa lisäämään sen (Android: painike, iPhone:
+  Jaa → Lisää Koti-valikkoon). Kuvakkeet `npm run brandikuvat` → `public/sovellus/`.
+  Service workeria ei ole tarkoituksella (päivitykset näkyvät heti).
+- Säännöt `vaiheet.ts`, testit `npm run test:arvostelu`.
+
 ## Sivulla
 
 - **/ravintolat/odottavat**: toista arvioijaa odottavat (ei lopettaneita), ensimmäisen
   arvioijan nimi ja pisteet, painike arvostelulomakkeelle ravintola valmiiksi valittuna.
-  Linkki ja määrä arvostelulomakkeen yläosassa. `noindex`, ei sivukartassa.
+  Linkki ja määrä ravintolahakemiston (/ravintolat) otsikon alla "Lähetä oma arvostelu" -painikkeen vieressä; arvostelussa odottavat ovat ravintolavaiheen listana. `noindex`, ei sivukartassa.
 
 - Arvosanakortissa: "Keskiarvo N klubilaisen arvosanasta".
 - Taulukko **Klubilaisten arvosanat**: nimi, päivä, ruoka, hinta, viihtyvyys,

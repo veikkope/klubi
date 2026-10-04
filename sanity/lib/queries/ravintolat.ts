@@ -157,7 +157,17 @@ export type RavintolaOption = {
   name: string;
   slug?: string | null;
   city?: string | null;
+  /**
+   * Toista klubilaista arvioijaa odottava: arvioineiden klubilaisten nimet ja
+   * id:t. Puuttuu, kun ravintola on jo sivustolla tai lopettanut.
+   */
+  odottaa?: { arvioija: string; nimi?: string | null }[] | null;
+  /** Tuorein klubilaisen arvio (odottavien järjestykseen). */
+  tuorein?: string | null;
 };
+
+/** Arvostelulomakkeen nimivalinta. */
+export type KlubilainenOption = { _id: string; nimi: string };
 
 // ── Projektiot ────────────────────────────────────────────────────────────────
 
@@ -509,11 +519,18 @@ export const ravintolaSlugsQuery = defineQuery(`
  * Arvostelulomakkeen ravintolavalikko — myös lopettaneet (käynti on voinut
  * olla ennen) ja toista arvioijaa odottavat (toinen klubilainen arvioi ne).
  */
-export const ravintolaOptionsQuery = defineQuery(`
+export const ravintolaOptionsQuery = /* groq */ `
   *[_type == "ravintola" && defined(slug.current)] | order(name asc){
     _id,
     name,
     "slug": slug.current,
-    "city": city->name
+    "city": city->name,
+    "odottaa": select(${odottavaFilter} => ${KLUBILAISTEN_ARVIOT}{ arvioija, nimi }),
+    "tuorein": select(${odottavaFilter} => ${TUOREIN_ARVIO})
   }
-`);
+`;
+
+/** Arvostelulomakkeen nimivalinta: klubilaiset aakkosjärjestyksessä. */
+export const klubilaisetQuery = /* groq */ `
+  *[_type == "klubilainen" && defined(nimi) && !(_id in path("drafts.**"))] | order(lower(nimi) asc){ _id, nimi }
+`;

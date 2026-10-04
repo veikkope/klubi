@@ -20,6 +20,7 @@ Tarkat valinnat ja niiden perustelut: `docs/03-cms-decision.md`.
 ```
 app/                   Next.js App Router -reitit
   (sivut)/             Reittiryhmä julkisille sivuille
+  (sovellus)/          Sovellusmaiset näkymät ilman sivuston palkkeja (ravintola-arvostelu, docs/21)
   studio/[[...tool]]/  Sanity Studio embedded
   api/                 Route handlers (revalidate webhook, lomakkeiden submission)
 components/            React-komponentit (UI, sivurakenne, Sanity-renderöijät)
@@ -53,7 +54,7 @@ public/                Staattiset tiedostot (favicon, robots, kuvat joita Sanity
 | Testaa joukkueiden nimivertailu (otteluohjelma) | `npm run test:joukkueet` |
 | Testaa kuvaloader (Sanityn CDN) | `npm run test:kuvat` |
 | Testaa Litmanen-osion säännöt (lehtileikkeiden ote, loukkaantumisyhteenveto) | `npm run test:litmanen` |
-| Brändikuvien verkkoversiot (vain kun logo muuttuu) | `npm run brandikuvat` → `public/brand/web/` |
+| Brändikuvien verkkoversiot ja kotinäytön sovelluskuvakkeet (vain kun logo muuttuu) | `npm run brandikuvat` → `public/brand/web/`, `public/sovellus/` |
 | Saavutettavuustesti (axe, WCAG 2.1 AA) | `npm run test:saavutettavuus` (sivusto käynnissä; `BASE_URL=…` muu osoite) |
 | Orpojen arvostelukuvien siivous (listaa; `-- --poista` poistaa) | `npm run siivoa:arvostelukuvat` (tarvittaessa; lisää `-- --production`) |
 | Hae Blogspot-blogi paikallisesti | `npm run blogspot:fetch` → `data/blogspot/` (gitignoressa) |
@@ -67,6 +68,7 @@ public/                Staattiset tiedostot (favicon, robots, kuvat joita Sanity
 | Testaa lukuaika ja ingressisääntö (uutiset, ravintola-arviot) | `npm run test:artikkeli` |
 | Testaa uutisten tunnisteet | `npm run test:tunnisteet` |
 | Testaa ravintolan arvosanalaskenta (klubilaisten arvosanat) | `npm run test:arvosana` |
+| Testaa arvostelun vaiheet ja luonnoksen (puhelinnäkymä) | `npm run test:arvostelu` |
 | Ruokailutaulukon arvosanat Sanityyn (kuivaharjoitus + tarkistuslista; `-- --vie`, `-- --production --vie` varmuuskopion kanssa) | `npm run tuo:klubiarviot` (docs/21) |
 | Ravintoloiden arvosanat uudelleen klubilaisten arvosanoista (webhook tekee tämän itse; kuivaharjoitus, `-- --vie`, `-- --production --vie`) | `npm run laske:arvosanat` |
 | Päästä päähän -testi productionissa: kahden klubilaisen sääntö webhookin kautta (luo ja poistaa testiravintolan; varmuuskopio ensin, webhook-jono tyhjänä) | `npm run e2e:arvioijasaanto` |

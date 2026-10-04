@@ -28,6 +28,7 @@ import {
   buildRavintolatFacets,
   countryNamesForSlug,
   odottavatRajauksellaQuery,
+  odottavatRavintolatMaaraQuery,
   ravintolatCountQuery,
   ravintolatDirectoryQuery,
   type OdottavaRavintola,
@@ -121,7 +122,7 @@ export default async function RavintolatPage({ searchParams }: PageProps) {
   // Alue- tai hakunäkymässä myös toista arvioijaa odottavat (klubilainen kaupungissa:
   // mitä on arvioitu ja missä kannattaa käydä). Top-listoissa ei.
   const alueTaiHaku = Boolean(filters.kaupunki || filters.maa || filters.maakunta.length || filters.q);
-  const [items, total, odottavat] = await Promise.all([
+  const [items, total, odottavat, odottaviaYhteensa] = await Promise.all([
     sanityFetch<RavintolaCardData[]>({
       query: ravintolatDirectoryQuery(
         lista
@@ -146,6 +147,8 @@ export default async function RavintolatPage({ searchParams }: PageProps) {
           fallback: [],
         })
       : Promise.resolve([] as OdottavaRavintola[]),
+    // Linkki odottavien listaan otsikon alla (klubilainen bongaa kohteet kaupungeittain).
+    sanityFetch<number>({ query: odottavatRavintolatMaaraQuery, tags: ["ravintola"], fallback: 0 }),
   ]);
 
   // Top-listaa ei sivuteta.
@@ -175,12 +178,25 @@ export default async function RavintolatPage({ searchParams }: PageProps) {
           topic="food"
           breadcrumbs={trail}
           actions={
-            <Link
-              href="/ravintolat/arvostele"
-              className="inline-flex min-h-11 items-center justify-center rounded-sm bg-primary px-6 text-sm font-medium text-on-primary shadow-sm transition hover:bg-primary-hover hover:text-on-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            >
-              Lähetä oma arvostelu
-            </Link>
+            <>
+              <Link
+                href="/ravintolat/arvostele"
+                className="inline-flex min-h-11 items-center justify-center rounded-sm bg-primary px-6 text-sm font-medium text-on-primary shadow-sm transition hover:bg-primary-hover hover:text-on-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              >
+                Lähetä oma arvostelu
+              </Link>
+              {odottaviaYhteensa > 0 && (
+                <Link
+                  href="/ravintolat/odottavat"
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-sm border border-border-strong bg-surface px-6 text-sm font-medium text-foreground transition hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                >
+                  Odottavat toista arvioijaa
+                  <span className="rounded-full bg-brass-tint px-2 py-0.5 text-xs font-semibold tabular-nums text-brass-tint-text">
+                    {odottaviaYhteensa}
+                  </span>
+                </Link>
+              )}
+            </>
           }
         />
 
