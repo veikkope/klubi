@@ -94,7 +94,7 @@ export const klubiToiminta = defineType({
             {
               name: "jarjestysnumero",
               title: "Järjestysnumero",
-              description: 'Monesko kerta, esim. vuosikokous "(11)" tai mölkky "XXXVII".',
+              description: "Monesko kerta, tavallisena lukuna (esim. 37). Näkyy sivulla muodossa (37.).",
               type: "number",
               validation: (rule) => rule.integer().min(1),
             },

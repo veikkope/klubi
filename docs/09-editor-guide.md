@@ -13,7 +13,7 @@
 |---|---|
 | Julkinen sivusto | https://www.lahdensuomalainenklubi.com |
 | Sisältöeditori (Studio) | https://www.lahdensuomalainenklubi.com/studio |
-| Apu | (kehittäjän nimi, puhelin ja sähköposti) |
+| Apu | Kehittäjä. Yhteystiedot on annettu sinulle erikseen |
 
 ## Kirjautuminen
 
@@ -52,13 +52,14 @@ toimii niiden varassa. Kehittäjä hoitaa ne.
   - **Varmuuskopiot:** automaattiset viikkokopiot (ks. alla). Sinun ei tarvitse tehdä niille mitään.
 - **Tarkistettavat:** migraation merkitsemät dokumentit tyypeittäin (ks. alla)
 - **Uutiset:** tiedotteet ja blogikirjoitukset, myös blogin kaikki 528 kirjoitusta vuodesta 2007
+- **Uutiskategoriat:** uutisten kategoriat ja suodattimen valinnat
 - **Kommentit ja veikkaukset:** jäsenten viestit uusin ensin sekä piilotetut
 - **Ottelut:** etusivun ja /ottelut-sivun otteluohjelma
 - **Tapahtumat:** klubin tulevat tapahtumat
 - **Galleria-albumit** ja **Sivut** (esim. säännöt ja tietosuojaseloste)
 - **Klubin toiminta:** vappu, mölkky, matkat ym. vuosimerkintöineen
 - **Hallitus**
-- **Ravintolat:** kaikki ravintolat, **odottavat arvostelut**, kaikki arvostelut ja kaupungit
+- **Ravintolat:** ravintolat, **odottavat arvostelut**, klubilaisten arvosanat ja kaupungit
 - **Jalkapalloarkisto:** tilastot, arvokisat, pelaajat ja stadionit
 
 ## Yleiset toimenpiteet
@@ -67,7 +68,8 @@ toimii niiden varassa. Kehittäjä hoitaa ne.
 
 1. **Uutiset** → **+** (Luo uusi).
 2. **Otsikko**, sen jälkeen **Polku** → *Luo* (Generate). **Julkaisuaika** on oletuksena nyt.
-3. **Lyhenne** (enintään 200 merkkiä) näkyy uutislistalla.
+3. **Lyhenne** (1–2 virkettä) näkyy uutislistalla ja jutun alussa.
+   **Tiivistelmän** voi jättää tyhjäksi.
 4. **Kansikuva** ja **Sisältö**. Sisältöön voi lisätä otsikoita, listoja, linkkejä ja
    **kuvia tekstin sekaan**: paina **+** tekstin kohdalla → *Kuva*.
 5. **Kategoriat:** rastita sopivat (esim. Palloveikkaus, Matkakuvaus, Tapahtumat).
@@ -255,6 +257,33 @@ ja seuraava klubin tapahtuma. Kun julkaiset uutisen, se nousee yläosaan.
 
 **Sivun asetukset → Yhteystiedot** → muokkaa → **Julkaise**. Muutos näkyy footerissa ja
 yhteystietosivulla.
+
+### Valikon muokkaaminen
+
+1. **Sivun asetukset → Navigaatio**.
+2. Muokkaa linkkiä: klikkaa sitä ja muuta **Otsikko** tai **Linkki**.
+3. Uusi linkki: **+** listan alla. Linkki alkaa `/` (oma sivu) tai `https://` (muu sivusto).
+4. Järjestys: vedä kahvasta (⋮⋮).
+5. Alavalikko: avaa linkki → **Alavalikko** → **+**.
+6. **Julkaise**.
+
+Päälinkkejä enintään 7.
+
+### Hallituksen jäsenet
+
+Uusi jäsen: **Hallitus** → **+** → **Nimi**, **Rooli** (esim. Sihteeri) ja
+**Järjestysnumero** (1 näkyy ensin) → **Julkaise**. Kuva, esittely, sähköposti ja
+puhelin ovat vapaaehtoisia.
+
+Jäsen vaihtuu: avaa vanha jäsen → **⋯ → Poista**, ja lisää uusi.
+
+### Klubin toiminta: uusi vuosi
+
+1. **Klubin toiminta** → valitse toiminta (esim. Mölkky).
+2. Välilehti **Vuosittain** → **+**.
+3. Täytä **Vuosi**. Muut kentät ovat vapaaehtoisia. **Järjestysnumero** on tavallinen
+   luku (esim. 37).
+4. **Julkaise**. Uusin vuosi näkyy sivulla ensimmäisenä.
 
 ### Ravintolan arvosana ja klubilaisten pisteet
 
@@ -497,18 +526,15 @@ saman listoissa.
 
 ## Täytä itse — puuttuvat tiedot
 
-Näitä ei ollut vanhalla sivulla, joten niitä ei ole keksitty. Siihen asti sivu näyttää
-kävijälle asiallisen ilmoituksen.
+Näitä ei ollut vanhalla sivulla. Tarkista, että ne on täytetty:
 
-| # | Mitä | Missä Studiossa | Tila 28.9.2026 |
-|---|---|---|---|
-| 1 | Yhteystiedot: osoite, **sähköposti**, puhelin. Sähköposti näkyy alatunnisteessa ja lomakkeiden virheilmoituksissa vain, kun se on täytetty | Sivun asetukset → Yhteystiedot | vain "Lahti" |
-| 2 | Y-tunnus ja IBAN | Sivun asetukset → Yhteystiedot | puuttuu |
-| 3 | Sosiaalinen media | Sivun asetukset → Yhteystiedot | puuttuu |
-| 4 | Hallituksen jäsenet | Hallitus → + | 0 jäsentä |
-| 6 | Tulevat tapahtumat | Tapahtumat → + | 0 |
-| 7 | Etusivun kuvat (taustakuva ja Klubista-kuva) | Sivun asetukset → Etusivu | puuttuvat |
-| 8 | Tietosuojaselosteen vahvistus (hallitus) | Sivut → Tietosuojaseloste | luonnos, ks. Mitä tarkistaa |
+- [ ] Yhteystiedot: osoite, **sähköposti**, puhelin (Sivun asetukset → Yhteystiedot)
+- [ ] Y-tunnus ja IBAN (Sivun asetukset → Yhteystiedot)
+- [ ] Sosiaalinen media (Sivun asetukset → Yhteystiedot)
+- [ ] Hallituksen jäsenet (Hallitus)
+- [ ] Tulevat tapahtumat (Tapahtumat)
+- [ ] Etusivun kuvat: taustakuva ja Klubista-kuva (Sivun asetukset → Etusivu)
+- [ ] Tietosuojaselosteen vahvistus hallitukselta (Sivut → Tietosuojaseloste)
 
 ## Tietosuojapyynnöt
 
@@ -516,7 +542,7 @@ Jos joku pyytää poistamaan tietonsa (kommentti, veikkaus tai arvostelu kuvinee
 
 1. Etsi viesti Studion hakukentällä nimellä.
 2. Kommentissa ja veikkauksessa **⋯ → Poista pysyvästi**. Arvostelussa **⋯ → Poista arvostelu**, joka poistaa myös kuvat.
-   Piilottaminen ei riitä poistopyyntöön, koska piilotettu viesti säilyy järjestelmässä.
+   Piilottaminen ei riitä: piilotettu viesti säilyy järjestelmässä ja on yhä teknisesti luettavissa.
 3. Vastaa pyytäjälle, että tieto on poistettu. Tietosuojaseloste on osoitteessa /tietosuoja.
 
 ## Tyypilliset tilanteet
@@ -554,8 +580,8 @@ Varmuuskopiot**, ja 12 uusinta säilyy (noin kolme kuukautta).
 
 ## Tuki
 
-Jos et tiedä, miten jokin tehdään, ota yhteyttä kehittäjään (yhteystiedot oppaan
-alussa). Tuoreet muutokset (3 päivää) voit perua itse versiohistoriasta, vanhemmat
+Jos et tiedä, miten jokin tehdään, ota yhteyttä kehittäjään (yhteystiedot on annettu
+sinulle erikseen). Tuoreet muutokset (3 päivää) voit perua itse versiohistoriasta, vanhemmat
 kehittäjä palauttaa varmuuskopiosta.
 
 ### Jos kehittäjä ei ole tavoitettavissa
