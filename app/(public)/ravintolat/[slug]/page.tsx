@@ -116,6 +116,7 @@ export async function generateMetadata({
     description: describe(r),
     path: `/ravintolat/${r.slug}`,
     image: r.images?.[0] ?? undefined,
+    sisalto: r.review,
     modifiedAt: r._updatedAt,
   });
 }

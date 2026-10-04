@@ -47,6 +47,7 @@ export async function generateMetadata({
     description: resolveDescription(sivu.seoDescription, sivu.tiivistelma, sivu.ingress),
     path,
     image: sivu.hero,
+    sisalto: sivu.body,
   });
 }
 

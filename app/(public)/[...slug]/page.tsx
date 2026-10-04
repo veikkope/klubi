@@ -57,6 +57,7 @@ export async function generateMetadata({
     ),
     path: toHref(sivu.slug),
     image: sivu.hero,
+    sisalto: sivu.body,
     modifiedAt: sivu.updatedAt,
   });
 }

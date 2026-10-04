@@ -67,6 +67,7 @@ export async function generateMetadata({
     ),
     path: `/klubi/toiminta/${toiminta.slug}`,
     image: toiminta.kuvat?.[0],
+    sisalto: toiminta.kuvaus,
   });
 }
 

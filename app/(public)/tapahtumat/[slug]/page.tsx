@@ -80,6 +80,7 @@ export async function generateMetadata({
     ),
     path: `/tapahtumat/${event.slug}`,
     image: event.image,
+    sisalto: event.description,
     publishedAt: event.startsAt,
     modifiedAt: event._updatedAt,
   });

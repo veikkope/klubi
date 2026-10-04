@@ -93,6 +93,7 @@ export async function generateMetadata({
     description: resolveDescription(kisa.seoDescription, kisa.tiivistelma),
     path: pathFor(slug),
     image: kisa.kuvat?.[0],
+    sisalto: kisa.kuvaus,
     modifiedAt: kisa._updatedAt,
   });
 }

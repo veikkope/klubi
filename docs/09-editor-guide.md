@@ -86,20 +86,24 @@ toimii niiden varassa. Kehittäjä hoitaa ne.
 5. **Kategoriat:** rastita sopivat (esim. Palloveikkaus, Matkakuvaus, Tapahtumat).
 6. **Julkaise**.
 
-### Jakokuva (kun uutinen jaetaan WhatsAppissa tai Facebookissa)
+### Jakokuva (kun linkki jaetaan WhatsAppissa tai Facebookissa)
 
-Kun uutisen linkki jaetaan, esikatselussa näkyy kuva, otsikko ja sivuston osoite. Kuva
-valitaan automaattisesti tässä järjestyksessä:
+Kun sivuston linkki jaetaan, esikatselussa näkyy kuva, otsikko ja sivuston osoite. Sama
+pätee uutisiin, tapahtumiin, sivuihin, ravintoloihin, klubin toimintaan, gallerioihin ja
+jalkapalloarkistoon. Kuva valitaan automaattisesti tässä järjestyksessä:
 
-1. **Kansikuva**
+1. sivun **oma kuva** (uutisen ja galleria-albumin kansikuva, tapahtuman kuva, sivun
+   yläkuva, ravintolan, stadionin tai pelaajan ensimmäinen kuva)
 2. ensimmäinen **kuva tekstin seassa**
 3. ensimmäisen **YouTube-videon kuva** toistopainikkeella
-4. **klubin logo** valkoisella pohjalla, jos uutisessa ei ole kuvaa eikä videota
+4. **klubin logo** valkoisella pohjalla, jos muuta ei ole
 
-Paras esikatselu syntyy, kun uutiselle lisää kansikuvan. Pidä kuvan tärkein kohta
-keskellä: WhatsApp näyttää kuvan usein pienenä neliönä, joka leikataan keskeltä.
-Kuvaan ei tarvitse lisätä logoa tai tekstiä, koska otsikko ja osoite näkyvät
-esikatselussa kuvan vieressä.
+Paras esikatselu syntyy, kun sivulla on oma kuva. Hyvä kuva on vaakakuva, vähintään
+noin 1200 pikseliä leveä, ja sen tärkein kohta on keskellä: WhatsApp näyttää kuvan
+usein pienenä neliönä, joka leikataan keskeltä. Hyvin pieniä kuvia (esim. vanhan
+sivuston pikkukuvat) ei käytetä, koska ne näyttäisivät suttuisilta; silloin
+esikatselussa on logo. Kuvaan ei tarvitse lisätä logoa tai tekstiä, koska otsikko ja
+osoite näkyvät esikatselussa kuvan vieressä.
 
 WhatsApp ja Facebook muistavat kerran jaetun linkin kuvan. Jos lisäät kuvan vasta
 jakamisen jälkeen, vanha kuva voi näkyä samassa linkissä vielä jonkin aikaa.

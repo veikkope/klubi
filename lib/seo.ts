@@ -22,8 +22,13 @@ export interface BuildMetadataInput {
   description?: string | null;
   /** Absoluuttinen polku, esim. "/ravintolat/mamma-maria". */
   path: string;
-  /** Sanity-kuvalähde tai valmis URL. Jos puuttuu, jakokuvana on klubin logo. */
+  /** Sanity-kuvalähde tai valmis URL. Jos puuttuu, kuva haetaan `sisalto`sta. */
   image?: unknown;
+  /**
+   * Tekstisisältö (Portable Text), josta jakokuva haetaan, kun `image` puuttuu:
+   * ensimmäinen kuva tai YouTube-video. Ilman kumpaakaan jakokuvana on klubin logo.
+   */
+  sisalto?: readonly SisaltoLohko[] | null;
   publishedAt?: string | null;
   modifiedAt?: string | null;
   /** Estä indeksointi (lomakkeiden kiitos-sivut, esikatselut). */
@@ -43,31 +48,70 @@ export interface BuildMetadataInput {
   type?: "website" | "article";
 }
 
-/** OG-kuvan URL: dokumentin oma kuva, muuten klubin logo (app/api/og). */
-function resolveOgImage(image: unknown): string {
-  if (typeof image === "string" && image.length > 0) {
-    return absoluteUrl(image);
-  }
-  const built = urlForImage(image as never)?.width(1200).height(630).fit("crop").url();
-  if (built) return built;
-  return absoluteUrl("/api/og");
+type SisaltoLohko = { _type?: string; asset?: unknown; url?: string };
+
+export type Jakokuva = { url: string; width: number; height: number };
+
+const OG_LEVEYS = 1200;
+const OG_KORKEUS = 630;
+/** Tätä kapeampi rajaus ei kelpaa jakokuvaksi; varalla on logo. */
+const MIN_LEVEYS = 400;
+/** Tekstin seasta otetulta kuvalta vaaditaan enemmän (pienet logot, kaaviot). */
+const MIN_LEVEYS_SISALTO = 600;
+
+/** Kuvan mitat Sanityn kuvaviittauksesta: image-<tunnus>-<leveys>x<korkeus>-<muoto>. */
+function kuvanMitat(image: unknown): { w: number; h: number } | null {
+  const ref = (image as { asset?: { _ref?: string } } | null)?.asset?._ref ?? "";
+  const m = /-(\d+)x(\d+)-[a-z]+$/.exec(ref);
+  return m ? { w: Number(m[1]), h: Number(m[2]) } : null;
 }
 
 /**
- * Jakokuva tekstisisällöstä, kun dokumentilla ei ole omaa kuvaa: ensimmäinen
- * kuva tekstin seasta, muuten ensimmäisen YouTube-videon kuva
- * toistopainikkeella. Palauttaa `buildMetadata`n `image`-arvon tai undefined.
+ * Kuvalähteen jakokuva 1.91:1-rajauksena (hotspotin mukaan). Kuvaa ei
+ * suurenneta yli alkuperäisen: vanhan sivuston pienet kuvat venyisivät
+ * 1200 pikseliin suttuisiksi. Liian pieni kuva → null.
  */
-export function jakokuvaSisallosta(
-  sisalto: readonly { _type?: string; asset?: unknown; url?: string }[] | null | undefined,
-): unknown {
-  const kuva = sisalto?.find((b) => b._type === "imageWithAlt" && b.asset);
-  if (kuva) return kuva;
+function jakokuvaLahteesta(image: unknown, minLeveys = MIN_LEVEYS): Jakokuva | null {
+  if (typeof image === "string" && image.length > 0) {
+    return { url: absoluteUrl(image), width: OG_LEVEYS, height: OG_KORKEUS };
+  }
+  const mitat = kuvanMitat(image);
+  // Suurin rajaus, joka mahtuu kuvaan ilman suurentamista.
+  const leveys = mitat
+    ? Math.floor(Math.min(OG_LEVEYS, mitat.w, (mitat.h * OG_LEVEYS) / OG_KORKEUS))
+    : OG_LEVEYS;
+  if (leveys < minLeveys) return null;
+  const korkeus = Math.round((leveys * OG_KORKEUS) / OG_LEVEYS);
+  const url = urlForImage(image as never)?.width(leveys).height(korkeus).fit("crop").url();
+  return url ? { url, width: leveys, height: korkeus } : null;
+}
+
+/**
+ * Jakokuva tekstisisällöstä: ensimmäinen riittävän iso kuva, muuten
+ * ensimmäisen YouTube-videon kuva toistopainikkeella (app/api/og).
+ */
+function jakokuvaSisallosta(sisalto: readonly SisaltoLohko[] | null | undefined): Jakokuva | null {
+  for (const b of sisalto ?? []) {
+    if (b._type !== "imageWithAlt" || !b.asset) continue;
+    const kuva = jakokuvaLahteesta(b, MIN_LEVEYS_SISALTO);
+    if (kuva) return kuva;
+  }
   for (const b of sisalto ?? []) {
     const video = b._type === "youtubeVideo" ? tulkitseYoutube(b.url) : null;
-    if (video) return `/api/og?video=${video.id}`;
+    if (video) return jakokuvaLahteesta(`/api/og?video=${video.id}`);
   }
-  return undefined;
+  return null;
+}
+
+/**
+ * Jakokuva: dokumentin oma kuva, sitten tekstin kuva tai YouTube-video,
+ * muuten klubin logo (app/api/og). Käytetään myös JSON-LD:ssä.
+ */
+export function resolveOgImage(image: unknown, sisalto?: readonly SisaltoLohko[] | null): Jakokuva {
+  return (
+    jakokuvaLahteesta(image) ??
+    jakokuvaSisallosta(sisalto) ?? { url: absoluteUrl("/api/og"), width: OG_LEVEYS, height: OG_KORKEUS }
+  );
 }
 
 export function buildMetadata(input: BuildMetadataInput): Metadata {
@@ -79,6 +123,7 @@ export function buildMetadata(input: BuildMetadataInput): Metadata {
     description,
     path,
     image,
+    sisalto,
     publishedAt,
     modifiedAt,
     noIndex = false,
@@ -87,7 +132,7 @@ export function buildMetadata(input: BuildMetadataInput): Metadata {
     type = "website",
   } = stegaClean(input);
   const url = absoluteUrl(path);
-  const ogImage = resolveOgImage(image);
+  const ogImage = resolveOgImage(image, sisalto);
   const desc = description?.trim() || undefined;
 
   return {
@@ -107,7 +152,7 @@ export function buildMetadata(input: BuildMetadataInput): Metadata {
       description: desc,
       siteName,
       locale: siteLocale,
-      images: [{ url: ogImage, width: 1200, height: 630, alt: title }],
+      images: [{ ...ogImage, alt: title }],
       ...(type === "article"
         ? {
             publishedTime: publishedAt ?? undefined,
@@ -119,7 +164,7 @@ export function buildMetadata(input: BuildMetadataInput): Metadata {
       card: "summary_large_image",
       title,
       description: desc,
-      images: [ogImage],
+      images: [ogImage.url],
     },
   };
 }

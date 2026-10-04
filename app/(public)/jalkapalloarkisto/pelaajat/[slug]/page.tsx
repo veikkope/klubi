@@ -74,6 +74,7 @@ export async function generateMetadata({
     ),
     path: pathFor(slug),
     image: pelaaja.kuvat?.[0],
+    sisalto: pelaaja.kuvaus,
     modifiedAt: pelaaja._updatedAt,
   });
 }

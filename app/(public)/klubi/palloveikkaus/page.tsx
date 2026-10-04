@@ -32,6 +32,7 @@ export async function generateMetadata(): Promise<Metadata> {
     ),
     path: PALLOVEIKKAUS_PATH,
     image: sivu?.hero,
+    sisalto: sivu?.body,
   });
 }
 

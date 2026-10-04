@@ -39,11 +39,13 @@ async function hae() {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  const { tiedot } = await hae();
+  const { patsas, tiedot } = await hae();
   return buildMetadata({
     title: TITLE,
     description: `Jari Litmasen patsas${tiedot ? ` (${tiedot})` : ""}: patsaan vaiheet kuvina ja uutisina.`,
     path: LITMANEN_PATSAS_PATH,
+    image: jarjestaKuvat((patsas?.kuvat ?? []).filter((k) => k?.asset))[0],
+    sisalto: patsas?.esittely,
   });
 }
 

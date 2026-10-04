@@ -73,7 +73,7 @@ export async function generateMetadata({
       fallbackDescription(album),
     ),
     path: `/galleria/${album.slug}`,
-    image: album.coverImage,
+    image: album.coverImage?.asset ? album.coverImage : album.images?.[0],
     modifiedAt: album._updatedAt,
   });
 }

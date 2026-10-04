@@ -62,6 +62,7 @@ export async function generateMetadata(): Promise<Metadata> {
     ),
     path: PATH,
     image: sivu?.hero,
+    sisalto: sivu?.body,
   });
 }
 

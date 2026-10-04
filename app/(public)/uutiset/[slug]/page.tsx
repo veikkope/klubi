@@ -21,13 +21,12 @@ import {
 } from "@/lib/artikkeli";
 import { formatDate } from "@/lib/format";
 import { rootCrumb } from "@/lib/nav-sections";
-import { absoluteUrl, siteUrl } from "@/lib/site";
+import { siteUrl } from "@/lib/site";
 import { articleSchema, breadcrumbSchema } from "@/lib/schema-org";
-import { buildMetadata, jakokuvaSisallosta, resolveDescription } from "@/lib/seo";
+import { buildMetadata, resolveDescription, resolveOgImage } from "@/lib/seo";
 import { KommentitOsio } from "../_kommentit/kommentit-osio";
 import { hasSanity } from "@/sanity/env";
 import { sanityFetch } from "@/sanity/lib/fetch";
-import { urlForImage } from "@/sanity/lib/image";
 import {
   relatedUutisetQuery,
   uutinenDetailQuery,
@@ -60,17 +59,6 @@ async function getUutinen(slug: string) {
   });
 }
 
-/** Jakokuva: kansikuva, sitten tekstin ensimmäinen kuva tai video (lib/seo.ts). */
-function jakokuva(news: UutinenDetail): unknown {
-  return news.coverImage?.asset ? news.coverImage : jakokuvaSisallosta(news.body);
-}
-
-function ogImageUrl(news: UutinenDetail): string | null {
-  const kuva = jakokuva(news);
-  if (typeof kuva === "string") return absoluteUrl(kuva);
-  return urlForImage(kuva as never)?.width(1200).height(630).fit("crop").url() ?? null;
-}
-
 export async function generateMetadata({
   params,
 }: {
@@ -95,7 +83,8 @@ export async function generateMetadata({
       news.excerpt,
     ),
     path: `/uutiset/${news.slug}`,
-    image: jakokuva(news),
+    image: news.coverImage,
+    sisalto: news.body,
     publishedAt: news.publishedAt,
     modifiedAt: news._updatedAt,
     type: "article",
@@ -143,7 +132,7 @@ export default async function UutinenPage({
             title: news.title,
             description: news.tiivistelma ?? news.excerpt,
             path,
-            image: ogImageUrl(news),
+            image: resolveOgImage(news.coverImage, news.body).url,
             publishedAt: news.publishedAt,
             modifiedAt: news._updatedAt,
           }),

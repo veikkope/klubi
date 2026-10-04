@@ -77,6 +77,7 @@ export async function generateMetadata({
     ),
     path: pathFor(slug),
     image: stadion.images?.[0],
+    sisalto: stadion.description,
     modifiedAt: stadion._updatedAt,
   });
 }
