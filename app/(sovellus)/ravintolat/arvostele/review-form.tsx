@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useActionState, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useFormStatus } from "react-dom";
 import Link from "next/link";
 
@@ -152,6 +152,14 @@ export function ReviewForm(props: Props) {
   const selaimessa = useSyncExternalStore(eiTilausta, () => true, () => false);
   // "Aloita alusta": uusi avain piirtää arvostelun tyhjästä ilman sivun latausta.
   const [kierros, setKierros] = useState(0);
+
+  // Sovellusnäkymä alkaa aina ylhäältä. Tultaessa alas vieritetyltä sivulta
+  // (esim. odottavien listan Arvostele) Next.js:n oma vieritys alkuun ehti
+  // tapahtua ennen kuin selaimessa piirretty näkymä oli paikallaan, ja sivu
+  // jäi vieritetyksi (productionissa 4.10.2026). Ennen piirtoa, ei animaatiota.
+  useLayoutEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  }, []);
   if (!selaimessa) {
     return (
       <Kuori otsikko="Arvostelu">
