@@ -72,6 +72,15 @@ toimii niiden varassa. Kehittäjä hoitaa ne.
    **Tiivistelmän** voi jättää tyhjäksi.
 4. **Kansikuva** ja **Sisältö**. Sisältöön voi lisätä otsikoita, listoja, linkkejä ja
    **kuvia tekstin sekaan**: paina **+** tekstin kohdalla → *Kuva*.
+   **YouTube-video** lisätään samalla tavalla: **+** → *YouTube-video*. Liitä videon
+   osoite (YouTubessa videon alta **Jaa** → **Kopioi**) ja kirjoita lyhyt otsikko, esim.
+   "Huuhkajien maali Unkaria vastaan 2023". Sivulla näkyy videon kuva ja toistopainike;
+   video alkaa, kun lukija painaa sitä. Jos haluat videon alkavan tietystä kohdasta,
+   rastita YouTuben Jaa-ikkunassa *Aloita kohdasta* ennen kopiointia.
+   Pelkän linkin voi edelleen tehdä tekstiin tavallisena linkkinä.
+   Video toimii samoin kaikissa tekstikentissä, joissa on **+**: sivut, tapahtumat,
+   ravintolat ja jalkapalloarkisto (tilastojen esittelyt ja lisätiedot, arvokisat,
+   pelaajat, stadionit, lehtileikkeet).
 5. **Kategoriat:** rastita sopivat (esim. Palloveikkaus, Matkakuvaus, Tapahtumat).
 6. **Julkaise**.
 

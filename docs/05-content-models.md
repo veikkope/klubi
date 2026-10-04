@@ -24,6 +24,13 @@ lohkon `kokoonpano` (Kokoonpano pelikentällä, `components/kokoonpano.tsx`):
 valinnainen `nimi` ruudunlukijalle ja `pelaajat[]` = `nimi` + valinnainen `luku`)
 ja valinnainen `selite`. Varoitus, jos pelaajia on muu määrä kuin 11.
 
+Lohko `youtubeVideo` (`components/youtube-video.tsx`): `url` (pakollinen, mikä
+tahansa YouTube-videon osoitemuoto, `lib/youtube.ts`; `t=`/`start=` → aloituskohta),
+`otsikko` (pakollinen, iframen `title` ja toistopainikkeen teksti) ja valinnainen
+`kuvateksti`. Sivulla esikatselukuva + toistopainike; soitin ladataan vasta
+painalluksesta `youtube-nocookie.com`-osoitteesta (ei evästeitä eikä YouTuben
+skriptejä ennen toistoa). Ilman JavaScriptiä painike on linkki YouTubeen.
+
 ## Sisältötyypit
 
 ### 1. `sivu` (julkinen vapaamuotoinen sivu)

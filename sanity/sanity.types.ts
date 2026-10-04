@@ -157,6 +157,9 @@ export type PortableText = Array<
   | ({
       _key: string;
     } & Kokoonpano)
+  | ({
+      _key: string;
+    } & YoutubeVideo)
 >;
 
 export type Asetukset = {
@@ -930,6 +933,13 @@ export type PaivattyKuva = {
   paivamaara?: string;
 };
 
+export type YoutubeVideo = {
+  _type: "youtubeVideo";
+  url?: string;
+  otsikko?: string;
+  kuvateksti?: string;
+};
+
 export type Kokoonpano = {
   _type: "kokoonpano";
   otsikko?: string;
@@ -1090,6 +1100,7 @@ export type AllSanitySchemaTypes =
   | Tapahtuma
   | Sivu
   | PaivattyKuva
+  | YoutubeVideo
   | Kokoonpano
   | GalleriaKuva
   | SanityImagePaletteSwatch
@@ -1188,6 +1199,13 @@ export type ArvokisaBySlugQueryResult = {
         }>;
         selite?: string;
       }
+    | {
+        _key: string;
+        _type: "youtubeVideo";
+        url?: string;
+        otsikko?: string;
+        kuvateksti?: string;
+      }
   > | null;
   tilastot: Array<{
     _id: string;
@@ -1268,6 +1286,13 @@ export type ArvokisaBySlugQueryResult = {
           }>;
           selite?: string;
         }
+      | {
+          _key: string;
+          _type: "youtubeVideo";
+          url?: string;
+          otsikko?: string;
+          kuvateksti?: string;
+        }
     > | null;
     columns: Array<{
       key: string | null;
@@ -1327,6 +1352,13 @@ export type ArvokisaBySlugQueryResult = {
             _key: string;
           }>;
           selite?: string;
+        }
+      | {
+          _key: string;
+          _type: "youtubeVideo";
+          url?: string;
+          otsikko?: string;
+          kuvateksti?: string;
         }
     > | null;
     kuvat: Array<{
@@ -1437,6 +1469,13 @@ export type ArvokisaMitalitaulukotQueryResult = Array<{
         }>;
         selite?: string;
       }
+    | {
+        _key: string;
+        _type: "youtubeVideo";
+        url?: string;
+        otsikko?: string;
+        kuvateksti?: string;
+      }
   > | null;
   columns: Array<{
     key: string | null;
@@ -1496,6 +1535,13 @@ export type ArvokisaMitalitaulukotQueryResult = Array<{
           _key: string;
         }>;
         selite?: string;
+      }
+    | {
+        _key: string;
+        _type: "youtubeVideo";
+        url?: string;
+        otsikko?: string;
+        kuvateksti?: string;
       }
   > | null;
   kuvat: Array<{
@@ -1633,6 +1679,13 @@ export type PelaajaBySlugQueryResult = {
           }>;
           selite?: string;
         }
+      | {
+          _key: string;
+          _type: "youtubeVideo";
+          url?: string;
+          otsikko?: string;
+          kuvateksti?: string;
+        }
     > | null;
     kuvat: Array<{
       _key: string;
@@ -1693,6 +1746,13 @@ export type PelaajaBySlugQueryResult = {
           _key: string;
         }>;
         selite?: string;
+      }
+    | {
+        _key: string;
+        _type: "youtubeVideo";
+        url?: string;
+        otsikko?: string;
+        kuvateksti?: string;
       }
   > | null;
   tilastot: Array<{
@@ -1774,6 +1834,13 @@ export type PelaajaBySlugQueryResult = {
           }>;
           selite?: string;
         }
+      | {
+          _key: string;
+          _type: "youtubeVideo";
+          url?: string;
+          otsikko?: string;
+          kuvateksti?: string;
+        }
     > | null;
     columns: Array<{
       key: string | null;
@@ -1833,6 +1900,13 @@ export type PelaajaBySlugQueryResult = {
             _key: string;
           }>;
           selite?: string;
+        }
+      | {
+          _key: string;
+          _type: "youtubeVideo";
+          url?: string;
+          otsikko?: string;
+          kuvateksti?: string;
         }
     > | null;
     kuvat: Array<{
@@ -1982,6 +2056,13 @@ export type StadionBySlugQueryResult = {
         }>;
         selite?: string;
       }
+    | {
+        _key: string;
+        _type: "youtubeVideo";
+        url?: string;
+        otsikko?: string;
+        kuvateksti?: string;
+      }
   > | null;
   images: Array<{
     _key: string;
@@ -2112,6 +2193,13 @@ export type TilastotByCategoryQueryResult = Array<{
         }>;
         selite?: string;
       }
+    | {
+        _key: string;
+        _type: "youtubeVideo";
+        url?: string;
+        otsikko?: string;
+        kuvateksti?: string;
+      }
   > | null;
   columns: Array<{
     key: string | null;
@@ -2171,6 +2259,13 @@ export type TilastotByCategoryQueryResult = Array<{
           _key: string;
         }>;
         selite?: string;
+      }
+    | {
+        _key: string;
+        _type: "youtubeVideo";
+        url?: string;
+        otsikko?: string;
+        kuvateksti?: string;
       }
   > | null;
   kuvat: Array<{
@@ -2278,6 +2373,13 @@ export type TilastotByCategoriesQueryResult = Array<{
         }>;
         selite?: string;
       }
+    | {
+        _key: string;
+        _type: "youtubeVideo";
+        url?: string;
+        otsikko?: string;
+        kuvateksti?: string;
+      }
   > | null;
   columns: Array<{
     key: string | null;
@@ -2337,6 +2439,13 @@ export type TilastotByCategoriesQueryResult = Array<{
           _key: string;
         }>;
         selite?: string;
+      }
+    | {
+        _key: string;
+        _type: "youtubeVideo";
+        url?: string;
+        otsikko?: string;
+        kuvateksti?: string;
       }
   > | null;
   kuvat: Array<{
@@ -2444,6 +2553,13 @@ export type TilastoBySlugQueryResult = {
         }>;
         selite?: string;
       }
+    | {
+        _key: string;
+        _type: "youtubeVideo";
+        url?: string;
+        otsikko?: string;
+        kuvateksti?: string;
+      }
   > | null;
   columns: Array<{
     key: string | null;
@@ -2503,6 +2619,13 @@ export type TilastoBySlugQueryResult = {
           _key: string;
         }>;
         selite?: string;
+      }
+    | {
+        _key: string;
+        _type: "youtubeVideo";
+        url?: string;
+        otsikko?: string;
+        kuvateksti?: string;
       }
   > | null;
   kuvat: Array<{
@@ -2651,6 +2774,13 @@ export type HuuhkajatOsioQueryResult = Array<{
         }>;
         selite?: string;
       }
+    | {
+        _key: string;
+        _type: "youtubeVideo";
+        url?: string;
+        otsikko?: string;
+        kuvateksti?: string;
+      }
   > | null;
   columns: Array<{
     key: string | null;
@@ -2710,6 +2840,13 @@ export type HuuhkajatOsioQueryResult = Array<{
           _key: string;
         }>;
         selite?: string;
+      }
+    | {
+        _key: string;
+        _type: "youtubeVideo";
+        url?: string;
+        otsikko?: string;
+        kuvateksti?: string;
       }
   > | null;
   kuvat: Array<{
@@ -2868,6 +3005,13 @@ export type EtusivuQueryResult = {
                 _key: string;
               }>;
               selite?: string;
+            }
+          | {
+              _key: string;
+              _type: "youtubeVideo";
+              url?: string;
+              otsikko?: string;
+              kuvateksti?: string;
             }
         > | null;
         image: {
@@ -3227,6 +3371,13 @@ export type KlubiSivuQueryResult = {
         }>;
         selite?: string;
       }
+    | {
+        _key: string;
+        _type: "youtubeVideo";
+        url?: string;
+        otsikko?: string;
+        kuvateksti?: string;
+      }
   > | null;
   tilastot: Array<{
     _id: string;
@@ -3307,6 +3458,13 @@ export type KlubiSivuQueryResult = {
           }>;
           selite?: string;
         }
+      | {
+          _key: string;
+          _type: "youtubeVideo";
+          url?: string;
+          otsikko?: string;
+          kuvateksti?: string;
+        }
     > | null;
     columns: Array<{
       key: string | null;
@@ -3366,6 +3524,13 @@ export type KlubiSivuQueryResult = {
             _key: string;
           }>;
           selite?: string;
+        }
+      | {
+          _key: string;
+          _type: "youtubeVideo";
+          url?: string;
+          otsikko?: string;
+          kuvateksti?: string;
         }
     > | null;
     kuvat: Array<{
@@ -3475,6 +3640,13 @@ export type KlubiToimintaBySlugQueryResult = {
           _key: string;
         }>;
         selite?: string;
+      }
+    | {
+        _key: string;
+        _type: "youtubeVideo";
+        url?: string;
+        otsikko?: string;
+        kuvateksti?: string;
       }
   > | null;
   kuvat: Array<{
@@ -3594,6 +3766,13 @@ export type KlubiToimintaBySlugQueryResult = {
           }>;
           selite?: string;
         }
+      | {
+          _key: string;
+          _type: "youtubeVideo";
+          url?: string;
+          otsikko?: string;
+          kuvateksti?: string;
+        }
     > | null;
     columns: Array<{
       key: string | null;
@@ -3653,6 +3832,13 @@ export type KlubiToimintaBySlugQueryResult = {
             _key: string;
           }>;
           selite?: string;
+        }
+      | {
+          _key: string;
+          _type: "youtubeVideo";
+          url?: string;
+          otsikko?: string;
+          kuvateksti?: string;
         }
     > | null;
     kuvat: Array<{
@@ -3778,6 +3964,13 @@ export type LehtileikkeetQueryResult = Array<{
           _key: string;
         }>;
         selite?: string;
+      }
+    | {
+        _key: string;
+        _type: "youtubeVideo";
+        url?: string;
+        otsikko?: string;
+        kuvateksti?: string;
       }
   > | null;
 }>;
@@ -4241,6 +4434,13 @@ export type UutinenDetailQueryResult = {
         }>;
         selite?: string;
       }
+    | {
+        _key: string;
+        _type: "youtubeVideo";
+        url?: string;
+        otsikko?: string;
+        kuvateksti?: string;
+      }
   > | null;
   lahde: {
     nimi: string | null;
@@ -4501,6 +4701,13 @@ export type TapahtumaDetailQueryResult = {
           _key: string;
         }>;
         selite?: string;
+      }
+    | {
+        _key: string;
+        _type: "youtubeVideo";
+        url?: string;
+        otsikko?: string;
+        kuvateksti?: string;
       }
   > | null;
   signupUrl: string | null;

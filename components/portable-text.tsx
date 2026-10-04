@@ -7,6 +7,7 @@ import {
 import Link from "next/link";
 import { SanityImage } from "./sanity-image";
 import { Kokoonpano, type KokoonpanoData } from "./kokoonpano";
+import { YoutubeVideo, type YoutubeVideoData } from "./youtube-video";
 import { UusiValilehti } from "@/components/ui/uusi-valilehti";
 import type { SanityImage as SanityImageData } from "@/lib/types";
 
@@ -117,6 +118,11 @@ const components: PortableTextComponents = {
       );
     },
     kokoonpano: kokoonpanoLohko(0),
+    // Vain data client-komponentille: Portable Text antaa lohkoille myös
+    // funktioproppeja (renderNode), joita ei voi välittää palvelimelta.
+    youtubeVideo: ({ value }: { value: YoutubeVideoData }) => (
+      <YoutubeVideo value={{ url: value?.url, otsikko: value?.otsikko, kuvateksti: value?.kuvateksti }} />
+    ),
   },
 };
 

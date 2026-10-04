@@ -4,6 +4,7 @@ import { imageWithAlt } from "./objects/imageWithAlt";
 import { galleriaKuva } from "./objects/galleriaKuva";
 import { portableText } from "./objects/portableText";
 import { kokoonpano } from "./objects/kokoonpano";
+import { youtubeVideo } from "./objects/youtubeVideo";
 import { paivattyKuva } from "./objects/paivattyKuva";
 
 import { sivu } from "./documents/sivu";
@@ -44,6 +45,7 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   galleriaKuva,
   portableText,
   kokoonpano,
+  youtubeVideo,
   paivattyKuva,
   sivu,
   tapahtuma,

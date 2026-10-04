@@ -60,5 +60,7 @@ export const portableText = defineType({
     defineArrayMember({ type: "imageWithAlt" }),
     // Avauskokoonpanot ym. pelikentälle piirrettynä (components/kokoonpano.tsx).
     defineArrayMember({ type: "kokoonpano" }),
+    // YouTube-video esikatselukuvana; soitin latautuu vasta painalluksesta.
+    defineArrayMember({ type: "youtubeVideo" }),
   ],
 });
