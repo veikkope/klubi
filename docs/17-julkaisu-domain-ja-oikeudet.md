@@ -212,4 +212,5 @@ riippuvainen web-muutoksesta C2:n jälkeen.
 | 16 | Arvostelukuvat: tietosuojaselosteen patch (docs/18 §7) | kehittäjä | ✅ 30.9. (varmuuskopio ensin) |
 | 17 | Vercel-osoitteet noindex (`X-Robots-Tag`) | kehittäjä | ✅ 30.9. |
 | 18 | Blogin 29.9. kirjoitus productioniin (`sync:blogspot:production`) | kehittäjä | ✅ 30.9. |
-| 19 | Viikoittainen varmuuskopio: `CRON_SECRET` Verceliin + redeploy, ensimmäisen ajon tarkistus | kehittäjä | koodi ✅ 30.9. · asetus ☐ |
+| 19 | Viikoittainen varmuuskopio: `CRON_SECRET` Verceliin + redeploy, ensimmäisen ajon tarkistus | kehittäjä | koodi ✅ 30.9. · asetus ✅ 4.10. (`/api/varmuuskopio` vastaa 401) · ensimmäinen ajo ma 1.00 UTC ☐ |
+| 20 | Yöllinen huolto `/api/huolto` (arvosanat, orvot arvostelukuvat; sama `CRON_SECRET`) | kehittäjä | koodi ✅ 4.10. · ensimmäisen ajon tarkistus Vercel → Cron Jobs ☐ |

@@ -250,15 +250,21 @@ kirjoiteta käsin, ja ravintolan arvosanakentät ovat lukittuja.
   muuta pisteet ja päivä → **Julkaise**. Uusin arvosana korvaa vanhan, joten
   samaa klubilaista ei lasketa kahdesti. Studio varoittaa, jos yrität lisätä
   klubilaiselle toisen arvosanan samaan ravintolaan.
-- **Uusi klubilainen:** Ravintolat → **Klubilaiset** → **+**.
+- **Uusi klubilainen:** Ravintolat → **Klubilaiset** → **+** → nimi → **Julkaise**. Nimi
+  tulee heti arvostelulomakkeen nimipainikkeisiin. Kahdella klubilaisella ei voi olla
+  samaa nimeä: lisää tarvittaessa sukunimen alkukirjain (esim. "Mikko K.").
+- **Klubilainen lopettaa:** avaa klubilainen ja poista valinta **Näytä arvostelulomakkeella**
+  → **Julkaise**. Nimi poistuu lomakkeelta, mutta hänen aiemmat arvosanansa säilyvät.
+  Klubilaista ei voi poistaa kokonaan, koska ravintoloiden arvosanat viittaavat häneen.
 - Lomakkeelta tullut arvostelu on myös klubilaisen arvosana, kun se on liitetty
   klubilaiseen (ks. alla).
 
 **Kahden klubilaisen sääntö:** ravintola näkyy sivustolla vasta, kun vähintään kaksi
 klubilaista on arvioinut sen. Siihen asti se odottaa listassa **Ravintolat → Odottavat
 toista arvioijaa**, ja se tulee sivulle itsestään, kun toinen arvosana lisätään.
-Klubilaiset näkevät samat paikat sivulla **/ravintolat/odottavat** (linkki
-arvostelulomakkeen yläosassa) ja voivat arvostella ne sieltä suoraan.
+Klubilaiset näkevät samat paikat sivulla **/ravintolat/odottavat** (painike
+Ravintola-arviot-sivun otsikon alla; haku nimellä tai kaupungilla) ja arvostelun
+ravintolavaiheessa, ja voivat arvostella ne sieltä suoraan.
 
 Ravintolasivulla näkyy taulukko **Klubilaisten arvosanat** ja arvosanan alla
 esim. "Keskiarvo 10 klubilaisen arvosanasta". Tuoreimmin arvioidut näkyvät
@@ -279,12 +285,13 @@ Hyväksymätön arvostelu ei näy sivulla edes esikatselussa, vain tässä jonos
 > esikatselusta**, niin näet sivun kuten kävijät.
 
 1. **Ravintolat → Arvostelut: odottavat hyväksyntää**.
-   Tarkista kohta **Klubilainen**: lomake valitsee sen itse, kun arvostelijan nimi
-   on sama kuin klubilaisen. Jos arvostelija on klubilainen eri nimellä, valitse
-   hänet. Jos hän ei ole klubilainen, jätä tyhjäksi: arvostelu näkyy silti, mutta
-   ei vaikuta ravintolan arvosanaan. Klubilaisen arvostelu korvaa hänen aiemman
-   arvosanansa ravintolalle.
+   Tarkista kohta **Klubilainen**: klubilainen valitsee lomakkeella oman nimensä, joten
+   kohta on yleensä valmiiksi oikein. Listassa lukee **Ei klubilainen**, jos arvostelija
+   ei valinnut nimeään. Jos hän kuitenkin on klubilainen, valitse hänet. Muuten jätä
+   tyhjäksi: arvostelu näkyy silti, mutta ei vaikuta ravintolan arvosanaan.
+   Klubilaisen arvostelu korvaa hänen aiemman arvosanansa ravintolalle.
 2. Avaa arvostelu ja lue se. Katso myös kuvat, jos niitä on (listassa näkyy esim. "2 kuvaa").
+   Arvosteluteksti on vapaaehtoinen: pelkät arvosanat ovat kelvollinen arvostelu.
 3. **Hyväksy:** paina **Julkaise**. Arvostelu ja sen kuvat näkyvät ravintolan sivulla.
 4. **Hylkää:** paina **Hylkää arvostelu** (Julkaise-painikkeen vieressä olevasta valikosta) → **Vahvista**.
    Arvostelu ja sen kuvat poistetaan heti.
@@ -306,13 +313,28 @@ Silloin listassa lukee **UUSI: ravintolan nimi**, ja arvostelussa näkyy laatikk
 
 1. Tarkista nimi, kaupunki ja maa. Jos ravintola on jo hakemistossa toisella nimellä,
    valitse se kohtaan **Ravintola** ja paina **Julkaise**.
-2. Muuten paina alareunan vihreää **Hyväksy ja luo ravintola** → **Vahvista**.
-   Ravintola lisätään hakemistoon ja arvostelu julkaistaan sen sivulle.
+2. Muuten paina alareunan vihreää **Hyväksy ja luo ravintola**. Vahvistus kertoo, mitä
+   tapahtuu, ja paina sitten **Vahvista**:
+   - *"…lisätään hakemistoon"*: ravintola luodaan ja arvostelu julkaistaan sen sivulle.
+   - *"…on jo hakemistossa"*: toinen klubilainen on arvostellut saman ravintolan
+     (esim. samalla illallisella), ja ravintola on jo luotu. Arvostelu liitetään siihen;
+     uutta ravintolaa ei synny. Kirjainkoko, ääkköset ja sana "ravintola" eivät haittaa
+     ("Ravintola Savu" ja "Savu" ovat sama).
+
+   Saman illan arvostelut tulevat yleensä samalla nimellä, koska klubilaiset valitsevat
+   ensimmäisen ehdotuksen listasta. Jos nimet poikkeavat selvästi ("Savu" ja "Bistro Savu"),
+   hyväksy ensimmäinen ja valitse toiselle kohtaan **Ravintola** juuri luotu ravintola →
+   **Julkaise**.
 3. Täydennä ravintolan tietoja halutessasi: **Kaikki ravintolat** → ravintola (kuva,
    osoite) → **Julkaise**.
 4. Jos kaupunki oli uusi, avaa se **Kaupungit**-listasta ja valitse maakunta.
 
 Arvostelijalta kysytään vain nimi, joka näkyy arvostelun yhteydessä. Sähköpostia ei kerätä.
+
+**Automaattinen huolto.** Sivusto tarkistaa joka yö ravintoloiden arvosanat ja poistaa
+hylättyjen arvostelujen jälkeen mahdollisesti jääneet käyttämättömät kuvat. Sinun ei
+tarvitse tehdä mitään. Jos arvosteluja tulee tunnissa poikkeuksellisen paljon (yli 30),
+lomake pitää tauon, ettei jono täyty roskapostista.
 
 ### Uuden kaupungin lisääminen (ravintolat)
 

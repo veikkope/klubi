@@ -1,6 +1,8 @@
 import { UserIcon } from "@sanity/icons";
 import { defineField, defineType } from "sanity";
 
+import { apiVersion } from "../../env";
+
 /**
  * Klubilainen: ravintola-arvioija.
  *
@@ -22,7 +24,32 @@ export const klubilainen = defineType({
         "Näkyy ravintolasivun Klubilaisten arvosanat -taulukossa ja arvostelulomakkeen nimivalinnassa. " +
         "Lomakkeen arvostelu liitetään klubilaiseen, kun arvostelija valitsee nimensä.",
       type: "string",
-      validation: (rule) => rule.required().error("Nimi on pakollinen."),
+      validation: (rule) => [
+        rule.required().error("Nimi on pakollinen."),
+        // Arvostelulomakkeen nimipainikkeet erottuvat vain eri nimillä.
+        rule.custom(async (nimi, context) => {
+          if (typeof nimi !== "string" || !nimi.trim()) return true;
+          const id = (context.document?._id ?? "").replace(/^drafts\./, "");
+          const samoja = await context
+            .getClient({ apiVersion })
+            .fetch<number>(
+              `count(*[_type == "klubilainen" && lower(nimi) == lower($nimi) && !(_id in [$id, "drafts." + $id])])`,
+              { nimi: nimi.trim(), id },
+            );
+          return samoja > 0
+            ? "Samanniminen klubilainen on jo olemassa. Lisää sukunimen alkukirjain (esim. \"Mikko K.\"), jotta nimet erottuvat arvostelulomakkeella."
+            : true;
+        }),
+      ],
+    }),
+    defineField({
+      name: "lomakkeella",
+      title: "Näytä arvostelulomakkeella",
+      description:
+        "Klubilainen voi valita nimensä arvostelulomakkeella. Poista valinta, kun klubilainen ei enää arvostele " +
+        "(esim. lopettanut): hänen aiemmat arvosanansa säilyvät ravintoloilla.",
+      type: "boolean",
+      initialValue: true,
     }),
     defineField({
       name: "taulukkoNumero",
@@ -34,5 +61,11 @@ export const klubilainen = defineType({
     }),
   ],
   orderings: [{ title: "Nimi A–Ö", name: "nimiAsc", by: [{ field: "nimi", direction: "asc" }] }],
-  preview: { select: { title: "nimi" } },
+  preview: {
+    select: { title: "nimi", lomakkeella: "lomakkeella" },
+    prepare: ({ title, lomakkeella }) => ({
+      title,
+      subtitle: lomakkeella === false ? "Ei arvostelulomakkeella" : undefined,
+    }),
+  },
 });

@@ -30,7 +30,10 @@ export async function KommentitOsio({
     params: { uutinenId },
     tags: ["kommentti", kommentitTag(uutinenId)],
     fallback: [],
-    useCdn: false,
+    // Buildissa CDN: satoja uutissivuja rinnakkain suoraan API:in ylitti Sanityn
+    // pyyntörajan ja kaatoi buildin (4.10.2026). Ajon aikana ohi CDN:n, jotta
+    // updateTag näyttää uuden viestin heti.
+    useCdn: process.env.NEXT_PHASE === "phase-production-build",
   });
 
   const kaytossa = Boolean(kommentointi?.kaytossa);

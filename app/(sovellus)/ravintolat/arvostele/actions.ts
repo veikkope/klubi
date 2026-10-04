@@ -93,6 +93,14 @@ async function readPhotos(
   return { photos };
 }
 
+/**
+ * Tulvasuoja: jos moderointijonoon on tullut tunnin sisällä näin monta
+ * arvostelua, uusia ei oteta vastaan hetkeen. Klubin normaali käyttö jää
+ * kauas tästä (yhteisellä illallisella kymmenkunta), mutta botti tai
+ * väärinkäyttö ei voi täyttää sihteerin jonoa eikä Sanityn ilmaiskiintiötä.
+ */
+const TULVARAJA_TUNNISSA = 30;
+
 /** Satunnainen `_key` taulukon alkiolle. */
 const arrayKey = () => randomUUID().replace(/-/g, "").slice(0, 12);
 
@@ -236,6 +244,25 @@ export async function submitReview(
     useCdn: false,
     perspective: "published",
   });
+
+  const tunnissa = await writeClient
+    .withConfig({ perspective: "raw" })
+    .fetch<number>(
+      /* groq */ `count(*[_type == "ravintolaKayttajaArvostelu" && _id in path("drafts.**")
+        && dateTime(submittedAt) > dateTime(now()) - 60 * 60])`,
+    )
+    .catch(() => 0);
+  if (tunnissa >= TULVARAJA_TUNNISSA) {
+    console.warn(`[submitReview] tulvasuoja: ${tunnissa} arvostelua tunnin sisällä.`);
+    return {
+      status: "error",
+      message:
+        "Arvosteluja on tullut juuri nyt poikkeuksellisen paljon, joten vastaanotto on hetken tauolla. " +
+        "Arvostelusi on tallessa tässä puhelimessa: yritä uudelleen tunnin kuluttua.",
+      fieldErrors: {},
+      values,
+    };
+  }
 
   let restaurantName: string;
   let restaurantId: string | null = null;

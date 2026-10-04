@@ -572,7 +572,11 @@ export type TuoreArvostelu = {
   nimi?: string | null;
 };
 
-/** Arvostelulomakkeen nimivalinta: klubilaiset aakkosjärjestyksessä. */
+/**
+ * Arvostelulomakkeen nimivalinta: klubilaiset aakkosjärjestyksessä. Piilotetut
+ * (`lomakkeella == false`, esim. lopettaneet) jäävät pois; puuttuva kenttä = näytetään.
+ */
 export const klubilaisetQuery = /* groq */ `
-  *[_type == "klubilainen" && defined(nimi) && !(_id in path("drafts.**"))] | order(lower(nimi) asc){ _id, nimi }
+  *[_type == "klubilainen" && defined(nimi) && !(_id in path("drafts.**")) && lomakkeella != false]
+    | order(lower(nimi) asc){ _id, nimi }
 `;

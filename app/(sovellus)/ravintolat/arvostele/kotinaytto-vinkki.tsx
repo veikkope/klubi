@@ -2,6 +2,8 @@
 
 import { useState, useSyncExternalStore } from "react";
 
+import { siteUrl } from "@/lib/site";
+
 /**
  * Vinkki arvostelun lisäämisestä puhelimen kotinäyttöön (PWA, app/manifest.ts).
  *
@@ -10,6 +12,11 @@ import { useState, useSyncExternalStore } from "react";
  * ja painike avaa selaimen oman asennusikkunan. iPhone/iPad: asennusta ei voi
  * käynnistää sivulta, joten näytetään ohje (Jaa → Lisää Koti-valikkoon).
  * Ei näytetä, kun arvostelu on jo avattu kotinäytöltä tai vinkki on suljettu.
+ *
+ * Vain virallisessa osoitteessa (`siteUrl`): kuvake, muistettu nimi ja
+ * keskeneräinen arvostelu kuuluvat osoitteelle, jossa ne luotiin. Vercelin
+ * väliaikaisesta tai esikatseluosoitteesta lisätty kuvake jäisi osoittamaan
+ * sinne, joten sellaista ei tarjota.
  */
 
 type AsennusTapahtuma = Event & { prompt: () => Promise<void> };
@@ -64,8 +71,9 @@ export function KotinayttoVinkki() {
   const [ohitettu, setOhitettu] = useState(lueOhitettu);
   const [ios] = useState(onIos);
   const [asennettu] = useState(kotinaytolta);
+  const [virallinen] = useState(() => window.location.host === new URL(siteUrl).host);
 
-  if (asennettu || ohitettu || (!tapahtuma && !ios)) return null;
+  if (!virallinen || asennettu || ohitettu || (!tapahtuma && !ios)) return null;
 
   function ohita() {
     setOhitettu(true);
