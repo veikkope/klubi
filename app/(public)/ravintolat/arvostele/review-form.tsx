@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useRef, useState } from "react";
+import { useActionState, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useFormStatus } from "react-dom";
 import Link from "next/link";
 
@@ -427,45 +427,166 @@ function ScoreRow({
   );
 }
 
+const KUUKAUDET = [
+  "tammikuu", "helmikuu", "maaliskuu", "huhtikuu", "toukokuu", "kesäkuu",
+  "heinäkuu", "elokuu", "syyskuu", "lokakuu", "marraskuu", "joulukuu",
+];
+
+const viikonpaiva = new Intl.DateTimeFormat("fi-FI", { weekday: "long", timeZone: "UTC" });
+
+/** "2026-10-04" → "sunnuntai 4.10.2026". */
+function kirjoitettuna(paiva: string): string {
+  const [v, k, p] = paiva.split("-").map(Number);
+  return `${viikonpaiva.format(new Date(`${paiva}T00:00:00Z`))} ${p}.${k}.${v}`;
+}
+
+const iso = (v: number, k: number, p: number) =>
+  `${v}-${String(k).padStart(2, "0")}-${String(p).padStart(2, "0")}`;
+
+/** Kuukauden päivien määrä (k = 1–12). */
+const paiviaKuussa = (v: number, k: number) => new Date(Date.UTC(v, k, 0)).getUTCDate();
+
+/** "YYYY-MM-DD" ± päiviä. */
+function siirra(paiva: string, paivia: number): string {
+  const d = new Date(`${paiva}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + paivia);
+  return d.toISOString().slice(0, 10);
+}
+
+const eiTilausta = () => () => {};
+
 /**
- * Käyntipäivä: oletuksena tämä päivä, arvostelija voi vaihtaa. Päivä täytetään
- * vasta selaimessa, koska palvelimen valmiiksi piirtämä sivu voi olla eiliseltä.
+ * Käyntipäivä suomalaisittain: päivä, kuukausi ja vuosi omina valintoinaan
+ * (selaimen päivämääräkenttä näyttäisi selaimen kielen muodon, esim. kk/pp/vvvv).
+ * Pikavalinnat Tänään ja Eilen kattavat useimmat arvostelut, ja valittu päivä
+ * näytetään kirjoitettuna ("lauantai 3.10.2026").
+ *
+ * Oletus on tämä päivä. Se luetaan vasta selaimessa (`useSyncExternalStore`),
+ * koska välimuistissa oleva sivu voi olla piirretty eilen. Tulevaisuuteen
+ * osuva valinta rajataan tähän päivään; palvelin tarkistaa saman.
  */
 function KayntipaivaField({ error, defaultValue }: { error?: string; defaultValue: string }) {
-  const ref = useRef<HTMLInputElement>(null);
+  const tama = useSyncExternalStore(eiTilausta, tanaan, () => "");
+  // Tyhjä = tämä päivä, kunnes arvostelija valitsee toisen.
+  const [valittu, setValittu] = useState(defaultValue);
+  const arvo = valittu || tama;
   const id = reviewFieldId("kayntipaiva");
+  const eilen = tama ? siirra(tama, -1) : "";
 
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const tama = tanaan();
-    el.max = tama;
-    if (!el.value) el.value = tama;
-  }, []);
+  const [v, k, p] = arvo ? arvo.split("-").map(Number) : [0, 0, 0];
+  const tamaVuosi = tama ? Number(tama.slice(0, 4)) : 0;
+  const vuodet = tamaVuosi
+    ? Array.from({ length: tamaVuosi - Number(KAYNTIPAIVA_MIN.slice(0, 4)) + 1 }, (_, i) => tamaVuosi - i)
+    : [];
+
+  function aseta(uv: number, uk: number, up: number) {
+    const seuraava = iso(uv, uk, Math.min(up, paiviaKuussa(uv, uk)));
+    setValittu(tama && seuraava > tama ? tama : seuraava);
+  }
+
+  const pika = (paiva: string, nimi: string) => (
+    <button
+      type="button"
+      onClick={() => setValittu(paiva)}
+      aria-pressed={arvo === paiva}
+      disabled={!paiva}
+      className={cn(
+        "inline-flex min-h-11 items-center rounded-sm border px-4 text-sm font-medium transition",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        arvo === paiva
+          ? "border-primary bg-primary text-on-primary"
+          : "border-border bg-background text-foreground hover:border-accent hover:text-accent",
+      )}
+    >
+      {nimi}
+    </button>
+  );
+
+  const valinta = "h-12 appearance-auto pr-2";
 
   return (
-    <div className="flex flex-col gap-1.5 sm:max-w-xs">
-      <label htmlFor={id} className={labelClass}>
+    <fieldset
+      className="flex flex-col gap-1.5"
+      aria-describedby={ids(`${id}-ohje`, error && reviewErrorId("kayntipaiva"))}
+    >
+      <legend className={labelClass}>
         {REVIEW_FIELD_LABELS.kayntipaiva}
         <RequiredMark />
-      </label>
+      </legend>
       <p id={`${id}-ohje`} className="text-sm text-muted">
-        Milloin kävit ravintolassa? Vaihda päivä, jos kävit aiemmin.
+        Milloin kävit ravintolassa? Valitse päivä, kuukausi ja vuosi, jos kävit aiemmin.
       </p>
-      <input
-        id={id}
-        name="kayntipaiva"
-        type="date"
-        required
-        min={KAYNTIPAIVA_MIN}
-        defaultValue={defaultValue}
-        ref={ref}
-        aria-invalid={error ? true : undefined}
-        aria-describedby={ids(`${id}-ohje`, error && reviewErrorId("kayntipaiva"))}
-        className={fieldClass}
-      />
+      <input type="hidden" name="kayntipaiva" value={arvo} />
+
+      <div className="mt-1 flex flex-wrap gap-2">
+        {pika(tama, "Tänään")}
+        {pika(eilen, "Eilen")}
+      </div>
+
+      <div className="mt-2 grid grid-cols-[5rem_1fr_6.5rem] gap-2 sm:max-w-md">
+        <label className="flex flex-col gap-1 text-[13px] text-muted">
+          Päivä
+          <select
+            // Virheyhteenvedon linkin kohde.
+            id={id}
+            value={p || ""}
+            onChange={(e) => aseta(v, k, Number(e.target.value))}
+            aria-invalid={error ? true : undefined}
+            className={cn(fieldClass, valinta)}
+          >
+            {!arvo && <option value="">–</option>}
+            {arvo &&
+              Array.from({ length: paiviaKuussa(v, k) }, (_, i) => i + 1).map((n) => (
+                <option key={n} value={n} disabled={iso(v, k, n) > tama}>
+                  {n}.
+                </option>
+              ))}
+          </select>
+        </label>
+        <label className="flex flex-col gap-1 text-[13px] text-muted">
+          Kuukausi
+          <select
+            value={k || ""}
+            onChange={(e) => aseta(v, Number(e.target.value), p)}
+            aria-invalid={error ? true : undefined}
+            className={cn(fieldClass, valinta)}
+          >
+            {!arvo && <option value="">–</option>}
+            {arvo &&
+              KUUKAUDET.map((nimi, i) => (
+                <option key={nimi} value={i + 1} disabled={iso(v, i + 1, 1) > tama}>
+                  {nimi}
+                </option>
+              ))}
+          </select>
+        </label>
+        <label className="flex flex-col gap-1 text-[13px] text-muted">
+          Vuosi
+          <select
+            value={v || ""}
+            onChange={(e) => aseta(Number(e.target.value), k, p)}
+            aria-invalid={error ? true : undefined}
+            className={cn(fieldClass, valinta)}
+          >
+            {!arvo && <option value="">–</option>}
+            {vuodet.map((n) => (
+              <option key={n} value={n}>
+                {n}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+
+      <p aria-live="polite" className="mt-1 text-sm text-foreground">
+        {arvo && (
+          <>
+            Käynti: <strong className="font-semibold">{kirjoitettuna(arvo)}</strong>
+          </>
+        )}
+      </p>
       <FieldMessages field="kayntipaiva" error={error} />
-    </div>
+    </fieldset>
   );
 }
 
