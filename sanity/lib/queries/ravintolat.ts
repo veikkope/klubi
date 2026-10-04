@@ -67,6 +67,8 @@ export type RavintolaDetail = RavintolaCardData & {
   cons?: string[] | null;
   visitedAt?: string | null;
   visits?: string[] | null;
+  /** Klubilaisten hyväksyttyjen arvostelujen käyntipäivät (päivä tai vanhoissa lähetysaika). */
+  arvostelujenKaynnit?: (string | null)[] | null;
   visitContext?: string | null;
   review?: PortableTextBlock[] | null;
   ottelupaivana?: string | null;
@@ -395,6 +397,10 @@ export const ravintolaBySlugQuery = defineQuery(`
     cons,
     visitedAt,
     visits,
+    // Klubilaisten hyväksyttyjen arvostelujen käyntipäivät: klubin käyntejä
+    // nekin. Vanhoissa arvosteluissa ei ole käyntipäivää → lähetysaika.
+    "arvostelujenKaynnit": *[_type == "ravintolaKayttajaArvostelu" && !(_id in path("drafts.**"))
+      && restaurant._ref == ^._id && defined(arvioija)]{ "p": coalesce(kayntipaiva, submittedAt) }.p,
     visitContext,
     automaattinenArvosana,
     review,

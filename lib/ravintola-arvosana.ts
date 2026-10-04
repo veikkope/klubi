@@ -38,7 +38,7 @@ export type KlubilaisenArvio = {
   ratingFood?: number | null;
   ratingPrice?: number | null;
   ratingAtmosphere?: number | null;
-  /** `klubiArvio.paiva` (päivä) tai lomakkeen `submittedAt` (aikaleima). */
+  /** `klubiArvio.paiva`, lomakkeen `kayntipaiva` (päivä) tai vanhan lomakkeen `submittedAt` (aikaleima). */
   paiva?: string | null;
   /** Ruokailutaulukosta tuotu. */
   tuotu?: boolean | null;
@@ -164,7 +164,9 @@ export const KLUBILAISTEN_ARVIOT = /* groq */ `[
   },
   ...*[_type == "ravintolaKayttajaArvostelu" && !(_id in path("drafts.**")) && restaurant._ref == ^._id && defined(arvioija)]{
     "arvioija": arvioija._ref, "nimi": arvioija->nimi,
-    ratingFood, ratingPrice, ratingAtmosphere, "paiva": submittedAt, "tuotu": false, "lahde": "arvostelu"
+    ratingFood, ratingPrice, ratingAtmosphere,
+    // Käyntipäivä; vanhoissa arvosteluissa sitä ei ole, joten lähetysaika.
+    "paiva": coalesce(kayntipaiva, submittedAt), "tuotu": false, "lahde": "arvostelu"
   }
 ]`;
 

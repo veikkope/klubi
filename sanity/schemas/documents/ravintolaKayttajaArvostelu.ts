@@ -87,6 +87,22 @@ export const ravintolaKayttajaArvostelu = defineType({
             : "Valitse ravintola.";
         }),
     }),
+    defineField({
+      name: "kayntipaiva",
+      title: "Käyntipäivä",
+      description:
+        "Milloin arvostelija kävi ravintolassa (lomakkeella oletuksena lähetyspäivä). Klubilaisen " +
+        "arvostelun päivä näkyy ravintolan sivulla klubin käyntinä. Vanhoissa arvosteluissa tyhjä: " +
+        "silloin käytetään lähetyspäivää.",
+      type: "date",
+      options: { dateFormat: "D.M.YYYY" },
+      validation: (rule) =>
+        rule.custom((paiva) =>
+          typeof paiva === "string" && paiva > new Date().toISOString().slice(0, 10)
+            ? "Käyntipäivä ei voi olla tulevaisuudessa."
+            : true,
+        ),
+    }),
     // Arvosana kolmesta osa-alueesta kuten klubin arvioissa (ravintola.ratingFood jne.).
     // Kokonaisarvosana on keskiarvo, ja se lasketaan kyselyssä.
     ...(
@@ -156,11 +172,17 @@ export const ravintolaKayttajaArvostelu = defineType({
       price: "ratingPrice",
       atmosphere: "ratingAtmosphere",
       submittedAt: "submittedAt",
+      kayntipaiva: "kayntipaiva",
       kuvat: "kuvat",
       arvioija: "arvioija._ref",
     },
-    prepare({ name, restaurant, uusi, food, price, atmosphere, submittedAt, kuvat, arvioija }) {
-      const pvm = submittedAt ? new Date(submittedAt).toLocaleDateString("fi-FI") : "";
+    prepare({ name, restaurant, uusi, food, price, atmosphere, submittedAt, kayntipaiva, kuvat, arvioija }) {
+      // Käyntipäivä, vanhoissa arvosteluissa lähetyspäivä.
+      const pvm = kayntipaiva
+        ? new Date(`${kayntipaiva}T12:00:00`).toLocaleDateString("fi-FI")
+        : submittedAt
+          ? new Date(submittedAt).toLocaleDateString("fi-FI")
+          : "";
       const osat = [food, price, atmosphere].filter((v): v is number => typeof v === "number");
       const ka = osat.length === 3 ? `★ ${((food + price + atmosphere) / 3).toFixed(1).replace(".", ",")}` : "";
       const kuvia = Array.isArray(kuvat) ? kuvat.length : 0;

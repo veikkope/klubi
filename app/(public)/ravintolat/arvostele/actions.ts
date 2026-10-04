@@ -21,11 +21,13 @@ import {
   COMMENT_MAX,
   COMMENT_MIN,
   EMPTY_REVIEW_VALUES,
+  kayntipaivaVirhe,
   normalizeSearch,
   RATING_FIELDS,
   RATING_MAX,
   RATING_MIN,
   REVIEW_FIELD_LABELS,
+  tanaan,
   type ReviewField,
   type ReviewFormState,
   type ReviewValues,
@@ -104,6 +106,8 @@ export async function submitReview(
     uusiMaa: text(formData, "uusiMaa"),
     uusiLisatieto: text(formData, "uusiLisatieto"),
     nimi: text(formData, "nimi"),
+    // Puuttuva päivä (esim. selain ilman JavaScriptiä) = tämä päivä.
+    kayntipaiva: text(formData, "kayntipaiva") || tanaan(),
     ruoka: text(formData, "ruoka"),
     hinta: text(formData, "hinta"),
     viihtyvyys: text(formData, "viihtyvyys"),
@@ -153,6 +157,9 @@ export async function submitReview(
   } else if (values.nimi.length > 80) {
     fieldErrors.nimi = "Nimi saa olla enintään 80 merkkiä.";
   }
+
+  const kayntipaivaOngelma = kayntipaivaVirhe(values.kayntipaiva);
+  if (kayntipaivaOngelma) fieldErrors.kayntipaiva = kayntipaivaOngelma;
 
   const ratings: Record<string, number> = {};
   for (const { field, schemaField } of RATING_FIELDS) {
@@ -316,6 +323,7 @@ export async function submitReview(
           }),
       ...ratings,
       comment: values.kommentti,
+      kayntipaiva: values.kayntipaiva,
       ...(kuvat.length > 0 ? { kuvat } : {}),
       submittedAt: new Date().toISOString(),
     });

@@ -37,7 +37,7 @@ import {
   type RavintolaDetail,
   type RavintolaUserReview,
 } from "@/sanity/lib/queries/ravintolat";
-import { voimassaOlevat, type KlubilaisenArvio, type VoimassaOlevaArvio } from "@/lib/ravintola-arvosana";
+import { paivaksi, voimassaOlevat, type KlubilaisenArvio, type VoimassaOlevaArvio } from "@/lib/ravintola-arvosana";
 import type { AlbumImage } from "@/lib/types";
 
 export const revalidate = 3600;
@@ -147,12 +147,20 @@ export default async function RavintolaPage({ params }: PageProps) {
     caption: image.caption,
   }));
 
-  const visits = (r.visits ?? []).filter(Boolean);
-  // Päivät järjestetään itse: ensimmäinen ja viimeisin käynti eivät saa
-  // riippua siitä, missä järjestyksessä ne on Studioon kirjattu.
-  const kaynnit = [...visits].sort();
-  const firstVisit = kaynnit[0] ?? r.visitedAt ?? null;
-  const lastVisit = kaynnit.at(-1) ?? r.visitedAt ?? null;
+  // Klubin käynnit: Studioon kirjatut ja klubilaisten arvostelujen
+  // käyntipäivät, kukin päivä kerran, uusin ensin. Järjestys lasketaan itse,
+  // jotta ensimmäinen ja viimeisin käynti eivät riipu kirjausjärjestyksestä.
+  const visits = [
+    ...new Set(
+      [...(r.visits ?? []), ...(r.arvostelujenKaynnit ?? []).map((p) => paivaksi(p))].filter(
+        (p): p is string => Boolean(p),
+      ),
+    ),
+  ]
+    .sort()
+    .reverse();
+  const firstVisit = visits.at(-1) ?? r.visitedAt ?? null;
+  const lastVisit = visits[0] ?? r.visitedAt ?? null;
   const hasReview = Boolean(r.review && r.review.length > 0);
 
   return (

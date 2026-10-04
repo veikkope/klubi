@@ -16,6 +16,7 @@ export const REVIEW_FIELDS = [
   "uusiKaupunki",
   "uusiMaa",
   "uusiLisatieto",
+  "kayntipaiva",
   "ruoka",
   "hinta",
   "viihtyvyys",
@@ -32,6 +33,7 @@ export const REVIEW_FIELD_LABELS: Record<ReviewField, string> = {
   uusiKaupunki: "Kaupunki",
   uusiMaa: "Maa",
   uusiLisatieto: "Osoite tai verkkosivu",
+  kayntipaiva: "Käyntipäivä",
   ruoka: "Ruoka",
   hinta: "Hinta",
   viihtyvyys: "Viihtyvyys",
@@ -68,6 +70,8 @@ export const EMPTY_REVIEW_VALUES: ReviewValues = {
   uusiKaupunki: "",
   uusiMaa: "Suomi",
   uusiLisatieto: "",
+  // Tyhjä = tämä päivä: lomake täyttää sen selaimessa, palvelin varmistaa.
+  kayntipaiva: "",
   ruoka: "",
   hinta: "",
   viihtyvyys: "",
@@ -96,6 +100,34 @@ export const RATING_FIELDS = [
 /** Osa-alueen arvosana 1,0–5,0 yhden desimaalin tarkkuudella. */
 export const RATING_MIN = 1;
 export const RATING_MAX = 5;
+
+/** Vanhin hyväksyttävä käyntipäivä (klubin ensimmäiset ravintolakäynnit). */
+export const KAYNTIPAIVA_MIN = "1990-01-01";
+
+const helsinkiPaiva = new Intl.DateTimeFormat("sv-SE", {
+  timeZone: "Europe/Helsinki",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
+
+/** Tämä päivä Helsingin aikaa, "YYYY-MM-DD" (sama selaimessa ja palvelimella). */
+export function tanaan(): string {
+  return helsinkiPaiva.format(new Date());
+}
+
+/**
+ * Käyntipäivän tarkistus. Palauttaa virheilmoituksen tai null.
+ * Päivä ei saa olla tulevaisuudessa eikä ennen `KAYNTIPAIVA_MIN`-päivää.
+ */
+export function kayntipaivaVirhe(arvo: string, tama = tanaan()): string | null {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(arvo);
+  const paiva = m ? new Date(Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3]))) : null;
+  if (!paiva || paiva.toISOString().slice(0, 10) !== arvo) return "Anna käyntipäivä muodossa pp.kk.vvvv.";
+  if (arvo > tama) return "Käyntipäivä ei voi olla tulevaisuudessa.";
+  if (arvo < KAYNTIPAIVA_MIN) return "Tarkista käyntipäivän vuosi.";
+  return null;
+}
 
 export const COMMENT_MIN = 10;
 export const COMMENT_MAX = 1000;

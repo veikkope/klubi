@@ -12,6 +12,7 @@ import {
   COMMENT_MAX,
   COMMENT_MIN,
   INITIAL_REVIEW_STATE,
+  KAYNTIPAIVA_MIN,
   RATING_FIELDS,
   RATING_MAX,
   RATING_MIN,
@@ -19,6 +20,7 @@ import {
   REVIEW_FIELD_LABELS,
   reviewErrorId,
   reviewFieldId,
+  tanaan,
   type ReviewField,
   type ReviewFormState,
 } from "./form-state";
@@ -27,7 +29,8 @@ import { PhotoPicker, type PhotoDraft } from "./photo-picker";
 import { RestaurantPicker } from "./restaurant-picker";
 
 /**
- * Arvostelulomake kolmessa vaiheessa: ravintola, arvio, nimi.
+ * Arvostelulomake kolmessa vaiheessa: ravintola, arvio (käyntipäivä, arvosanat,
+ * teksti, kuvat), nimi.
  *
  * Client Component, jotta haku, tähdet ja virheet toimivat ilman sivunlatausta.
  * Lähetys menee Server Actionille, joka validoi ja tallentaa (actions.ts).
@@ -167,6 +170,7 @@ export function ReviewForm({
 
       <Step number={2} title="Millainen kokemus oli?">
         <div className="flex flex-col gap-6">
+          <KayntipaivaField error={state.fieldErrors.kayntipaiva} defaultValue={state.values.kayntipaiva} />
           <RatingsField values={state.values} errors={state.fieldErrors} />
           <CommentField error={state.fieldErrors.kommentti} defaultValue={state.values.kommentti} />
           <PhotoPicker
@@ -419,6 +423,48 @@ function ScoreRow({
         </p>
       )}
       <FieldMessages field={field} error={error} />
+    </div>
+  );
+}
+
+/**
+ * Käyntipäivä: oletuksena tämä päivä, arvostelija voi vaihtaa. Päivä täytetään
+ * vasta selaimessa, koska palvelimen valmiiksi piirtämä sivu voi olla eiliseltä.
+ */
+function KayntipaivaField({ error, defaultValue }: { error?: string; defaultValue: string }) {
+  const ref = useRef<HTMLInputElement>(null);
+  const id = reviewFieldId("kayntipaiva");
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const tama = tanaan();
+    el.max = tama;
+    if (!el.value) el.value = tama;
+  }, []);
+
+  return (
+    <div className="flex flex-col gap-1.5 sm:max-w-xs">
+      <label htmlFor={id} className={labelClass}>
+        {REVIEW_FIELD_LABELS.kayntipaiva}
+        <RequiredMark />
+      </label>
+      <p id={`${id}-ohje`} className="text-sm text-muted">
+        Milloin kävit ravintolassa? Vaihda päivä, jos kävit aiemmin.
+      </p>
+      <input
+        id={id}
+        name="kayntipaiva"
+        type="date"
+        required
+        min={KAYNTIPAIVA_MIN}
+        defaultValue={defaultValue}
+        ref={ref}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={ids(`${id}-ohje`, error && reviewErrorId("kayntipaiva"))}
+        className={fieldClass}
+      />
+      <FieldMessages field="kayntipaiva" error={error} />
     </div>
   );
 }
