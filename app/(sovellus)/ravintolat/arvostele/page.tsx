@@ -2,19 +2,83 @@ import type { Metadata, Viewport } from "next";
 import Link from "next/link";
 
 import { JsonLd } from "@/components/seo/json-ld";
+import { ravintolaAvain } from "@/lib/ravintolan-nimi";
 import { buildMetadata } from "@/lib/seo";
 import { webPageSchema } from "@/lib/schema-org";
 import { getYhteysSahkoposti } from "@/lib/yhteystiedot";
+import { readToken } from "@/sanity/env";
+import { client } from "@/sanity/lib/client";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import {
   klubilaisetQuery,
   ravintolaOptionsQuery,
+  tuoreetArvostelutQuery,
   type KlubilainenOption,
   type RavintolaOption,
+  type TuoreArvostelu,
 } from "@/sanity/lib/queries/ravintolat";
+import { TUOREET_TAG } from "./form-state";
 import { ReviewForm } from "./review-form";
 
 export const revalidate = 3600;
+
+/** Montako viimeksi arvosteltua ravintolaa näytetään ravintolavaiheessa. */
+const TUOREITA = 5;
+
+/** Haussa löytyvät klubilaisten uudet ehdotukset (kukin kerran). */
+const EHDOTUKSIA = 30;
+
+/**
+ * Viimeksi arvostellut ravintolat (uusin ensin, kukin kerran) ja kaikki
+ * klubilaisten odottavat uuden ravintolan ehdotukset haun käyttöön.
+ * Lukutunnuksella mukana myös hyväksymättömät lähetykset (vain viite, aika,
+ * klubilaisen nimi ja ehdotuksen nimi; ks. tuoreetArvostelutQuery). Sama
+ * ehdotus tunnistetaan samalla säännöllä kuin lähetyksessä ja hyväksynnässä
+ * (lib/ravintolan-nimi.ts). Apuominaisuus: virhe ei kaada sivua.
+ */
+async function tuoreetArvostelut(
+  ravintolat: RavintolaOption[],
+): Promise<{ tuoreet: TuoreArvostelu[]; ehdotukset: TuoreArvostelu[] }> {
+  if (!client) return { tuoreet: [], ehdotukset: [] };
+  const lukija = client.withConfig({
+    useCdn: false,
+    ...(readToken ? { token: readToken, perspective: "raw" as const } : {}),
+  });
+  try {
+    const rivit = await lukija.fetch<TuoreArvostelu[]>(tuoreetArvostelutQuery, {}, {
+      next: { tags: [TUOREET_TAG, "ravintolaKayttajaArvostelu"], revalidate: 60 },
+    });
+    const tunnetut = new Set(ravintolat.map((r) => r._id));
+    const nahty = new Set<string>();
+    const tuoreet: TuoreArvostelu[] = [];
+    const ehdotukset: TuoreArvostelu[] = [];
+    for (const rivi of rivit) {
+      let avain: string;
+      if (rivi.ravintola) {
+        if (!tunnetut.has(rivi.ravintola)) continue;
+        avain = rivi.ravintola;
+      } else if (rivi.uusi?.nimi?.trim() && rivi.uusi.kaupunki?.trim()) {
+        rivi.uusi = {
+          nimi: rivi.uusi.nimi.trim().slice(0, 100),
+          kaupunki: rivi.uusi.kaupunki.trim().slice(0, 60),
+          maa: rivi.uusi.maa?.trim().slice(0, 60) || null,
+        };
+        avain = `uusi:${ravintolaAvain(rivi.uusi.nimi, rivi.uusi.kaupunki)}`;
+      } else {
+        continue;
+      }
+      // Uusin rivi edustaa ravintolaa tai ehdotusta.
+      if (nahty.has(avain)) continue;
+      nahty.add(avain);
+      if (tuoreet.length < TUOREITA) tuoreet.push(rivi);
+      if (rivi.uusi && ehdotukset.length < EHDOTUKSIA) ehdotukset.push(rivi);
+    }
+    return { tuoreet, ehdotukset };
+  } catch (error) {
+    console.error("[arvostele] viimeksi arvostellut epäonnistui:", error);
+    return { tuoreet: [], ehdotukset: [] };
+  }
+}
 
 const TITLE = "Arvostele ravintola";
 const PATH = "/ravintolat/arvostele";
@@ -63,6 +127,7 @@ export default async function ArvostelePage({
   ]);
 
   const preselected = wanted ? restaurants.find((r) => r.slug === wanted)?._id : undefined;
+  const { tuoreet, ehdotukset } = await tuoreetArvostelut(restaurants);
 
   return (
     <>
@@ -70,7 +135,13 @@ export default async function ArvostelePage({
       {restaurants.length === 0 ? (
         <UnavailableNotice email={email} />
       ) : (
-        <ReviewForm restaurants={restaurants} klubilaiset={klubilaiset} defaultRestaurantId={preselected} />
+        <ReviewForm
+          restaurants={restaurants}
+          klubilaiset={klubilaiset}
+          tuoreet={tuoreet}
+          ehdotukset={ehdotukset}
+          defaultRestaurantId={preselected}
+        />
       )}
       <noscript>
         <p className="mx-auto max-w-xl px-4 py-10 text-center text-muted">

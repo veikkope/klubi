@@ -21,6 +21,11 @@ import { parseScore } from "./vaiheet";
 
 /** Arvostelun kentät: arvosanat, käyntipäivä ja vapaaehtoinen teksti. */
 
+/** Tarkistusyhteenvedon rivi (review-form.tsx): selite, arvo ja "Muuta". */
+export const yhteenvetoRivi =
+  "flex min-h-[2.875rem] w-full items-center gap-3 px-4 py-1.5 text-left transition hover:bg-background active:bg-surface-strong " +
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring";
+
 /** Välilyönnillä erotettu id-lista `aria-describedby`:lle; tyhjät pois. */
 function ids(...values: (string | false | undefined)[]): string | undefined {
   const list = values.filter(Boolean);
@@ -293,19 +298,12 @@ export function KayntipaivaField({ error, defaultValue }: { error?: string; defa
 
   const valinta = "h-12 appearance-auto pr-2";
 
+  // Tiivis rivi tarkistusyhteenvedossa (review-form.tsx): koko rivi avaa valinnat.
   if (!auki && !error) {
-    const nimi = arvo === tama ? "tänään" : arvo === eilen ? "eilen" : null;
+    const nimi = arvo === tama ? "Tänään" : arvo === eilen ? "Eilen" : null;
     return (
-      <div className="flex min-h-12 items-center justify-between gap-3 rounded-sm border border-border bg-surface px-4 py-1">
+      <>
         <input type="hidden" name="kayntipaiva" value={arvo} />
-        <p aria-live="polite" className="min-w-0 text-[15px] text-foreground">
-          <span className="text-muted">Käynti </span>
-          {arvo && (
-            <strong className="font-semibold">
-              {nimi ? `${nimi}, ${kirjoitettuna(arvo).split(" ")[1]}` : kirjoitettuna(arvo)}
-            </strong>
-          )}
-        </p>
         <button
           id={id}
           type="button"
@@ -313,18 +311,23 @@ export function KayntipaivaField({ error, defaultValue }: { error?: string; defa
             setAuki(true);
             requestAnimationFrame(() => document.getElementById(id)?.focus());
           }}
-          aria-label="Vaihda käyntipäivä"
-          className="-mr-2 min-h-11 shrink-0 rounded-sm px-3 text-sm font-semibold text-accent underline underline-offset-4 hover:text-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className={yhteenvetoRivi}
         >
-          Vaihda
+          <span className="w-24 shrink-0 text-sm text-muted">Käynti</span>
+          <span aria-live="polite" className="min-w-0 flex-1 truncate text-[15px] font-semibold text-foreground">
+            {arvo && (nimi ? `${nimi}, ${kirjoitettuna(arvo).split(" ")[1]}` : kirjoitettuna(arvo))}
+          </span>
+          <span className="shrink-0 text-sm font-semibold text-accent">
+            Muuta<span className="sr-only"> käyntipäivää</span>
+          </span>
         </button>
-      </div>
+      </>
     );
   }
 
   return (
     <fieldset
-      className="flex flex-col gap-1.5"
+      className="flex flex-col gap-1.5 px-4 py-3"
       aria-describedby={ids(`${id}-ohje`, error && reviewErrorId("kayntipaiva"))}
     >
       <legend className={labelClass}>{REVIEW_FIELD_LABELS.kayntipaiva}</legend>
@@ -418,14 +421,15 @@ export function CommentField({ error, defaultValue }: { error?: string; defaultV
       <textarea
         id={id}
         name="kommentti"
-        rows={3}
+        // Kasvaa tekstin mukana (field-sizing), muuten kaksi riviä.
+        rows={2}
         maxLength={COMMENT_MAX}
         defaultValue={defaultValue}
         onInput={(e) => setLength(e.currentTarget.value.length)}
         aria-invalid={error ? true : undefined}
         placeholder="Mitä söit, miten palvelu toimi, suosittelisitko?"
         aria-describedby={ids(`${id}-laskuri`, error && reviewErrorId("kommentti"))}
-        className={cn(fieldClass, "resize-y bg-surface leading-relaxed")}
+        className={cn(fieldClass, "max-h-60 min-h-16 resize-y bg-surface leading-relaxed field-sizing-content")}
       />
       <div className="flex items-start justify-between gap-4 empty:hidden">
         <FieldMessages field="kommentti" error={error} />

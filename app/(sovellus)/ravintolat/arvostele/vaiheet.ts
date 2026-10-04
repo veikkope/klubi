@@ -23,7 +23,7 @@ export const VAIHEEN_OTSIKKO: Record<Vaihe, string> = {
   kuka: "Kuka arvostelee?",
   ravintola: "Mitä ravintolaa arvostelet?",
   arvosanat: "Arvosanat 1,0–5,0",
-  lisaa: "Kerro lisää",
+  lisaa: "Tarkista ja lähetä",
 };
 
 /** Missä vaiheessa kukin kenttä on (palvelimen virhe vie oikeaan vaiheeseen). */

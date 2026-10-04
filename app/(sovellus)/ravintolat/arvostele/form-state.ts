@@ -104,6 +104,13 @@ export const RATING_FIELDS = [
 export const RATING_MIN = 1;
 export const RATING_MAX = 5;
 
+/**
+ * Viimeksi arvosteltujen ravintoloiden välimuistitagi: sivu (page.tsx) merkitsee
+ * haun sillä, ja lähetys (actions.ts, updateTag) tyhjentää sen, jolloin seuraava
+ * klubilainen näkee juuri arvostellun ravintolan heti listan kärjessä.
+ */
+export const TUOREET_TAG = "arvostelut-tuoreet";
+
 /** Laitteelle muistettu arvostelija (localStorage), ettei nimeä kysytä joka kerta. */
 export const ARVOSTELIJA_AVAIN = "klubi.arvostelija";
 
@@ -153,16 +160,5 @@ export function reviewErrorId(field: ReviewField): string {
   return `arvostelu-${field}-virhe`;
 }
 
-/**
- * Hakuvertailun normalisointi: pienet kirjaimet, ei diakriittejä eikä
- * välimerkkejä ("Hämeenlinna" löytyy haulla "hameenlinna", "Café" haulla "cafe").
- * Käytetään sekä haussa että palvelimella kaksoiskappaleiden tunnistamisessa.
- */
-export function normalizeSearch(value: string): string {
-  return value
-    .normalize("NFD")
-    .replace(/\p{Diacritic}/gu, "")
-    .toLocaleLowerCase("fi-FI")
-    .replace(/[^a-z0-9]+/g, " ")
-    .trim();
-}
+/** Hakuvertailun normalisointi (yhteinen, lib/haku.ts). */
+export { normalizeSearch } from "@/lib/haku";

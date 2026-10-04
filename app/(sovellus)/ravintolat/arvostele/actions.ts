@@ -2,6 +2,7 @@
 
 import { randomUUID } from "node:crypto";
 
+import { updateTag } from "next/cache";
 import { createClient } from "next-sanity";
 
 import {
@@ -15,18 +16,19 @@ import {
   validatePhotos,
   type CleanPhoto,
 } from "@/lib/arvostelukuvat";
+import { ravintolaAvain } from "@/lib/ravintolan-nimi";
 import { ilmoitaOsoitteeseen } from "@/lib/yhteystiedot";
 import { apiVersion, dataset, hasSanity, projectId } from "@/sanity/env";
 import {
   COMMENT_MAX,
   EMPTY_REVIEW_VALUES,
   kayntipaivaVirhe,
-  normalizeSearch,
   RATING_FIELDS,
   RATING_MAX,
   RATING_MIN,
   REVIEW_FIELD_LABELS,
   tanaan,
+  TUOREET_TAG,
   type ReviewField,
   type ReviewFormState,
   type ReviewValues,
@@ -45,8 +47,11 @@ import {
  * ravintola (`ehdotettuRavintola`, ei viittausta). Uuden ravintolan arvostelua
  * ei voi julkaista ennen kuin sihteeri luo ravintolan: Studion toiminto
  * "Hyväksy ja luo ravintola" tekee sen yhdellä painalluksella
- * (sanity/actions/hyvaksy-ja-luo-ravintola.tsx). Jos ehdotettu ravintola on jo
- * hakemistossa (sama nimi ja kaupunki), arvostelu liitetään siihen suoraan.
+ * (sanity/actions/hyvaksy-ja-luo-ravintola.tsx). Saman ravintolan tunnistus
+ * (lib/ravintolan-nimi.ts): jos ehdotettu ravintola on jo hakemistossa,
+ * arvostelu liitetään siihen suoraan; jos toinen klubilainen on jo ehdottanut
+ * samaa (odottaa hyväksyntää), ehdotus kirjoitetaan samoin, jolloin hyväksyntä
+ * luo yhden ravintolan molemmille.
  *
  * Tietojen minimointi (GDPR art. 5): arvostelijalta kysytään vain julkaistava
  * nimi (klubilainen valitsee omansa listasta). Sähköpostia ei kerätä, koska
@@ -240,15 +245,31 @@ export async function submitReview(
   try {
 
     if (isNew) {
+      const avain = ravintolaAvain(values.uusiNimi, values.uusiKaupunki);
       // Onko ehdotettu ravintola jo hakemistossa? Liitetään silloin suoraan.
       const all = await writeClient.fetch<{ _id: string; name: string; city: string | null }[]>(
         /* groq */ `*[_type == "ravintola"]{ _id, name, "city": city->name }`,
       );
-      const name = normalizeSearch(values.uusiNimi);
-      const city = normalizeSearch(values.uusiKaupunki);
-      const match = all.find(
-        (r) => normalizeSearch(r.name) === name && normalizeSearch(r.city ?? "") === city,
-      );
+      const match = all.find((r) => ravintolaAvain(r.name, r.city ?? "") === avain);
+      if (!match) {
+        // Onko toinen klubilainen jo ehdottanut samaa (luonnos, odottaa hyväksyntää)?
+        // Vanhin ehdotus ratkaisee kirjoitusasun, jotta kaikki saman illan
+        // arvostelut kirjoitetaan samoin ja hyväksyntä yhdistää ne.
+        const odottavat = await writeClient
+          .withConfig({ perspective: "raw" })
+          .fetch<{ nimi?: string; kaupunki?: string; maa?: string }[]>(
+            /* groq */ `*[_type == "ravintolaKayttajaArvostelu" && _id in path("drafts.**")
+              && !defined(restaurant._ref) && defined(ehdotettuRavintola.nimi) && defined(ehdotettuRavintola.kaupunki)
+              && dateTime(submittedAt) > dateTime(now()) - 60 * 60 * 24 * 30]
+              | order(submittedAt asc).ehdotettuRavintola`,
+          );
+        const sama = odottavat.find((e) => e.nimi && e.kaupunki && ravintolaAvain(e.nimi, e.kaupunki) === avain);
+        if (sama?.nimi && sama.kaupunki) {
+          values.uusiNimi = sama.nimi;
+          values.uusiKaupunki = sama.kaupunki;
+          if (sama.maa) values.uusiMaa = sama.maa;
+        }
+      }
       restaurantId = match?._id ?? null;
       restaurantName = match?.name ?? values.uusiNimi;
     } else {
@@ -353,6 +374,9 @@ export async function submitReview(
       values,
     };
   }
+
+  // Ravintola heti seuraavien arvostelijoiden "Viimeksi arvioidut" -listan kärkeen.
+  if (restaurantId) updateTag(TUOREET_TAG);
 
   return {
     status: "success",

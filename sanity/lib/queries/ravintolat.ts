@@ -530,6 +530,48 @@ export const ravintolaOptionsQuery = /* groq */ `
   }
 `;
 
+/**
+ * Viimeksi arvostellut ravintolat arvostelun ravintolavaiheeseen: kun klubilaiset
+ * syövät yhdessä, ensimmäisen lähettämä arvostelu nostaa ravintolan seuraaville
+ * listan kärkeen. Haetaan lukutunnuksella myös luonnokset (hyväksymättömät
+ * lähetykset), mutta vain ravintolan viite, lähetysaika ja klubilaisen nimi
+ * Studiosta: arvostelun tekstiä ei palauteta.
+ *
+ * Myös uuden ravintolan ehdotukset (ei vielä hakemistossa), jotta saman illan
+ * muut klubilaiset voivat valita saman ehdotuksen: arvostelut saavat silloin
+ * täsmälleen saman nimen ja kaupungin, ja "Hyväksy ja luo ravintola" liittää
+ * ne yhteen ravintolaan. Hyväksymätön nimi on kävijän kirjoittama, joten
+ * ehdotuksista näytetään vain klubilaiseen liitetyt ja viimeisen 7 päivän ajalta.
+ */
+export const tuoreetArvostelutQuery = /* groq */ `
+  *[_type == "ravintolaKayttajaArvostelu" && defined(submittedAt) && (
+      defined(restaurant._ref)
+      || (defined(ehdotettuRavintola.nimi) && defined(ehdotettuRavintola.kaupunki) && defined(arvioija)
+          && dateTime(submittedAt) > dateTime(now()) - 60 * 60 * 24 * 7)
+    )]
+    | order(submittedAt desc)[0...60]{
+      "ravintola": restaurant._ref,
+      "uusi": select(!defined(restaurant._ref) => ehdotettuRavintola{ nimi, kaupunki, maa }),
+      "aika": submittedAt,
+      "arvioija": arvioija._ref,
+      "nimi": arvioija->nimi
+    }
+`;
+
+/** Uuden ravintolan ehdotus (ei vielä hakemistossa). */
+export type UusiEhdotus = { nimi: string; kaupunki: string; maa?: string | null };
+
+export type TuoreArvostelu = {
+  /** Hakemiston ravintola; puuttuu uuden ravintolan ehdotukselta. */
+  ravintola?: string | null;
+  uusi?: UusiEhdotus | null;
+  /** Lähetysaika (ISO). */
+  aika: string;
+  /** Klubilaisen _id; puuttuu muulta kuin klubilaiselta. */
+  arvioija?: string | null;
+  nimi?: string | null;
+};
+
 /** Arvostelulomakkeen nimivalinta: klubilaiset aakkosjärjestyksessä. */
 export const klubilaisetQuery = /* groq */ `
   *[_type == "klubilainen" && defined(nimi) && !(_id in path("drafts.**"))] | order(lower(nimi) asc){ _id, nimi }

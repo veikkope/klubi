@@ -24,6 +24,7 @@ import {
   virheenVaihe,
   type Edistyminen,
 } from "../app/(sovellus)/ravintolat/arvostele/vaiheet";
+import { kaupunkiAvain, nimiAvain, ravintolaAvain } from "../lib/ravintolan-nimi";
 
 let ok = 0;
 function test(nimi: string, fn: () => void) {
@@ -141,6 +142,23 @@ test("muistettu arvostelija: klubilaisen nimi Studiosta, poistettu unohdetaan", 
   assert.equal(lueArvostelija(JSON.stringify({ klubilainen: "", nimi: "A" }), klubilaiset), null);
   assert.equal(lueArvostelija("null", klubilaiset), null);
   assert.equal(lueArvostelija("rikki", klubilaiset), null);
+});
+
+test("sama ravintola: kirjainkoko, ääkköset, välimerkit ja yleissanat ohitetaan", () => {
+  assert.equal(ravintolaAvain("Ravintola Savu", "Lahti"), ravintolaAvain("savu!", "LAHTI"));
+  assert.equal(ravintolaAvain("Café Kärpänen Oy", "Hämeenlinna"), ravintolaAvain("cafe karpanen", "hameenlinna"));
+  assert.equal(nimiAvain("Restaurant  The Grill"), "grill");
+  assert.equal(kaupunkiAvain(" Hämeenlinna "), "hameenlinna");
+});
+
+test("eri ravintola: eri nimi tai eri kaupunki", () => {
+  assert.notEqual(ravintolaAvain("Savu", "Lahti"), ravintolaAvain("Savu Bistro", "Lahti"));
+  assert.notEqual(ravintolaAvain("Savu", "Lahti"), ravintolaAvain("Savu", "Hollola"));
+});
+
+test("pelkistä yleissanoista koostuva nimi säilyy", () => {
+  assert.equal(nimiAvain("Ravintola"), "ravintola");
+  assert.notEqual(ravintolaAvain("Ravintola", "Lahti"), ravintolaAvain("Restaurant", "Lahti"));
 });
 
 console.log(`\n${ok} testiä läpi.`);

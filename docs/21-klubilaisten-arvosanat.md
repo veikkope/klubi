@@ -40,13 +40,24 @@ mahtuvat iPhone 13 -kokoiselle ruudulle ilman vieritystä (mitattu).
 | Vaihe | Sisältö |
 |---|---|
 | Kuka arvostelee | Vain kun laite ei muista nimeä. Klubilaisen nimen napautus vie eteenpäin ja muistetaan (`localStorage` `klubi.arvostelija`); lomake lähettää klubilaisen `_id`:n, joten liitos ei riipu kirjoitusasusta. "En ole klubilainen" → nimikenttä |
-| Ravintola | Haku ylhäällä, "Lisää uusi ravintola" heti sen alla. Ennen kirjoittamista toista arvioijaa odottavat (ilman arvostelijan itse jo arvioimia). Napautus vie eteenpäin. Uudesta ravintolasta nimi ja kaupunki; maa (oletus Suomi) ja osoite "Maa ja osoite" -kohdan takana |
+| Ravintola | "Arvostelijana Elias · Vaihda" (väärä nimi huomataan heti). Haku ylhäällä, "Lisää uusi ravintola" heti sen alla. Ennen kirjoittamista **Viimeksi arvioidut** (5, uusin ensin, myös hyväksymättömät lähetykset: yhdessä syötäessä ensimmäisen arvostelu nostaa ravintolan muiden kärkeen; lähetys tyhjentää välimuistin `updateTag`; mukana klubilaisten uudet ravintolaehdotukset 7 päivän ajalta: valinta täyttää saman nimen, kaupungin ja maan, jolloin "Hyväksy ja luo ravintola" luo yhden ravintolan molemmille) ja sitten toista arvioijaa odottavat (ilman arvostelijan itse jo arvioimia). Napautus vie eteenpäin. Uudesta ravintolasta nimi ja kaupunki; maa (oletus Suomi) ja osoite "Maa ja osoite" -kohdan takana |
 | Arvosanat | Napit 1–5 ja −/+ (0,1), numeron voi myös kirjoittaa. Ei liukusäädintä (vieritys siirsi sitä). Kokonaisarvosana näkyy heti |
-| Kerro lisää | Teksti (vapaaehtoinen), kuvat, käyntipäivä yhtenä rivinä ("Käynti tänään · Vaihda"), arvostelija ("Vaihda") ja Lähetä |
+| Tarkista ja lähetä | Teksti (vapaaehtoinen) ja kuvat, sitten yhteenveto: ravintola, arvosana, käynti (oletus tänään) ja arvostelija, kukin "Muuta"-napautuksella. Lähetä |
 
 - **Vaihe osoitteessa** (`?vaihe=arvosanat`, `history.pushState`): puhelimen
   takaisin-ele siirtyy edelliseen vaiheeseen. Eteenpäin ei pääse keskeneräisen
   vaiheen yli. Palvelimen virhe vie vaiheeseen, jossa virhe on.
+- **Saman uuden ravintolan arvostelut samaan aikaan** (`lib/ravintolan-nimi.ts`: sama ravintola =
+  sama nimi ja kaupunki, kun kirjainkoko, ääkköset, välimerkit ja yleissanat kuten "ravintola" ohitetaan):
+  1. Ravintolavaiheen haku löytää myös klubilaisten odottavat ehdotukset (ensimmäisinä osumina).
+  2. Lista päivittyy, kun ravintolavaiheeseen tullaan tai puhelin palaa taustalta (`router.refresh`, enintään 15 s välein).
+  3. Lähetys liittää ehdotuksen hakemiston ravintolaan tai kirjoittaa sen samoin kuin vanhin odottava ehdotus.
+  4. "Hyväksy ja luo ravintola" käyttää olemassa olevaa ravintolaa samalla säännöllä (myös täsmälleen yhtä aikaa
+     lähetetyt) ja kertoo ennen vahvistusta, liitetäänkö arvostelu olemassa olevaan vai luodaanko uusi.
+  Eri nimiä ("Savu" / "Savu Bistro") ei yhdistetä automaattisesti: sihteeri valitsee ravintolan Studiossa.
+- **Luottamus**: nimen tai ravintolan napautus korostuu hetken (0,18 s) ennen siirtymää.
+  Verkkokatkos lähetyksessä ei vie virhesivulle: ilmoitus ja uusi yritys samasta kohdasta.
+  Kiitosnäkymä näyttää, mitä lähti (ravintola, arvosana, arvostelija).
 - **Luonnos**: keskeneräinen arvostelu tallentuu laitteelle (`klubi.arvostelu-luonnos`,
   14 päivää) ja jatkuu samasta kohdasta ("Jatkat keskeneräistä arvostelua · Aloita
   alusta"). Kuvat eivät tallennu.

@@ -167,7 +167,8 @@ export function PhotoPicker({
         {`Kuvat `}
         <span className="font-normal text-muted">(valinnainen)</span>
       </p>
-      <p id={hintId} className="text-sm text-muted">
+      {/* Ohje näkyy, kun kuvia on (lisäyspainike kertoo sen ruudunlukijalle aina). */}
+      <p id={hintId} className={photos.length > 0 ? "text-sm text-muted" : "sr-only"}>
         Ruoasta tai paikasta. Vältä tunnistettavia ihmisiä; sijaintitiedot poistetaan.
       </p>
 

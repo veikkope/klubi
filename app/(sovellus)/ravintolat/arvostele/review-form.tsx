@@ -3,11 +3,11 @@
 import { useActionState, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useFormStatus } from "react-dom";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { cn } from "@/lib/cn";
 import { PHOTO_ALT_FIELD, PHOTO_CONSENT_FIELD, PHOTO_FIELD } from "@/lib/arvostelukuvat";
-import type { KlubilainenOption, RavintolaOption } from "@/sanity/lib/queries/ravintolat";
+import type { KlubilainenOption, RavintolaOption, TuoreArvostelu } from "@/sanity/lib/queries/ravintolat";
 import { submitReview } from "./actions";
 import { ArvostelijaValinta } from "./arvostelija-valinta";
 import {
@@ -21,7 +21,7 @@ import {
   type ReviewField,
   type ReviewFormState,
 } from "./form-state";
-import { CommentField, KayntipaivaField, RatingsField } from "./kentat";
+import { CommentField, formatScore, KayntipaivaField, RatingsField, yhteenvetoRivi } from "./kentat";
 import { KotinayttoVinkki } from "./kotinaytto-vinkki";
 import { PhotoPicker, type PhotoDraft } from "./photo-picker";
 import { RestaurantPicker, type RavintolaValinta } from "./restaurant-picker";
@@ -97,6 +97,30 @@ function muista(arvostelija: Arvostelija | null) {
   }
 }
 
+/** Valinnan korostus ennen siirtymää: käyttäjä näkee, mitä napautti. */
+const VAHVISTUS_MS = 180;
+
+/**
+ * Lähetys palvelimelle. Verkkokatkos ei kaada näkymää virhesivulle: arvostelu
+ * (ja kuvat muistissa) säilyy, ja käyttäjä voi yrittää uudelleen samasta kohdasta.
+ */
+async function laheta(edellinen: ReviewFormState, data: FormData): Promise<ReviewFormState> {
+  const katkos: ReviewFormState = {
+    status: "error",
+    message:
+      "Ei verkkoyhteyttä. Arvostelusi on tallessa: lähetä uudelleen, kun yhteys toimii.",
+    fieldErrors: {},
+    values: edellinen.values,
+  };
+  if (!navigator.onLine) return katkos;
+  try {
+    return await submitReview(edellinen, data);
+  } catch (error) {
+    console.error("[arvostelu] lähetys epäonnistui:", error);
+    return katkos;
+  }
+}
+
 /** Virheet ilman yhtä kenttää (kenttää on muutettu). */
 const ilman =
   (kentta: ReviewField) =>
@@ -114,6 +138,10 @@ function osoite(vaihe: Vaihe): string {
 type Props = {
   restaurants: RavintolaOption[];
   klubilaiset: KlubilainenOption[];
+  /** Viimeksi arvostellut ravintolat, uusin ensin (page.tsx). */
+  tuoreet: TuoreArvostelu[];
+  /** Klubilaisten odottavat uuden ravintolan ehdotukset (haku löytää ne). */
+  ehdotukset: TuoreArvostelu[];
   defaultRestaurantId?: string;
 };
 
@@ -151,10 +179,12 @@ export function ReviewForm(props: Props) {
 function Arvostelu({
   restaurants,
   klubilaiset,
+  tuoreet,
+  ehdotukset,
   defaultRestaurantId,
   onAlusta,
 }: Props & { onAlusta: () => void }) {
-  const [state, formAction] = useActionState<ReviewFormState, FormData>(submitReview, INITIAL_REVIEW_STATE);
+  const [state, formAction] = useActionState<ReviewFormState, FormData>(laheta, INITIAL_REVIEW_STATE);
   const formRef = useRef<HTMLFormElement>(null);
   const haku = useSearchParams();
 
@@ -247,6 +277,29 @@ function Arvostelu({
     }
   }, [haku, vaihe, state.status]);
 
+  // Ravintolavaiheen lista (viimeksi arvioidut, ehdotukset) ajan tasalle, kun
+  // vaiheeseen tullaan tai puhelin palaa taustalta: saman illan muiden juuri
+  // lähettämät arvostelut näkyvät ilman sivun latausta. router.refresh hakee
+  // palvelimen datan uudelleen ja säilyttää lomakkeen tilan. Korkeintaan
+  // kerran 15 sekunnissa.
+  const router = useRouter();
+  const paivitetty = useRef(0);
+  useEffect(() => {
+    const paivita = () => {
+      if (vaiheRef.current !== "ravintola" || Date.now() - paivitetty.current < 15_000) return;
+      paivitetty.current = Date.now();
+      router.refresh();
+    };
+    if (vaihe === "ravintola") {
+      // Ensimmäinen lataus toi tuoreen datan jo mukanaan.
+      if (paivitetty.current === 0) paivitetty.current = Date.now();
+      else paivita();
+    }
+    const nakyvissa = () => document.visibilityState === "visible" && paivita();
+    document.addEventListener("visibilitychange", nakyvissa);
+    return () => document.removeEventListener("visibilitychange", nakyvissa);
+  }, [vaihe, router]);
+
   // Uusi vaihe: alkuun ja fokus otsikkoon (ei ensimmäisellä latauksella).
   const ensimmainen = useRef(true);
   useEffect(() => {
@@ -312,6 +365,30 @@ function Arvostelu({
     else window.history.replaceState(null, "", osoite(vaiheet[indeksi - 1]));
   }
 
+  /** Aiempaan vaiheeseen (yhteenvedon "Muuta"): edellinen historian kautta. */
+  function palaa(kohde: Vaihe) {
+    if (vaiheet.indexOf(kohde) === indeksi - 1) takaisin();
+    else siirry(kohde);
+  }
+
+  function vaihdaArvostelija() {
+    setKysyNimi(true);
+    palaa("kuka");
+  }
+
+  // Napautuksella valittu (nimi, ravintola) korostuu hetken ennen siirtymää.
+  const etenee = useRef(false);
+  function etene(valmis: Vaihe) {
+    if (etenee.current) return;
+    etenee.current = true;
+    setKuitatut((k) => ({ tila: state, vaiheet: [...(k.tila === state ? k.vaiheet : []), valmis] }));
+    const kohde = vaiheet[vaiheet.indexOf(valmis) + 1];
+    setTimeout(() => {
+      etenee.current = false;
+      if (kohde) siirry(kohde);
+    }, VAHVISTUS_MS);
+  }
+
   /** Vaiheen tarkistus ennen siirtymistä; palauttaa virheet (tyhjä = kunnossa). */
   function tarkista(v: Vaihe): Partial<Record<ReviewField, string>> {
     const tulos: Partial<Record<ReviewField, string>> = {};
@@ -346,6 +423,10 @@ function Arvostelu({
     }
     setKuitatut((k) => ({ tila: state, vaiheet: [...(k.tila === state ? k.vaiheet : []), vaihe] }));
     if (vaihe === "kuka") muista(arvostelija);
+    if (vaihe === "ravintola" && ravintola === "uusi" && formRef.current) {
+      const nimi = String(new FormData(formRef.current).get("uusiNimi") ?? "").trim();
+      setRavintolanNimi(nimi || null);
+    }
     const kohde = vaiheet[indeksi + 1];
     if (kohde) siirry(kohde);
   }
@@ -372,26 +453,34 @@ function Arvostelu({
   }
 
   if (state.status === "success") {
+    const keskiarvoLahetetty = RATING_FIELDS.every(({ field }) => arvosanat[field] != null)
+      ? RATING_FIELDS.reduce((summa, { field }) => summa + (arvosanat[field] ?? 0), 0) / RATING_FIELDS.length
+      : null;
     return (
       <Kuori otsikko="Arvostelu lähetetty">
         <div className="mx-auto flex w-full max-w-xl flex-col gap-8 px-4 py-10">
           <div id="arvostelu-kiitos" tabIndex={-1} role="status" className="focus:outline-none">
-            <svg aria-hidden viewBox="0 0 24 24" className="size-14 text-success">
+            <svg aria-hidden viewBox="0 0 24 24" className="kuittaus size-16 text-success">
               <path
                 fill="currentColor"
                 d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20Zm4.2 6.3a1 1 0 0 0-1.4 0l-4.1 4.1-1.5-1.5a1 1 0 1 0-1.4 1.4l2.2 2.2a1 1 0 0 0 1.4 0l4.8-4.8a1 1 0 0 0 0-1.4Z"
               />
             </svg>
-            <h1 className="mt-4 font-display text-[2rem] leading-tight text-heading">Kiitos arvostelusta!</h1>
-            <p className="mt-3 text-[17px] leading-relaxed text-muted">
-              {state.restaurantName && (
-                <>
-                  Arviosi ravintolasta <strong className="text-foreground">{state.restaurantName}</strong>{" "}
-                  on vastaanotettu.{" "}
-                </>
+            <h1 className="mt-5 font-display text-[2rem] leading-tight text-heading">Kiitos, arvostelu on perillä</h1>
+            {/* Vahvistus siitä, mitä lähti. */}
+            <div className="mt-6 flex items-center justify-between gap-4 rounded-sm border border-border border-l-[3px] border-l-brass bg-surface px-4 py-3">
+              <div className="min-w-0">
+                <p className="truncate font-semibold text-heading">{state.restaurantName ?? ravintolanNimi}</p>
+                {arvostelija && <p className="text-sm text-muted">Arvostelija {arvostelija.nimi}</p>}
+              </div>
+              {keskiarvoLahetetty !== null && (
+                <p className="shrink-0 font-display text-2xl font-semibold tabular-nums text-brass-text">
+                  {formatScore(keskiarvoLahetetty)}
+                  <span className="font-sans text-sm font-normal text-muted"> / 5</span>
+                </p>
               )}
-              {state.message}
-            </p>
+            </div>
+            <p className="mt-5 text-[17px] leading-relaxed text-muted">{state.message}</p>
           </div>
           <div className="flex flex-col gap-3">
             {/* Tavallinen linkki: täysi lataus aloittaa puhtaalta pöydältä. */}
@@ -416,6 +505,10 @@ function Arvostelu({
   const naytaYhteenveto = (v: Vaihe) =>
     state.status === "error" && v === yhteenvedonVaihe && (virheLista.length > 0 || kuitattu.length === 0);
 
+  const keskiarvo = RATING_FIELDS.every(({ field }) => arvosanat[field] != null)
+    ? RATING_FIELDS.reduce((summa, { field }) => summa + (arvosanat[field] ?? 0), 0) / RATING_FIELDS.length
+    : null;
+
   const otsikko =
     vaihe === "kuka" ? "Arvostelu" : (ravintolanNimi ?? (ravintola === "uusi" ? "Uusi ravintola" : "Arvostelu"));
 
@@ -431,29 +524,43 @@ function Arvostelu({
         onValittu={(valinta) => {
           // Muistetaan heti: keskeytynyt arvostelu jatkuu kysymättä nimeä uudelleen.
           muista(valinta);
-          // Tila päivittyy samassa erässä, joten rajaus päästää eteenpäin.
-          setKuitatut((k) => ({ tila: state, vaiheet: [...(k.tila === state ? k.vaiheet : []), "kuka"] }));
-          siirry(vaiheet[indeksi + 1]);
+          etene("kuka");
         }}
         error={virheet.nimi}
       />
     ),
     ravintola: (
-      <RestaurantPicker
-        restaurants={restaurants}
-        values={alku.arvot}
-        errors={virheet}
-        klubilainenId={arvostelija?.klubilainen || undefined}
-        onChange={(valinta, nimi) => {
-          setRavintola(valinta);
-          setRavintolanNimi(nimi);
-          setPaikalliset(ilman("ravintola"));
-        }}
-        onValittu={() => {
-          setKuitatut((k) => ({ tila: state, vaiheet: [...(k.tila === state ? k.vaiheet : []), "ravintola"] }));
-          siirry(vaiheet[indeksi + 1]);
-        }}
-      />
+      <>
+        {arvostelija && (
+          // Väärän nimen napautus huomataan heti: nimi näkyy ja sen voi vaihtaa.
+          <p className="-mt-2 mb-3 flex flex-wrap items-center gap-x-1 text-[15px] text-muted">
+            Arvostelijana <strong className="font-semibold text-foreground">{arvostelija.nimi}</strong>
+            <span aria-hidden>·</span>
+            <button
+              type="button"
+              onClick={vaihdaArvostelija}
+              aria-label={`Vaihda arvostelija, nyt ${arvostelija.nimi}`}
+              className="-my-2 min-h-11 rounded-sm px-1 font-semibold text-accent underline underline-offset-4 hover:text-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              Vaihda
+            </button>
+          </p>
+        )}
+        <RestaurantPicker
+          restaurants={restaurants}
+          tuoreet={tuoreet}
+          ehdotukset={ehdotukset}
+          values={alku.arvot}
+          errors={virheet}
+          klubilainenId={arvostelija?.klubilainen || undefined}
+          onChange={(valinta, nimi) => {
+            setRavintola(valinta);
+            setRavintolanNimi(nimi);
+            setPaikalliset(ilman("ravintola"));
+          }}
+          onValittu={() => etene("ravintola")}
+        />
+      </>
     ),
     arvosanat: (
       <RatingsField
@@ -468,7 +575,7 @@ function Arvostelu({
       />
     ),
     lisaa: (
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-3.5">
         <CommentField error={virheet.kommentti} defaultValue={alku.arvot.kommentti} />
         <PhotoPicker
           photos={photos}
@@ -477,28 +584,48 @@ function Arvostelu({
           setConsent={setPhotoConsent}
           error={virheet.kuvat}
         />
-        <div className="flex flex-col gap-2">
-          <KayntipaivaField error={virheet.kayntipaiva} defaultValue={alku.arvot.kayntipaiva} />
-          {arvostelija && (
-            <div className="flex min-h-12 items-center justify-between gap-3 rounded-sm border border-border bg-surface px-4 py-1">
-              <p className="min-w-0 truncate text-[15px] text-foreground">
-                <span className="text-muted">Arvostelija </span>
-                <strong className="font-semibold">{arvostelija.nimi}</strong>
-              </p>
-              <button
-                type="button"
-                onClick={() => {
-                  setKysyNimi(true);
-                  siirry("kuka");
-                }}
-                aria-label={`Vaihda arvostelija, nyt ${arvostelija.nimi}`}
-                className="-mr-2 min-h-11 shrink-0 rounded-sm px-3 text-sm font-semibold text-accent underline underline-offset-4 hover:text-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              >
-                Vaihda
+        {/* Tarkistus ennen lähetystä: mitä lähtee, ja jokaista voi muuttaa. */}
+        <section aria-labelledby="yhteenveto-otsikko">
+          <h2 id="yhteenveto-otsikko" className="sr-only">
+            Yhteenveto
+          </h2>
+          <div className="divide-y divide-border overflow-hidden rounded-sm border border-border bg-surface">
+            <button type="button" onClick={() => palaa("ravintola")} className={yhteenvetoRivi}>
+              <span className="w-24 shrink-0 text-sm text-muted">Ravintola</span>
+              <span className="min-w-0 flex-1 truncate text-[15px] font-semibold text-foreground">
+                {ravintolanNimi ?? "Uusi ravintola"}
+                {ravintola === "uusi" && <span className="font-normal text-muted"> (uusi)</span>}
+              </span>
+              <Muuta mita="ravintolaa" />
+            </button>
+            <button type="button" onClick={() => palaa("arvosanat")} className={yhteenvetoRivi}>
+              <span className="w-24 shrink-0 text-sm text-muted">Arvosana</span>
+              <span className="min-w-0 flex-1">
+                <span className="font-display text-lg font-semibold tabular-nums text-brass-text">
+                  {keskiarvo !== null ? formatScore(keskiarvo) : "–"}
+                </span>
+                <span className="text-sm text-muted"> / 5</span>
+                {/* Osa-arvosanat ruudunlukijalle; näkyvissä Muuta-napautuksella. */}
+                <span className="sr-only">
+                  {RATING_FIELDS.map(({ field }) =>
+                    `, ${REVIEW_FIELD_LABELS[field]} ${arvosanat[field] != null ? formatScore(arvosanat[field]) : "–"}`,
+                  ).join("")}
+                </span>
+              </span>
+              <Muuta mita="arvosanoja" />
+            </button>
+            <KayntipaivaField error={virheet.kayntipaiva} defaultValue={alku.arvot.kayntipaiva} />
+            {arvostelija && (
+              <button type="button" onClick={vaihdaArvostelija} className={yhteenvetoRivi}>
+                <span className="w-24 shrink-0 text-sm text-muted">Arvostelija</span>
+                <span className="min-w-0 flex-1 truncate text-[15px] font-semibold text-foreground">
+                  {arvostelija.nimi}
+                </span>
+                <Muuta mita="arvostelijaa" />
               </button>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        </section>
         <p className="text-sm text-muted">
           Luemme arvostelut ennen julkaisua.{" "}
           <Link href="/tietosuoja" className="text-accent underline underline-offset-4">
@@ -720,6 +847,14 @@ function Kuori({
         </footer>
       )}
     </div>
+  );
+}
+
+function Muuta({ mita }: { mita: string }) {
+  return (
+    <span className="shrink-0 text-sm font-semibold text-accent">
+      Muuta<span className="sr-only"> {mita}</span>
+    </span>
   );
 }
 

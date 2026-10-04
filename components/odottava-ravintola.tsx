@@ -56,7 +56,7 @@ export function OdottavaRavintolaKortti({
       </div>
       <Link
         href={`/ravintolat/arvostele?ravintola=${encodeURIComponent(r.slug)}`}
-        className="group/linkki inline-flex min-h-11 shrink-0 items-center justify-center gap-1 self-start rounded-sm bg-primary px-5 text-sm font-medium text-on-primary no-underline transition hover:bg-primary-hover hover:text-on-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:self-center"
+        className="group/linkki inline-flex min-h-12 shrink-0 items-center justify-center gap-1 self-stretch rounded-sm bg-primary px-5 text-[15px] font-semibold sm:min-h-11 sm:text-sm sm:font-medium text-on-primary no-underline transition hover:bg-primary-hover hover:text-on-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:self-center"
       >
         Arvostele<span className="sr-only"> {r.name}</span>&nbsp;<Nuoli />
       </Link>

@@ -3,7 +3,8 @@
 import { useId, useMemo, useState } from "react";
 
 import { cn } from "@/lib/cn";
-import type { RavintolaOption } from "@/sanity/lib/queries/ravintolat";
+import { ravintolaAvain } from "@/lib/ravintolan-nimi";
+import type { RavintolaOption, TuoreArvostelu, UusiEhdotus } from "@/sanity/lib/queries/ravintolat";
 import {
   REVIEW_FIELD_LABELS,
   normalizeSearch,
@@ -19,9 +20,15 @@ import { FieldMessages, fieldClass, labelClass, RequiredMark } from "./form-ui";
  *
  * Hakukenttä on vaiheen ylälaidassa ja osumat heti sen alla, joten puhelimen
  * näppäimistö ei peitä niitä. "Lisää uusi ravintola" on aina hakukentän alla.
- * Ennen kirjoittamista näytetään toista klubilaista arvioijaa odottavat
- * ravintolat (kahden klubilaisen sääntö, docs/21), joista arvosteltava
- * useimmiten löytyy; arvostelijan itse jo arvioimat jätetään pois.
+ * Ennen kirjoittamista näytetään ensin viimeksi arvostellut ravintolat (uusin
+ * ensin, myös hyväksymättömät lähetykset): kun klubilaiset syövät yhdessä,
+ * ensimmäisen arvostelu nostaa ravintolan muiden listan kärkeen. Mukana myös
+ * klubilaisten ehdottamat uudet ravintolat: valinta täyttää uuden ravintolan
+ * tiedot samoiksi, jolloin hyväksyntä luo yhden ravintolan. Haku löytää
+ * ehdotukset myös (ensimmäisinä osumina), joten nimellä hakeva klubilainen ei
+ * päädy lisäämään samaa ravintolaa uudestaan. Sen alla
+ * toista klubilaista arvioijaa odottavat (kahden klubilaisen sääntö, docs/21);
+ * arvostelijan itse jo arvioimat jätetään niistä pois.
  * Ravintolan napautus valitsee sen ja vie seuraavaan vaiheeseen.
  *
  * Haku noudattaa WAI-ARIA 1.2 combobox-mallia: nuolinäppäimet liikkuvat
@@ -36,11 +43,24 @@ import { FieldMessages, fieldClass, labelClass, RequiredMark } from "./form-ui";
 
 const MAX_RESULTS = 30;
 const MAX_ODOTTAVAT = 30;
+/** Haun osumat klubilaisten uusista ehdotuksista (ennen hakemiston osumia). */
+const MAX_EHDOTUSOSUMAT = 3;
 
 /** Valinnan tila arvostelulle: hakemistosta valittu, uusi ehdotus tai ei mitään. */
 export type RavintolaValinta = "valittu" | "uusi" | null;
 
 type Indexed = { r: RavintolaOption; name: string; city: string };
+
+/** Listan rivi: hakemiston ravintola tai klubilaisen ehdottama uusi ravintola. */
+type Vaihtoehto = {
+  avain: string;
+  nimi: string;
+  kaupunki: string | null;
+  r?: RavintolaOption;
+  uusi?: UusiEhdotus;
+  /** Lisärivi: "arvioitu tänään · Elias", "arvioinut Jukka" … */
+  lisa: string | null;
+};
 
 /** Merkki kerrallaan taitettu teksti korostusta varten: pituus säilyy. */
 function fold(value: string): string {
@@ -109,6 +129,40 @@ function arvioineet(r: RavintolaOption): string | null {
   return nimet.length ? `arvioinut ${luettelo(nimet)}` : null;
 }
 
+const helsinginPaiva = new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Helsinki" });
+
+/** Lähetysaika suhteessa tähän päivään: "tänään", "eilen", "3 pv sitten", "12.9.2026". */
+function milloin(iso: string, nyt = new Date()): string {
+  const aika = new Date(iso);
+  const ero = Math.round(
+    (Date.parse(helsinginPaiva.format(nyt)) - Date.parse(helsinginPaiva.format(aika))) / 86_400_000,
+  );
+  if (ero <= 0) return "tänään";
+  if (ero === 1) return "eilen";
+  if (ero < 7) return `${ero} pv sitten`;
+  const [v, k, p] = helsinginPaiva.format(aika).split("-").map(Number);
+  return `${p}.${k}.${v}`;
+}
+
+/** Viimeksi arvostellun ravintolan lisärivi: "arvioitu tänään · Elias". */
+function tuoreTeksti(t: TuoreArvostelu, klubilainenId?: string): string {
+  const aika = milloin(t.aika);
+  if (klubilainenId && t.arvioija === klubilainenId) return `arvioit ${aika}`;
+  return t.nimi ? `arvioitu ${aika} · ${t.nimi}` : `arvioitu ${aika}`;
+}
+
+/** Klubilaisen uuden ravintolan ehdotus listan riviksi. */
+function ehdotusRivi(t: TuoreArvostelu, klubilainenId?: string): Vaihtoehto {
+  const u = t.uusi!;
+  return {
+    avain: `uusi:${ravintolaAvain(u.nimi, u.kaupunki)}`,
+    nimi: u.nimi,
+    kaupunki: u.maa && u.maa !== "Suomi" ? `${u.kaupunki}, ${u.maa}` : u.kaupunki,
+    uusi: u,
+    lisa: `uusi, odottaa hyväksyntää · ${tuoreTeksti(t, klubilainenId)}`,
+  };
+}
+
 /** Hakutuloksen lisärivi odottavalle ravintolalle. */
 function odottaaTeksti(r: RavintolaOption): string | null {
   if (!r.odottaa) return null;
@@ -118,6 +172,8 @@ function odottaaTeksti(r: RavintolaOption): string | null {
 
 export function RestaurantPicker({
   restaurants,
+  tuoreet,
+  ehdotukset,
   values,
   errors,
   klubilainenId,
@@ -125,6 +181,10 @@ export function RestaurantPicker({
   onValittu,
 }: {
   restaurants: RavintolaOption[];
+  /** Viimeksi arvostellut, uusin ensin. */
+  tuoreet: TuoreArvostelu[];
+  /** Klubilaisten odottavat uuden ravintolan ehdotukset (haku). */
+  ehdotukset: TuoreArvostelu[];
   /** Alkuarvot (luonnos tai ?ravintola=). */
   values: ReviewValues;
   errors: Partial<Record<ReviewField, string>>;
@@ -139,8 +199,8 @@ export function RestaurantPicker({
     restaurants.find((r) => r._id === values.ravintola),
   );
   const [query, setQuery] = useState("");
-  // Uuden ravintolan kenttien esitäyttö haun tekstistä.
-  const [prefill, setPrefill] = useState<{ nimi: string; kaupunki: string } | null>(null);
+  // Uuden ravintolan kenttien esitäyttö: haun tekstistä tai toisen klubilaisen ehdotuksesta.
+  const [prefill, setPrefill] = useState<(UusiEhdotus & { ehdotuksesta: boolean }) | null>(null);
   const [active, setActive] = useState(-1);
   const listId = useId();
 
@@ -154,16 +214,45 @@ export function RestaurantPicker({
     [restaurants],
   );
   const results = useMemo(() => search(index, query), [index, query]);
+  // Viimeksi arvioidut: hakemiston ravintolat ja klubilaisten uudet ehdotukset.
+  const viimeisimmat = useMemo<Vaihtoehto[]>(() => {
+    const ravintolat = new Map(restaurants.map((r) => [r._id, r]));
+    return tuoreet.flatMap((t): Vaihtoehto[] => {
+      if (t.ravintola) {
+        const r = ravintolat.get(t.ravintola);
+        return r ? [{ avain: r._id, nimi: r.name, kaupunki: r.city ?? null, r, lisa: tuoreTeksti(t, klubilainenId) }] : [];
+      }
+      return t.uusi ? [ehdotusRivi(t, klubilainenId)] : [];
+    });
+  }, [restaurants, tuoreet, klubilainenId]);
+  // Haun osumat ehdotuksista: nimi, kaupunki tai maa.
+  const ehdotusIndeksi = useMemo(
+    () =>
+      ehdotukset.flatMap((t) =>
+        t.uusi ? [{ t, haku: normalizeSearch(`${t.uusi.nimi} ${t.uusi.kaupunki} ${t.uusi.maa ?? ""}`) }] : [],
+      ),
+    [ehdotukset],
+  );
+  const ehdotusOsumat = useMemo(() => {
+    const sanat = normalizeSearch(query).split(" ").filter(Boolean);
+    if (!sanat.length) return [];
+    return ehdotusIndeksi
+      .filter(({ haku }) => sanat.every((s) => haku.includes(s)))
+      .slice(0, MAX_EHDOTUSOSUMAT)
+      .map(({ t }) => ehdotusRivi(t, klubilainenId));
+  }, [ehdotusIndeksi, query, klubilainenId]);
   const odottavat = useMemo(
     () =>
       restaurants
+        // Viimeksi arvioiduissa jo näkyvät eivät toistu.
+        .filter((r) => !tuoreet.some((t) => t.ravintola === r._id))
         .filter((r) => r.odottaa && !r.odottaa.some((a) => a.arvioija === klubilainenId))
         .sort(
           (a, b) =>
             (b.tuorein ?? "").localeCompare(a.tuorein ?? "") || a.name.localeCompare(b.name, "fi"),
         )
         .slice(0, MAX_ODOTTAVAT),
-    [restaurants, klubilainenId],
+    [restaurants, tuoreet, klubilainenId],
   );
   // Tunnetut kaupungit: "pizzeria roma lahti" → nimi "pizzeria roma", kaupunki "Lahti".
   const cities = useMemo(() => {
@@ -181,9 +270,45 @@ export function RestaurantPicker({
     return { nimi: q.trim(), kaupunki: "" };
   }
 
+  /** Hakemiston ravintola listan riviksi. */
+  const rivi = (r: RavintolaOption, lisa: string | null): Vaihtoehto => ({
+    avain: r._id,
+    nimi: r.name,
+    kaupunki: r.city ?? null,
+    r,
+    lisa,
+  });
+  const omaArvio = (r: RavintolaOption) =>
+    Boolean(klubilainenId && r.odottaa?.some((a) => a.arvioija === klubilainenId));
+
   const searching = query.trim() !== "";
-  const options = searching ? results : odottavat;
+  // Ilman hakua: viimeksi arvioidut ensin, sitten odottavat (yhtenäinen numerointi
+  // nuolinäppäimille).
+  const ryhmat: { otsikko: string; rivit: Vaihtoehto[] }[] = searching
+    ? [
+        {
+          otsikko: "Hakutulokset",
+          // Ehdotukset ensin: nimellä hakeva löytää saman illan uuden ravintolan.
+          rivit: [
+            ...ehdotusOsumat,
+            ...results.map((r) => rivi(r, omaArvio(r) ? "Olet jo arvioinut" : odottaaTeksti(r))),
+          ],
+        },
+      ]
+    : [
+        { otsikko: "Viimeksi arvioidut", rivit: viimeisimmat },
+        {
+          otsikko: "Toista arvioijaa odottavat",
+          rivit: odottavat.map((r) => rivi(r, arvioineet(r))),
+        },
+      ].filter((g) => g.rivit.length > 0);
+  const options = ryhmat.flatMap((g) => g.rivit);
   const optionId = (i: number) => `${listId}-vaihtoehto-${i}`;
+  const valittuAvain = uusi
+    ? prefill?.ehdotuksesta
+      ? `uusi:${ravintolaAvain(prefill.nimi, prefill.kaupunki)}`
+      : null
+    : (selected?._id ?? null);
 
   function select(r: RavintolaOption) {
     setSelected(r);
@@ -194,8 +319,23 @@ export function RestaurantPicker({
     onValittu();
   }
 
+  /** Toisen klubilaisen ehdottama uusi ravintola: samat tiedot, jotta hyväksyntä yhdistää ne. */
+  function selectEhdotus(u: UusiEhdotus) {
+    setPrefill({ ...u, ehdotuksesta: true });
+    setUusi(true);
+    setQuery("");
+    setActive(-1);
+    onChange("uusi", u.nimi);
+    onValittu();
+  }
+
+  function valitse(v: Vaihtoehto) {
+    if (v.r) select(v.r);
+    else if (v.uusi) selectEhdotus(v.uusi);
+  }
+
   function addNew() {
-    setPrefill(splitQuery(query));
+    setPrefill({ ...splitQuery(query), ehdotuksesta: false });
     setUusi(true);
     onChange("uusi", null);
   }
@@ -213,8 +353,8 @@ export function RestaurantPicker({
       case "Enter": {
         // Enter valitsee osuman eikä lähetä lomaketta.
         e.preventDefault();
-        const r = options[active >= 0 ? active : 0];
-        if (r && (active >= 0 || searching)) select(r);
+        const v = options[active >= 0 ? active : 0];
+        if (v && (active >= 0 || searching)) valitse(v);
         break;
       }
       case "Escape":
@@ -230,6 +370,15 @@ export function RestaurantPicker({
   const error = errors.ravintola;
   const hintId = `${reviewFieldId("ravintola")}-ohje`;
 
+  // Ehdotuksesta valittu korvaa luonnoksen arvot; haun teksti vain tyhjät kentät.
+  const uudenArvot: ReviewValues = !prefill
+    ? values
+    : prefill.ehdotuksesta
+      ? { ...values, uusiNimi: prefill.nimi, uusiKaupunki: prefill.kaupunki, uusiMaa: prefill.maa || values.uusiMaa }
+      : values.uusiNimi
+        ? values
+        : { ...values, uusiNimi: prefill.nimi, uusiKaupunki: values.uusiKaupunki || prefill.kaupunki };
+
   return (
     <div className="flex flex-col">
       {/* Palvelimelle menevät arvot. */}
@@ -238,14 +387,15 @@ export function RestaurantPicker({
 
       {uusi ? (
         <NewRestaurantFields
-          values={
-            values.uusiNimi || !prefill
-              ? values
-              : { ...values, uusiNimi: prefill.nimi, uusiKaupunki: values.uusiKaupunki || prefill.kaupunki }
-          }
+          // Uusi esitäyttö (kentät ovat hallitsemattomia): piirretään alusta.
+          key={prefill ? `${prefill.ehdotuksesta}:${prefill.nimi}|${prefill.kaupunki}` : "luonnos"}
+          values={uudenArvot}
           errors={errors}
+          // Ehdotuksesta valittaessa siirrytään heti arvosanoihin: ei näppäimistöä.
+          kohdista={!prefill?.ehdotuksesta}
           onCancel={() => {
             setUusi(false);
+            setPrefill(null);
             onChange(selected ? "valittu" : null, selected?.name ?? null);
           }}
         />
@@ -309,56 +459,74 @@ export function RestaurantPicker({
             </span>
           </button>
 
-          <p aria-live="polite" className="mt-2 text-[13px] font-semibold uppercase tracking-wide text-muted">
+          <p aria-live="polite" className={searching ? "mt-2 text-[13px] font-semibold uppercase tracking-wide text-muted" : "sr-only"}>
             {searching
-              ? results.length > 0
-                ? `${results.length}${results.length === MAX_RESULTS ? "+" : ""} osumaa`
+              ? results.length + ehdotusOsumat.length > 0
+                ? `${results.length + ehdotusOsumat.length}${results.length === MAX_RESULTS ? "+" : ""} osumaa`
                 : "Ei osumia"
-              : odottavat.length > 0
-                ? "Toista arvioijaa odottavat"
-                : ""}
+              : ""}
           </p>
-          {searching && results.length === 0 && (
+          {searching && results.length + ehdotusOsumat.length === 0 && (
             <p className="mt-1 text-[15px] text-muted">Tarkista kirjoitusasu tai lisää uusi ravintola.</p>
           )}
-          <ul
-            id={listId}
-            role="listbox"
-            aria-label={searching ? "Hakutulokset" : "Toista arvioijaa odottavat"}
-            className="mt-2 overflow-hidden rounded-sm border border-border bg-surface empty:hidden"
-          >
-            {options.map((r, i) => {
-              const odottaa = odottaaTeksti(r);
-              const arvioitu = Boolean(klubilainenId && r.odottaa?.some((a) => a.arvioija === klubilainenId));
+          <div id={listId} role="listbox" aria-label={searching ? "Hakutulokset" : "Ehdotetut ravintolat"}>
+            {ryhmat.map((g, gi) => {
+              const alku = ryhmat.slice(0, gi).reduce((n, x) => n + x.rivit.length, 0);
+              const otsikkoId = `${listId}-ryhma-${gi}`;
               return (
-                <li
-                  key={r._id}
-                  id={optionId(i)}
-                  role="option"
-                  aria-selected={i === active || r._id === selected?._id}
-                  onClick={() => select(r)}
-                  className={cn(
-                    "flex min-h-14 cursor-pointer items-center gap-3 border-b border-border px-4 py-2.5 last:border-b-0",
-                    i === active ? "bg-brass-tint" : "hover:bg-background active:bg-surface-strong",
+                <div key={g.otsikko} className="mt-3">
+                  {!searching && (
+                    <p
+                      id={otsikkoId}
+                      role="presentation"
+                      className="mb-2 text-[13px] font-semibold uppercase tracking-wide text-muted"
+                    >
+                      {g.otsikko}
+                    </p>
                   )}
-                >
-                  <span className="flex min-w-0 flex-1 flex-col">
-                    <span className="text-[15px] font-semibold text-foreground">
-                      <Highlight text={r.name} query={query} />
-                    </span>
-                    {(r.city || odottaa) && (
-                      <span className="text-sm text-muted">
-                        {r.city && <Highlight text={r.city} query={query} />}
-                        {r.city && (odottaa || arvioitu) && " · "}
-                        {arvioitu ? "Olet jo arvioinut" : searching ? odottaa : arvioineet(r)}
-                      </span>
-                    )}
-                  </span>
-                  <span aria-hidden className="text-xl text-muted-soft">›</span>
-                </li>
+                  <ul
+                    role="group"
+                    aria-labelledby={searching ? undefined : otsikkoId}
+                    aria-label={searching ? g.otsikko : undefined}
+                    className="overflow-hidden rounded-sm border border-border bg-surface"
+                  >
+                    {g.rivit.map((v, j) => {
+                      const i = alku + j;
+                      const korostettu = i === active || v.avain === valittuAvain;
+                      return (
+                        <li
+                          key={v.avain}
+                          id={optionId(i)}
+                          role="option"
+                          aria-selected={korostettu}
+                          onClick={() => valitse(v)}
+                          className={cn(
+                            "flex min-h-14 cursor-pointer items-center gap-3 border-b border-border px-4 py-2.5 last:border-b-0",
+                            // Valittu korostuu (näkyy hetken ennen siirtymää seuraavaan vaiheeseen).
+                            korostettu ? "bg-brass-tint" : "hover:bg-background active:bg-surface-strong",
+                          )}
+                        >
+                          <span className="flex min-w-0 flex-1 flex-col">
+                            <span className="text-[15px] font-semibold text-foreground">
+                              <Highlight text={v.nimi} query={query} />
+                            </span>
+                            {(v.kaupunki || v.lisa) && (
+                              <span className="text-sm text-muted">
+                                {v.kaupunki && <Highlight text={v.kaupunki} query={query} />}
+                                {v.kaupunki && v.lisa && " · "}
+                                {v.lisa}
+                              </span>
+                            )}
+                          </span>
+                          <span aria-hidden className="text-xl text-muted-soft">›</span>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
               );
             })}
-          </ul>
+          </div>
         </>
       )}
     </div>
@@ -379,10 +547,13 @@ function SearchIcon({ className }: { className?: string }) {
 function NewRestaurantFields({
   values,
   errors,
+  kohdista = true,
   onCancel,
 }: {
   values: ReviewValues;
   errors: Partial<Record<ReviewField, string>>;
+  /** Fokus ensimmäiseen täytettävään kenttään (ei, kun tiedot tulivat ehdotuksesta). */
+  kohdista?: boolean;
   onCancel: () => void;
 }) {
   const text = (field: keyof ReviewValues & ReviewField, props: React.InputHTMLAttributes<HTMLInputElement> = {}, required = true) => (
@@ -424,8 +595,8 @@ function NewRestaurantFields({
         </button>
       </div>
       {/* Fokus ensimmäiseen täytettävään kenttään (hakukenttä poistui näkyvistä). */}
-      {text("uusiNimi", { maxLength: 100, autoFocus: !values.uusiNimi || Boolean(values.uusiKaupunki) })}
-      {text("uusiKaupunki", { maxLength: 60, autoComplete: "address-level2", autoFocus: Boolean(values.uusiNimi) && !values.uusiKaupunki })}
+      {text("uusiNimi", { maxLength: 100, autoFocus: kohdista && (!values.uusiNimi || Boolean(values.uusiKaupunki)) })}
+      {text("uusiKaupunki", { maxLength: 60, autoComplete: "address-level2", autoFocus: kohdista && Boolean(values.uusiNimi) && !values.uusiKaupunki })}
       {/* Maa (oletus Suomi) ja osoite harvoin tarpeen: piilossa, ellei niissä ole virhettä.
           Suljetun details-elementin kentät lähtevät lomakkeella normaalisti. */}
       <details open={Boolean(errors.uusiMaa || errors.uusiLisatieto) || undefined} className="group">

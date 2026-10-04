@@ -44,3 +44,18 @@ export function hakusanat(syote: string | undefined | null): string[] {
     .filter((sana) => sana.length >= MIN_SANA);
   return [...new Set(sanat)].slice(0, HAKU_MAX_SANAT).map((sana) => `${alkuosa(sana)}*`);
 }
+
+/**
+ * Selaimessa tehtävän haun vertailumuoto: pienet kirjaimet, ei diakriittejä
+ * eikä välimerkkejä ("Hämeenlinna" löytyy haulla "hameenlinna", "Café" haulla
+ * "cafe"). Ravintola-arvostelun haku ja odottavien ravintoloiden haku käyttävät
+ * tätä, samoin palvelin uuden ravintolan kaksoiskappaleen tunnistamisessa.
+ */
+export function normalizeSearch(value: string): string {
+  return value
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .toLocaleLowerCase("fi-FI")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}

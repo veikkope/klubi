@@ -403,6 +403,45 @@ body {
   }
 }
 
+/* Alhaalta nouseva valintapaneeli (<dialog class="alapaneeli">, esim. kaupungin
+   valinta odottavien ravintoloiden sivulla): puhelimella nousee alareunasta kuten
+   puhelinten omat valinnat, leveällä näytöllä häivytys keskelle. */
+.alapaneeli[open] {
+  animation: alapaneeli-nousu 240ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.alapaneeli[open]::backdrop {
+  animation: sivu-haivytys 200ms ease-out both;
+}
+@keyframes alapaneeli-nousu {
+  from { translate: 0 100%; }
+  to { translate: 0 0; }
+}
+@media (min-width: 640px) {
+  .alapaneeli[open] {
+    animation-name: sivu-haivytys;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .alapaneeli[open],
+  .alapaneeli[open]::backdrop {
+    animation: none;
+  }
+}
+
+/* Arvostelun kuittausmerkki: ponnahtaa näkyviin lähetyksen onnistuttua. */
+.kuittaus {
+  animation: kuittaus 480ms cubic-bezier(0.2, 0.9, 0.3, 1.25) both;
+}
+@keyframes kuittaus {
+  from { opacity: 0; scale: 0.5; }
+  to { opacity: 1; scale: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .kuittaus {
+    animation: none;
+  }
+}
+
 /* Hakutulosten päivityspalkki (components/hakunakyma.tsx): ohut, edestakaisin
    liukuva klubinsininen jakso vaalealla pohjalla. Kun käyttäjä on pyytänyt
    vähemmän liikettä, palkki on paikallaan ja täysleveä. */
