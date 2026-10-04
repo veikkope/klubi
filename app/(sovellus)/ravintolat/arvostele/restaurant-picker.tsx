@@ -200,7 +200,14 @@ export function RestaurantPicker({
   );
   const [query, setQuery] = useState("");
   // Uuden ravintolan kenttien esitäyttö: haun tekstistä tai toisen klubilaisen ehdotuksesta.
-  const [prefill, setPrefill] = useState<(UusiEhdotus & { ehdotuksesta: boolean }) | null>(null);
+  const [prefill, setPrefill] = useState<(UusiEhdotus & { ehdotuksesta: boolean }) | null>(() => {
+    // Luonnoksesta palattaessa: jos uusi ravintola on sama kuin jokin
+    // klubilaisen ehdotus, näytetään se valittuna ehdotuksena eikä täyttölomakkeena.
+    if (values.uusi !== "1" || !values.uusiNimi || !values.uusiKaupunki) return null;
+    const avain = ravintolaAvain(values.uusiNimi, values.uusiKaupunki);
+    const sama = ehdotukset.find((t) => t.uusi && ravintolaAvain(t.uusi.nimi, t.uusi.kaupunki) === avain)?.uusi;
+    return sama ? { ...sama, ehdotuksesta: true } : null;
+  });
   const [active, setActive] = useState(-1);
   const listId = useId();
 
@@ -379,13 +386,35 @@ export function RestaurantPicker({
         ? values
         : { ...values, uusiNimi: prefill.nimi, uusiKaupunki: values.uusiKaupunki || prefill.kaupunki };
 
+  // Valittu ehdotus näytetään korttina (kuten hakemiston ravintola), ja sen
+  // tiedot lähtevät piilokentissä; täyttölomake vain itse lisätylle.
+  const ehdotusValittu = uusi && prefill?.ehdotuksesta ? prefill : null;
+  const kortti = ehdotusValittu
+    ? {
+        nimi: ehdotusValittu.nimi,
+        paikka: ehdotusValittu.maa && ehdotusValittu.maa !== "Suomi"
+          ? `${ehdotusValittu.kaupunki}, ${ehdotusValittu.maa}`
+          : ehdotusValittu.kaupunki,
+        lisa: "uusi, odottaa hyväksyntää",
+      }
+    : !uusi && selected
+      ? { nimi: selected.name, paikka: selected.city ?? null, lisa: null }
+      : null;
+
   return (
     <div className="flex flex-col">
       {/* Palvelimelle menevät arvot. */}
       <input type="hidden" name="ravintola" value={!uusi ? (selected?._id ?? "") : ""} />
       <input type="hidden" name="uusi" value={uusi ? "1" : ""} />
+      {ehdotusValittu && (
+        <>
+          <input type="hidden" name="uusiNimi" value={ehdotusValittu.nimi} />
+          <input type="hidden" name="uusiKaupunki" value={ehdotusValittu.kaupunki} />
+          <input type="hidden" name="uusiMaa" value={ehdotusValittu.maa || "Suomi"} />
+        </>
+      )}
 
-      {uusi ? (
+      {uusi && !ehdotusValittu ? (
         <NewRestaurantFields
           // Uusi esitäyttö (kentät ovat hallitsemattomia): piirretään alusta.
           key={prefill ? `${prefill.ehdotuksesta}:${prefill.nimi}|${prefill.kaupunki}` : "luonnos"}
@@ -401,7 +430,7 @@ export function RestaurantPicker({
         />
       ) : (
         <>
-          {selected && (
+          {kortti && (
             <div className="mb-4 flex items-center gap-3 rounded-sm border border-border border-l-[3px] border-l-brass bg-surface px-4 py-3">
               <svg aria-hidden viewBox="0 0 20 20" className="size-5 shrink-0 text-brass-text">
                 <path
@@ -411,8 +440,9 @@ export function RestaurantPicker({
               </svg>
               <p className="min-w-0 text-[15px]">
                 <span className="text-muted">Valittuna </span>
-                <strong className="font-semibold text-heading">{selected.name}</strong>
-                {selected.city && <span className="text-muted">, {selected.city}</span>}
+                <strong className="font-semibold text-heading">{kortti.nimi}</strong>
+                {kortti.paikka && <span className="text-muted">, {kortti.paikka}</span>}
+                {kortti.lisa && <span className="block text-sm text-muted">{kortti.lisa}</span>}
               </p>
             </div>
           )}

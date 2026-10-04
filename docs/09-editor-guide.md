@@ -293,8 +293,9 @@ Hyväksymätön arvostelu ei näy sivulla edes esikatselussa, vain tässä jonos
 2. Avaa arvostelu ja lue se. Katso myös kuvat, jos niitä on (listassa näkyy esim. "2 kuvaa").
    Arvosteluteksti on vapaaehtoinen: pelkät arvosanat ovat kelvollinen arvostelu.
 3. **Hyväksy:** paina **Julkaise**. Arvostelu ja sen kuvat näkyvät ravintolan sivulla.
-4. **Hylkää:** paina **Hylkää arvostelu** (Julkaise-painikkeen vieressä olevasta valikosta) → **Vahvista**.
-   Arvostelu ja sen kuvat poistetaan heti.
+4. **Hylkää:** avaa alareunan päänapin vieressä oleva **⌄**-valikko → **Hylkää arvostelu** →
+   **Vahvista**. Arvostelu ja sen kuvat poistetaan heti. (Päänappi on **Julkaise**, tai uuden
+   ravintolan ehdotuksessa **Hyväksy ja luo ravintola**; Hylkää on aina valikossa ensimmäisenä.)
 
 **Kuvat.** Kävijä voi liittää arvosteluun enintään kolme kuvaa. Tarkista kuvat ennen julkaisua:
 
@@ -309,7 +310,8 @@ Hyväksymätön arvostelu ei näy sivulla edes esikatselussa, vain tässä jonos
 
 **Uusi ravintola.** Kävijä voi arvostella myös ravintolan, jota hakemistossa ei vielä ole.
 Silloin listassa lukee **UUSI: ravintolan nimi**, ja arvostelussa näkyy laatikko
-*Kävijän ehdottama uusi ravintola*.
+*Kävijän ehdottama uusi ravintola*. Kohdan **Ravintola** keltainen huomautus on tällöin
+normaali: ravintola täyttyy, kun painat **Hyväksy ja luo ravintola**.
 
 1. Tarkista nimi, kaupunki ja maa. Jos ravintola on jo hakemistossa toisella nimellä,
    valitse se kohtaan **Ravintola** ja paina **Julkaise**.

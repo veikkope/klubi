@@ -9,7 +9,7 @@ import { schemaTypes, singletonTypes } from "./sanity/schemas";
 import { structure } from "./sanity/structure";
 import { locations } from "./sanity/presentation";
 import { HylkaaArvostelu } from "./sanity/actions/hylkaa-arvostelu";
-import { HyvaksyJaLuoRavintola } from "./sanity/actions/hyvaksy-ja-luo-ravintola";
+import { HyvaksyJaLuoRavintola, ilmanJulkaisuaEhdotukselle } from "./sanity/actions/hyvaksy-ja-luo-ravintola";
 import { PiilotaKommentti, PoistaKommentti } from "./sanity/actions/kommentin-moderointi";
 
 export default defineConfig({
@@ -30,8 +30,11 @@ export default defineConfig({
       if (context.schemaType === "ravintolaKayttajaArvostelu") {
         // Ensisijainen toiminto, kun kävijä ehdotti uutta ravintolaa. "Hylkää
         // arvostelu" korvaa tavallisen Poista-toiminnon, koska se poistaa myös
-        // kuvat (docs/18). Sijoitetaan heti julkaisun jälkeen.
-        const actions = input.filter(({ action }) => action !== "delete");
+        // kuvat (docs/18). Sijoitetaan heti julkaisun jälkeen; ehdotukselta
+        // Julkaise on piilossa, joten Hylkää on silloin valikon ensimmäisenä.
+        const actions = input
+          .filter(({ action }) => action !== "delete")
+          .map((toiminto) => (toiminto.action === "publish" ? ilmanJulkaisuaEhdotukselle(toiminto) : toiminto));
         const publishAt = actions.findIndex(({ action }) => action === "publish");
         // Jos julkaisutoimintoa ei ole, loppuun: hylkäys ei saa olla päätoiminto.
         actions.splice(publishAt === -1 ? actions.length : publishAt + 1, 0, HylkaaArvostelu);

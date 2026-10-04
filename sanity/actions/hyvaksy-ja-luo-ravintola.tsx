@@ -36,6 +36,23 @@ function asWebsite(value: string): string | null {
   return null;
 }
 
+/**
+ * Tavallinen Julkaise piilotetaan uuden ravintolan ehdotukselta: se ei voi
+ * onnistua ilman ravintolaa, ja harmaana se oli valikon ensimmäisenä
+ * Hylkää-toiminnon edellä. Kun sihteeri valitsee kohtaan Ravintola olemassa
+ * olevan ravintolan, Julkaise palaa (ja "Hyväksy ja luo ravintola" poistuu).
+ * Alkuperäistä toimintoa kutsutaan aina, jotta Reactin hookien järjestys säilyy.
+ */
+export function ilmanJulkaisuaEhdotukselle(Julkaise: DocumentActionComponent): DocumentActionComponent {
+  const Kaare: DocumentActionComponent = (props) => {
+    const tulos = Julkaise(props);
+    const doc = props.draft as { restaurant?: unknown; ehdotettuRavintola?: Ehdotus } | null;
+    return doc && !doc.restaurant && doc.ehdotettuRavintola?.nimi ? null : tulos;
+  };
+  Kaare.action = Julkaise.action;
+  return Kaare;
+}
+
 export const HyvaksyJaLuoRavintola: DocumentActionComponent = (props) => {
   const { id, type, draft, onComplete } = props;
   const client = useClient({ apiVersion });

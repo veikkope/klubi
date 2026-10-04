@@ -77,15 +77,26 @@ export const ravintolaKayttajaArvostelu = defineType({
       title: "Ravintola",
       type: "reference",
       to: [{ type: "ravintola" }],
-      validation: (rule) =>
+      // Uuden ravintolan ehdotuksessa tyhjä ravintola on odotettu tila (keltainen
+      // ohje, ei punaista virhettä): "Hyväksy ja luo ravintola" täyttää sen, eikä
+      // tavallista Julkaise-toimintoa ole (sanity.config.ts). Muuten pakollinen.
+      validation: (rule) => [
         rule.custom((value, context) => {
-          if (value) return true;
           const ehdotus = (context.document as { ehdotettuRavintola?: { nimi?: string } } | undefined)
             ?.ehdotettuRavintola;
-          return ehdotus
-            ? `Ravintolaa "${ehdotus.nimi ?? ""}" ei ole vielä hakemistossa. Paina "Hyväksy ja luo ravintola" tai valitse olemassa oleva ravintola.`
-            : "Valitse ravintola.";
+          return value || ehdotus?.nimi ? true : "Valitse ravintola.";
         }),
+        rule
+          .custom((value, context) => {
+            const ehdotus = (context.document as { ehdotettuRavintola?: { nimi?: string } } | undefined)
+              ?.ehdotettuRavintola;
+            return !value && ehdotus?.nimi
+              ? `Uusi ravintola "${ehdotus.nimi}": paina alareunan vihreää "Hyväksy ja luo ravintola". ` +
+                  "Jos ravintola on jo hakemistossa toisella nimellä, valitse se tähän."
+              : true;
+          })
+          .warning(),
+      ],
     }),
     defineField({
       name: "kayntipaiva",
