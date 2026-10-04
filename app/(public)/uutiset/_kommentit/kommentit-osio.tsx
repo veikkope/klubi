@@ -1,3 +1,5 @@
+import { stegaClean } from "next-sanity";
+
 import { formatDate, formatDateTime } from "@/lib/format";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import { kommentitQuery } from "@/sanity/lib/queries/kommentit";
@@ -14,11 +16,15 @@ import { KommenttiLomake } from "./kommentti-lomake";
  */
 export async function KommentitOsio({
   uutinenId,
-  kommentointi,
+  kommentointi: raaka,
 }: {
   uutinenId: string;
   kommentointi: Kommentointi | null | undefined;
 }) {
+  // Esikatselussa (draft mode) merkkijonoissa on näkymätön stega-koodaus: ilman
+  // siivousta tyyppi "kommentti" ei vastaisi vertailua (lomake luuli sitä
+  // veikkaukseksi), ja joukkueiden nimet menisivät lomakkeen arvoihin koodattuina.
+  const kommentointi = stegaClean(raaka);
   const kommentit = await sanityFetch<KommenttiItem[]>({
     query: kommentitQuery,
     params: { uutinenId },
