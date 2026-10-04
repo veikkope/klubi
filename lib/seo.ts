@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { stegaClean } from "next-sanity";
 
 import { absoluteUrl, siteLocale, siteName } from "@/lib/site";
+import { tulkitseYoutube } from "@/lib/youtube";
 import { urlForImage } from "@/sanity/lib/image";
 
 /**
@@ -21,7 +22,7 @@ export interface BuildMetadataInput {
   description?: string | null;
   /** Absoluuttinen polku, esim. "/ravintolat/mamma-maria". */
   path: string;
-  /** Sanity-kuvalähde tai valmis URL. Jos puuttuu, käytetään generoitua OG-kuvaa. */
+  /** Sanity-kuvalähde tai valmis URL. Jos puuttuu, jakokuvana on klubin logo. */
   image?: unknown;
   publishedAt?: string | null;
   modifiedAt?: string | null;
@@ -42,14 +43,31 @@ export interface BuildMetadataInput {
   type?: "website" | "article";
 }
 
-/** OG-kuvan URL: dokumentin oma kuva, muuten generoitu brändikuva. */
-function resolveOgImage(image: unknown, title: string): string {
+/** OG-kuvan URL: dokumentin oma kuva, muuten klubin logo (app/api/og). */
+function resolveOgImage(image: unknown): string {
   if (typeof image === "string" && image.length > 0) {
     return absoluteUrl(image);
   }
   const built = urlForImage(image as never)?.width(1200).height(630).fit("crop").url();
   if (built) return built;
-  return absoluteUrl(`/api/og?title=${encodeURIComponent(title)}`);
+  return absoluteUrl("/api/og");
+}
+
+/**
+ * Jakokuva tekstisisällöstä, kun dokumentilla ei ole omaa kuvaa: ensimmäinen
+ * kuva tekstin seasta, muuten ensimmäisen YouTube-videon kuva
+ * toistopainikkeella. Palauttaa `buildMetadata`n `image`-arvon tai undefined.
+ */
+export function jakokuvaSisallosta(
+  sisalto: readonly { _type?: string; asset?: unknown; url?: string }[] | null | undefined,
+): unknown {
+  const kuva = sisalto?.find((b) => b._type === "imageWithAlt" && b.asset);
+  if (kuva) return kuva;
+  for (const b of sisalto ?? []) {
+    const video = b._type === "youtubeVideo" ? tulkitseYoutube(b.url) : null;
+    if (video) return `/api/og?video=${video.id}`;
+  }
+  return undefined;
 }
 
 export function buildMetadata(input: BuildMetadataInput): Metadata {
@@ -69,7 +87,7 @@ export function buildMetadata(input: BuildMetadataInput): Metadata {
     type = "website",
   } = stegaClean(input);
   const url = absoluteUrl(path);
-  const ogImage = resolveOgImage(image, title);
+  const ogImage = resolveOgImage(image);
   const desc = description?.trim() || undefined;
 
   return {
