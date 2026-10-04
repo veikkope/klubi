@@ -5,7 +5,7 @@
 > Studio on suomeksi. Suluissa on englanninkielinen nimi, jos jokin kohta näkyy
 > vielä englanniksi.
 >
-> Versio 2.1 (4.10.2026). Päivitetty luovutusta edeltävän tarkastuksen jälkeen.
+> Versio 2.2 (5.10.2026). Lisätty YouTube-video ja jakokuva.
 
 ## Tärkeät linkit
 
