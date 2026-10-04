@@ -34,9 +34,14 @@ type FetchOptions<T> = {
   /** Palautetaan jos Sanity ei ole konfiguroitu tai tulos on null. Ei virheen sattuessa. */
   fallback: T;
   /**
-   * false = ohita Sanityn CDN. Kävijöiden itse lähettämälle sisällölle
-   * (kommentit): muuten CDN voi palauttaa vanhan tuloksen heti tallennuksen
-   * jälkeen, vaikka Next.js:n välimuisti on jo tyhjennetty.
+   * Oletus false = ohita Sanityn CDN. Webhook (app/api/revalidate) tyhjentää
+   * Next.js:n välimuistin heti julkaisun jälkeen, ja uudelleenrenderöinti
+   * alkaa sekunneissa. CDN palauttaisi silloin vielä vanhan tuloksen, joka
+   * jäisi sivun välimuistiin minuuteiksi (e2e-arvioijasaanto 4.10.2026: poistettu
+   * ravintola näkyi ~10 min). Sanityyn mennään vain uudelleenrenderöinnissä,
+   * joten kutsuja on vähän. true vain sisällölle, jota webhook ei päivitä.
+   * Buildissa oletus on CDN: satoja sivuja rinnakkain ilman CDN:ää voi
+   * törmätä Sanityn API-rajoihin, eikä buildissa ole webhook-kilpailua.
    */
   useCdn?: boolean;
   /**
@@ -63,7 +68,7 @@ export async function sanityFetch<T>({
   params,
   tags,
   fallback,
-  useCdn = true,
+  useCdn = process.env.NEXT_PHASE === "phase-production-build",
   vainJulkaistu = false,
 }: FetchOptions<T>): Promise<T> {
   if (!hasSanity || !client) {
