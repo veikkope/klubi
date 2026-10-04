@@ -72,7 +72,9 @@ toimii niiden varassa. Kehittäjä hoitaa ne.
    **Tiivistelmän** voi jättää tyhjäksi.
 4. **Kansikuva** ja **Sisältö**. Sisältöön voi lisätä otsikoita, listoja, linkkejä ja
    **kuvia tekstin sekaan**: paina **+** tekstin kohdalla → *Kuva*.
-   **YouTube-video** lisätään samalla tavalla: **+** → *YouTube-video*. Liitä videon
+   **YouTube-video** lisätään samalla tavalla: napsauta Sisältö-kentän tekstiin ja paina
+   kentän työkalupalkin oikeasta reunasta toistokolmiota ▷ (kapealla näytöllä **+**-valikosta
+   *YouTube-video*). Liitä videon
    osoite (YouTubessa videon alta **Jaa** → **Kopioi**) ja kirjoita lyhyt otsikko, esim.
    "Huuhkajien maali Unkaria vastaan 2023". Sivulla näkyy videon kuva ja toistopainike;
    video alkaa, kun lukija painaa sitä. Jos haluat videon alkavan tietystä kohdasta,
@@ -83,6 +85,24 @@ toimii niiden varassa. Kehittäjä hoitaa ne.
    pelaajat, stadionit, lehtileikkeet).
 5. **Kategoriat:** rastita sopivat (esim. Palloveikkaus, Matkakuvaus, Tapahtumat).
 6. **Julkaise**.
+
+### Jakokuva (kun uutinen jaetaan WhatsAppissa tai Facebookissa)
+
+Kun uutisen linkki jaetaan, esikatselussa näkyy kuva, otsikko ja sivuston osoite. Kuva
+valitaan automaattisesti tässä järjestyksessä:
+
+1. **Kansikuva**
+2. ensimmäinen **kuva tekstin seassa**
+3. ensimmäisen **YouTube-videon kuva** toistopainikkeella
+4. **klubin logo** valkoisella pohjalla, jos uutisessa ei ole kuvaa eikä videota
+
+Paras esikatselu syntyy, kun uutiselle lisää kansikuvan. Pidä kuvan tärkein kohta
+keskellä: WhatsApp näyttää kuvan usein pienenä neliönä, joka leikataan keskeltä.
+Kuvaan ei tarvitse lisätä logoa tai tekstiä, koska otsikko ja osoite näkyvät
+esikatselussa kuvan vieressä.
+
+WhatsApp ja Facebook muistavat kerran jaetun linkin kuvan. Jos lisäät kuvan vasta
+jakamisen jälkeen, vanha kuva voi näkyä samassa linkissä vielä jonkin aikaa.
 
 ### Uusi uutiskategoria
 
