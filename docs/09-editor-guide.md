@@ -11,8 +11,8 @@
 
 | | |
 |---|---|
-| Julkinen sivusto | https://www.lahdensuomalainenklubi.com (domainin siirron jälkeen, docs/17). Siihen asti https://klubi-blond.vercel.app |
-| Sisältöeditori (Studio) | https://www.lahdensuomalainenklubi.com/studio (siirron jälkeen). Siihen asti https://klubi-blond.vercel.app/studio |
+| Julkinen sivusto | https://www.lahdensuomalainenklubi.com |
+| Sisältöeditori (Studio) | https://www.lahdensuomalainenklubi.com/studio |
 | Apu | (kehittäjän nimi, puhelin ja sähköposti) |
 
 ## Kirjautuminen

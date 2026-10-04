@@ -74,7 +74,7 @@ Muutosten jälkeen: **Deployments → Redeploy** (muuttujat tulevat voimaan vast
 deployssa).
 
 ✅ Tehty 28.9.2026: Sanityyn on luotu webhook **"Sivuston päivitys (revalidate)"**
-(production, create/update/delete) → `https://klubi-blond.vercel.app/api/revalidate`.
+(production, create/update/delete) → `https://www.lahdensuomalainenklubi.com/api/revalidate` (vaihdettu 4.10.2026; alun perin klubi-blond.vercel.app).
 Salaisuus on kehittäjän `.env.local`-tiedostossa (`SANITY_REVALIDATE_SECRET`), mistä se
 kopioidaan Verceliin. Tarkistus: Studio → julkaise muutos → sanity.io/manage → API →
 Webhooks → *Attempts* näyttää 200.
@@ -158,6 +158,25 @@ Jos jokin menee pieleen: palauta apexin A-tietue 5.44.244.222 ja `www` CNAME →
 Matala TTL (300 s) tarkoittaa, että paluu on voimassa minuuteissa. Posti ei ole
 riippuvainen web-muutoksesta C2:n jälkeen.
 
+
+### C6. Toteutus 4.10.2026
+
+- **Domain ja DNS jäävät Zonerille** (ent. Wepardi). DNS:ää muokataan Wepardin **cPanelissa →
+  Toimialueet → Zone Editor → Hallinta** (isän tunnuksilla). Rekisteröinnin siirtoa ei tehty.
+- **Posti lopetettu:** postitilejä ei ollut käytetty. MX ja `mail` poistettu, SPF `v=spf1 -all`,
+  DMARC `_dmarc` TXT `v=DMARC1; p=reject`. DKIM- ja cPanelin omat tietueet jätettiin; poistuvat
+  webhotellin mukana. info@ voidaan myöhemmin palauttaa ilmaisella edelleenlähetyksellä (MX + SPF).
+- **Huom. ns1 on hidas:** `ns1.int2000.net` päivittyy ns2:lta vasta SOA-refreshin (1 h) mukaan, ei
+  heti. Tarkista muutokset aina molemmilta (`nslookup -debug -type=soa … ns1/ns2.int2000.net`,
+  serial sama). Ristiriitainen tila kaatoi Let's Encryptin http-01-tarkistuksen; varmenne syntyi,
+  kun molemmat olivat ajan tasalla.
+- Tarkistettu 21.08: https www 200, apex ja http 308 → www, /studio, /sitemap.xml, vanhat .htm- ja
+  /blogspot-osoitteet ohjautuvat. `verify:redirects`: 4 "rikki" ovat vain pilkun koodaus `%2C`
+  (sivu toimii). `verify:content`: 26 eroa = productionin siivotut otsikot vs. development.
+- **Zonerin webhotelli** pidetään paluutienä noin kuukauden. Ennen irtisanomista: kotihakemiston
+  varmuuskopio (cPanel → Tiedostot → Varmuuskopio) talteen kahteen paikkaan ja Zonerilta kirjallinen
+  vahvistus, että domain ja DNS-vyöhyke jäävät voimaan (vyöhyke on nyt webhotellin cPanelissa).
+
 ---
 
 ## D. Sisältö ja datasetit julkaisun jälkeen
@@ -207,7 +226,7 @@ riippuvainen web-muutoksesta C2:n jälkeen.
 | 11 | Perustiedot Studiossa (docs/09 "Täytä itse") | isä + hallitus | ☐ 30.9.: sähköposti, osoite, Y-tunnus, hallitus (0), tapahtumat (0), etusivun kuvat, /english-kieli |
 | 12 | Tietosuojaselosteen vahvistus | hallitus | ☐ |
 | 13 | Jäsenhakemukset poistettu (ei Resendiä) | kehittäjä | ✅ 28.9. koodi · ✅ tietosuojaselosteessa ei mainintaa (tarkistettu 30.9.) |
-| 14 | DNS C1–C4 | kehittäjä + int2000 | ☐ 4.10.: domainit lisätty Verceliin (apex 308 → www), odottaa DNS-paneelin tunnuksia |
+| 14 | DNS C1–C4 | kehittäjä + isä | ✅ 4.10. web Verceliin (cPanel Zone Editor), posti lopetettu (versio A, §C6), webhook → www, vercel.app → www (308). ☐ Search Console, blogin ohjaus, Zonerin webhotellin irtisanominen |
 | 15 | Blogin ohjaus (docs/14 §6) | kehittäjä | ☐ siirron jälkeen (tuotantopolku ja dynaaminen /blogspot-reitti valmiit 30.9.) |
 | 16 | Arvostelukuvat: tietosuojaselosteen patch (docs/18 §7) | kehittäjä | ✅ 30.9. (varmuuskopio ensin) |
 | 17 | Vercel-osoitteet noindex (`X-Robots-Tag`) | kehittäjä | ✅ 30.9. |

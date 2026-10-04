@@ -17,7 +17,7 @@
 import { createClient } from "@sanity/client";
 import { sanityWriteToken } from "./lib/sanity-token";
 
-const SITE = "https://klubi-blond.vercel.app";
+const SITE = "https://www.lahdensuomalainenklubi.com";
 const RID = "ravintola-testiravintola-poistetaan";
 const SLUG = "testiravintola-poistetaan";
 const NIMI = "Testiravintola (poistetaan)";
