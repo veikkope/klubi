@@ -3,12 +3,11 @@
 import { useActionState, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useFormStatus } from "react-dom";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
 
 import { cn } from "@/lib/cn";
 import { PHOTO_ALT_FIELD, PHOTO_CONSENT_FIELD, PHOTO_FIELD } from "@/lib/arvostelukuvat";
 import type { KlubilainenOption, RavintolaOption, TuoreArvostelu } from "@/sanity/lib/queries/ravintolat";
-import { submitReview } from "./actions";
+import { paivitaTuoreet, submitReview } from "./actions";
 import { ArvostelijaValinta } from "./arvostelija-valinta";
 import {
   ARVOSTELIJA_AVAIN,
@@ -21,7 +20,8 @@ import {
   type ReviewField,
   type ReviewFormState,
 } from "./form-state";
-import { CommentField, formatScore, KayntipaivaField, RatingsField, yhteenvetoRivi } from "./kentat";
+import { KayntipaivaField } from "./kayntipaiva";
+import { CommentField, formatScore, RatingsField, yhteenvetoRivi } from "./kentat";
 import { KotinayttoVinkki } from "./kotinaytto-vinkki";
 import { PhotoPicker, type PhotoDraft } from "./photo-picker";
 import { RestaurantPicker, type RavintolaValinta } from "./restaurant-picker";
@@ -54,8 +54,11 @@ import {
  * npm run test:arvostelu.
  *
  * Ratkaisuja:
- * - Vaihe on osoitteessa (?vaihe=arvosanat, `history.pushState`), joten
- *   puhelimen takaisin-ele siirtyy edelliseen vaiheeseen eikä pois sivulta.
+ * - Vaihe on tämän komponentin oma tila. Osoite (?vaihe=arvosanat) ja selaimen
+ *   historia (`pushState`, `popstate`) vain heijastavat sitä, joten puhelimen
+ *   takaisin-ele siirtyy edelliseen vaiheeseen eikä pois sivulta. Vaihe ei
+ *   riipu Next.js:n reitittimen tilasta (useSearchParams): reitittimen omat
+ *   päivitykset eivät voi palauttaa sitä vanhaksi kesken vaihdon.
  *   Eteenpäin ei pääse keskeneräisen vaiheen yli (`sallittuVaihe`).
  * - Kaikki vaiheet ovat koko ajan lomakkeessa (näkymättömät `hidden`-tilassa),
  *   joten yksi lähetys vie kaikki kentät Server Actionille (actions.ts), joka
@@ -186,7 +189,6 @@ function Arvostelu({
 }: Props & { onAlusta: () => void }) {
   const [state, formAction] = useActionState<ReviewFormState, FormData>(laheta, INITIAL_REVIEW_STATE);
   const formRef = useRef<HTMLFormElement>(null);
-  const haku = useSearchParams();
 
   // Alkutila laitteelta kerran: luonnos ja muistettu nimi. ?ravintola= (esim.
   // odottavien listalta) aloittaa uuden arvostelun, ellei luonnos ole samasta.
@@ -222,10 +224,15 @@ function Arvostelu({
   });
   const processingPhotos = photos.some((p) => p.status === "processing");
 
+  // Pyydetty vaihe: osoitteesta latauksessa, sitten siirtymistä ja takaisin-eleistä.
+  const [pyydetty, setPyydetty] = useState<Vaihe | null>(() => {
+    const osoitteessa = new URLSearchParams(window.location.search).get("vaihe");
+    return onVaihe(osoitteessa) ? osoitteessa : (alku.luonnos?.vaihe ?? null);
+  });
+
   const vaiheet = naytettavat(kysyNimi);
   const edistyminen: Edistyminen = { arvostelija, ravintola, arvosanat };
-  const pyydetty = haku.get("vaihe");
-  const toivottu = onVaihe(pyydetty) ? pyydetty : (alku.luonnos?.vaihe ?? vaiheet[0]);
+  const toivottu = pyydetty ?? vaiheet[0];
   const vaihe = sallittuVaihe(vaiheet.includes(toivottu) ? toivottu : vaiheet[0], vaiheet, edistyminen);
   const indeksi = vaiheet.indexOf(vaihe);
 
@@ -238,6 +245,13 @@ function Arvostelu({
     setEdellinen(vaihe);
     setSuunta(vaiheet.indexOf(vaihe) >= vaiheet.indexOf(edellinen) ? "eteen" : "taakse");
     setPaikalliset({});
+  }
+
+  // Palvelimen virhe: vaiheeseen, jossa virhe on (tila edellisestä piirrosta).
+  const [kasitelty, setKasitelty] = useState(state);
+  if (kasitelty !== state) {
+    setKasitelty(state);
+    if (state.status === "error") setPyydetty(virheenVaihe(state.fieldErrors, vaiheet) ?? "lisaa");
   }
 
   // Palvelimen virheet, joita ei ole vielä korjattu, ja vaiheen omat.
@@ -257,6 +271,7 @@ function Arvostelu({
     vaiheetRef.current = vaiheet;
   });
 
+  // Selaimen takaisin- ja eteen-ele: vaihe osoitteesta omaan tilaan.
   useEffect(() => {
     function onPop() {
       const uusi = new URLSearchParams(window.location.search).get("vaihe");
@@ -264,31 +279,36 @@ function Arvostelu({
       const j = vaiheetRef.current.indexOf(vaiheRef.current);
       if (i < j) syvyys.current = Math.max(0, syvyys.current - 1);
       else if (i > j) syvyys.current += 1;
+      setPyydetty(onVaihe(uusi) ? uusi : null);
     }
     window.addEventListener("popstate", onPop);
     return () => window.removeEventListener("popstate", onPop);
   }, []);
 
-  // Osoite vastaamaan näytettyä vaihetta (ensimmäinen lataus, rajattu vaihe).
+  // Osoite vastaamaan näytettyä vaihetta (ensimmäinen lataus, rajattu vaihe,
+  // palvelimen virhe). Korvaa nykyisen merkinnän; uudet merkinnät tekee siirry().
   useEffect(() => {
     if (state.status === "success") return;
-    if (haku.get("vaihe") !== vaihe || haku.has("ravintola")) {
+    const nyt = new URLSearchParams(window.location.search);
+    if (nyt.get("vaihe") !== vaihe || nyt.has("ravintola")) {
       window.history.replaceState(null, "", osoite(vaihe));
     }
-  }, [haku, vaihe, state.status]);
+  }, [vaihe, state.status]);
 
   // Ravintolavaiheen lista (viimeksi arvioidut, ehdotukset) ajan tasalle, kun
   // vaiheeseen tullaan tai puhelin palaa taustalta: saman illan muiden juuri
-  // lähettämät arvostelut näkyvät ilman sivun latausta. router.refresh hakee
-  // palvelimen datan uudelleen ja säilyttää lomakkeen tilan. Korkeintaan
-  // kerran 15 sekunnissa.
-  const router = useRouter();
+  // lähettämät arvostelut näkyvät ilman sivun latausta. Palvelintoiminto
+  // palauttaa pelkän datan eikä koske reitittimeen tai osoitteeseen.
+  // Korkeintaan kerran 15 sekunnissa; virhe jättää vanhan listan.
+  const [lista, setLista] = useState({ tuoreet, ehdotukset });
   const paivitetty = useRef(0);
   useEffect(() => {
     const paivita = () => {
       if (vaiheRef.current !== "ravintola" || Date.now() - paivitetty.current < 15_000) return;
       paivitetty.current = Date.now();
-      router.refresh();
+      paivitaTuoreet()
+        .then(setLista)
+        .catch((error) => console.warn("[arvostelu] listan päivitys epäonnistui:", error));
     };
     if (vaihe === "ravintola") {
       // Ensimmäinen lataus toi tuoreen datan jo mukanaan.
@@ -298,7 +318,7 @@ function Arvostelu({
     const nakyvissa = () => document.visibilityState === "visible" && paivita();
     document.addEventListener("visibilitychange", nakyvissa);
     return () => document.removeEventListener("visibilitychange", nakyvissa);
-  }, [vaihe, router]);
+  }, [vaihe]);
 
   // Uusi vaihe: alkuun ja fokus otsikkoon (ei ensimmäisellä latauksella).
   const ensimmainen = useRef(true);
@@ -345,24 +365,29 @@ function Arvostelu({
       return;
     }
     if (state.status !== "error") return;
+    // Vaihe vaihtui jo piirrossa (kasitelty); osoite päivittyy omassa efektissään.
     const kohde = virheenVaihe(state.fieldErrors, vaiheetRef.current) ?? "lisaa";
-    if (kohde !== vaiheRef.current) {
-      window.history.pushState(null, "", osoite(kohde));
-      syvyys.current += 1;
-    }
     requestAnimationFrame(() => document.getElementById(`virheet-${kohde}`)?.focus());
   }, [state]);
 
+  /** Uuteen vaiheeseen: oma tila heti, osoitteeseen uusi historiamerkintä. */
   function siirry(kohde: Vaihe) {
-    if (kohde === vaihe) return;
+    if (kohde === vaiheRef.current) return;
+    setPyydetty(kohde);
     window.history.pushState(null, "", osoite(kohde));
     syvyys.current += 1;
   }
 
+  /** Edelliseen vaiheeseen: selaimen historian kautta, jos tämä sivu teki merkinnän. */
   function takaisin() {
     if (indeksi <= 0) return;
-    if (syvyys.current > 0) window.history.back();
-    else window.history.replaceState(null, "", osoite(vaiheet[indeksi - 1]));
+    if (syvyys.current > 0) {
+      window.history.back();
+    } else {
+      const kohde = vaiheet[indeksi - 1];
+      setPyydetty(kohde);
+      window.history.replaceState(null, "", osoite(kohde));
+    }
   }
 
   /** Aiempaan vaiheeseen (yhteenvedon "Muuta"): edellinen historian kautta. */
@@ -371,9 +396,14 @@ function Arvostelu({
     else siirry(kohde);
   }
 
+  /**
+   * Nimivaiheeseen. Nimivaihe lisätään vaiheisiin vasta nyt (muistettu nimi),
+   * joten siirrytään aina uudella historiamerkinnällä: takaisin palaa siihen
+   * vaiheeseen, josta Vaihda painettiin.
+   */
   function vaihdaArvostelija() {
     setKysyNimi(true);
-    palaa("kuka");
+    siirry("kuka");
   }
 
   // Napautuksella valittu (nimi, ravintola) korostuu hetken ennen siirtymää.
@@ -548,8 +578,8 @@ function Arvostelu({
         )}
         <RestaurantPicker
           restaurants={restaurants}
-          tuoreet={tuoreet}
-          ehdotukset={ehdotukset}
+          tuoreet={lista.tuoreet}
+          ehdotukset={lista.ehdotukset}
           values={alku.arvot}
           errors={virheet}
           klubilainenId={arvostelija?.klubilainen || undefined}

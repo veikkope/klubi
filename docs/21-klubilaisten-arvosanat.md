@@ -42,15 +42,15 @@ mahtuvat iPhone 13 -kokoiselle ruudulle ilman vieritystä (mitattu).
 | Kuka arvostelee | Vain kun laite ei muista nimeä. Klubilaisen nimen napautus vie eteenpäin ja muistetaan (`localStorage` `klubi.arvostelija`); lomake lähettää klubilaisen `_id`:n, joten liitos ei riipu kirjoitusasusta. "En ole klubilainen" → nimikenttä |
 | Ravintola | "Arvostelijana Elias · Vaihda" (väärä nimi huomataan heti). Haku ylhäällä, "Lisää uusi ravintola" heti sen alla. Ennen kirjoittamista **Viimeksi arvioidut** (5, uusin ensin, myös hyväksymättömät lähetykset: yhdessä syötäessä ensimmäisen arvostelu nostaa ravintolan muiden kärkeen; lähetys tyhjentää välimuistin `updateTag`; mukana klubilaisten uudet ravintolaehdotukset 7 päivän ajalta: valinta täyttää saman nimen, kaupungin ja maan, jolloin "Hyväksy ja luo ravintola" luo yhden ravintolan molemmille) ja sitten toista arvioijaa odottavat (ilman arvostelijan itse jo arvioimia). Napautus vie eteenpäin. Uudesta ravintolasta nimi ja kaupunki; maa (oletus Suomi) ja osoite "Maa ja osoite" -kohdan takana |
 | Arvosanat | Napit 1–5 ja −/+ (0,1), numeron voi myös kirjoittaa. Ei liukusäädintä (vieritys siirsi sitä). Kokonaisarvosana näkyy heti |
-| Tarkista ja lähetä | Teksti (vapaaehtoinen) ja kuvat, sitten yhteenveto: ravintola, arvosana, käynti (oletus tänään) ja arvostelija, kukin "Muuta"-napautuksella. Lähetä |
+| Tarkista ja lähetä | Teksti (vapaaehtoinen) ja kuvat, sitten yhteenveto: ravintola, arvosana, käynti (oletus tänään; rivin napautus avaa oman päivävalitsimen alhaalta nousevaan paneeliin: Tänään/Eilen, isot päiväruudut, kuukausi ja vuosi valikoista, `kayntipaiva.tsx`) ja arvostelija, kukin "Muuta"-napautuksella. Lähetä |
 
-- **Vaihe osoitteessa** (`?vaihe=arvosanat`, `history.pushState`): puhelimen
+- **Vaihe on lomakkeen oma tila**, ja osoite heijastaa sitä (`?vaihe=arvosanat`, `history.pushState`/`popstate`, ei Next.js:n `useSearchParams`): puhelimen
   takaisin-ele siirtyy edelliseen vaiheeseen. Eteenpäin ei pääse keskeneräisen
   vaiheen yli. Palvelimen virhe vie vaiheeseen, jossa virhe on.
 - **Saman uuden ravintolan arvostelut samaan aikaan** (`lib/ravintolan-nimi.ts`: sama ravintola =
   sama nimi ja kaupunki, kun kirjainkoko, ääkköset, välimerkit ja yleissanat kuten "ravintola" ohitetaan):
   1. Ravintolavaiheen haku löytää myös klubilaisten odottavat ehdotukset (ensimmäisinä osumina).
-  2. Lista päivittyy, kun ravintolavaiheeseen tullaan tai puhelin palaa taustalta (`router.refresh`, enintään 15 s välein).
+  2. Lista päivittyy, kun ravintolavaiheeseen tullaan tai puhelin palaa taustalta (palvelintoiminto `paivitaTuoreet`, enintään 15 s välein; ei `router.refresh`, joka kilpaili vaiheen vaihdon kanssa).
   3. Lähetys liittää ehdotuksen hakemiston ravintolaan tai kirjoittaa sen samoin kuin vanhin odottava ehdotus.
   4. "Hyväksy ja luo ravintola" käyttää olemassa olevaa ravintolaa samalla säännöllä (myös täsmälleen yhtä aikaa
      lähetetyt) ja kertoo ennen vahvistusta, liitetäänkö arvostelu olemassa olevaan vai luodaanko uusi.

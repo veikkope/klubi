@@ -19,6 +19,7 @@ import {
 import { ravintolaAvain } from "@/lib/ravintolan-nimi";
 import { ilmoitaOsoitteeseen } from "@/lib/yhteystiedot";
 import { apiVersion, dataset, hasSanity, projectId } from "@/sanity/env";
+import { sanityFetch } from "@/sanity/lib/fetch";
 import {
   COMMENT_MAX,
   EMPTY_REVIEW_VALUES,
@@ -33,6 +34,7 @@ import {
   type ReviewFormState,
   type ReviewValues,
 } from "./form-state";
+import { tuoreetArvostelut, type Tuoreet } from "./tuoreet";
 
 /**
  * Käyttäjän ravintola-arvostelun vastaanotto.
@@ -415,4 +417,19 @@ export async function submitReview(
     values: EMPTY_REVIEW_VALUES,
     restaurantName,
   };
+}
+
+/**
+ * Ravintolavaiheen lista uudelleen (review-form.tsx): saman illan muiden juuri
+ * lähettämät arvostelut ja ehdotukset näkyvät ilman sivun latausta. Palauttaa
+ * pelkän datan eikä koske reitittimeen, joten se ei voi kilpailla vaiheen
+ * vaihdon kanssa. Sama välimuisti kuin sivulla (lähetys tyhjentää sen).
+ */
+export async function paivitaTuoreet(): Promise<Tuoreet> {
+  const ravintolat = await sanityFetch<{ _id: string }[]>({
+    query: /* groq */ `*[_type == "ravintola" && defined(slug.current)]{ _id }`,
+    tags: ["ravintola"],
+    fallback: [],
+  });
+  return tuoreetArvostelut(ravintolat);
 }
