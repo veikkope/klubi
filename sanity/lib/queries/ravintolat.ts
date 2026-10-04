@@ -229,7 +229,14 @@ const directoryFilter = /* groq */ `
 /** Montako ravintolaa yhdellä hakemistosivulla. */
 export const RAVINTOLAT_PAGE_SIZE = 24;
 
-const OVERALL = "coalesce(ratingOverall, stars, 0) desc, name asc";
+/**
+ * Parhaat ensin. Tasapisteissä (arvosana yhden desimaalin tarkkuudella)
+ * ratkaisee arvioijien määrä ja sen jälkeen tuoreempi arvio. Vanhan sivuston
+ * arvosanalla ei ole arvioijamäärää, joten se lasketaan nollaksi.
+ */
+const OVERALL = `round(coalesce(ratingOverall, stars, 0), 1) desc,
+  coalesce(automaattinenArvosana.arvioijia, 0) desc,
+  coalesce(${TUOREIN_ARVIO}, "0000-00-00") desc, name asc`;
 
 /** Osa-arvosanan puuttuminen lajitellaan loppuun (`null` olisi GROQ:ssa ensin). */
 const ORDERINGS = {
@@ -237,9 +244,9 @@ const ORDERINGS = {
   uusin: `coalesce(${TUOREIN_ARVIO}, "0000-00-00") desc, name asc`,
   arvosana: OVERALL,
   nimi: "name asc",
-  ruoka: `coalesce(ratingFood, -1) desc, ${OVERALL}`,
-  hinta: `coalesce(ratingPrice, -1) desc, ${OVERALL}`,
-  viihtyvyys: `coalesce(ratingAtmosphere, -1) desc, ${OVERALL}`,
+  ruoka: `round(coalesce(ratingFood, -1), 1) desc, ${OVERALL}`,
+  hinta: `round(coalesce(ratingPrice, -1), 1) desc, ${OVERALL}`,
+  viihtyvyys: `round(coalesce(ratingAtmosphere, -1), 1) desc, ${OVERALL}`,
 } as const;
 
 export type RavintolatOrdering = keyof typeof ORDERINGS;
@@ -397,7 +404,7 @@ export const ravintolaBySlugQuery = defineQuery(`
     seoDescription,
     "related": *[_type == "ravintola" && defined(slug.current) && ${JULKINEN_RAVINTOLA}
       && _id != ^._id && closed != true && city._ref == ^.city._ref]
-      | order(coalesce(ratingOverall, stars, 0) desc, name asc)[0...3]{${cardProjection}}
+      | order(${OVERALL})[0...3]{${cardProjection}}
   }
 `);
 
