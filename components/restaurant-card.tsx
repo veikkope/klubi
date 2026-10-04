@@ -1,3 +1,4 @@
+import { UtensilsCrossed } from "lucide-react";
 import Link from "next/link";
 
 import { FramedImage, korttiZoom } from "@/components/framed-image";
@@ -62,8 +63,14 @@ function arvioituKuukausi(iso: string | null | undefined): string | null {
 export function RestaurantCard({
   restaurant: r,
   korostus,
+  sija,
 }: {
   restaurant: RavintolaCardData;
+  /**
+   * Sijoitus arvosanajärjestyksessä (1 = paras), näytetään nimen edessä.
+   * Lista on `<ol>`, joten ruudunlukija kertoo numeron jo itse.
+   */
+  sija?: number;
   /**
    * Osa-arvosana, joka näytetään kokonaisarvosanan lisäksi, esim. "Ruoka 4,3"
    * Paras ruoka -listalla (`?lista=ruoka`). Puuttuva arvo jätetään näyttämättä.
@@ -112,7 +119,14 @@ export function RestaurantCard({
           </div>
         </KuvaSiirtyma>
       ) : (
-        <span aria-hidden className="aspect-square w-full rounded-sm bg-brass-tint sm:hidden" />
+        // Ei kuvaa: messinkinen paikkamerkki, jotta kortit ovat samankokoisia
+        // ruudukossa (ilman sitä kuvaton kortti jäi isolla näytöllä tyhjäksi).
+        <span
+          aria-hidden
+          className="flex aspect-square w-full items-center justify-center rounded-sm bg-brass-tint text-brass-text sm:aspect-[4/3] sm:rounded-none"
+        >
+          <UtensilsCrossed className="size-6 opacity-60 sm:size-10" strokeWidth={1.5} />
+        </span>
       )}
 
       <div className="flex min-w-0 flex-col gap-1.5 sm:flex-1 sm:gap-2.5 sm:border-t-[3px] sm:border-t-brass sm:p-6">
@@ -142,6 +156,11 @@ export function RestaurantCard({
           {meta && <span className="hidden text-sm text-muted-soft sm:inline">{meta}</span>}
         </div>
         <h3 className="font-display text-[1.1875rem] leading-[1.25] text-heading group-hover:text-accent sm:text-2xl">
+          {sija !== undefined && (
+            <span aria-hidden className="mr-1.5 tabular-nums text-brass-text">
+              {sija}.
+            </span>
+          )}
           {r.name}
         </h3>
         <p className="text-[13px] text-muted-soft sm:hidden">

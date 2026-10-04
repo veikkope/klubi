@@ -37,8 +37,8 @@ const KIINTEAT = [
   "/uutiset/tunniste/huuhkajat",
   "/ravintolat?q=tallinna",
   "/ravintolat?q=zzqqxx",
-  "/ravintolat?lista=ruoka",
-  "/ravintolat?lista=hinta&kaupunki=lahti",
+  "/ravintolat?jarjesta=ruoka",
+  "/ravintolat?kaupunki=lahti&jarjesta=hinta",
 ];
 
 type Rikkomus = { id: string; impact: string | null; help: string; helpUrl: string; kohteet: string[] };

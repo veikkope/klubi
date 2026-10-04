@@ -22,7 +22,7 @@ ruokailutaulukko (`ruokailu2026.xls`, ei versionhallinnassa: jäsenten nimet).
 Laskenta: `lib/ravintola-arvosana.ts` (testit `npm run test:arvosana`).
 Tulos tallennetaan ravintolan kenttiin (`ratingOverall`, `ratingFood`,
 `ratingPrice`, `ratingAtmosphere`, `automaattinenArvosana`), joten listat,
-suodattimet, top-listat ja JSON-LD toimivat ilman muutoksia. Vanhan sivuston
+suodattimet, arvosanajärjestykset ja JSON-LD toimivat ilman muutoksia. Vanhan sivuston
 arvosana tallentuu ensimmäisellä laskennalla kenttään `alkuperainenArvio`
 (vain vertailuun) ja palautuu, jos ravintolan klubilaisten arvosanat poistetaan.
 

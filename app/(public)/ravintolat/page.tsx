@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 
 import { HakuNakyma, HakuTulokset } from "@/components/hakunakyma";
 import { Container } from "@/components/layout/container";
@@ -13,7 +14,9 @@ import {
   buildRavintolaHref,
   hasActiveRavintolaFilters,
   parseRavintolaFilters,
-  ravintolaLista,
+  ravintolaSort,
+  siistiRavintolaHref,
+  sovitaAlue,
   type RavintolaFilterValues,
   type RavintolaSearchParams,
 } from "@/components/ravintola-filters";
@@ -24,7 +27,6 @@ import { breadcrumbSchema, collectionPageSchema } from "@/lib/schema-org";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import {
   RAVINTOLAT_PAGE_SIZE,
-  RAVINTOLAT_TOP_SIZE,
   buildRavintolatFacets,
   countryNamesForSlug,
   odottavatRajauksellaQuery,
@@ -54,10 +56,8 @@ function buildLead(facets: RavintolatFacetData): string {
   const since = year ? ` vuodesta ${year} alkaen` : "";
   const count = facets.total > 0 ? `${facets.total}` : "satoja";
   return (
-    `Lahden Suomalainen Klubi ry on arvioinut ${count} ravintolaa${since}. ` +
-    "Jokainen kohde saa kokonaisarvosanan sekä osa-arviot ruoasta, hinnasta " +
-    "ja viihtyvyydestä. Hae nimellä tai kaupungilla, tai katso parhaat " +
-    "suoraan top-listoista."
+    `Klubi on arvioinut ${count} ravintolaa${since}. Jokainen saa ` +
+    "arvosanan sekä osa-arviot ruoasta, hinnasta ja viihtyvyydestä."
   );
 }
 
@@ -106,7 +106,7 @@ export async function generateMetadata({
 }
 
 export default async function RavintolatPage({ searchParams }: PageProps) {
-  const filters = parseRavintolaFilters(await searchParams);
+  const sp = await searchParams;
 
   // Facetit ensin: `?maa=`-slug muunnetaan niiden avulla maan nimiksi.
   const facets = buildRavintolatFacets(
@@ -116,19 +116,28 @@ export default async function RavintolatPage({ searchParams }: PageProps) {
       fallback: emptyFacets,
     }),
   );
+  const filters = sovitaAlue(parseRavintolaFilters(sp), facets);
+
+  // Lomakkeen lähetys (`?alue=…&kaupunki=&…`) ja vanhat `?lista=`-linkit
+  // siistiin osoitteeseen, jotta jaettu linkki on lyhyt ja yksiselitteinen.
+  const siisti = siistiRavintolaHref(sp, buildRavintolaHref(filters));
+  if (siisti) redirect(siisti);
+
   const params = queryParams(filters, facets);
-  const lista = ravintolaLista(filters.lista);
+  const sort = ravintolaSort(filters.jarjesta);
+  // Arvosanajärjestyksessä kortit numeroidaan (ei haussa: siinä osuvuus ratkaisee).
+  const sijaAlkaen = sort.sija && !filters.q ? (filters.sivu - 1) * RAVINTOLAT_PAGE_SIZE + 1 : null;
 
   // Alue- tai hakunäkymässä myös toista arvioijaa odottavat (klubilainen kaupungissa:
-  // mitä on arvioitu ja missä kannattaa käydä). Top-listoissa ei.
+  // mitä on arvioitu ja missä kannattaa käydä).
   const alueTaiHaku = Boolean(filters.kaupunki || filters.maa || filters.maakunta.length || filters.q);
   const [items, total, odottavat, odottaviaYhteensa] = await Promise.all([
     sanityFetch<RavintolaCardData[]>({
-      query: ravintolatDirectoryQuery(
-        lista
-          ? { ordering: lista.ordering, page: 1, pageSize: RAVINTOLAT_TOP_SIZE }
-          : { ordering: filters.jarjesta, page: filters.sivu, search: params.terms !== null },
-      ),
+      query: ravintolatDirectoryQuery({
+        ordering: filters.jarjesta,
+        page: filters.sivu,
+        search: params.terms !== null,
+      }),
       params,
       tags: ["ravintola", "kaupunki"],
       fallback: [],
@@ -139,7 +148,7 @@ export default async function RavintolatPage({ searchParams }: PageProps) {
       tags: ["ravintola", "kaupunki"],
       fallback: 0,
     }),
-    alueTaiHaku && !lista && filters.sivu === 1
+    alueTaiHaku && filters.sivu === 1
       ? sanityFetch<OdottavaRavintola[]>({
           query: odottavatRajauksellaQuery,
           params,
@@ -151,8 +160,7 @@ export default async function RavintolatPage({ searchParams }: PageProps) {
     sanityFetch<number>({ query: odottavatRavintolatMaaraQuery, tags: ["ravintola"], fallback: 0 }),
   ]);
 
-  // Top-listaa ei sivuteta.
-  const pageCount = lista ? 1 : Math.max(1, Math.ceil(total / RAVINTOLAT_PAGE_SIZE));
+  const pageCount = Math.max(1, Math.ceil(total / RAVINTOLAT_PAGE_SIZE));
   const isFiltered = hasActiveRavintolaFilters(filters);
   const lead = buildLead(facets);
 
@@ -181,16 +189,19 @@ export default async function RavintolatPage({ searchParams }: PageProps) {
             <>
               <Link
                 href="/ravintolat/arvostele"
-                className="inline-flex min-h-11 items-center justify-center rounded-sm bg-primary px-6 text-sm font-medium text-on-primary shadow-sm transition hover:bg-primary-hover hover:text-on-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                className="inline-flex min-h-11 items-center justify-center rounded-sm bg-primary px-5 text-sm sm:px-6 font-medium text-on-primary shadow-sm transition hover:bg-primary-hover hover:text-on-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
                 Lähetä oma arvostelu
               </Link>
               {odottaviaYhteensa > 0 && (
                 <Link
                   href="/ravintolat/odottavat"
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-sm border border-border-strong bg-surface px-6 text-sm font-medium text-foreground transition hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-sm border border-border-strong bg-surface px-4 text-sm sm:px-6 font-medium text-foreground transition hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 >
-                  Odottavat toista arvioijaa
+                  {/* Puhelimella lyhyt teksti, jotta painikkeet mahtuvat yhdelle riville. */}
+                  <span>
+                    Odottavat<span className="max-sm:sr-only"> toista arvioijaa</span>
+                  </span>
                   <span className="rounded-full bg-brass-tint px-2 py-0.5 text-xs font-semibold tabular-nums text-brass-tint-text">
                     {odottaviaYhteensa}
                   </span>
@@ -201,7 +212,7 @@ export default async function RavintolatPage({ searchParams }: PageProps) {
         />
 
         <HakuNakyma polku="/ravintolat" tila={buildRavintolaHref(filters)}>
-          <div className="mt-10">
+          <div className="mt-8 sm:mt-10">
             <RavintolaFilterBar
               active={filters}
               facets={facets}
@@ -209,30 +220,33 @@ export default async function RavintolatPage({ searchParams }: PageProps) {
             />
           </div>
 
-          <section aria-label="Hakutulokset" className="mt-10">
+          <section aria-label="Hakutulokset" className="mt-6">
             <HakuTulokset>
               {items.length === 0 ? (
                 <EmptyState isFiltered={isFiltered} isSearch={Boolean(filters.q)} hasAnyContent={facets.total > 0} />
-              ) : lista ? (
-                <ol className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                  {items.map((restaurant, index) => (
-                    <li key={restaurant._id} className="flex flex-col gap-2">
-                      <span aria-hidden className="font-display text-3xl leading-none text-accent">
-                        {index + 1}.
-                      </span>
-                      <RestaurantCard restaurant={restaurant} korostus={lista.osa ?? undefined} />
-                    </li>
-                  ))}
-                </ol>
               ) : (
                 <>
-                  <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                    {items.map((restaurant) => (
-                      <li key={restaurant._id} className="flex">
-                        <RestaurantCard restaurant={restaurant} />
-                      </li>
-                    ))}
-                  </ul>
+                  {sijaAlkaen !== null ? (
+                    <ol start={sijaAlkaen} className="grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
+                      {items.map((restaurant, index) => (
+                        <li key={restaurant._id} className="flex">
+                          <RestaurantCard
+                            restaurant={restaurant}
+                            korostus={sort.osa ?? undefined}
+                            sija={sijaAlkaen + index}
+                          />
+                        </li>
+                      ))}
+                    </ol>
+                  ) : (
+                    <ul className="grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
+                      {items.map((restaurant) => (
+                        <li key={restaurant._id} className="flex">
+                          <RestaurantCard restaurant={restaurant} korostus={sort.osa ?? undefined} />
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                   <Pagination filters={filters} pageCount={pageCount} />
                 </>
               )}
@@ -293,7 +307,7 @@ function EmptyState({
         {isSearch
           ? "Tarkista kirjoitusasu tai kokeile pelkkää nimen alkua tai kaupunkia."
           : isFiltered
-            ? "Kokeile väljempiä rajauksia — esimerkiksi matalampaa vähimmäisarvosanaa tai laajempaa aluetta (maa, maakunta tai kaupunki)."
+            ? "Kokeile väljempiä rajauksia, esimerkiksi matalampaa arvosanaa tai laajempaa aluetta."
             : hasAnyContent
               ? "Arvostelut ovat juuri nyt piilossa. Tarkista rajaukset tai palaa hetken kuluttua."
               : "Ravintola-arvostelut lisätään Sanity Studiossa. Kun ensimmäinen arvostelu on tallennettu, se ilmestyy tähän."}
@@ -336,7 +350,7 @@ function Pagination({
           rel="prev"
           className={linkClass}
         >
-          <Nuoli suunta="vasen" /> Edellinen sivu
+          <Nuoli suunta="vasen" /> Edellinen<span className="max-sm:sr-only"> sivu</span>
         </Link>
       ) : (
         <span aria-hidden />
@@ -352,7 +366,7 @@ function Pagination({
           rel="next"
           className={linkClass}
         >
-          Seuraava sivu <Nuoli />
+          Seuraava<span className="max-sm:sr-only"> sivu</span> <Nuoli />
         </Link>
       ) : (
         <span aria-hidden />

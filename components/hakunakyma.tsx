@@ -74,6 +74,20 @@ export function HakuNakyma({
   // Fokus säilyy.
   useEffect(() => {
     juuriRef.current?.querySelectorAll("form").forEach((lomake) => lomake.reset());
+    // React ei päivitä valikon `defaultValue`-arvoa uudelleenrenderöinnissä,
+    // joten reset() palauttaisi valikon sivun ensimmäisen latauksen arvoon.
+    // Valikko kertoo nykyisen arvonsa `data-arvo`-attribuutissa.
+    juuriRef.current?.querySelectorAll<HTMLSelectElement>("select[data-arvo]").forEach((valikko) => {
+      valikko.value = valikko.dataset.arvo ?? "";
+    });
+    // Vaakasuunnassa vieritettävä nappirivi (puhelimella): valittu nappi
+    // näkyviin, jottei se jää ruudun ulkopuolelle. Vain rivi vierii, ei sivu.
+    juuriRef.current?.querySelectorAll<HTMLElement>("[data-vaakarivi]").forEach((rivi) => {
+      const valittu = rivi.querySelector<HTMLElement>("[aria-current]");
+      if (!valittu || rivi.scrollWidth <= rivi.clientWidth) return;
+      const vasen = valittu.getBoundingClientRect().left - rivi.getBoundingClientRect().left + rivi.scrollLeft;
+      rivi.scrollLeft = Math.max(0, vasen - (rivi.clientWidth - valittu.offsetWidth) / 2);
+    });
   }, [tila]);
 
   // Sivutus: uusi sivu näkyviin tulosten alusta, kun se on valmis.
@@ -107,15 +121,46 @@ export function HakuNakyma({
     // `form`-attribuutilla liitetyt kentät.
     const submitter = (e.nativeEvent as SubmitEvent).submitter;
     const tiedot = new FormData(lomake, submitter);
+    // Valikon vaihtoehto voi kertoa oman parametrinimensä (`data-nimi`): esim.
+    // ravintoloiden aluevalikossa maa → `maa=`, maakunta → `maakunta=`.
+    const nimet = new Map<string, string>();
+    for (const kentta of lomake.elements) {
+      const nimi = kentta instanceof HTMLSelectElement ? kentta.selectedOptions[0]?.dataset.nimi : undefined;
+      if (nimi) nimet.set((kentta as HTMLSelectElement).name, nimi);
+    }
+    // Tyhjät kentät ("Kaikki") pois, jotta osoite on lyhyt ja sama kuin linkeissä.
     url.search = new URLSearchParams(
-      [...tiedot].map(([nimi, arvo]) => [nimi, typeof arvo === "string" ? arvo : arvo.name]),
+      [...tiedot]
+        .filter(([, arvo]) => arvo !== "")
+        .map(([nimi, arvo]) => [nimet.get(nimi) ?? nimi, typeof arvo === "string" ? arvo : arvo.name]),
     ).toString();
     siirry(url, false);
   }
 
+  // Rajaus päivittyy heti valittaessa, kun lomakkeella on `data-heti`: valikko,
+  // valintanappi tai valintaruutu lähettää lomakkeen (ilman JS:ää on painike).
+  // Tekstikenttä ei, sillä sen haku lähtee Enterillä tai Hae-painikkeella.
+  function onChangeCapture(e: FormEvent<HTMLDivElement>) {
+    const kentta = e.target;
+    const valinta =
+      kentta instanceof HTMLSelectElement ||
+      (kentta instanceof HTMLInputElement && (kentta.type === "radio" || kentta.type === "checkbox"));
+    if (!valinta || !kentta.form?.hasAttribute("data-heti")) return;
+    // Riippuva valikko tyhjenee (`data-tyhjentaa`), esim. alueen vaihto
+    // tyhjentää kaupungin, joka voisi olla toisella alueella.
+    const riippuva = kentta.dataset.tyhjentaa && document.getElementById(kentta.dataset.tyhjentaa);
+    if (riippuva instanceof HTMLSelectElement) riippuva.value = "";
+    kentta.form.requestSubmit();
+  }
+
   return (
     <HakuKonteksti.Provider value={{ paivittyy, tuloksetRef }}>
-      <div ref={juuriRef} onClickCapture={onClickCapture} onSubmitCapture={onSubmitCapture}>
+      <div
+        ref={juuriRef}
+        onClickCapture={onClickCapture}
+        onSubmitCapture={onSubmitCapture}
+        onChangeCapture={onChangeCapture}
+      >
         {children}
       </div>
     </HakuKonteksti.Provider>

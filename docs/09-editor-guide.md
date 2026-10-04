@@ -351,6 +351,11 @@ lomake pitää tauon, ettei jono täyty roskapostista.
 Jos ravintolan kaupunkia ei tiedetä (esim. laiva), liitä se maan nimiseen "kaupunkiin"
 (esim. "Ruotsi").
 
+Ravintolasivun **Alue**- ja **Kaupunki**-valikot (ja niiden lukumäärät) rakentuvat näistä
+tiedoista itsestään: uusi maa, maakunta tai kaupunki ilmestyy valikkoon, kun sinne on
+julkaistu ensimmäinen ravintola. Valikoita ei tarvitse ylläpitää erikseen. Jos kaupunki
+puuttuu maakuntavalinnasta, tarkista sen **Maakunta**-kenttä.
+
 ### Litmanen-osio
 
 Valikon **Litmanen** alla on neljä sivua:
