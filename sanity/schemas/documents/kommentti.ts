@@ -18,10 +18,14 @@ export const kommentti = defineType({
       name: "piilotettu",
       title: "Piilota sivulta",
       description:
-        "Piilotettu kommentti ei näy sivulla, mutta säilyy tässä. Käytä asiattomiin " +
-        "viesteihin tai kun jäsen pyytää poistamaan veikkauksensa näkyvistä.",
+        "Piilota tai palauta alareunan painikkeella Piilota sivulta / Näytä sivulla: " +
+        "muutos näkyy sivulla heti, eikä Julkaise-painallusta tarvita. Piilotettu " +
+        "kommentti säilyy tässä. Pysyvä poisto: ⋯ → Poista pysyvästi.",
       type: "boolean",
       initialValue: false,
+      // Käsin rastitettu piilotus jäisi luonnokseksi, ja kommentti näkyisi yhä
+      // sivulla (sanity/actions/kommentin-moderointi.tsx).
+      readOnly: true,
     }),
     defineField({
       name: "uutinen",

@@ -122,6 +122,26 @@ export const structure: StructureResolver = (S) =>
                     .title("Uusimmat kommentit")
                     .defaultOrdering([{ field: "lahetetty", direction: "desc" }]),
                 ),
+              // Yhden veikkauksen tai keskustelun läpikäynti: uutinen → sen kommentit.
+              S.listItem()
+                .title("Uutisittain")
+                .schemaType("uutinen")
+                .child(
+                  S.documentList()
+                    .title("Uutiset, joilla on kommentteja")
+                    .schemaType("uutinen")
+                    .filter(`_type == "uutinen" && count(*[_type == "kommentti" && uutinen._ref == ^._id]) > 0`)
+                    .defaultOrdering([{ field: "publishedAt", direction: "desc" }])
+                    .child((uutinenId) =>
+                      S.documentList()
+                        .title("Uutisen kommentit")
+                        .schemaType("kommentti")
+                        .filter(`_type == "kommentti" && uutinen._ref == $uutinenId`)
+                        .params({ uutinenId: uutinenId.replace(/^drafts\./, "") })
+                        .defaultOrdering([{ field: "lahetetty", direction: "desc" }])
+                        .initialValueTemplates([]),
+                    ),
+                ),
               S.listItem()
                 .title("Piilotetut")
                 .schemaType("kommentti")

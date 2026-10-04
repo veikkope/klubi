@@ -42,19 +42,14 @@ export async function KommentitOsio({
       </h2>
 
       {kaytossa && auki && kommentointi && (
-        <div className="mt-8 rounded-2xl border border-border bg-surface p-5 sm:p-8">
-          <h3 className="font-display text-xl">
-            {onVeikkaus ? "Jätä veikkauksesi" : "Jätä kommentti"}
-          </h3>
+        <div className="mt-6">
           {kommentointi.sulkeutuu && (
-            <p className="mt-1 text-sm text-muted">
+            <p className="mb-4 text-sm text-muted">
               {onVeikkaus ? "Veikkaus" : "Kommentointi"} sulkeutuu{" "}
               <time dateTime={kommentointi.sulkeutuu}>{formatDateTime(kommentointi.sulkeutuu)}</time>.
             </p>
           )}
-          <div className="mt-6">
-            <KommenttiLomake uutinenId={uutinenId} kommentointi={kommentointi} />
-          </div>
+          <KommenttiLomake uutinenId={uutinenId} kommentointi={kommentointi} />
         </div>
       )}
 

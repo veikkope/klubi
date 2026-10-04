@@ -134,8 +134,19 @@ määrä (oletus 4) ja kysytäänkö maalikuningas.
 
 **Tavallinen kommentti** (esim. "Suomen paras avaus", kesäjuhla): tyyppi **Kommentti**.
 
-**Valvonta:** **Kommentit ja veikkaukset → Uusimmat**. Asiattoman viestin saat pois
-sivulta rastilla **Piilota sivulta** → Julkaise.
+**Valvonta:** valikossa **Kommentit ja veikkaukset**:
+
+- **Uusimmat**: kaikki kommentit, uusin ensin.
+- **Uutisittain**: valitse uutinen, niin näet vain sen kommentit (esim. yhden veikkauksen kaikki vastaukset).
+- **Piilotetut**: piilottamasi kommentit.
+
+Asiaton viesti: avaa kommentti ja paina alareunan **Piilota sivulta**. Kommentti
+katoaa sivulta heti, eikä Julkaise-painallusta tarvita. Kommentti säilyy Studiossa,
+ja sen saa takaisin samasta painikkeesta (**Näytä sivulla**). Listassa piilotetun
+kommentin edessä on 🚫.
+
+Pysyvä poisto (esim. jäsen pyytää poistamaan tietonsa): alareunan **⋯ → Poista
+pysyvästi**. Poistettua ei voi palauttaa.
 
 > **Älä käytä Kopioi (Duplicate) -toimintoa vanhoille blogikirjoituksille**, koska kopio
 > saisi blogin alkuperätiedot. Tee uusi uutinen tyhjästä ja kopioi joukkueet
@@ -455,7 +466,7 @@ kävijälle asiallisen ilmoituksen.
 Jos joku pyytää poistamaan tietonsa (kommentti, veikkaus tai arvostelu kuvineen):
 
 1. Etsi viesti Studion hakukentällä nimellä.
-2. **⋯ → Poista** (Delete). Arvostelussa **⋯ → Poista arvostelu**, joka poistaa myös kuvat.
+2. Kommentissa ja veikkauksessa **⋯ → Poista pysyvästi**. Arvostelussa **⋯ → Poista arvostelu**, joka poistaa myös kuvat.
    Piilottaminen ei riitä poistopyyntöön, koska piilotettu viesti säilyy järjestelmässä.
 3. Vastaa pyytäjälle, että tieto on poistettu. Tietosuojaseloste on osoitteessa /tietosuoja.
 

@@ -26,6 +26,10 @@ import {
  * Client Component, jotta virheet, lähetystila ja sarjajärjestyksen siirrot
  * päivittyvät ilman sivunlatausta. Lähetys menee Server Actionille, ja kentät
  * ovat tavallisia lomakekenttiä, joten lomake toimii myös ennen hydraatiota.
+ *
+ * Lomake on oletuksena kiinni painikkeen takana (natiivi `<details>`, toimii
+ * ilman JavaScriptiä): veikkauslomake on 12 riviä pitkä, ja useimmat tulevat
+ * lukemaan kommentteja. Virhe avaa lomakkeen, onnistunut lähetys sulkee sen.
  */
 
 const fieldClass =
@@ -65,6 +69,16 @@ export function KommenttiLomake({
   const tyyppi = kommentointi.tyyppi ?? "kommentti";
   const onVeikkaus = tyyppi !== "kommentti";
   const nimiRef = useRef<HTMLInputElement>(null);
+
+  // Ilman JavaScriptiä palvelin renderöi virhetilan, jolloin lomake on auki heti.
+  // Uusi lähetyksen tulos säätää tilan jo renderöinnissä (ei efektissä).
+  const [auki, setAuki] = useState(() => state.status === "error");
+  const [kasiteltyTila, setKasiteltyTila] = useState(state);
+  if (state !== kasiteltyTila) {
+    setKasiteltyTila(state);
+    if (state.status === "error") setAuki(true);
+    if (state.status === "success") setAuki(false);
+  }
 
   // Nimi valmiiksi edellisestä kerrasta.
   useEffect(() => {
@@ -117,76 +131,102 @@ export function KommenttiLomake({
         )}
       </div>
 
-      {/* key: onnistunut lähetys tyhjentää lomakkeen (nimi palautetaan muistista). */}
-      <form key={state.lahetyksia} action={formAction} onSubmit={muista} noValidate className="space-y-6">
-        <input type="hidden" name="uutinen" value={uutinenId} />
-
-        {kommentointi.ohje && <p className="leading-relaxed text-muted">{kommentointi.ohje}</p>}
-
-        <Field field="nimi" state={state} required hint="Näkyy sivulla veikkauksesi yhteydessä.">
-          <input
-            ref={nimiRef}
-            id={kommenttiFieldId("nimi")}
-            name="nimi"
-            type="text"
-            required
-            maxLength={NIMI_MAX}
-            autoComplete="given-name"
-            defaultValue={state.values.nimi}
-            aria-invalid={state.fieldErrors.nimi ? true : undefined}
-            aria-describedby={describedBy("nimi", state, true)}
-            className={cn(fieldClass, "sm:max-w-xs")}
-          />
-        </Field>
-
-        {tyyppi === "sarjajarjestys" && (
-          <Sarjajarjestys
-            vaihtoehdot={kommentointi.vaihtoehdot ?? []}
-            alku={state.values.jarjestys}
-            error={state.fieldErrors.veikkaus}
-          />
-        )}
-
-        {tyyppi === "voittajaveikkaus" && (
-          <Voittajaveikkaus kommentointi={kommentointi} state={state} />
-        )}
-
-        <Field
-          field="teksti"
-          state={state}
-          required={!onVeikkaus}
-          label={onVeikkaus ? "Kommentti (vapaaehtoinen)" : undefined}
+      <details
+        open={auki}
+        onToggle={(e) => setAuki(e.currentTarget.open)}
+        className="group open:rounded-2xl open:border open:border-border open:bg-surface open:p-5 sm:open:p-8"
+      >
+        <summary
+          className={cn(
+            "inline-flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-sm border border-primary px-5",
+            "text-sm font-medium text-primary transition hover:bg-primary hover:text-on-primary",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+            "[&::-webkit-details-marker]:hidden",
+            "group-open:mb-6 group-open:border-transparent group-open:px-0 group-open:font-display",
+            "group-open:text-xl group-open:text-foreground group-open:hover:bg-transparent group-open:hover:text-accent",
+          )}
         >
-          <textarea
-            id={kommenttiFieldId("teksti")}
-            name="teksti"
+          <span aria-hidden className="text-lg leading-none group-open:hidden">+</span>
+          <span className="group-open:hidden">
+            {state.status === "success"
+              ? onVeikkaus ? "Jätä uusi veikkaus" : "Kirjoita uusi kommentti"
+              : onVeikkaus ? "Jätä veikkauksesi" : "Kirjoita kommentti"}
+          </span>
+          <span className="hidden group-open:inline">{onVeikkaus ? "Jätä veikkauksesi" : "Kirjoita kommentti"}</span>
+          <span aria-hidden className="hidden text-base text-muted group-open:inline">(sulje ×)</span>
+        </summary>
+
+        {/* key: onnistunut lähetys tyhjentää lomakkeen (nimi palautetaan muistista). */}
+        <form key={state.lahetyksia} action={formAction} onSubmit={muista} noValidate className="space-y-6">
+          <input type="hidden" name="uutinen" value={uutinenId} />
+
+          {kommentointi.ohje && <p className="leading-relaxed text-muted">{kommentointi.ohje}</p>}
+
+          <Field field="nimi" state={state} required hint={`Näkyy sivulla ${onVeikkaus ? "veikkauksesi" : "kommenttisi"} yhteydessä.`}>
+            <input
+              ref={nimiRef}
+              id={kommenttiFieldId("nimi")}
+              name="nimi"
+              type="text"
+              required
+              maxLength={NIMI_MAX}
+              autoComplete="given-name"
+              defaultValue={state.values.nimi}
+              aria-invalid={state.fieldErrors.nimi ? true : undefined}
+              aria-describedby={describedBy("nimi", state, true)}
+              className={cn(fieldClass, "sm:max-w-xs")}
+            />
+          </Field>
+
+          {tyyppi === "sarjajarjestys" && (
+            <Sarjajarjestys
+              vaihtoehdot={kommentointi.vaihtoehdot ?? []}
+              alku={state.values.jarjestys}
+              error={state.fieldErrors.veikkaus}
+            />
+          )}
+
+          {tyyppi === "voittajaveikkaus" && (
+            <Voittajaveikkaus kommentointi={kommentointi} state={state} />
+          )}
+
+          <Field
+            field="teksti"
+            state={state}
             required={!onVeikkaus}
-            rows={onVeikkaus ? 2 : 4}
-            maxLength={TEKSTI_MAX}
-            defaultValue={state.values.teksti}
-            aria-invalid={state.fieldErrors.teksti ? true : undefined}
-            aria-describedby={describedBy("teksti", state)}
-            className={cn(fieldClass, "resize-y")}
-          />
-        </Field>
+            label={onVeikkaus ? "Kommentti (vapaaehtoinen)" : undefined}
+          >
+            <textarea
+              id={kommenttiFieldId("teksti")}
+              name="teksti"
+              required={!onVeikkaus}
+              rows={onVeikkaus ? 2 : 4}
+              maxLength={TEKSTI_MAX}
+              defaultValue={state.values.teksti}
+              aria-invalid={state.fieldErrors.teksti ? true : undefined}
+              aria-describedby={describedBy("teksti", state)}
+              className={cn(fieldClass, "resize-y")}
+            />
+          </Field>
 
-        {/* Hunajapurkki: piilossa ihmisiltä ja näppäimistöltä, vain botti täyttää sen. */}
-        <div aria-hidden className="absolute left-[-9999px] h-0 w-0 overflow-hidden">
-          <label htmlFor="kommentti-verkkosivu">Verkkosivu</label>
-          <input id="kommentti-verkkosivu" name="verkkosivu" type="text" tabIndex={-1} autoComplete="off" defaultValue="" />
-        </div>
+          {/* Hunajapurkki: piilossa ihmisiltä ja näppäimistöltä, vain botti täyttää sen. */}
+          <div aria-hidden className="absolute left-[-9999px] h-0 w-0 overflow-hidden">
+            <label htmlFor="kommentti-verkkosivu">Verkkosivu</label>
+            <input id="kommentti-verkkosivu" name="verkkosivu" type="text" tabIndex={-1} autoComplete="off" defaultValue="" />
+          </div>
 
-        <p className="text-sm text-muted">
-          Nimesi ja {onVeikkaus ? "veikkauksesi" : "kommenttisi"} näkyvät sivulla julkisesti heti lähettämisen jälkeen.
-          Lue{" "}
-          <Link href="/tietosuoja" className="text-accent underline underline-offset-4">
-            tietosuojaseloste
-          </Link>
-          .
-        </p>
+          <p className="text-sm text-muted">
+            Nimesi ja {onVeikkaus ? "veikkauksesi" : "kommenttisi"} näkyvät sivulla julkisesti heti lähettämisen jälkeen.
+            Lue{" "}
+            <Link href="/tietosuoja" className="text-accent underline underline-offset-4">
+              tietosuojaseloste
+            </Link>
+            .
+          </p>
 
-        <SubmitButton label={onVeikkaus ? "Lähetä veikkaus" : "Lähetä kommentti"} />
-      </form>
+          <SubmitButton label={onVeikkaus ? "Lähetä veikkaus" : "Lähetä kommentti"} />
+        </form>
+      </details>
     </div>
   );
 }

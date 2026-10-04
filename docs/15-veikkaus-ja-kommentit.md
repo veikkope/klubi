@@ -194,3 +194,5 @@ avoin palsta) jäävät paikalliseen arkistoon.
 | Korjattu samalla | `lib/format.ts`: päivämäärät ja kellonajat Suomen aikaan. Vercel toimii UTC-ajassa, joten tapahtumien kellonajat olisivat näkyneet 2–3 h väärin |
 | Ei testattu | ulkoasu ja näppäimistökäyttö selaimessa (selainlaajennus ei ollut käytettävissä). Tarkistettava käsin ennen julkaisua: puhelin, ↑/↓-napit, ruudunlukijan ilmoitus siirrosta |
 | Käyttöönotto | isä kytkee kommentoinnin uutiselle Studiossa (docs/09) |
+| Moderointi (4.10.2026) | Studion toiminnot `sanity/actions/kommentin-moderointi.tsx`: **Piilota sivulta / Näytä sivulla** muuttaa julkaistua versiota suoraan (ennen rasti + Julkaise, ja unohtunut julkaisu jätti kommentin näkyviin), **Poista pysyvästi** vahvistuksella. Kenttä `piilotettu` on lukittu lomakkeessa. Valikossa uusi näkymä **Uutisittain** |
+| Lomakkeen ulkoasu (4.10.2026) | Lomake on oletuksena kiinni painikkeen "Kirjoita kommentti" / "Jätä veikkauksesi" takana (natiivi `<details>`, toimii ilman JavaScriptiä). Virhe avaa lomakkeen, onnistunut lähetys sulkee sen ja kiitos näkyy yläpuolella. Syy: 12-rivinen veikkauslomake peitti kommentit |

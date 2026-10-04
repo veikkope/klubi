@@ -10,6 +10,7 @@ import { structure } from "./sanity/structure";
 import { locations } from "./sanity/presentation";
 import { HylkaaArvostelu } from "./sanity/actions/hylkaa-arvostelu";
 import { HyvaksyJaLuoRavintola } from "./sanity/actions/hyvaksy-ja-luo-ravintola";
+import { PiilotaKommentti, PoistaKommentti } from "./sanity/actions/kommentin-moderointi";
 
 export default defineConfig({
   name: "klubi",
@@ -35,6 +36,13 @@ export default defineConfig({
         // Jos julkaisutoimintoa ei ole, loppuun: hylkäys ei saa olla päätoiminto.
         actions.splice(publishAt === -1 ? actions.length : publishAt + 1, 0, HylkaaArvostelu);
         return [HyvaksyJaLuoRavintola, ...actions];
+      }
+      if (context.schemaType === "kommentti") {
+        // Piilotus ensisijaisena: muuttaa julkaistua versiota suoraan, joten
+        // erillistä Julkaise-painallusta ei tarvita. Pysyvä poisto omalla
+        // vahvistuksellaan tavallisen Poista-toiminnon tilalle.
+        const actions = input.filter(({ action }) => action !== "delete" && action !== "duplicate");
+        return [PiilotaKommentti, ...actions, PoistaKommentti];
       }
       // Varmuuskopio on vain luettava: ladataan, ei muokata, julkaista eikä poisteta käsin.
       if (context.schemaType === "varmuuskopio") return [];
