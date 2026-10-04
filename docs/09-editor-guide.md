@@ -234,6 +234,14 @@ poistaa seuroja (kirjoita nimi kuten Veikkausliigan sivuilla ja paina Enter).
 3. Ilmoittautumislinkki tai -sähköposti (valinnainen).
 4. **Julkaise**. Tapahtuma näkyy etusivulla ja /tapahtumat-sivulla, kunnes se on ohi.
 
+**Jakokuva:** kun tapahtuman linkki jaetaan WhatsAppissa tai Facebookissa, esikatselun
+kuvana on tapahtuman **kansikuva**. Ilman kansikuvaa käytetään kuvausta: ensin siinä
+olevaa kuvaa, sitten YouTube-videon kuvaa, ja jos kumpaakaan ei ole, klubin logoa.
+Lisää siis kansikuva ennen kuin jaat kutsun: vaakakuva, vähintään noin 1200 pikseliä
+leveä, tärkein kohta keskellä. Kuvaan ei tarvitse kirjoittaa tapahtuman nimeä tai
+aikaa, koska otsikko näkyy esikatselussa kuvan vieressä. Lisätietoa kohdassa
+*Jakokuva* uutisohjeen alla.
+
 ### Uusi sivu (esim. säännöt)
 
 1. **Sivut** → **+**.
