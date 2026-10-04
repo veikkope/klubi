@@ -148,7 +148,11 @@ export default async function RavintolaPage({ params }: PageProps) {
   }));
 
   const visits = (r.visits ?? []).filter(Boolean);
-  const lastVisit = visits.at(-1) ?? r.visitedAt ?? null;
+  // Päivät järjestetään itse: ensimmäinen ja viimeisin käynti eivät saa
+  // riippua siitä, missä järjestyksessä ne on Studioon kirjattu.
+  const kaynnit = [...visits].sort();
+  const firstVisit = kaynnit[0] ?? r.visitedAt ?? null;
+  const lastVisit = kaynnit.at(-1) ?? r.visitedAt ?? null;
   const hasReview = Boolean(r.review && r.review.length > 0);
 
   return (
@@ -197,7 +201,17 @@ export default async function RavintolaPage({ params }: PageProps) {
               {r.tuomio && lastVisit && " · "}
               {lastVisit && (
                 <>
-                  Klubi vieraili <time dateTime={lastVisit}>{formatDate(lastVisit)}</time>
+                  {firstVisit && firstVisit !== lastVisit ? (
+                    <>
+                      Klubi vieraili ensimmäisen kerran{" "}
+                      <time dateTime={firstVisit}>{formatDate(firstVisit)}</time>, viimeksi{" "}
+                      <time dateTime={lastVisit}>{formatDate(lastVisit)}</time>
+                    </>
+                  ) : (
+                    <>
+                      Klubi vieraili <time dateTime={lastVisit}>{formatDate(lastVisit)}</time>
+                    </>
+                  )}
                   {visits.length > 1 && ` (${visits.length} käyntiä)`}
                 </>
               )}
