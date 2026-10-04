@@ -45,6 +45,17 @@ Luo tokenit: sanity.io/manage → *API* → **Tokens** → Add API token. Kopioi
 **suoraan Verceliin**, äläkä tallenna sitä muualle (ei sähköpostiin eikä chattiin).
 Tokenin arvo näytetään vain kerran.
 
+### A3. Omistajuus (päätetty 4.10.2026)
+
+- **Sanity:** projekti `zyrukn4s` kuuluu organisaatiolle "Lahden Suomalainen Klubi ry"
+  (`omn1r3j11`). Organisaation Administratorit: kehittäjä ja Simo (isä).
+- **Vercel:** projekti jää kehittäjän Hobby-tilille. Hobby-tiliin ei voi lisätä jäseniä, joten
+  siirto toiselle henkilölle vaatisi Pro-tiimin. Klubin omaisuus (sisältö, domain, julkinen repo)
+  ei ole Vercelissä. Jos ylläpitäjä vaihtuu: uusi Vercel-tili → tuo repo `veikkope/klubi` →
+  kopioi §B:n ympäristömuuttujat → lisää domainit → vaihda DNS (§C3) → päivitä Sanityn CORS ja
+  webhook uuteen osoitteeseen.
+- **Domain:** rekisteröijä tarkistetaan Wepardilta (pitää olla yhdistys).
+
 ---
 
 ## B. Vercelin ympäristömuuttujat
@@ -118,8 +129,8 @@ klubin sähköposti lakkaa toimimasta. Tämä on estettävä ensin (C2).
 
 ### C3. Web Verceliin (siirtopäivä)
 
-1. Apex **A** → Vercelin antama IP (tyypillisesti `76.76.21.21`).
-2. `www` **CNAME** → Vercelin antama nimi (tyypillisesti `cname.vercel-dns.com`).
+1. Apex **A** → `216.198.79.1` (Vercelin antama 4.10.2026; vanha `76.76.21.21` toimii myös).
+2. `www` **CNAME** → `b0e6106b7627dd0d.vercel-dns-017.com` (Vercelin antama 4.10.2026; tarkista kopioimalla Vercelistä).
 3. **Älä koske** NS-, MX-, `mail`-, SPF- tai DKIM-tietueisiin.
 4. Odota, että Vercel näyttää domainit *Valid* ja HTTPS-varmenne on valmis.
 5. Tarkista: https://www… ja apex (→ www 308), http → https, `/studio`, `/sitemap.xml`,
@@ -196,7 +207,7 @@ riippuvainen web-muutoksesta C2:n jälkeen.
 | 11 | Perustiedot Studiossa (docs/09 "Täytä itse") | isä + hallitus | ☐ 30.9.: sähköposti, osoite, Y-tunnus, hallitus (0), tapahtumat (0), etusivun kuvat, /english-kieli |
 | 12 | Tietosuojaselosteen vahvistus | hallitus | ☐ |
 | 13 | Jäsenhakemukset poistettu (ei Resendiä) | kehittäjä | ✅ 28.9. koodi · ✅ tietosuojaselosteessa ei mainintaa (tarkistettu 30.9.) |
-| 14 | DNS C1–C4 | kehittäjä + int2000 | ☐ |
+| 14 | DNS C1–C4 | kehittäjä + int2000 | ☐ 4.10.: domainit lisätty Verceliin (apex 308 → www), odottaa DNS-paneelin tunnuksia |
 | 15 | Blogin ohjaus (docs/14 §6) | kehittäjä | ☐ siirron jälkeen (tuotantopolku ja dynaaminen /blogspot-reitti valmiit 30.9.) |
 | 16 | Arvostelukuvat: tietosuojaselosteen patch (docs/18 §7) | kehittäjä | ✅ 30.9. (varmuuskopio ensin) |
 | 17 | Vercel-osoitteet noindex (`X-Robots-Tag`) | kehittäjä | ✅ 30.9. |
