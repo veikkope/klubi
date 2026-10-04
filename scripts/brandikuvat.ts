@@ -10,7 +10,7 @@
  * lähdetiedostoina ja OG-kuvan pohjana (app/api/og).
  *
  * Lisäksi kotinäytön sovelluskuvakkeet (app/manifest.ts) → public/sovellus/:
- * valkoinen merkki yönsinisellä pohjalla, 192 ja 512 px sekä "maskable"-versio,
+ * yönsininen merkki valkoisella pohjalla (kuten iPhonen app/apple-icon.png), 192 ja 512 px sekä "maskable"-versio,
  * jonka merkki mahtuu Androidin pyöreään tai pyöristettyyn rajaukseen
  * (turva-alue 80 % keskeltä).
  */
@@ -24,14 +24,14 @@ const KOHDE = "public/brand/web";
 const KORKEUS: Record<string, number> = { mark: 168, wordmark: 75 };
 
 const SOVELLUS = "public/sovellus";
-const YONSININEN = "#141f4d"; // --navy (globals.css)
+const POHJA = "#ffffff";
 
 /** Neliön muotoinen kuvake: merkki keskellä, korkeus `osuus` × koko. */
 async function kuvake(koko: number, osuus: number, kohde: string) {
-  const merkki = await sharp(join(LAHDE, "mark-white.png"))
+  const merkki = await sharp(join(LAHDE, "mark-navy.png"))
     .resize({ height: Math.round(koko * osuus) })
     .toBuffer();
-  await sharp({ create: { width: koko, height: koko, channels: 4, background: YONSININEN } })
+  await sharp({ create: { width: koko, height: koko, channels: 4, background: POHJA } })
     .composite([{ input: merkki, gravity: "center" }])
     .png({ compressionLevel: 9 })
     .toFile(join(SOVELLUS, kohde));
