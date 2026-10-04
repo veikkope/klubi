@@ -3,9 +3,9 @@ import { LITMANEN_PATH } from "./lib/path";
 import { blogspotRedirects, legacyRedirects } from "./lib/redirects";
 
 const nextConfig: NextConfig = {
-  // Otetaan typedRoutes käyttöön sprintissä 2 kun kaikki reitit on luotu.
+  // Ei paljasteta palvelinteknologiaa (X-Powered-By: Next.js).
+  poweredByHeader: false,
   experimental: {
-    // typedRoutes: true,
     serverActions: {
       // Arvostelulomakkeen kuvat (docs/18): 3 × enintään 1,3 Mt (lib/arvostelukuvat.ts)
       // + teksti. Oletus 1 Mt ei riitä; Vercelin kova raja on 4,5 Mt.
@@ -26,6 +26,27 @@ const nextConfig: NextConfig = {
   },
   async headers() {
     return [
+      {
+        // Perussuojaukset kaikille vastauksille (HSTS tulee Verceliltä).
+        // Täyttä CSP:tä ei aseteta: Studio ja sisällön upotukset tarvitsisivat
+        // laajat poikkeukset, joten se tuottaisi rikkoutumisriskiä ilman
+        // vastaavaa hyötyä. frame-ancestors estää sivuston upottamisen vieraille
+        // sivustoille (clickjacking); Studion esikatselu on samassa originissa.
+        source: "/:path*",
+        headers: [
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          { key: "Content-Security-Policy", value: "frame-ancestors 'self'" },
+          {
+            // Sivusto ei käytä näitä rajapintoja. Jakopainike (web-share) ja
+            // leikepöytä jäävät sallituiksi; kuvien valinta käyttää
+            // tiedostokenttää, johon camera-rajoitus ei vaikuta.
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=(), payment=(), usb=(), browsing-topics=()",
+          },
+        ],
+      },
       {
         // Vercelin osoitteet (klubi-blond.vercel.app ja esikatselut) eivät saa
         // päätyä hakukoneisiin: sama sisältö olisi kahdessa osoitteessa, ja

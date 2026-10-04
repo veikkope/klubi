@@ -16,6 +16,7 @@ import {
   collectionPageSchema,
   type Crumb,
 } from "@/lib/schema-org";
+import { TOIMINTA_SIVU_SLUG } from "@/lib/path";
 import { buildMetadata, resolveDescription } from "@/lib/seo";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import {
@@ -31,7 +32,7 @@ const PATH = "/klubi/toiminta";
  * listaukselle saatteen Studiossa ilman että kukaan koskee koodiin — ja
  * ilman sitä sivu on silti ehjä, koska kortit ovat sivun varsinainen sisältö.
  */
-const SIVU_SLUG = "klubi/toiminta";
+const SIVU_SLUG = TOIMINTA_SIVU_SLUG;
 const FALLBACK_TITLE = "Toiminta";
 
 function getToiminnat() {

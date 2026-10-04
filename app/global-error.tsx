@@ -4,7 +4,7 @@
  * Viimeinen varasivu, kun myös juurilayout kaatuu. Korvaa koko dokumentin,
  * joten tyylit ovat inline eikä sivupohjaa ole käytettävissä.
  */
-export default function GlobalError({ reset }: { error: Error & { digest?: string }; reset: () => void }) {
+export default function GlobalError({ retry }: { error: Error & { digest?: string }; retry: () => void }) {
   return (
     <html lang="fi">
       <body style={{ fontFamily: "system-ui, sans-serif", margin: 0, padding: "4rem 1rem", color: "#1a1a1a" }}>
@@ -17,7 +17,7 @@ export default function GlobalError({ reset }: { error: Error & { digest?: strin
             {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
             <a href="/">etusivulle</a>.
           </p>
-          <button type="button" onClick={reset} style={{ minHeight: 44, padding: "0 1.5rem", fontSize: "1rem" }}>
+          <button type="button" onClick={() => retry()} style={{ minHeight: 44, padding: "0 1.5rem", fontSize: "1rem" }}>
             Yritä uudelleen
           </button>
         </main>

@@ -1,4 +1,4 @@
-import { defineField, type SlugRule } from "sanity";
+import { defineField, type Rule, type SanityDocumentLike, type SlugRule } from "sanity";
 
 import { apiVersion } from "../../env";
 
@@ -89,6 +89,19 @@ export const needsReviewField = (group?: string) =>
   });
 
 /**
+ * Polku on lukittu, kun sivusto hakee dokumentin juuri tällä slugilla
+ * (esim. Litmanen-osio, klubin pääsivut, lib/path.ts). Muutos veisi koko
+ * osion 404:ään eikä redirect auttaisi, joten varoitus ei riitä.
+ */
+export function koodiinSidottuSlug(
+  document: SanityDocumentLike | undefined,
+  lukitut: readonly string[],
+): boolean {
+  const slug = (document?.slug as { current?: string } | undefined)?.current;
+  return Boolean(slug && lukitut.includes(slug));
+}
+
+/**
  * Varoitus, kun julkaistun dokumentin polkua (slug) muutetaan: vanhat linkit
  * (Google, jaetut linkit, vanhan sivuston ohjaukset) lakkaisivat toimimasta.
  * Varoitus ei estä julkaisua, koska polun korjaus voi olla tarkoituksellinen;
@@ -109,3 +122,22 @@ export const polkuMuuttunut = (rule: SlugRule) =>
       );
     })
     .warning();
+
+/**
+ * Valikon ja pikalinkkien `href`-kenttä (string, koska sivuston oma polku ei
+ * kelpaa url-tyypille). Hyväksyy sivuston polun (`/uutiset`), täyden
+ * osoitteen (`https://…`), sähköpostin (`mailto:`) ja puhelinnumeron (`tel:`).
+ * Tyypillinen virhe on unohtunut kauttaviiva, jolloin linkki osoittaisi
+ * nykyisen sivun alle ja päätyisi 404:ään.
+ */
+export const linkkiValidointi = (rule: Rule) =>
+  rule.required().custom<string>((href) => {
+    if (!href) return true;
+    const arvo = href.trim();
+    if (arvo !== href) return "Poista välilyönnit linkin alusta ja lopusta.";
+    if (/\s/.test(arvo)) return "Linkissä ei saa olla välilyöntejä.";
+    if (arvo.startsWith("//")) return 'Aloita joko yhdellä "/" (sivuston oma sivu) tai "https://".';
+    if (/^(\/|https?:\/\/|mailto:|tel:)/.test(arvo)) return true;
+    if (/^www\./i.test(arvo)) return `Lisää alkuun "https://", esim. https://${arvo}`;
+    return 'Sivuston oma sivu alkaa "/" (esim. /uutiset), ulkoinen osoite "https://".';
+  });

@@ -1,4 +1,4 @@
-# Laatuportti jokaiselle pushille ja PR:lle: tyypit, lint ja lomakkeiden testit.
+# Laatuportti jokaiselle pushille ja PR:lle: tyypit, lint ja kaikki yksikkötestit (npm test).
 # Build ja sisältötarkistukset ajetaan Vercelissä ja käsin (docs/16).
 name: Tarkistukset
 
@@ -22,4 +22,4 @@ jobs:
       - run: npm ci
       - run: npm run type-check
       - run: npm run lint
-      - run: npm run test:kommentit
+      - run: npm test

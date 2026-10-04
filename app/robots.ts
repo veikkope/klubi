@@ -30,17 +30,24 @@ const aiCrawlers = [
 /** Polut joita ei indeksoida: hallinta, rajapinnat, lomakkeiden paluusivut. */
 const disallowedPaths = ["/studio", "/studio/", "/api/"];
 
+/**
+ * Jakokuvien generaattori on rajapinnan alla, mutta somepalveluiden haku-
+ * botit (X, LinkedIn) noudattavat robots.txt:tä: ilman poikkeusta jaetun
+ * linkin esikatselukuva jää puuttumaan. Tarkempi sääntö voittaa /api/-eston.
+ */
+const allowedPaths = ["/", "/api/og"];
+
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
       {
         userAgent: "*",
-        allow: "/",
+        allow: allowedPaths,
         disallow: disallowedPaths,
       },
       ...aiCrawlers.map((userAgent) => ({
         userAgent,
-        allow: "/",
+        allow: allowedPaths,
         disallow: disallowedPaths,
       })),
     ],

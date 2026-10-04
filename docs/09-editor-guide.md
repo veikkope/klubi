@@ -5,7 +5,7 @@
 > Studio on suomeksi. Suluissa on englanninkielinen nimi, jos jokin kohta näkyy
 > vielä englanniksi.
 >
-> Versio 2.0 (28.9.2026). Päivitetty kokonaisauditoinnin jälkeen (docs/16).
+> Versio 2.1 (4.10.2026). Päivitetty luovutusta edeltävän tarkastuksen jälkeen.
 
 ## Tärkeät linkit
 
@@ -23,8 +23,10 @@
 3. Vasemmalla näkyy valikko ja oikealla muokattava sisältö. Yläpalkissa ovat
    **Sisältö** ja **Esikatselu**.
 
-Roolisi on **Editor** (muokkaaja). Voit muokata ja julkaista kaiken sisällön, mutta et
-voi muuttaa projektin asetuksia tai käyttöoikeuksia. Kehittäjä hoitaa ne.
+Roolisi on **Administrator** (ylläpitäjä), koska Sanity-projekti kuuluu klubille
+(docs/17 §A3). Voit muokata ja julkaista kaiken sisällön ja tarvittaessa kutsua uusia
+käyttäjiä. **Älä muuta projektin asetuksia** (API, CORS, tokenit, webhookit): sivusto
+toimii niiden varassa. Kehittäjä hoitaa ne.
 
 ## Perusasiat
 
@@ -224,7 +226,8 @@ ja seuraava klubin tapahtuma. Kun julkaiset uutisen, se nousee yläosaan.
    - **Taustakuva:** näkyy mustavalkoisena tummansinisen sävyn alla. Vaihda
      kuva vaikka kauden mukaan; tekstit erottuvat aina. Sama kuva näkyy somejaoissa.
    - **Pikalinkit:** enintään neljä linkkiä Seuraavaksi-korttiin, esim.
-     "Palloveikkaus" → `/palloveikkaus`.
+     "Palloveikkaus" → `/klubi/palloveikkaus`. Sivuston oma polku alkaa `/`,
+     ulkoinen linkki `https://`. Studio huomauttaa, jos muoto on väärä.
    - **Näytä seuraava Huuhkajien ottelu ja laskuri:** pois päältä, jos et halua sitä.
 3. Hakukoneiden kuvaus on **SEO**-välilehdellä. Se ei näy sivulla.
 4. **Lohkot:** vedä kahvasta muuttaaksesi järjestystä ja lisää uusi **+**-painikkeella.
@@ -471,8 +474,8 @@ dokumentit rastilla **Vaatii tarkistuksen** ja kirjoitti syyn kenttään
 2. Avaa dokumentti ja lue **Mitä tarkistaa**.
 3. Korjaa tiedot tai totea ne oikeiksi, ota rasti pois ja **Julkaise**.
 
-Tilanne 28.9.2026: 75 dokumenttia (uutisia 37, ravintoloita 22, tilastoja 10, stadioneja 3,
-klubin toimintaa 2 ja pelaaja 1) sekä tietosuojaseloste. Merkki ⚠ nimen edessä kertoo
+Lista siivottiin 1.10.2026: turhat merkinnät poistettiin ja varmat korjaukset tehtiin.
+Ajantasainen määrä näkyy valikossa **Tarkistettavat**. Merkki ⚠ nimen edessä kertoo
 saman listoissa.
 
 ## Täytä itse — puuttuvat tiedot
@@ -510,10 +513,13 @@ Jos joku pyytää poistamaan tietonsa (kommentti, veikkaus tai arvostelu kuvinee
 
 ## Mitä EI saa tehdä
 
-- **Älä poista** Sivun asetuksien dokumentteja. Ne on lukittu, mutta jos jokin menee pieleen, soita kehittäjälle.
+- **Älä poista** Sivun asetuksien dokumentteja. Niitä ei voi poistaa eikä niiden julkaisua
+  perua, mutta jos jokin menee pieleen, soita kehittäjälle.
 - **Älä muuta julkaistun sivun Polkua**, koska se rikkoo linkit. Studio varoittaa
   keltaisella, jos polku poikkeaa julkaistusta. Jos muutos on pakko tehdä, kerro
-  kehittäjälle, joka tekee ohjauksen.
+  kehittäjälle, joka tekee ohjauksen. Klubin pääsivujen (Klubi, Hallitus, Toiminta,
+  Palloveikkaus) ja Jari Litmasen polut on lukittu kokonaan, koska sivusto hakee ne
+  polun perusteella.
 - **Älä muuta** kenttiä **Vanha osoite** tai **Alkuperäinen Blogspot-kirjoitus**. Vanhat linkit ohjautuvat niiden varassa.
 
 ## Varmuuskopiot
@@ -531,6 +537,20 @@ Varmuuskopiot**, ja 12 uusinta säilyy (noin kolme kuukautta).
 
 ## Tuki
 
-Jos et tiedä, miten jokin tehdään, ota yhteyttä kehittäjään. Tuoreet muutokset
-(3 päivää) voit perua itse versiohistoriasta, vanhemmat kehittäjä palauttaa
-varmuuskopiosta.
+Jos et tiedä, miten jokin tehdään, ota yhteyttä kehittäjään (yhteystiedot oppaan
+alussa). Tuoreet muutokset (3 päivää) voit perua itse versiohistoriasta, vanhemmat
+kehittäjä palauttaa varmuuskopiosta.
+
+### Jos kehittäjä ei ole tavoitettavissa
+
+Sivusto toimii ilman ylläpitoa: sisältö, kuvat ja varmuuskopiot ovat Sanityssa, joka
+kuuluu klubille. Kiireettömät asiat voivat odottaa.
+
+- **Sisältövirhe:** korjaa se Studiossa tai palauta edellinen versio versiohistoriasta.
+- **Sivusto ei aukea lainkaan:** tarkista ensin toisella laitteella tai verkolla. Jos vika
+  jatkuu yli päivän, uusi ylläpitäjä tarvitsee tämän repositorion
+  (github.com/veikkope/klubi) ja ohjeen docs/17 §A3, jossa siirto on kuvattu vaihe vaiheelta.
+- **Domain tai sähköposti:** domainin uusinta hoidetaan rekisteröijän (Wepard) kautta,
+  ei sivuston kautta.
+- **Älä anna** Sanityn tunnuksiasi tai tokeneita kenellekään. Uusi ylläpitäjä kutsutaan
+  omalla sähköpostillaan: sanity.io/manage → projekti → **Members** → **Invite**.

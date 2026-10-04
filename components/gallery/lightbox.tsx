@@ -240,7 +240,7 @@ export function Lightbox({
               backgroundColor: current.vari ?? undefined,
               translate: pyyhkaisy.siirto ? `${pyyhkaisy.siirto}px 0` : undefined,
             }}
-            className={`relative h-auto max-h-[78vh] w-auto max-w-full select-none object-contain ${
+            className={`relative h-auto max-h-[78dvh] w-auto max-w-full select-none object-contain ${
               pyyhkaisy.vetaa ? "" : "transition-[translate] duration-200 ease-out"
             }`}
           />

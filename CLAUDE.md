@@ -19,15 +19,16 @@ Tarkat valinnat ja niiden perustelut: `docs/03-cms-decision.md`.
 
 ```
 app/                   Next.js App Router -reitit
-  (sivut)/             Reittiryhmä julkisille sivuille
+  (public)/            Reittiryhmä julkisille sivuille
   (sovellus)/          Sovellusmaiset näkymät ilman sivuston palkkeja (ravintola-arvostelu, docs/21)
   studio/[[...tool]]/  Sanity Studio embedded
-  api/                 Route handlers (revalidate webhook, lomakkeiden submission)
+  api/                 Route handlers (revalidate-webhook, draft mode, cronit, OG-kuvat)
 components/            React-komponentit (UI, sivurakenne, Sanity-renderöijät)
 sanity/
   schemas/             Sisältötyyppien skeemat
   lib/                 Sanity-client, GROQ-kyselyt, image-helpers
-  desk/                Studio-strukturointi (singletons, järjestys, esikatselut)
+  structure.ts         Studio-strukturointi (singletons, järjestys, tarkistusnäkymät)
+  actions/, components/ Studion omat toiminnot ja kenttäeditorit
 lib/                   Sovelluksen jaetut apurit (date, slug, validointi)
 scripts/               Kertaluonteiset skriptit (scrape, import, redirect-generaattori)
 docs/                  Suunnittelu- ja päätösdokumentit (00-10)
@@ -48,7 +49,9 @@ public/                Staattiset tiedostot (favicon, robots, kuvat joita Sanity
 | Hae vanha sivusto paikallisesti | `npm run crawl` + `npm run images` → `data/` (gitignoressa) |
 | Koko migraatio → `development` | `npm run migrate:all` (yksittäin `migrate:<tyyppi>`) |
 | Tarkista migraatio | `npm run verify:migration`, `verify:content`, `verify:redirects`, `verify:blogspot` |
+| Kaikki yksikkötestit (sama kuin CI) | `npm test` |
 | Testaa kommenttilomakkeen säännöt | `npm run test:kommentit` |
+| Testaa paluuosoitteen rajaus (avoin uudelleenohjaus) | `npm run test:paluuosoite` |
 | Testaa arvostelukuvien säännöt | `npm run test:arvostelukuvat` |
 | Testaa taulukkoeditorin säännöt | `npm run test:taulukko` |
 | Testaa joukkueiden nimivertailu (otteluohjelma) | `npm run test:joukkueet` |

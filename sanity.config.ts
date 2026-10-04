@@ -50,8 +50,10 @@ export default defineConfig({
       // Varmuuskopio on vain luettava: ladataan, ei muokata, julkaista eikä poisteta käsin.
       if (context.schemaType === "varmuuskopio") return [];
       if (singletonTypes.has(context.schemaType)) {
+        // Julkaisun peruminen veisi etusivulta, valikosta ym. sisällön ja
+        // korvaisi sen koodin oletuksilla, joten se on poissa kuten poisto.
         return input.filter(
-          ({ action }) => action !== "duplicate" && action !== "delete",
+          ({ action }) => action !== "duplicate" && action !== "delete" && action !== "unpublish",
         );
       }
       return input;

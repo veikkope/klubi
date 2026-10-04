@@ -8,7 +8,9 @@ import {
   tarkistettavaaField,
   tiivistelmaField,
   polkuMuuttunut,
+  koodiinSidottuSlug,
 } from "../objects/contentMeta";
+import { LITMANEN_SLUG } from "../../../lib/path";
 
 /**
  * Pelaajaprofiili jalkapalloarkistossa (Litmanen, Hyypiä, Pukki …).
@@ -38,7 +40,9 @@ export const pelaaja = defineType({
       name: "slug",
       title: "Polku (slug)",
       type: "slug",
+      description: "Litmasen polku on lukittu, koska Litmanen-osio hakee hänet sen perusteella.",
       options: { source: "name", maxLength: 80 },
+      readOnly: ({ document }) => koodiinSidottuSlug(document, [LITMANEN_SLUG]),
       validation: (rule) => [rule.required(), polkuMuuttunut(rule)],
       group: "perustiedot",
     }),

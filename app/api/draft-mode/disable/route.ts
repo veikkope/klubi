@@ -5,10 +5,10 @@
  */
 import { draftMode } from "next/headers";
 
+import { omaPaluuosoite } from "@/lib/paluuosoite";
+
 export async function GET(request: Request): Promise<Response> {
   (await draftMode()).disable();
-  const paluu = new URL(request.url).searchParams.get("paluu") ?? "/";
-  const polku = paluu.startsWith("/") && !paluu.startsWith("//") && !paluu.includes("\\") ? paluu : "/";
-  const target = new URL(polku, request.url);
-  return Response.redirect(target, 307);
+  const paluu = new URL(request.url).searchParams.get("paluu");
+  return Response.redirect(omaPaluuosoite(paluu, request.url), 307);
 }

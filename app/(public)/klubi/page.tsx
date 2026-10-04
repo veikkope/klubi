@@ -22,6 +22,7 @@ import {
   webPageSchema,
   type Crumb,
 } from "@/lib/schema-org";
+import { KLUBI_SIVU_SLUG } from "@/lib/path";
 import { buildMetadata, resolveDescription } from "@/lib/seo";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import {
@@ -34,7 +35,7 @@ import {
 export const revalidate = 3600;
 
 const PATH = "/klubi";
-const SIVU_SLUG = "klubi";
+const SIVU_SLUG = KLUBI_SIVU_SLUG;
 /** Otsikko kun Studiossa ei vielä ole `sivu`-dokumenttia slugilla "klubi". */
 const FALLBACK_TITLE = "Klubi";
 

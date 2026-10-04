@@ -1,5 +1,5 @@
 import { LemonIcon } from "@sanity/icons";
-import { defineField, defineType } from "sanity";
+import { defineField, defineType, type SanityDocumentLike } from "sanity";
 import { seoFields } from "../objects/seoFields";
 import {
   legacyUrlField,
@@ -9,6 +9,17 @@ import {
   tiivistelmaField,
   polkuMuuttunut,
 } from "../objects/contentMeta";
+
+/**
+ * Arvosanakentät ovat muokattavissa vain vanhan sivuston ravintolalla, jolla
+ * on jo käsin annettu arvosana eikä vielä klubilaisten arvosanoja. Uudella
+ * ravintolalla käsin kirjoitettu arvosana tekisi siitä julkisen ohi kahden
+ * klubilaisen säännön (JULKINEN_RAVINTOLA, docs/21), joten se on lukittu.
+ */
+function arvosanaLukittu({ document }: { document?: SanityDocumentLike }): boolean {
+  if (document?.automaattinenArvosana) return true;
+  return document?.ratingOverall == null && document?.stars == null;
+}
 
 /**
  * Ravintola-arvostelu.
@@ -143,9 +154,10 @@ export const ravintola = defineType({
       name: "stars",
       title: "Tähdet (1–5)",
       description:
-        "Nopea visuaalinen arvio. Jätä tyhjäksi jos ravintolaa ei ole vielä arvioitu.",
+        "Vanhan sivuston arvio. Uudelle ravintolalle arvosana tulee klubilaisten arvosanoista.",
       type: "number",
       validation: (rule) => rule.integer().min(1).max(5),
+      readOnly: arvosanaLukittu,
       group: "arvostelu",
     }),
     defineField({
@@ -154,7 +166,7 @@ export const ravintola = defineType({
       description: "0–5, yksi desimaali. Esim. 3,6. Lasketaan automaattisesti, kun ravintolalla on klubilaisten arvosanoja.",
       type: "number",
       validation: (rule) => rule.min(0).max(5).precision(2),
-      readOnly: ({ document }) => Boolean(document?.automaattinenArvosana),
+      readOnly: arvosanaLukittu,
       group: "arvostelu",
     }),
     defineField({
@@ -162,7 +174,7 @@ export const ravintola = defineType({
       title: "Ruoka",
       type: "number",
       validation: (rule) => rule.min(0).max(5).precision(2),
-      readOnly: ({ document }) => Boolean(document?.automaattinenArvosana),
+      readOnly: arvosanaLukittu,
       group: "arvostelu",
     }),
     defineField({
@@ -170,7 +182,7 @@ export const ravintola = defineType({
       title: "Hinta",
       type: "number",
       validation: (rule) => rule.min(0).max(5).precision(2),
-      readOnly: ({ document }) => Boolean(document?.automaattinenArvosana),
+      readOnly: arvosanaLukittu,
       group: "arvostelu",
     }),
     defineField({
@@ -178,7 +190,7 @@ export const ravintola = defineType({
       title: "Viihtyvyys",
       type: "number",
       validation: (rule) => rule.min(0).max(5).precision(2),
-      readOnly: ({ document }) => Boolean(document?.automaattinenArvosana),
+      readOnly: arvosanaLukittu,
       group: "arvostelu",
     }),
     defineField({

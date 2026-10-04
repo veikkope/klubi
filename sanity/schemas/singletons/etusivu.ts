@@ -1,6 +1,6 @@
 import { HomeIcon } from "@sanity/icons";
 import { defineArrayMember, defineField, defineType } from "sanity";
-import { legacyUrlField } from "../objects/contentMeta";
+import { legacyUrlField, linkkiValidointi } from "../objects/contentMeta";
 
 export const etusivu = defineType({
   name: "etusivu",
@@ -62,14 +62,14 @@ export const etusivu = defineType({
       name: "heroCtas",
       title: "Pikalinkit",
       description:
-        'Näkyvät yläosassa tuoreimpien juttujen alla, esim. "Palloveikkaus" → /palloveikkaus. Enintään neljä.',
+        'Näkyvät yläosassa tuoreimpien juttujen alla, esim. "Palloveikkaus" → /klubi/palloveikkaus. Enintään neljä.',
       type: "array",
       of: [
         {
           type: "object",
           fields: [
             { name: "label", title: "Teksti", type: "string", validation: (rule) => rule.required() },
-            { name: "href", title: "Linkki", type: "string", validation: (rule) => rule.required() },
+            { name: "href", title: "Linkki", type: "string", validation: linkkiValidointi },
             // Vanhan heron korostusvalinta: uusi yläosa ei käytä sitä.
             { name: "primary", title: "Korostettu", type: "boolean", hidden: true },
           ],

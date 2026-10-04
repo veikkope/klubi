@@ -222,7 +222,7 @@ export function PhotoPicker({
                     onChange={(e) => setAlt(photo.id, e.target.value)}
                     placeholder="esim. Paahdettu lohi"
                     autoComplete="off"
-                    className={cn(fieldClass, "px-3 py-2 text-[15px]")}
+                    className={cn(fieldClass, "px-3 py-2")}
                   />
                 </div>
               </li>

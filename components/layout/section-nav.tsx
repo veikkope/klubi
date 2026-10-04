@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useRef } from "react";
 
 import { cn } from "@/lib/cn";
 
@@ -29,7 +30,7 @@ interface SectionNavProps {
 
 export function SectionNav({ items, label, className }: SectionNavProps) {
   const pathname = usePathname();
-  if (items.length === 0) return null;
+  const navRef = useRef<HTMLElement>(null);
 
   // Tarkin osuma voittaa: yleiskatsaus (/jalkapalloarkisto) on alasivujen
   // etuliite, eikä sen kuulu näkyä aktiivisena alasivulla.
@@ -38,10 +39,26 @@ export function SectionNav({ items, label, className }: SectionNavProps) {
     .filter((href) => pathname === href || pathname.startsWith(`${href}/`))
     .sort((x, y) => y.length - x.length)[0];
 
+  // Puhelimella lista vierii vaakasuunnassa, ja aktiivinen kohde voi jäädä
+  // ruudun ulkopuolelle (esim. listan loppupään arkistosivu). Vieritetään se
+  // näkyviin vain navigaation sisällä: scrollIntoView vierittäisi myös sivua.
+  useEffect(() => {
+    const nav = navRef.current;
+    const active = nav?.querySelector<HTMLElement>('[aria-current="page"]');
+    if (!nav || !active || nav.scrollWidth <= nav.clientWidth) return;
+    nav.scrollLeft = active.offsetLeft - (nav.clientWidth - active.offsetWidth) / 2;
+  }, [activeHref]);
+
+  if (items.length === 0) return null;
+
   return (
     <nav
+      ref={navRef}
       aria-label={label}
-      className={cn("-mx-6 overflow-x-auto px-6 sm:mx-0 sm:px-0", className)}
+      // Ulottuu mobiilissa ruudun reunaan asti, joten vierityksen jatkuminen
+      // näkyy. Negatiivisen marginaalin pitää vastata Containerin sivutäytettä
+      // (px-5), muuten sivu levenee ja heiluu sivuttain.
+      className={cn("relative -mx-5 overflow-x-auto px-5 sm:mx-0 sm:px-0", className)}
     >
       {/* Painikkeet pysyvät yksirivisinä ja samankorkuisina: lista vierii
           vaakasuunnassa, joten pitkän nimen ("Suomen mestarit") ei tarvitse

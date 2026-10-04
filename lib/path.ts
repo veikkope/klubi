@@ -111,6 +111,22 @@ export const LITMANEN_LOUKKAANTUMISET_PATH = `${LITMANEN_PATH}/loukkaantumiset`;
 export const LITMANEN_LEHTILEIKKEET_PATH = `${LITMANEN_PATH}/lehtileikkeet`;
 export const LITMANEN_PATSAS_PATH = `${LITMANEN_PATH}/patsas`;
 
+/**
+ * Klubi-osion sivut, joiden reitit hakevat sisältönsä kiinteällä slugilla
+ * (app/(public)/klubi/…). Studio lukitsee näiden slugit (sivu.ts): muutos
+ * veisi koko sivun 404:ään, eikä redirect auttaisi.
+ */
+export const KLUBI_SIVU_SLUG = "klubi";
+export const HALLITUS_SIVU_SLUG = "klubi/hallitus";
+export const TOIMINTA_SIVU_SLUG = "klubi/toiminta";
+export const PALLOVEIKKAUS_SLUG = "klubi/palloveikkaus";
+export const KOODIIN_SIDOTUT_SIVUT: readonly string[] = [
+  KLUBI_SIVU_SLUG,
+  HALLITUS_SIVU_SLUG,
+  TOIMINTA_SIVU_SLUG,
+  PALLOVEIKKAUS_SLUG,
+];
+
 /** Lehtileikkeen `osio` → Litmanen-osion sivu (docs/20). */
 const LEHTILEIKE_OSIO_PATH: Record<string, string> = {
   lehtileikkeet: LITMANEN_LEHTILEIKKEET_PATH,

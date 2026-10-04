@@ -8,7 +8,9 @@ import {
   tarkistettavaaField,
   tiivistelmaField,
   polkuMuuttunut,
+  koodiinSidottuSlug,
 } from "../objects/contentMeta";
+import { KOODIIN_SIDOTUT_SIVUT } from "../../../lib/path";
 
 /**
  * Yleisen sisältösivun dokumenttityyppi. Yksi `sivu` per polku — slug voi
@@ -89,8 +91,10 @@ export const sivu = defineType({
       title: "Polku (slug)",
       description:
         'URL-osa. Vain pieniä kirjaimia, numeroita ja yhdysmerkkejä. ' +
-        'Käytä "/" alasivuille — esim. "klubi/historia" → /klubi/historia.',
+        'Käytä "/" alasivuille — esim. "klubi/historia" → /klubi/historia. ' +
+        "Klubi-osion pääsivujen polut on lukittu, koska sivusto hakee ne polun perusteella.",
       type: "slug",
+      readOnly: ({ document }) => koodiinSidottuSlug(document, KOODIIN_SIDOTUT_SIVUT),
       options: {
         source: "title",
         maxLength: 96,

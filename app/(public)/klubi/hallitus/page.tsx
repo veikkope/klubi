@@ -17,6 +17,7 @@ import {
   personSchema,
   type Crumb,
 } from "@/lib/schema-org";
+import { HALLITUS_SIVU_SLUG } from "@/lib/path";
 import { buildMetadata, resolveDescription } from "@/lib/seo";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import { urlForImage } from "@/sanity/lib/image";
@@ -29,7 +30,7 @@ export const revalidate = 3600;
 
 const PATH = "/klubi/hallitus";
 /** Valinnainen johdanto Studiosta — sama kuvio kuin muilla hub-sivuilla. */
-const SIVU_SLUG = "klubi/hallitus";
+const SIVU_SLUG = HALLITUS_SIVU_SLUG;
 const FALLBACK_TITLE = "Hallitus";
 
 function getJasenet() {

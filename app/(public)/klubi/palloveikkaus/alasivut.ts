@@ -1,5 +1,5 @@
 import type { SectionNavItem } from "@/components/layout/section-nav";
-import { toHref } from "@/lib/path";
+import { PALLOVEIKKAUS_SLUG, toHref } from "@/lib/path";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import { klubiAlasivutQuery, type KlubiAlasivu } from "@/sanity/lib/queries/klubi";
 
@@ -10,7 +10,7 @@ import { klubiAlasivutQuery, type KlubiAlasivu } from "@/sanity/lib/queries/klub
  */
 
 export const PALLOVEIKKAUS_PATH = "/klubi/palloveikkaus";
-export const PALLOVEIKKAUS_SLUG = "klubi/palloveikkaus";
+export { PALLOVEIKKAUS_SLUG };
 export const PALLOVEIKKAUS_TITLE = "Palloveikkaus";
 
 export function fetchVeikkaukset() {

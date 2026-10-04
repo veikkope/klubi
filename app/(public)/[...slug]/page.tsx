@@ -108,7 +108,7 @@ export default async function SivuPage({
             <div className="absolute inset-0 bg-gradient-to-b from-navy/60 to-navy" />
           </div>
           <Container className="py-20 sm:py-28">
-            <Breadcrumbs className="text-on-chrome-muted" items={crumbs} />
+            <Breadcrumbs tone="dark" items={crumbs} />
             <h1 lang={kieli} className="mt-6 font-display text-4xl leading-[1.1] text-on-chrome sm:text-5xl">
               {sivu.title}
             </h1>

@@ -1,5 +1,6 @@
 import { MenuIcon } from "@sanity/icons";
 import { defineArrayMember, defineField, defineType } from "sanity";
+import { linkkiValidointi } from "../objects/contentMeta";
 
 /**
  * Päänavigaation singleton. Esitäytetty valmiilla 6 päälinkillä + CTA:lla
@@ -24,7 +25,7 @@ export const navigaatio = defineType({
           type: "object",
           fields: [
             { name: "label", title: "Otsikko", type: "string", validation: (rule) => rule.required() },
-            { name: "href", title: "Linkki (esim. /tapahtumat)", type: "string", validation: (rule) => rule.required() },
+            { name: "href", title: "Linkki (esim. /tapahtumat)", type: "string", validation: linkkiValidointi },
             // Tyyliopas: valikossa ei ole CTA-korostusta. Vanhentunut kenttä: näkyy vain
             // (lukittuna, varoituksen kera) niissä linkeissä, joissa sillä on jo arvo.
             defineField({
@@ -45,7 +46,7 @@ export const navigaatio = defineType({
                   type: "object",
                   fields: [
                     { name: "label", title: "Otsikko", type: "string", validation: (rule) => rule.required() },
-                    { name: "href", title: "Linkki", type: "string", validation: (rule) => rule.required() },
+                    { name: "href", title: "Linkki (esim. /klubi/hallitus)", type: "string", validation: linkkiValidointi },
                   ],
                   preview: { select: { title: "label", subtitle: "href" } },
                 },

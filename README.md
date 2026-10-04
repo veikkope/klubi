@@ -76,7 +76,7 @@ docs/            Planning docs — content audit, IA, design, build plan
 
 ## Status
 
-Sprint 4 in progress. Still open: football archive (hub + sub-pages + stat tables), stadiums, membership application form (Server Action + email), map for restaurants, final content migration from the legacy site, 301 redirects.
+In production on Vercel; content is maintained by the association's secretary in Sanity Studio. Legacy content and 301 redirects are migrated. Current state, conventions and commands: `CLAUDE.md`; operations and handover: `docs/17-julkaisu-domain-ja-oikeudet.md`; editor guide: `docs/09-editor-guide.md`.
 
 ## License
 

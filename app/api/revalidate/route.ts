@@ -93,10 +93,12 @@ export async function POST(request: NextRequest): Promise<Response> {
     // Ravintolan päivitys laukaisee oman webhookinsa, joka tyhjentää sen sivut.
     if (ARVOSANAAN_VAIKUTTAVAT.has(body._type)) await laskeArvosanat();
 
-    // Next 16 vaatii cache-profiilin toisena argumenttina. "max" tarkoittaa
-    // tässä: mitätöi riippumatta siitä, kuinka pitkä välimuistin elinikä oli —
-    // webhook laukeaa vain kun sisältö on oikeasti muuttunut.
-    for (const tag of tags) revalidateTag(tag, "max");
+    // `{ expire: 0 }`: vanhaa versiota ei tarjoilla enää kertaakaan, vaan
+    // seuraava pyyntö odottaa tuoreen datan. Profiili "max" (stale-while-
+    // revalidate) näyttäisi ensimmäiselle kävijälle vielä vanhan sivun, jolloin
+    // julkaisija ei näkisi muutostaan heti (docs/09 lupaa sen sekunneissa).
+    // Next 16:n ohje webhookeille: revalidateTag.md, "Route Handler".
+    for (const tag of tags) revalidateTag(tag, { expire: 0 });
 
     return Response.json({ revalidated: true, tags, now: Date.now() });
   } catch (error) {
