@@ -54,6 +54,7 @@ public/                Staattiset tiedostot (favicon, robots, kuvat joita Sanity
 | Testaa paluuosoitteen rajaus (avoin uudelleenohjaus) | `npm run test:paluuosoite` |
 | Testaa arvostelukuvien säännöt | `npm run test:arvostelukuvat` |
 | Testaa taulukkoeditorin säännöt | `npm run test:taulukko` |
+| Testaa Studion linkkikenttien tarkistus (www.-alku, puuttuva kauttaviiva) | `npm run test:linkki` |
 | Testaa joukkueiden nimivertailu (otteluohjelma) | `npm run test:joukkueet` |
 | Testaa kuvaloader (Sanityn CDN) | `npm run test:kuvat` |
 | Testaa Litmanen-osion säännöt (lehtileikkeiden ote, loukkaantumisyhteenveto) | `npm run test:litmanen` |
@@ -151,6 +152,7 @@ Täydellinen työnkulku: `docs/10-agent-workflow.md`.
 | Tilastotaulukoiden editori | `docs/19-taulukkoeditori.md` |
 | Litmanen-osio (lehtileikkeet, patsas, loukkaantumiset) | `docs/20-litmanen-osio.md` |
 | Klubilaisten arvosanat (ruokailutaulukko, laskenta) | `docs/21-klubilaisten-arvosanat.md` |
+| Julkaisuvalmiusauditointi 5.10.2026 | `docs/22-julkaisuvalmius.md` |
 | Tyyliopas (lopullinen, HTML) | `docs/design-handoff/` |
 
 <!-- BEGIN:nextjs-agent-rules -->
