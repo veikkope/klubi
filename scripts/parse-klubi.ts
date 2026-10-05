@@ -20,7 +20,7 @@
  *    faktoista (kuten `import-ravintolat.ts`:n `buildTiivistelma`).
  *  - Jokainen sivun rivi joko käytetään tai kirjataan raporttiin
  *    (`kasittelemattomat`), jotta mitään ei pudoteta hiljaa.
- *  - Merkistö: tiukka UTF-8, muuten windows-1252 (family-notes §0.1). `<meta charset>`
+ *  - Merkistö: tiukka UTF-8, muuten windows-1252 (migraatio-lahdehavainnot §0.1). `<meta charset>`
  *    valehtelee yhdeksällä sivulla, joten siihen ei luoteta.
  */
 import { readFile, writeFile } from "node:fs/promises";
@@ -2243,7 +2243,7 @@ async function parseSingletonit(): Promise<Singletonit> {
       continue;
     }
     if (/^Viimeiset:?$/.test(l.text) || / \/ (KLUBI|HISTORIA) \d{2}\.\d{2}\.\d{4}$/.test(l.text) || /\/ (KLUBI|HISTORIA) \d/.test(l.text)) {
-      // "Viimeiset" = otsikkoarkiston kärki; lohko hakee uutiset itse (family-notes M6).
+      // "Viimeiset" = otsikkoarkiston kärki; lohko hakee uutiset itse (migraatio-lahdehavainnot M6).
       rep.kaytetytRivit += 1;
       continue;
     }

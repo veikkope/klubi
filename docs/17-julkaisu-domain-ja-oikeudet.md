@@ -48,7 +48,7 @@ Tokenin arvo näytetään vain kerran.
 ### A3. Omistajuus (päätetty 4.10.2026)
 
 - **Sanity:** projekti `zyrukn4s` kuuluu organisaatiolle "Lahden Suomalainen Klubi ry"
-  (`omn1r3j11`). Organisaation Administratorit: kehittäjä ja Simo (isä).
+  (`omn1r3j11`). Organisaation Administratorit: kehittäjä ja sihteeri.
 - **Vercel:** projekti jää kehittäjän Hobby-tilille. Hobby-tiliin ei voi lisätä jäseniä, joten
   siirto toiselle henkilölle vaatisi Pro-tiimin. Klubin omaisuus (sisältö, domain, julkinen repo)
   ei ole Vercelissä. Jos ylläpitäjä vaihtuu: uusi Vercel-tili → tuo repo `veikkope/klubi` →

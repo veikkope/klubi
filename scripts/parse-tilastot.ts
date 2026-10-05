@@ -124,7 +124,7 @@ export interface DroppedImage {
 // ---------------------------------------------------------------------------
 
 /**
- * `<meta charset>` ei ole luotettava (data/family-notes.md §0.1): yritetään
+ * `<meta charset>` ei ole luotettava (docs/migraatio-lahdehavainnot.md §0.1): yritetään
  * tiukkaa UTF-8:aa ja pudotaan windows-1252:een. Toimii kaikille 197 sivulle.
  */
 // decodeHtml: scripts/lib/decode-html.ts (yhteinen, oikea windows-1252-taulukko).

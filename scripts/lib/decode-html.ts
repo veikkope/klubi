@@ -1,7 +1,7 @@
 /**
  * Vanhan FrontPage-sivuston HTML-tiedostojen dekoodaus (docs/12 §2.1.8).
  *
- * `<meta charset>` ei ole luotettava (data/family-notes.md §0.1): osa sivuista
+ * `<meta charset>` ei ole luotettava (docs/migraatio-lahdehavainnot.md §0.1): osa sivuista
  * ilmoittaa us-asciin mutta on UTF-8:aa, osa on windows-1252:ta. Siksi:
  * tiukka UTF-8 ensin, ja jos tavujono ei ole kelvollista UTF-8:aa, windows-1252.
  * Toimii kaikille 197 lähdesivulle.

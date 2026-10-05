@@ -149,7 +149,7 @@ interface DroppedImage {
 // ─── Koodaus ─────────────────────────────────────────────────────────────────
 
 /**
- * `<meta charset>` ei ole luotettava (data/family-notes.md §0.1): osa sivuista
+ * `<meta charset>` ei ole luotettava (docs/migraatio-lahdehavainnot.md §0.1): osa sivuista
  * ilmoittaa us-asciin mutta on UTF-8:aa, osa windows-1252:ta. Tiukka UTF-8
  * ensin, muuten windows-1252 — toimii kaikille 197 tiedostolle.
  *
@@ -754,7 +754,7 @@ const LOHKO_COLUMNS: Column[] = [
 /**
  * Sarjataulukon rivi: "1. Uruguay | 3 | 2 | 1 | 0 | 4 | - | 0 | 7".
  * Sarake "-" on tehty- ja päästettyjen maalien erotin → yhdistetään
- * "Maalit"-sarakkeeksi "4-0" (family-notes M2/M4). Sija luetaan joukkueen
+ * "Maalit"-sarakkeeksi "4-0" (migraatio-lahdehavainnot M2/M4). Sija luetaan joukkueen
  * edestä; jos se puuttuu (EM2008), sija on rivin järjestysnumero.
  */
 function lohkoRow(cells: string[], index: number): Record<string, string> | null {

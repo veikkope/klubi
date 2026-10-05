@@ -35,7 +35,7 @@ Tärkeimmät viestit:
 | Sanity Studion käytettävyys | 8 | 0 | 0 | Suomeksi ja suojattu. Linkkikentät, poisto ja kopiointi voivat rikkoa ohjauksia huomaamatta. |
 | Isän ohjeet ja luovutus | 7 | 0 | 0 | Opas kattava ja ajan tasalla. Omistajuus, kustannukset ja jatkuvuus dokumentoimatta. |
 | SEO, metadata, redirectit | 8 | 0 | 0 | Julkaisukunnossa. Vanhat ruokailusivut ohjautuvat noindex-sivuille, tyhjät sivut indeksoitavina. |
-| Tietoturva ja yksityisyys | 8 | 0 | 0 | Rajapinnat ja otsakkeet kunnossa. Moderoimatonta tekstiä voi näkyä, tulvasuojan voi kiertää, seloste vanhentunut. |
+| Tietoturva ja yksityisyys | 8 | 0 | 0 | Rajapinnat ja otsakkeet kunnossa. Moderoimatonta tekstiä voi näkyä, tulvasuoja vahvistettava, seloste vanhentunut. |
 | Koodin laatu | 8,5 | 0 | 0 | Puhdas ja testattu. Node-versio lukitsematta, Dependabot-PR:t kasassa. |
 | Julkaisu, operointi, jatkuvuus | 7,5 | 0 | 1 | DNS ja HTTPS kunnossa. info@ ei toimi, ei valvontaa, varmuuskopio samassa projektissa kuin data. |
 | Sisällön eheys ja migraatio | 8 | 0 | 1 | Rakenteellisesti eheä. Tyhjät perussivut, tietosuoja vahvistamatta, blogi ilman ohjausta. |
@@ -234,7 +234,7 @@ Opas (docs/09 v2.2) kattaa kaikki arkiset työnkulut, ja noin 80 tarkistetusta n
 
 **Tietoturva ja interaktiiviset**
 - **Moderoimaton ravintolaehdotus** näkyy jopa 7 päivää kaikille Viimeksi arvioidut -listassa. Lyhennä aika 24 tuntiin tai näytä listassa vain hakemiston ravintolat. `arvostele/tuoreet.ts:37`
-- **Kommenttien tulvasuoja** on nimikohtainen, joten sen kiertää vaihtamalla nimeä. Lisää uutis- tai sivustokohtainen kokonaisraja ja harkitse Vercel Firewallin rate limitiä. `_kommentit/actions.ts:83-84`
+- **Kommenttien tulvasuoja:** lisää nimestä riippumaton kokonaisraja. *Korjattu 5.10.2026* (docs/15 §4).
 - **Ilmoitukset isälle:** yöllinen /api/huolto lähettää koosteen sähköpostilla (esim. Resend).
 - **Arvostelun tupla uudelleenlähetyksessä:** luo tunniste selaimessa ja käytä `createIfNotExists`-kutsua. `arvostele/actions.ts:271`
 - **Webhookin arvosanalaskennan kilpailutilanne:** yritä uudelleen revisioristiriidan jälkeen tai palauta 500. `api/revalidate/route.ts:59`
@@ -284,7 +284,7 @@ Opas (docs/09 v2.2) kattaa kaikki arkiset työnkulut, ja noin 80 tarkistetusta n
 - Kiintiöiden seuranta kuukausittain: Sanity 5548 dokumenttia 10 000:sta, Vercel Usage.
 - Tarkistusskriptien väärät hälytykset (verify:redirects %2C, verify-migration dataset ja legacyUrl, verify-blogspot).
 - Axe-testi CI:hin Vercel-previewta vastaan.
-- `public/`-kansiosta Next-pohjan SVG:t pois (next.svg, vercel.svg ym.).
+- ~~`public/`-kansiosta Next-pohjan SVG:t pois~~ *Tehty 5.10.2026.*
 - Kovakoodatut värit tokeneiksi (`footer.tsx:152`, `hero.tsx:92`, `global-error.tsx`).
 - Kaksi julkaisematonta luonnosta: julkaise Scolari ja hylkää Suomi–Albania.
 - Ohuet toimintasivut (ilotulitukset, musiikki) ja 3 orpoa assettia (tarkista KerberosLittiSale.jpg).

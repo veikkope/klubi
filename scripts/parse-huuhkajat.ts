@@ -24,7 +24,7 @@
  *  - Sivukohtaiset rakenteet on kuvattu nimettyinä käsittelijöinä, ei
  *    yleisenä heuristiikkana: sivuja on 21 ja jokainen on omanlaisensa.
  *
- * Koodaus: `<meta charset>` ei ole luotettava (data/family-notes.md §0.1).
+ * Koodaus: `<meta charset>` ei ole luotettava (docs/migraatio-lahdehavainnot.md §0.1).
  * Tiukka UTF-8 ensin, sitten windows-1252 — toimii kaikille 197 sivulle.
  */
 import { readFile, writeFile } from "node:fs/promises";
@@ -302,7 +302,7 @@ const DATE_START = /^\(?\d{1,2}\.\d{1,2}\./;
 const NOT_HEADING = /^(yleisöä|erotuomari|maalit?:|\d+\s+maali(a)?\b)/i;
 
 /**
- * Muuntaa DOM-alueen kappaleiksi. FrontPage-säännöt (family-notes §0.2):
+ * Muuntaa DOM-alueen kappaleiksi. FrontPage-säännöt (migraatio-lahdehavainnot §0.2):
  * kappale = lohkoelementti tai `<br><br>`; yksittäinen `<br>` = rivinvaihto.
  * Lyhyt, kokonaan lihavoitu kappale, joka ei ala päivämäärällä → väliotsikko.
  */
@@ -519,7 +519,7 @@ function normalizeNumbers(columns: Column[], rows: string[][]): string[][] {
 
 /**
  * Sarjataulukko (9 saraketta): Joukkue O V T H TM - PM P.
- * Erotinsarake "-" yhdistetään maaleiksi "TM-PM" (family-notes M2).
+ * Erotinsarake "-" yhdistetään maaleiksi "TM-PM" (migraatio-lahdehavainnot M2).
  * Otsikkorivi puuttuu lähteestä → otsikot lisätään tässä (raportoidaan).
  */
 const STANDINGS_LABELS = ["Joukkue", "Ottelut", "Voitot", "Tasapelit", "Häviöt", "Maalit", "Pisteet"];

@@ -72,3 +72,6 @@ next-env.d.ts
 *.xls
 *.xlsx
 /data/klubiarviot-*.csv
+
+# Claude Coden paikalliset asetukset (luvat, polut)
+.claude/settings.local.json

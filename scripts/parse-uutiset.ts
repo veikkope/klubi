@@ -12,7 +12,7 @@
  * Tulos on CMS-riippumaton: Sanity-import tehdään erillisessä adapterissa
  * (`scripts/import-uutiset.ts`), kuten ravintoloilla.
  *
- * Sivujen rakenne (docs/12 §3 M1, data/family-notes.md):
+ * Sivujen rakenne (docs/12 §3 M1, docs/migraatio-lahdehavainnot.md):
  *
  *   [kuva] OTSIKKO (lihavoitu)
  *   leipäteksti <br> leipäteksti …
@@ -130,7 +130,7 @@ export interface OtsikkoarkistoLinkki {
 // ─── Koodaus ───────────────────────────────────────────────────────────────
 
 /**
- * `<meta charset>` ei ole luotettava (docs: family-notes §0.1): yhdeksän sivua
+ * `<meta charset>` ei ole luotettava (docs: migraatio-lahdehavainnot §0.1): yhdeksän sivua
  * ilmoittaa us-ascii mutta on UTF-8:aa, mm. Kommentit2022. Tiukka UTF-8 ensin,
  * muuten windows-1252 — toimii kaikille 197 tiedostolle.
  */

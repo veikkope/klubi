@@ -99,7 +99,7 @@ const CITY_LOCATIVE: Record<string, string> = {
 
 /**
  * Kaupungit, joita ei ole vielä Sanityssa (ravintolamigraatio loi 44
- * kaupunkia; nämä puuttuivat, ks. data/family-notes.md M5). Import luo vain
+ * kaupunkia; nämä puuttuivat, ks. docs/migraatio-lahdehavainnot.md M5). Import luo vain
  * nämä, jotta olemassa olevien kaupunkien kenttiä ei ylikirjoiteta.
  */
 export const NEW_CITY_SLUGS = ["ateena", "moskova", "pietari", "teplice", "voru"];
@@ -245,7 +245,7 @@ export interface Normalized {
 // ---------------------------------------------------------------------------
 
 /**
- * Vanhan sivuston `<meta charset>` ei ole luotettava (data/family-notes.md
+ * Vanhan sivuston `<meta charset>` ei ole luotettava (docs/migraatio-lahdehavainnot.md
  * §0.1): yritetään tiukkaa UTF-8:aa ja palataan windows-1252:een.
  */
 // decodeHtml: scripts/lib/decode-html.ts (yhteinen, oikea windows-1252-taulukko).
