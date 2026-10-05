@@ -22,7 +22,7 @@ import {
 } from "@/components/restaurant-card";
 import { ensimmainenKappaleIngressiksi } from "@/lib/artikkeli";
 import { cn } from "@/lib/cn";
-import { formatDate } from "@/lib/format";
+import { formatDate, formatDateShort } from "@/lib/format";
 import { rootCrumb } from "@/lib/nav-sections";
 import { breadcrumbSchema, restaurantSchema } from "@/lib/schema-org";
 import { buildMetadata, resolveDescription } from "@/lib/seo";
@@ -420,6 +420,27 @@ export default async function RavintolaPage({ params }: PageProps) {
 
 const arvosana = (x: number | null | undefined) => (typeof x === "number" ? formatRating(x) : "–");
 
+/** Nimisarake pysyy vasemmassa reunassa, kun taulukkoa vieritetään sivulle. */
+const kiinnitettyNimi = "taulukko-kiinnitetty sticky left-0 z-[1] bg-surface";
+
+const arvoSolu =
+  "border-b border-border py-3 text-right whitespace-nowrap tabular-nums group-last/rivi:border-b-0";
+
+/**
+ * Sarakeotsikko, joka lyhenee kapealla näytöllä. Ruudunlukija kuulee aina
+ * koko sanan, koska lyhenne on piilotettu siltä.
+ */
+function LyhytOtsikko({ lyhyt, pitka }: { lyhyt: string; pitka: string }) {
+  return (
+    <>
+      <span aria-hidden className="sm:hidden">
+        {lyhyt}
+      </span>
+      <span className="sr-only sm:not-sr-only">{pitka}</span>
+    </>
+  );
+}
+
 /**
  * Klubilaisten arvosanat taulukkona (kunkin klubilaisen voimassa oleva eli
  * uusin arvosana). Ravintolan arvosana on näiden keskiarvo.
@@ -431,39 +452,76 @@ function KlubilaistenArvosanat({ arviot }: { arviot: VoimassaOlevaArvio[] }) {
       <h2 id="klubilaiset-otsikko" className="text-2xl">
         Klubilaisten arvosanat
       </h2>
-      <div className="mt-5 overflow-x-auto rounded-sm bg-surface">
-        <table className="w-full min-w-[420px] border-collapse text-[15px]">
-          <caption className="sr-only">
-            Klubilaisten arvosanat: ruoka, hinta, viihtyvyys ja niiden keskiarvo asteikolla 1–5
-          </caption>
-          <thead>
-            <tr className="border-b border-border text-left text-[13px] font-semibold uppercase tracking-[0.08em] text-muted-soft">
-              <th scope="col" className="px-4 py-3 sm:px-6">Klubilainen</th>
-              <th scope="col" className="px-2 py-3 text-right">Ruoka</th>
-              <th scope="col" className="px-2 py-3 text-right">Hinta</th>
-              <th scope="col" className="px-2 py-3 text-right">Viihtyvyys</th>
-              <th scope="col" className="px-4 py-3 text-right sm:px-6">Keskiarvo</th>
-            </tr>
-          </thead>
-          <tbody>
-            {arviot.map((a) => (
-              <tr key={a.arvioija} className="border-b border-border last:border-b-0">
-                <th scope="row" className="px-4 py-3 text-left font-semibold text-foreground sm:px-6">
-                  {a.nimi ?? "Klubilainen"}
-                  {a.pvm && (
-                    <span className="block text-[13px] font-normal text-muted-soft">{formatDate(a.pvm)}</span>
-                  )}
+      {/* Sama vierityssäiliö kuin tilastotaulukoissa (stat-table.tsx): taulukko
+          mahtuu 360 px:n näyttöön lyhennetyillä otsikoilla, mutta pitkällä
+          nimellä tai suurella tekstikoolla se vierii omassa säiliössään.
+          Nimisarake pysyy paikallaan ja reunavarjo kertoo vieritettävästä. */}
+      <div className="taulukko relative mt-5 rounded-sm">
+        <div
+          tabIndex={0}
+          role="region"
+          aria-labelledby="klubilaiset-otsikko"
+          className="taulukko-vieritin overflow-x-auto rounded-sm bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+        >
+          {/* border-separate: kiinnitetyn sarakkeen viivat pysyvät sen mukana. */}
+          <table className="w-full border-separate border-spacing-0 text-[15px]">
+            <caption className="sr-only">
+              Klubilaisten arvosanat: ruoka, hinta, viihtyvyys ja niiden keskiarvo asteikolla 1–5
+            </caption>
+            <thead>
+              <tr className="text-left text-[13px] font-semibold uppercase tracking-normal text-muted-soft sm:tracking-[0.08em]">
+                <th scope="col" className={cn("border-b border-border px-3 py-3 sm:px-6", kiinnitettyNimi)}>
+                  Klubilainen
                 </th>
-                <td className="px-2 py-3 text-right tabular-nums">{arvosana(a.ratingFood)}</td>
-                <td className="px-2 py-3 text-right tabular-nums">{arvosana(a.ratingPrice)}</td>
-                <td className="px-2 py-3 text-right tabular-nums">{arvosana(a.ratingAtmosphere)}</td>
-                <td className="px-4 py-3 text-right font-display text-lg font-semibold tabular-nums text-brass-text sm:px-6">
-                  {arvosana(a.kokonais)}
-                </td>
+                <th scope="col" className="border-b border-border px-1.5 py-3 text-right sm:px-2">Ruoka</th>
+                <th scope="col" className="border-b border-border px-1.5 py-3 text-right sm:px-2">Hinta</th>
+                <th scope="col" className="border-b border-border px-1.5 py-3 text-right sm:px-2">
+                  <LyhytOtsikko lyhyt="Viiht." pitka="Viihtyvyys" />
+                </th>
+                <th scope="col" className="border-b border-border py-3 pl-1.5 pr-3 text-right sm:px-6">
+                  <LyhytOtsikko lyhyt="Ka." pitka="Keskiarvo" />
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {arviot.map((a) => (
+                <tr key={a.arvioija} className="group/rivi">
+                  <th
+                    scope="row"
+                    className={cn(
+                      "border-b border-border px-3 py-3 text-left font-semibold text-foreground group-last/rivi:border-b-0 sm:px-6",
+                      kiinnitettyNimi,
+                    )}
+                  >
+                    {a.nimi ?? "Klubilainen"}
+                    {a.pvm && (
+                      <time
+                        dateTime={a.pvm}
+                        className="block text-[13px] font-normal whitespace-nowrap text-muted-soft"
+                      >
+                        <span className="sm:hidden">{formatDateShort(a.pvm)}</span>
+                        <span className="hidden sm:inline">{formatDate(a.pvm)}</span>
+                      </time>
+                    )}
+                  </th>
+                  <td className={cn(arvoSolu, "px-1.5 sm:px-2")}>{arvosana(a.ratingFood)}</td>
+                  <td className={cn(arvoSolu, "px-1.5 sm:px-2")}>{arvosana(a.ratingPrice)}</td>
+                  <td className={cn(arvoSolu, "px-1.5 sm:px-2")}>{arvosana(a.ratingAtmosphere)}</td>
+                  <td
+                    className={cn(
+                      arvoSolu,
+                      "pl-1.5 pr-3 font-display text-lg font-semibold text-brass-text sm:px-6",
+                    )}
+                  >
+                    {arvosana(a.kokonais)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        {/* Oikean reunan varjo: sivulle on vielä vieritettävää. */}
+        <div aria-hidden className="taulukko-vihje pointer-events-none absolute inset-y-0 right-0 w-8 rounded-r-sm" />
       </div>
     </section>
   );

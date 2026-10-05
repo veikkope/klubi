@@ -1,5 +1,7 @@
 import { defineArrayMember, defineType } from "sanity";
 
+import { tarkistaLinkki } from "../../../lib/linkki";
+
 export const portableText = defineType({
   name: "portableText",
   title: "Sisältö",
@@ -38,13 +40,17 @@ export const portableText = defineType({
                   "Ulkoinen osoite (https://…) tai sivuston oma polku (/jalkapalloarkisto/…).",
                 // allowRelative: migraatio muuntaa vanhat .htm-linkit sisäisiksi
                 // poluiksi (docs/12 §2.1.3), jotka eivät ole absoluuttisia URL:eja.
-                validation: (rule) =>
+                // Pelkkä uri() hyväksyisi myös "www.palloliitto.fi" suhteellisena
+                // polkuna (→ 404), joten alku tarkistetaan erikseen (lib/linkki.ts).
+                validation: (rule) => [
                   rule
                     .uri({
                       scheme: ["http", "https", "mailto", "tel"],
                       allowRelative: true,
                     })
                     .error("Tarkista linkki: https://…, mailto:, tel: tai /polku."),
+                  rule.custom<string>((href) => tarkistaLinkki(href)),
+                ],
               },
               {
                 name: "newTab",

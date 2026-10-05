@@ -12,7 +12,7 @@ import {
   type KommenttiFormState,
   type Kommentointi,
 } from "./form-state";
-import { jarjestysLomakkeelta, siisti, validoi } from "./validointi";
+import { jarjestysLomakkeelta, lomakkeenArvot, validoi, veikkausKentat } from "./validointi";
 
 /**
  * Jäsenen kommentin tai veikkauksen vastaanotto (docs/15 §4).
@@ -39,14 +39,10 @@ export async function lahetaKommentti(
   formData: FormData,
 ): Promise<KommenttiFormState> {
   const uutinenId = text(formData, "uutinen");
-  const nimi = siisti(text(formData, "nimi"));
-  const teksti = siisti(text(formData, "teksti")).replace(/\n{3,}/g, "\n\n");
-  const kentat: Record<string, string> = {};
-  for (const [key, value] of formData.entries()) {
-    if (typeof value === "string" && /^(sija-\d+|paikka-\d+|maalikuningas)$/.test(key)) kentat[key] = value;
-  }
-
-  const values = { nimi, teksti, jarjestys: [] as string[], maalikuningas: siisti(kentat.maalikuningas ?? "") };
+  const kentat = veikkausKentat(formData);
+  // Veikkauksen järjestys täydennetään, kun kommentoinnin asetukset on haettu.
+  const values = lomakkeenArvot(null, formData);
+  const { nimi, teksti } = values;
   const fail = (message: string, fieldErrors: KommenttiFormState["fieldErrors"] = {}): KommenttiFormState => ({
     status: "error",
     message,

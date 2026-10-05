@@ -10,7 +10,12 @@
 import assert from "node:assert/strict";
 
 import { kommentointiAuki, type Kommentointi } from "../app/(public)/uutiset/_kommentit/form-state";
-import { jarjestysLomakkeelta, siisti, validoi } from "../app/(public)/uutiset/_kommentit/validointi";
+import {
+  jarjestysLomakkeelta,
+  lomakkeenArvot,
+  siisti,
+  validoi,
+} from "../app/(public)/uutiset/_kommentit/validointi";
 
 const joukkueet = ["HJK", "KuPS", "Ilves", "FC Lahti"];
 const sarja: Kommentointi = { kaytossa: true, tyyppi: "sarjajarjestys", vaihtoehdot: joukkueet };
@@ -78,6 +83,25 @@ test("nimi 2–40 merkkiä", () => {
 
 test("siisti: ohjausmerkit ja tuplavälit pois, rivinvaihdot säilyvät", () => {
   assert.equal(siisti("  a​  b\n c\u0007 "), "a b\n c");
+});
+
+test("lomakkeenArvot: katkoksen jälkeen lomake täytetään syötetyillä arvoilla", () => {
+  const lomake = (kentat: Record<string, string>) => {
+    const data = new FormData();
+    for (const [k, v] of Object.entries(kentat)) data.append(k, v);
+    return data;
+  };
+  assert.deepEqual(
+    lomakkeenArvot(sarja, lomake({ nimi: "  Ilpo ", teksti: "a\n\n\n\nb", "sija-0": "4", "sija-1": "1", "sija-2": "2", "sija-3": "3" })),
+    { nimi: "Ilpo", teksti: "a\n\nb", jarjestys: ["KuPS", "Ilves", "FC Lahti", "HJK"], maalikuningas: "" },
+  );
+  assert.deepEqual(
+    lomakkeenArvot(voittaja, lomake({ nimi: "Ilpo", "paikka-1": "HJK", "paikka-3": "KuPS", maalikuningas: " Pukki " })).jarjestys,
+    ["HJK", "", "KuPS"],
+  );
+  assert.equal(lomakkeenArvot(voittaja, lomake({ maalikuningas: " Pukki " })).maalikuningas, "Pukki");
+  // Palvelin lukee arvot ennen kuin kommentoinnin asetukset on haettu.
+  assert.deepEqual(lomakkeenArvot(null, lomake({ nimi: "Ilpo", "sija-0": "1" })).jarjestys, []);
 });
 
 test("sulkeutuminen", () => {

@@ -40,6 +40,13 @@ function HeaderClientInner({
   const triggerRefs = useRef(new Map<string, HTMLButtonElement>());
   const mobileButtonRef = useRef<HTMLButtonElement>(null);
 
+  // Linkin napautus sulkee valikot heti. Reitin vaihtuminen nollaa tilan
+  // (key={pathname}), mutta ei silloin, kun linkki vie samalle polulle tai
+  // vain hakuparametrit muuttuvat (/uutiset?sivu=2 → /uutiset): valikko ja
+  // vierityksen lukitus jäisivät muuten päälle.
+  const suljeDropdown = () => setOpenDropdown(null);
+  const suljeMobiili = () => setMobileOpen(false);
+
   // Sulje desktop-dropdown kun klikataan ulkopuolelle
   const navRef = useRef<HTMLElement>(null);
   useEffect(() => {
@@ -152,6 +159,7 @@ function HeaderClientInner({
                       <>
                         <Link
                           href={item.href}
+                          onNavigate={suljeDropdown}
                           className="block rounded-lg px-3 py-2 text-sm text-foreground hover:bg-surface-strong"
                         >
                           {item.label} — yleisesittely
@@ -163,6 +171,7 @@ function HeaderClientInner({
                       <Link
                         key={c.href}
                         href={c.href}
+                        onNavigate={suljeDropdown}
                         aria-current={pathname === c.href ? "page" : undefined}
                         className="block rounded-lg px-3 py-2 text-sm text-foreground hover:bg-surface-strong"
                       >
@@ -228,7 +237,12 @@ function HeaderClientInner({
               className="mx-auto flex max-w-6xl flex-col gap-1 px-6 py-4"
             >
               {items.map((item) => (
-                <MobileItem key={`${item.label}|${item.href}`} item={item} pathname={pathname} />
+                <MobileItem
+                  key={`${item.label}|${item.href}`}
+                  item={item}
+                  pathname={pathname}
+                  onNavigate={suljeMobiili}
+                />
               ))}
             </nav>
           </div>
@@ -241,9 +255,12 @@ function HeaderClientInner({
 function MobileItem({
   item,
   pathname,
+  onNavigate,
 }: {
   item: NavigationItem;
   pathname: string;
+  /** Sulkee mobiilivalikon, kun linkkiä napautetaan. */
+  onNavigate: () => void;
 }) {
   const [open, setOpen] = useState(false);
   const hasChildren = item.children && item.children.length > 0;
@@ -252,6 +269,7 @@ function MobileItem({
     return (
       <Link
         href={item.href}
+        onNavigate={onNavigate}
         aria-current={pathname === item.href ? "page" : undefined}
         className={cn(
           "rounded-lg px-3 py-3 text-base font-medium transition",
@@ -287,6 +305,7 @@ function MobileItem({
           {!hasOverviewChild(item) && (
             <Link
               href={item.href}
+              onNavigate={onNavigate}
               className="rounded-lg px-3 py-2 text-sm text-muted hover:text-foreground"
             >
               Yleisesittely
@@ -296,6 +315,7 @@ function MobileItem({
             <Link
               key={c.href}
               href={c.href}
+              onNavigate={onNavigate}
               aria-current={pathname === c.href ? "page" : undefined}
               className="rounded-lg px-3 py-2 text-sm text-foreground hover:bg-surface-strong"
             >

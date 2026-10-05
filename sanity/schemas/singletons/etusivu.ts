@@ -1,6 +1,6 @@
 import { HomeIcon } from "@sanity/icons";
 import { defineArrayMember, defineField, defineType } from "sanity";
-import { legacyUrlField, linkkiValidointi } from "../objects/contentMeta";
+import { legacyUrlField, linkkiValidointi, valinnainenLinkkiValidointi } from "../objects/contentMeta";
 
 export const etusivu = defineType({
   name: "etusivu",
@@ -224,7 +224,13 @@ export const etusivu = defineType({
             { name: "body", title: "Teksti", type: "portableText" },
             { name: "image", title: "Kuva", type: "imageWithAlt" },
             { name: "ctaLabel", title: "Linkin teksti", type: "string", description: 'Esim. "Lue lisää klubista".' },
-            { name: "ctaHref", title: "Linkin osoite", type: "string" },
+            {
+              name: "ctaHref",
+              title: "Linkin osoite",
+              type: "string",
+              description: "Sivuston oma sivu alkaa /, esim. /klubi. Ulkoinen osoite alkaa https://.",
+              validation: valinnainenLinkkiValidointi,
+            },
           ],
           preview: { select: { title: "heading" }, prepare: ({ title }) => ({ title: title || "Esittelyteksti" }) },
         }),
@@ -269,7 +275,9 @@ export const etusivu = defineType({
               name: "ctaHref",
               title: "Napin linkki",
               type: "string",
+              description: "Sivuston oma sivu alkaa /, esim. /jalkapalloarkisto.",
               initialValue: "/jalkapalloarkisto",
+              validation: valinnainenLinkkiValidointi,
             },
           ],
           preview: {

@@ -1,5 +1,7 @@
 import { ConfettiIcon } from "@sanity/icons";
 import { defineField, defineType } from "sanity";
+
+import { tarkistaLinkki } from "../../../lib/linkki";
 import { seoFields } from "../objects/seoFields";
 import {
   legacyUrlField,
@@ -122,12 +124,15 @@ export const klubiToiminta = defineType({
                   description:
                     "Ulkoinen osoite (https://…) tai sivuston oma polku, esim. /uutiset/2019-03-10-milano.",
                   type: "url",
-                  validation: (rule) =>
+                  validation: (rule) => [
                     rule
                       // allowRelative: Blogspot-migraatio kääntää blogin matkakuvauslinkit
                       // tuotujen uutisten poluiksi (docs/14).
                       .uri({ scheme: ["http", "https"], allowRelative: true })
                       .error("Tarkista linkki: https://… tai /polku."),
+                    // uri() hyväksyisi myös "www.…"-muodon suhteellisena polkuna (→ 404).
+                    rule.custom<string>((url) => tarkistaLinkki(url, ["http", "https"])),
+                  ],
                 },
                 {
                   name: "teksti",

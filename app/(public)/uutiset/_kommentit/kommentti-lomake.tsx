@@ -6,6 +6,7 @@ import { useFormStatus } from "react-dom";
 
 import { cn } from "@/lib/cn";
 import { lahetaKommentti } from "./actions";
+import { lomakkeenArvot } from "./validointi";
 import {
   INITIAL_KOMMENTTI_STATE,
   KOMMENTTI_FIELD_LABELS,
@@ -24,8 +25,8 @@ import {
  * Kommentti- ja veikkauslomake uutisen alla (docs/15 §2).
  *
  * Client Component, jotta virheet, lähetystila ja sarjajärjestyksen siirrot
- * päivittyvät ilman sivunlatausta. Lähetys menee Server Actionille, ja kentät
- * ovat tavallisia lomakekenttiä, joten lomake toimii myös ennen hydraatiota.
+ * päivittyvät ilman sivunlatausta. Lähetys menee Server Actionille selaimen
+ * kääreen kautta (`laheta`), joka pitää verkkokatkoksen lomakkeen sisällä.
  *
  * Lomake on oletuksena kiinni painikkeen takana (natiivi `<details>`, toimii
  * ilman JavaScriptiä): veikkauslomake on 12 riviä pitkä, ja useimmat tulevat
@@ -58,6 +59,43 @@ function kirjoitaMuisti(key: string, value: string) {
   }
 }
 
+/**
+ * Lähetys palvelimelle. Puhelimen verkkokatkos tai deployn aikainen versioero
+ * saisi Server Actionin heittämään, ja koko sivu vaihtuisi virhesivuksi:
+ * kirjoitettu kommentti ja 12 joukkueen veikkausjärjestys katoaisivat. Kääre
+ * palauttaa sen sijaan virhetilan, jossa syötteet ovat tallessa, kuten
+ * arvostelulomakkeessa (review-form.tsx).
+ *
+ * Jos tallennus ehti palvelimelle mutta vastaus katosi, uusi lähetys osuu
+ * tulvasuojaan ("Viestisi on jo tallennettu"), joten viesti ei tuplaannu.
+ */
+async function laheta(
+  kommentointi: Kommentointi,
+  edellinen: KommenttiFormState,
+  data: FormData,
+): Promise<KommenttiFormState> {
+  const onVeikkaus = (kommentointi.tyyppi ?? "kommentti") !== "kommentti";
+  const katkos = (message: string): KommenttiFormState => ({
+    status: "error",
+    message,
+    fieldErrors: {},
+    values: lomakkeenArvot(kommentointi, data),
+    lahetyksia: edellinen.lahetyksia,
+  });
+  const tallessa = onVeikkaus ? "Veikkauksesi on tallessa" : "Kommenttisi on tallessa";
+  if (!navigator.onLine) {
+    return katkos(`Ei verkkoyhteyttä. ${tallessa}: lähetä uudelleen, kun yhteys toimii.`);
+  }
+  try {
+    return await lahetaKommentti(edellinen, data);
+  } catch (error) {
+    console.error("[kommentti] lähetys epäonnistui:", error);
+    return katkos(
+      `Lähetys ei mennyt perille. ${tallessa}: tarkista verkkoyhteys ja lähetä uudelleen.`,
+    );
+  }
+}
+
 export function KommenttiLomake({
   uutinenId,
   kommentointi,
@@ -65,7 +103,10 @@ export function KommenttiLomake({
   uutinenId: string;
   kommentointi: Kommentointi;
 }) {
-  const [state, formAction] = useActionState<KommenttiFormState, FormData>(lahetaKommentti, INITIAL_KOMMENTTI_STATE);
+  const [state, formAction] = useActionState<KommenttiFormState, FormData>(
+    (edellinen, data) => laheta(kommentointi, edellinen, data),
+    INITIAL_KOMMENTTI_STATE,
+  );
   const tyyppi = kommentointi.tyyppi ?? "kommentti";
   const onVeikkaus = tyyppi !== "kommentti";
   const nimiRef = useRef<HTMLInputElement>(null);

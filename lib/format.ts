@@ -6,6 +6,13 @@ const dateFormatter = new Intl.DateTimeFormat("fi-FI", {
   year: "numeric",
 });
 
+const shortDateFormatter = new Intl.DateTimeFormat("fi-FI", {
+  timeZone: "Europe/Helsinki",
+  day: "numeric",
+  month: "numeric",
+  year: "numeric",
+});
+
 const dateTimeFormatter = new Intl.DateTimeFormat("fi-FI", {
   timeZone: "Europe/Helsinki",
   day: "numeric",
@@ -30,6 +37,12 @@ const dayMonthFormatter = new Intl.DateTimeFormat("fi-FI", {
 export function formatDate(iso: string | null | undefined) {
   if (!iso) return "";
   return dateFormatter.format(new Date(iso));
+}
+
+/** Lyhyt päiväys ahtaisiin paikkoihin, esim. taulukkoon: "14.10.2023". */
+export function formatDateShort(iso: string | null | undefined) {
+  if (!iso) return "";
+  return shortDateFormatter.format(new Date(iso));
 }
 
 export function formatDateTime(iso: string | null | undefined) {

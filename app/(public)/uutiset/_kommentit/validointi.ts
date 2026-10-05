@@ -14,6 +14,7 @@ import {
   VEIKKAUS_MAX,
   sijojenMaara,
   type KommenttiField,
+  type KommenttiFormState,
   type Kommentointi,
 } from "./form-state";
 
@@ -55,6 +56,34 @@ export function jarjestysLomakkeelta(k: Kommentointi, kentat: Record<string, str
     return Array.from({ length: sijojenMaara(k) }, (_, p) => siisti(kentat[`paikka-${p + 1}`] ?? ""));
   }
   return [];
+}
+
+function kentta(data: FormData, key: string): string {
+  const value = data.get(key);
+  return typeof value === "string" ? value : "";
+}
+
+/** Veikkauksen raakakentät lomakkeelta (`sija-*`, `paikka-*`, `maalikuningas`). */
+export function veikkausKentat(data: FormData): Record<string, string> {
+  const kentat: Record<string, string> = {};
+  for (const [key, value] of data.entries()) {
+    if (typeof value === "string" && /^(sija-\d+|paikka-\d+|maalikuningas)$/.test(key)) kentat[key] = value;
+  }
+  return kentat;
+}
+
+/**
+ * Lomakkeen siistityt arvot. Palvelin validoi näillä, ja virhetilassa lomake
+ * täytetään niillä uudelleen, myös kun lähetys ei päässyt perille asti.
+ */
+export function lomakkeenArvot(k: Kommentointi | null, data: FormData): KommenttiFormState["values"] {
+  const kentat = veikkausKentat(data);
+  return {
+    nimi: siisti(kentta(data, "nimi")),
+    teksti: siisti(kentta(data, "teksti")).replace(/\n{3,}/g, "\n\n"),
+    jarjestys: k ? jarjestysLomakkeelta(k, kentat) : [],
+    maalikuningas: siisti(kentat.maalikuningas ?? ""),
+  };
 }
 
 const samaNimi = (a: string, b: string) => a.trim().toLocaleLowerCase("fi") === b.trim().toLocaleLowerCase("fi");
