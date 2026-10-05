@@ -72,6 +72,11 @@ poistetut kommentit säilyvät varmuuskopioissa 12 viikkoa).
 - Skriptit ja Studio käyttävät jo omia tunnuksiaan, eivätkä muutu.
 - **Jos token vaihdetaan tai se vanhenee, koko sivusto lakkaa saamasta sisältöä.**
   Uusi token Verceliin ja Redeploy ennen vanhan poistamista.
+- **Toteutus 5.10.2026:** koodi deployattu ensin (6b0c696), sitten `production` →
+  private. Ennen vaihtoa anonyymisti näkyi 5548 dokumenttia, jälkeen 0 (API ja CDN,
+  myös kommentit ja varmuuskopiot). Tokenilla näkyy kaikki. Tuotannossa toimivat
+  staattiset sivut sekä joka pyynnöllä Sanitystä hakevat haku-, arkisto-, tunniste-
+  ja arvostelusivut.
 - Näkyvyyden tarkistus: `npx sanity dataset visibility get production`.
   Palautus hätätilanteessa: `npx sanity dataset visibility set production public`.
 
