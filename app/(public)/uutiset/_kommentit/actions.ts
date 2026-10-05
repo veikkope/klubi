@@ -18,7 +18,7 @@ import { jarjestysLomakkeelta, lomakkeenArvot, validoi, veikkausKentat } from ".
  * Jäsenen kommentin tai veikkauksen vastaanotto (docs/15 §4).
  *
  * Toisin kuin ravintola-arvostelut, kommentti julkaistaan heti, kuten blogissa
- * ennen. Suojana on piilokenttä ja tulvasuoja. Isä piilottaa asiattomat
+ * ennen. Suojana on piilokenttä ja kaksitasoinen tulvasuoja. Isä piilottaa asiattomat
  * viestit Studiossa jälkikäteen.
  *
  * Validointi tehdään kokonaan palvelimella: lomakkeen voi lähettää ilman selainta.
@@ -28,6 +28,14 @@ import { jarjestysLomakkeelta, lomakkeenArvot, validoi, veikkausKentat } from ".
 const DOCUMENT_ID = /^(?!drafts\.)[A-Za-z0-9_-][A-Za-z0-9._-]{0,127}$/;
 /** Sama nimi samaan uutiseen korkeintaan kerran tässä ajassa. */
 const TULVASUOJA_MS = 30_000;
+/**
+ * Kokonaisraja, jota ei kierrä vaihtamalla nimeä: viestejä korkeintaan näin
+ * monta minuutissa samaan uutiseen ja koko sivustolle. Klubin koko huomioiden
+ * raja ei osu oikeaan käyttöön edes veikkauksen sulkeutumisen hetkellä.
+ */
+const RAJA_IKKUNA_MS = 60_000;
+const RAJA_UUTINEN = 6;
+const RAJA_SIVUSTO = 20;
 
 function text(data: FormData, key: string): string {
   const value = data.get(key);
@@ -72,17 +80,22 @@ export async function lahetaKommentti(
   let tila: {
     uutinen: { _id: string; kommentointi: Kommentointi | null } | null;
     tuore: string | null;
+    uutiseen: number;
+    sivustolle: number;
   };
   try {
     tila = await client.fetch(
       /* groq */ `{
         "uutinen": *[_type == "uutinen" && _id == $id][0]{ _id, kommentointi },
-        "tuore": *[_type == "kommentti" && uutinen._ref == $id && lower(nimi) == lower($nimi) && lahetetty > $raja][0]._id
+        "tuore": *[_type == "kommentti" && uutinen._ref == $id && lower(nimi) == lower($nimi) && lahetetty > $raja][0]._id,
+        "uutiseen": count(*[_type == "kommentti" && uutinen._ref == $id && lahetetty > $ikkuna]),
+        "sivustolle": count(*[_type == "kommentti" && lahde == "sivusto" && lahetetty > $ikkuna])
       }`,
       {
         id: uutinenId,
         nimi,
         raja: new Date(Date.now() - TULVASUOJA_MS).toISOString(),
+        ikkuna: new Date(Date.now() - RAJA_IKKUNA_MS).toISOString(),
       },
     );
   } catch (error) {
@@ -100,6 +113,10 @@ export async function lahetaKommentti(
     return fail("Lomakkeessa on puutteita. Korjaa alla merkityt kohdat.", tulos.fieldErrors);
   }
   if (tila.tuore) return fail("Viestisi on jo tallennettu. Odota hetki, jos haluat lähettää uuden.");
+  if (tila.uutiseen >= RAJA_UUTINEN || tila.sivustolle >= RAJA_SIVUSTO) {
+    console.warn("[lahetaKommentti] kokonaisraja täynnä:", { uutinenId, uutiseen: tila.uutiseen, sivustolle: tila.sivustolle });
+    return fail("Viestejä tulee juuri nyt poikkeuksellisen paljon. Viestiäsi ei tallennettu — yritä minuutin kuluttua uudelleen.");
+  }
 
   try {
     await client.create({

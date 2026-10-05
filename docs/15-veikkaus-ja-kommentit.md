@@ -123,6 +123,8 @@ vain palvelimella.
    - kommentointi päällä, `sulkeutuu` ei ohitettu
    - veikkauksen arvot sallittujen listasta, ei tuplia, kaikki sijat täytetty
    - tulvasuoja: sama nimi samaan uutiseen korkeintaan kerran 30 sekunnissa
+   - kokonaisraja (5.10.2026), jota ei kierrä nimeä vaihtamalla: enintään 6 viestiä
+     minuutissa samaan uutiseen ja 20 koko sivustolle
    - `client.create()` → `revalidateTag("kommentit:<uutisen id>")`, joten sivu päivittyy heti
 2. **Näyttö**: uutissivun ISR säilyy (`revalidate = 3600`). Kommenttilista haetaan
    omalla tagilla, joten uusi kommentti tyhjentää vain sen välimuistin.
