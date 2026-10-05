@@ -38,7 +38,7 @@ kaikilla vain tarvittavat oikeudet.**
 | Token | Rooli | Missä | Tila |
 |---|---|---|---|
 | "Vercel – lomakkeet" | Editor | Vercel: `SANITY_API_WRITE_TOKEN` | luo uusi ja korvaa nykyinen |
-| "Vercel – esikatselu" | Viewer | Vercel: `SANITY_API_READ_TOKEN` | **puuttuu Vercelistä** → esikatselu antaa 501 |
+| "Vercel – esikatselu" | Viewer | Vercel: `SANITY_API_READ_TOKEN` | ✅ Vercelissä (28.9.). **Pakollinen 5.10.2026 alkaen:** sivusto lukee yksityistä datasettiä tällä tokenilla (§A4) |
 | "Migration", "Migration2" | Editor | migraatioskriptit | **poista**, kun Vercelin token on vaihdettu (migraatiot ajetaan nykyään `npx sanity login` -tunnuksella) |
 
 Luo tokenit: sanity.io/manage → *API* → **Tokens** → Add API token. Kopioi arvo
@@ -56,6 +56,25 @@ Tokenin arvo näytetään vain kerran.
   webhook uuteen osoitteeseen.
 - **Domain:** rekisteröijä tarkistetaan Wepardilta (pitää olla yhdistys).
 
+### A4. Datasettien näkyvyys: yksityinen (5.10.2026)
+
+Molemmat datasetit (`production`, `development`) ovat **yksityisiä**. Julkisesta
+datasetistä kuka tahansa olisi voinut lukea rajapinnasta myös sivulta piilotetut
+kommentit ja listata viikkovarmuuskopioiden latausosoitteet (piilotetut ja
+poistetut kommentit säilyvät varmuuskopioissa 12 viikkoa).
+
+- Sivusto lukee kaiken palvelimella Viewer-tokenilla (`SANITY_API_READ_TOKEN`,
+  `sanity/lib/client.ts`). Token ei päädy selaimeen (`server-only`).
+- `perspective: "published"`: luonnokset eli hyväksymättömät arvostelut eivät
+  näy sivulla, vaikka token näkisi ne.
+- Kuvat ja tiedostot ovat Sanityssa aina julkisia osoitteensa kautta. Yksityinen
+  datasetti estää osoitteiden listaamisen kyselyllä.
+- Skriptit ja Studio käyttävät jo omia tunnuksiaan, eivätkä muutu.
+- **Jos token vaihdetaan tai se vanhenee, koko sivusto lakkaa saamasta sisältöä.**
+  Uusi token Verceliin ja Redeploy ennen vanhan poistamista.
+- Näkyvyyden tarkistus: `npx sanity dataset visibility get production`.
+  Palautus hätätilanteessa: `npx sanity dataset visibility set production public`.
+
 ---
 
 ## B. Vercelin ympäristömuuttujat
@@ -67,7 +86,7 @@ Vercel → projekti → **Settings → Environment Variables** (Production ja Pr
 | `NEXT_PUBLIC_SANITY_PROJECT_ID` | `zyrukn4s` | (on jo) |
 | `NEXT_PUBLIC_SANITY_DATASET` | `production` | (on jo) |
 | `SANITY_API_WRITE_TOKEN` | token "Vercel – lomakkeet" | kommentit ja arvostelut |
-| `SANITY_API_READ_TOKEN` | token "Vercel – esikatselu" | Studion esikatselu (draft mode) |
+| `SANITY_API_READ_TOKEN` | token "Vercel – esikatselu" | **kaikki sivuston haut** (yksityinen datasetti, §A4) ja Studion esikatselu |
 | `SANITY_REVALIDATE_SECRET` | arvo `.env.local`-tiedostosta | webhookin allekirjoitus |
 
 Muutosten jälkeen: **Deployments → Redeploy** (muuttujat tulevat voimaan vasta uudessa
