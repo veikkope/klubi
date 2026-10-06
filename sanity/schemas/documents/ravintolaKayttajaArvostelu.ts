@@ -202,7 +202,9 @@ export const ravintolaKayttajaArvostelu = defineType({
       submittedAt: "submittedAt",
       kayntipaiva: "kayntipaiva",
       kuvat: "kuvat",
-      arvioija: "arvioija._ref",
+      // Esikatselu seuraa viittausta: "arvioija._ref" haettaisiin klubilaisesta
+      // itsestään ja olisi aina tyhjä. Klubilaisen _id kertoo, että viittaus on.
+      arvioija: "arvioija._id",
     },
     prepare({ name, restaurant, uusi, food, price, atmosphere, submittedAt, kayntipaiva, kuvat, arvioija }) {
       // Käyntipäivä, vanhoissa arvosteluissa lähetyspäivä.
