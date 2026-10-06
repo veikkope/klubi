@@ -51,7 +51,7 @@ export function MatchCountdownTimer({ aika, pieni = false }: { aika: string; pie
 
   if (now !== null && now >= target) {
     // Etusivu päivittyy tunnin välein; silloin laskuri siirtyy seuraavaan otteluun.
-    return <p className="text-lg font-semibold text-on-chrome">Ottelu on alkanut – hyvä Suomi!</p>;
+    return <p className="text-lg font-semibold text-on-chrome">Ottelu on alkanut – Huuhkajat!</p>;
   }
 
   const values = now === null ? null : split(target - now);
