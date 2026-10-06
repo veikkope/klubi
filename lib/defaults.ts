@@ -30,7 +30,7 @@ export const defaultNavigation: NavigationData = {
     { label: "Ravintola-arviot", href: "/ravintolat", highlight: false },
     { label: "Uutiset", href: "/uutiset", highlight: false },
     {
-      label: "Klubista",
+      label: "Klubi",
       href: "/klubi",
       highlight: false,
       children: [
