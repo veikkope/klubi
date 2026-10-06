@@ -109,8 +109,10 @@ function Logo({ kuva }: { kuva: string }) {
         backgroundColor: "#ffffff",
       }}
     >
+      {/* Lähes koko 630 × 630 -neliön korkuinen: WhatsApp pienentää neliön noin
+          100 px:n pikkukuvaksi, ja pienempänä logon ohuet viivat pikselöityvät. */}
       {/* eslint-disable-next-line @next/next/no-img-element -- ImageResponse ei tue next/imagea */}
-      <img src={kuva} width={322} height={360} alt="" />
+      <img src={kuva} width={482} height={540} alt="" />
     </div>
   );
 }
