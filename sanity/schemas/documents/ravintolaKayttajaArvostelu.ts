@@ -59,17 +59,33 @@ export const ravintolaKayttajaArvostelu = defineType({
       name: "ehdotettuRavintola",
       title: "Kävijän ehdottama uusi ravintola",
       description:
-        "Ravintolaa ei ollut hakemistossa. Tarkista tiedot ja paina alareunasta " +
-        "\"Hyväksy ja luo ravintola\": ravintola lisätään hakemistoon ja arvostelu julkaistaan. " +
+        "Ravintolaa ei ollut hakemistossa. Tarkista ja korjaa tiedot tarvittaessa ja paina alareunasta " +
+        "\"Hyväksy ja luo ravintola\": ravintola luodaan näillä tiedoilla ja arvostelu julkaistaan. " +
         "Voit myös valita alta olemassa olevan ravintolan, jos se löytyy jo toisella nimellä.",
       type: "object",
-      readOnly: true,
+      // Muokattava: sihteeri voi korjata kirjoitusvirheet ja lisätä osoitteen ennen
+      // hyväksyntää. "Hyväksy ja luo ravintola" lukee tiedot luonnoksesta.
       hidden: ({ value }) => !value,
       fields: [
-        defineField({ name: "nimi", title: "Nimi", type: "string" }),
-        defineField({ name: "kaupunki", title: "Kaupunki", type: "string" }),
+        defineField({
+          name: "nimi",
+          title: "Nimi",
+          type: "string",
+          validation: (rule) => rule.required().error("Ravintolan nimi on pakollinen."),
+        }),
+        defineField({
+          name: "kaupunki",
+          title: "Kaupunki",
+          type: "string",
+          validation: (rule) => rule.required().error("Kaupunki on pakollinen."),
+        }),
         defineField({ name: "maa", title: "Maa", type: "string" }),
-        defineField({ name: "lisatieto", title: "Osoite tai verkkosivu", type: "string" }),
+        defineField({
+          name: "lisatieto",
+          title: "Osoite tai verkkosivu",
+          description: "Verkko-osoite (https://… tai www.…) tallentuu ravintolan verkkosivuksi, muu teksti osoitteeksi.",
+          type: "string",
+        }),
       ],
     }),
     defineField({

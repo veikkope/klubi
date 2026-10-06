@@ -132,7 +132,7 @@ Listanäkymässä järjestys: `startsAt` desc (tulevat ensin).
 |---|---|---|---|
 | reviewerName | string | kyllä | Julkaistava nimi (sähköpostia ei kerätä) |
 | restaurant | reference→ravintola | julkaistaessa | Puuttuu, kun kävijä ehdotti uutta ravintolaa |
-| ehdotettuRavintola | object { nimi, kaupunki, maa, lisatieto? } | ei | Kävijän ehdottama ravintola, jota ei ole hakemistossa. Vain luku |
+| ehdotettuRavintola | object { nimi, kaupunki, maa, lisatieto? } | ei | Kävijän ehdottama ravintola, jota ei ole hakemistossa. Sihteeri voi korjata ennen hyväksyntää (nimi ja kaupunki pakollisia) |
 | ratingFood, ratingPrice, ratingAtmosphere | number 1,0–5,0 (yksi desimaali) | kyllä | Ruoka, hinta, viihtyvyys kuten klubin arvioissa. Kokonaisarvosana on keskiarvo, ja se lasketaan kyselyssä (`math::avg`) |
 | comment | text | kyllä | 10–1000 merkkiä |
 | kuvat | array of image { alt } | ei | Enintään 3 kävijän kuvaa. `alt` pakollinen (lomake täyttää oletuksen). Kuvatiedoston `source.name = "kavija-arvostelu"`. Ks. docs/18 |

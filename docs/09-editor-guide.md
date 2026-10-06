@@ -403,7 +403,8 @@ Silloin listassa lukee **UUSI: ravintolan nimi**, ja arvostelussa näkyy laatikk
 *Kävijän ehdottama uusi ravintola*. Kohdan **Ravintola** keltainen huomautus on tällöin
 normaali: ravintola täyttyy, kun painat **Hyväksy ja luo ravintola**.
 
-1. Tarkista nimi, kaupunki ja maa. Jos ravintola on jo hakemistossa toisella nimellä,
+1. Tarkista nimi, kaupunki ja maa. Voit korjata kirjoitusvirheet ja lisätä osoitteen
+   tai verkkosivun suoraan laatikkoon: ravintola luodaan näillä tiedoilla. Jos ravintola on jo hakemistossa toisella nimellä,
    valitse se kohtaan **Ravintola** ja paina **Julkaise**.
 2. Muuten paina alareunan vihreää **Hyväksy ja luo ravintola**. Vahvistus kertoo, mitä
    tapahtuu, ja paina sitten **Vahvista**:
