@@ -24,6 +24,13 @@ export interface HuuhkajatOsio {
    * karsintasarjojen alla (Kansojen liiga kuuluu EM-karsintojen yhteyteen).
    */
   hubKohta: "aiheet" | "karsinnat";
+  /**
+   * Osion taulukko kuuluu jonkin kauden karsintasivulle (Kansojen liigan
+   * lohko pelataan samana vuonna kuin karsinnat). Taulukolle valitaan
+   * Studiossa kauden karsintasivu, jolla taulukko näytetään otteluiden
+   * yhteydessä, ja osiosivu linkittää taulukolta otteluihin.
+   */
+  kaudenOttelut?: boolean;
 }
 
 export const HUUHKAJAT_OSIOT: HuuhkajatOsio[] = [
@@ -50,6 +57,7 @@ export const HUUHKAJAT_OSIOT: HuuhkajatOsio[] = [
     description:
       "Suomen miesten maajoukkue Kansojen liigassa: lohkojen loppusarjataulukot kausittain vuodesta 2018 alkaen.",
     hubKohta: "karsinnat",
+    kaudenOttelut: true,
   },
   {
     value: "avauskokoonpano",
@@ -86,6 +94,11 @@ export function resolveHuuhkajatOsio(value: string | null | undefined): string {
   return clean && HUUHKAJAT_OSIOT.some((osio) => osio.value === clean)
     ? clean
     : HUUHKAJAT_OSIO_OLETUS;
+}
+
+/** Liitetäänkö osion taulukot kauden karsintasivuun (`kaudenOttelut`-kenttä). */
+export function osioLiittyyKauteen(value: string | null | undefined): boolean {
+  return findHuuhkajatOsio(value?.trim() ?? "")?.kaudenOttelut === true;
 }
 
 export function findHuuhkajatOsio(value: string): HuuhkajatOsio | undefined {

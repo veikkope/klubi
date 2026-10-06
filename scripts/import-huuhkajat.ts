@@ -26,6 +26,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
 import { huuhkajatOsioForSlug } from "./lib/huuhkajat-osio";
+import { paritaKaudet } from "./lib/kaudet";
 import type { Block, CoverageEntry, HuuhkajaTilasto, Kuva } from "./parse-huuhkajat";
 
 const SOURCE = join(process.cwd(), "data", "normalized", "huuhkajat.json");
@@ -147,9 +148,17 @@ async function main() {
   const source = JSON.parse(await readFile(SOURCE, "utf-8")) as HuuhkajaTilasto[];
   const report = JSON.parse(await readFile(REPORT, "utf-8")) as { kattavuus: CoverageEntry[] };
 
-  const docs = source.map(toDocument);
+  const docs: (ReturnType<typeof toDocument> & { kaudenOttelut?: { _type: "reference"; _ref: string } })[] =
+    source.map(toDocument);
   const ids = new Set(docs.map((d) => d._id));
   if (ids.size !== docs.length) throw new Error("Toistuva _id — tarkista slugit");
+
+  // Kansojen liigan taulukko saman kauden karsintasivulle (sama vanha sivu).
+  const kaudet = paritaKaudet(docs);
+  if (kaudet.ongelmat.length) throw new Error(`Kauden paritus: ${kaudet.ongelmat.join("; ")}`);
+  for (const { taulukko, karsinta } of kaudet.parit) {
+    docs.find((d) => d._id === taulukko)!.kaudenOttelut = { _type: "reference", _ref: karsinta };
+  }
 
   await writeFile(OUT, `${docs.map((d) => JSON.stringify(d)).join("\n")}\n`, "utf-8");
 

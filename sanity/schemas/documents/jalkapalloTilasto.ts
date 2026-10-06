@@ -1,6 +1,6 @@
 import { BarChartIcon } from "@sanity/icons";
 import { defineField, defineType } from "sanity";
-import { HUUHKAJAT_OSIOT } from "../../../lib/huuhkajat-osiot";
+import { HUUHKAJAT_OSIOT, osioLiittyyKauteen } from "../../../lib/huuhkajat-osiot";
 import { MESTARUUSMAAT } from "../../../lib/ulkomaiset-mestarit";
 import { TilastoDokumenttiInput } from "../../components/taulukkoeditori/konteksti";
 import { TaulukkoEditori } from "../../components/taulukkoeditori/TaulukkoEditori";
@@ -97,6 +97,31 @@ export const jalkapalloTilasto = defineType({
             ? "Valitse osio, jotta taulukko löytyy oikean otsikon alta."
             : true,
         ),
+      group: "perustiedot",
+    }),
+    defineField({
+      name: "kaudenOttelut",
+      title: "Kauden ottelut ja tulokset",
+      description:
+        "Karsintasivu, jolla saman kauden ottelut ovat (esim. Suomen ottelut " +
+        "2026–2027 ja EM 2028 -karsinta). Sarjataulukko näytetään myös sillä " +
+        "sivulla, ja taulukon alta linkitetään otteluihin.",
+      type: "reference",
+      to: [{ type: "jalkapalloTilasto" }],
+      options: { filter: 'category == "karsinta"', disableNew: true },
+      hidden: ({ document }) =>
+        document?.category !== "huuhkajat" ||
+        !osioLiittyyKauteen(document?.huuhkajatOsio as string | undefined),
+      validation: (rule) =>
+        rule
+          .custom((value, context) =>
+            context.document?.category === "huuhkajat" &&
+            osioLiittyyKauteen(context.document?.huuhkajatOsio as string | undefined) &&
+            !value
+              ? "Valitse kauden karsintasivu, jotta sarjataulukko ja ottelut näkyvät yhdessä."
+              : true,
+          )
+          .warning(),
       group: "perustiedot",
     }),
     defineField({

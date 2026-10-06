@@ -46,6 +46,11 @@ export interface TilastoDoc {
   paivitetty: string | null;
   jarjestys: number | null;
   sources: string[] | null;
+  /**
+   * Kauden karsintasivu, jolla taulukkoon liittyvät ottelut ovat
+   * (Kansojen liigan lohkot, `lib/huuhkajat-osiot.ts`).
+   */
+  kaudenOttelut: { title: string; slug: string | null } | null;
 }
 
 /** Kevyt rivi hub-sivujen laskureita ja tuoreussignaalia varten. */
@@ -70,7 +75,8 @@ const tilastoProjection = /* groq */ `
   kuvat[]{ _key, alt, caption, asset, hotspot, crop, ${lqip} },
   paivitetty,
   jarjestys,
-  "sources": coalesce(sources, [])
+  "sources": coalesce(sources, []),
+  "kaudenOttelut": kaudenOttelut->{ title, "slug": slug.current }
 `;
 
 /** Yhden kategorian kaikki tilastot. */
@@ -97,6 +103,33 @@ export const tilastoBySlugQuery = defineQuery(/* groq */ `
     && slug.current == $slug
   ][0]{
     ${tilastoProjection}
+  }
+`);
+
+/** Karsintasivu ja sen kauden muut taulukot (`kaudenOttelut`-viittaus). */
+export interface KarsintaDoc extends TilastoDoc {
+  kaudenTaulukot: TilastoDoc[];
+}
+
+/**
+ * Karsintasivu slugilla. Mukana taulukot, jotka on liitetty tähän kauteen
+ * (esim. saman kauden Kansojen liigan lohko), jotta sarjataulukko ja
+ * ottelut näkyvät samalla sivulla.
+ */
+export const karsintaBySlugQuery = defineQuery(/* groq */ `
+  *[
+    _type == "jalkapalloTilasto"
+    && category == "karsinta"
+    && slug.current == $slug
+  ][0]{
+    ${tilastoProjection},
+    "kaudenTaulukot": *[
+      _type == "jalkapalloTilasto"
+      && category == "huuhkajat"
+      && kaudenOttelut._ref == ^._id
+    ] | order(coalesce(jarjestys, 1000) asc, title asc){
+      ${tilastoProjection}
+    }
   }
 `);
 

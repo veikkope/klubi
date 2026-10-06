@@ -1,4 +1,8 @@
+import type { ReactNode } from "react";
+import Link from "next/link";
+
 import { PortableText } from "@/components/portable-text";
+import { Nuoli } from "@/components/ui/nuoli";
 import { UusiValilehti } from "@/components/ui/uusi-valilehti";
 import { SanityImage } from "@/components/sanity-image";
 import { StatTable } from "@/components/ui/stat-table";
@@ -6,6 +10,8 @@ import { cn } from "@/lib/cn";
 import { formatDate } from "@/lib/format";
 import type { SanityImage as SanityImageData } from "@/lib/types";
 import type { TilastoDoc } from "@/sanity/lib/queries/arkisto";
+
+import { karsintaPath } from "./helpers";
 
 /**
  * Jalkapalloarkiston tilastolistauksen yhteinen renderöinti.
@@ -107,11 +113,14 @@ function hasBlocks(value: unknown[] | null | undefined): boolean {
 export function TilastoBody({
   tilasto,
   ylinOtsikko,
+  taulukonJalkeen,
   className,
 }: {
   tilasto: TilastoDoc;
   /** Tekstisisällön ylimmän otsikon taso: yhtä syvemmällä kuin kutsujan otsikko. */
   ylinOtsikko: 2 | 3 | 4;
+  /** Taulukon ja lisätietojen väliin, esim. kauden muut sarjataulukot. */
+  taulukonJalkeen?: ReactNode;
   className?: string;
 }) {
   const hasTable = (tilasto.columns?.length ?? 0) > 0 && (tilasto.rows?.length ?? 0) > 0;
@@ -145,6 +154,8 @@ export function TilastoBody({
         </p>
       )}
 
+      {taulukonJalkeen}
+
       {hasBlocks(tilasto.lisatiedot) && (
         <div className="mt-8 max-w-3xl">
           <PortableText value={tilasto.lisatiedot} ylinOtsikko={ylinOtsikko} />
@@ -164,6 +175,11 @@ interface StatSectionsProps {
   headingLevel?: "h2" | "h3";
   emptyTitle?: string;
   emptyMessage?: string;
+  /**
+   * Linkki taulukolta kauden karsintasivulle. Pois päältä, kun taulukot
+   * näytetään juuri sillä karsintasivulla.
+   */
+  kaudenOttelulinkki?: boolean;
   className?: string;
 }
 
@@ -172,6 +188,7 @@ export function StatSections({
   headingLevel = "h2",
   emptyTitle,
   emptyMessage,
+  kaudenOttelulinkki = true,
   className,
 }: StatSectionsProps) {
   if (tilastot.length === 0) {
@@ -200,6 +217,18 @@ export function StatSections({
           )}
 
           <TilastoBody tilasto={tilasto} ylinOtsikko={headingLevel === "h2" ? 3 : 4} className="mt-2" />
+
+          {kaudenOttelulinkki && tilasto.kaudenOttelut?.slug && (
+            <p className="mt-4">
+              <Link
+                href={karsintaPath(tilasto.kaudenOttelut.slug)}
+                className="group/linkki inline-flex min-h-11 items-center gap-2 text-accent underline decoration-1 underline-offset-4 hover:decoration-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+              >
+                Kauden ottelut ja tulokset: {tilasto.kaudenOttelut.title}
+                <Nuoli />
+              </Link>
+            </p>
+          )}
         </section>
       ))}
     </div>

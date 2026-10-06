@@ -537,6 +537,15 @@ Karsintasarjat (kategoria *Karsinta*) ovat omia sivujaan, ja ne listataan
 Huuhkajat-sivun alaosassa uusin ensin. Kansojen liigan kaudet näkyvät samassa
 kohdassa karsintasarjojen alla.
 
+**Uusi Kansojen liigan kausi:** kun osioksi on valittu *Kansojen liiga*, näkyviin
+tulee kenttä **Kauden ottelut ja tulokset**. Valitse siihen saman kauden
+karsintasivu (esim. *Suomen ottelut 2026–2027 ja EM 2028 -karsinta*). Silloin
+sarjataulukko näkyy myös karsintasivulla otteluiden yhteydessä, ja Kansojen
+liiga -sivulla taulukon alla on linkki kauden otteluihin. Jos kenttä on tyhjä,
+Studio muistuttaa siitä keltaisella varoituksella. Ottelut kirjoitetaan
+edelleen karsintasivulle, ja sarjataulukkoa päivitetään vain Kansojen liigan
+taulukkoon.
+
 ### Kokoonpano pelikentälle
 
 Avauskokoonpanot (esim. Huuhkaja-arvostelun "Huuhkajat avauskokoonpano

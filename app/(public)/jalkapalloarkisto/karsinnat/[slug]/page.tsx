@@ -9,9 +9,9 @@ import { buildMetadata, resolveDescription } from "@/lib/seo";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import {
   arkistoTags,
-  tilastoBySlugQuery,
+  karsintaBySlugQuery,
   tilastoSlugsByCategoryQuery,
-  type TilastoDoc,
+  type KarsintaDoc,
 } from "@/sanity/lib/queries/arkisto";
 
 import { ArkistoPage } from "../../_tilastot/arkisto-page";
@@ -20,7 +20,7 @@ import {
   huuhkajatPath,
   karsintaPath,
 } from "../../_tilastot/helpers";
-import { TilastoBody } from "../../_tilastot/stat-sections";
+import { StatSections, TilastoBody } from "../../_tilastot/stat-sections";
 
 export const revalidate = 3600;
 
@@ -41,10 +41,10 @@ export async function generateStaticParams(): Promise<Params[]> {
   return slugs.filter(Boolean).map((slug) => ({ slug }));
 }
 
-async function getTilasto(slug: string): Promise<TilastoDoc | null> {
-  return sanityFetch<TilastoDoc | null>({
-    query: tilastoBySlugQuery,
-    params: { category, slug },
+async function getTilasto(slug: string): Promise<KarsintaDoc | null> {
+  return sanityFetch<KarsintaDoc | null>({
+    query: karsintaBySlugQuery,
+    params: { slug },
     tags: arkistoTags,
     fallback: null,
   });
@@ -121,7 +121,21 @@ export default async function KarsintaPage({
           ) : undefined
         }
       >
-        <TilastoBody tilasto={tilasto} ylinOtsikko={2} />
+        <TilastoBody
+          tilasto={tilasto}
+          ylinOtsikko={2}
+          taulukonJalkeen={
+            // Saman kauden muut sarjataulukot (Kansojen liiga) otteluiden
+            // yhteyteen: taulukko ja sen ottelut ovat samalla sivulla.
+            tilasto.kaudenTaulukot.length > 0 && (
+              <StatSections
+                tilastot={tilasto.kaudenTaulukot}
+                kaudenOttelulinkki={false}
+                className="mt-12"
+              />
+            )
+          }
+        />
 
         <p className="mt-12 text-muted">
           Kaikki karsintasarjat löytyvät{" "}

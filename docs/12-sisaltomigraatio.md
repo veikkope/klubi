@@ -485,7 +485,10 @@ kreikka Ateena → `?maa=kreikka` (Egina mukaan), venaja Pietari (23/35) → `?m
    korvattiin PNG:llä, eikä putki luo niitä uudelleen. Ne voi poistaa, tai
    `import-kuvat.ts`:n vaihe 0 voi siivota ne.
 5. ~~**Otsikkoarkiston 300 Blogspot-linkkiä** on jäsennetty, mutta niitä ei ole tuotu (§0).~~ Blogin kaikki kirjoitukset tuodaan kokonaisina: docs/14.
-6. Kansojen liigan lohkotaulukot (M2) voisi linkittää arvokisojen `tilastot`-kenttään (M4).
+6. ~~Kansojen liigan lohkotaulukot (M2) voisi linkittää arvokisojen `tilastot`-kenttään (M4).~~
+   Korjattu 6.10.2026 toisin: lohkotaulukko viittaa saman kauden karsintasivuun
+   (`kaudenOttelut`), koska ottelut ovat siellä. Karsintasivu näyttää taulukon, ja
+   Kansojen liiga -sivu linkittää otteluihin (`npm run patch:kansojen-liiga`).
 7. MM-kisojen mitalistitaulukossa on tulevia rivejä (2030, 2034), joissa on vain
    isäntämaa. Ne jätettiin, koska isäntä on todellinen tieto. QA päättää, rikkovatko
    ne §1.2:n sääntöä "ei tulevaisuuden päiväyksiä".

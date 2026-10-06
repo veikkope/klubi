@@ -56,6 +56,7 @@ public/                Staattiset tiedostot (favicon, robots, kuvat joita Sanity
 | Testaa taulukkoeditorin säännöt | `npm run test:taulukko` |
 | Testaa Studion linkkikenttien tarkistus (www.-alku, puuttuva kauttaviiva) | `npm run test:linkki` |
 | Testaa joukkueiden nimivertailu (otteluohjelma) | `npm run test:joukkueet` |
+| Testaa Kansojen liigan taulukon ja kauden karsintasivun paritus | `npm run test:kaudet` |
 | Testaa kuvaloader (Sanityn CDN) | `npm run test:kuvat` |
 | Testaa Litmanen-osion säännöt (lehtileikkeiden ote, loukkaantumisyhteenveto) | `npm run test:litmanen` |
 | Brändikuvien verkkoversiot ja kotinäytön sovelluskuvakkeet (vain kun logo muuttuu) | `npm run brandikuvat` → `public/brand/web/`, `public/sovellus/` |
@@ -82,6 +83,7 @@ public/                Staattiset tiedostot (favicon, robots, kuvat joita Sanity
 | Litmanen-osio: päävalikon Pelaajat → Litmanen ja `litmanen.htm` loukkaantumissivulle (kuivaharjoitus; `-- --vie` kirjoittaa, `-- --production` varmuuskopion kanssa; kertaluonteinen) | `npm run patch:litmanen` |
 | Järkytykset ja maailman paras avaus omille sivuilleen (kategoriat `jarkytykset`, `maailman-parhaat`; kuivaharjoitus; `-- --vie` kirjoittaa, `-- --production` varmuuskopion kanssa; kertaluonteinen, productioniin vasta deployn jälkeen) | `npm run patch:omat-sivut` |
 | Litmanen-osion uudistus: lehtijutut `lehtileike`-dokumenteiksi, faktat ja patsas omiin kenttiin (kuivaharjoitus → `data/litmanen-leikkeet.tsv`; `-- --vie` kirjoittaa, `-- --production` varmuuskopion kanssa; kertaluonteinen, productioniin vasta deployn jälkeen) | `npm run patch:litmanen-osio` (docs/20) |
+| Kansojen liigan lohkotaulukot kauden karsintasivulle (`kaudenOttelut`-viittaus saman vanhan osoitteen perusteella; kuivaharjoitus; `-- --vie` kirjoittaa, `-- --production` varmuuskopion kanssa; idempotentti, productioniin vasta deployn jälkeen) | `npm run patch:kansojen-liiga` |
 | Tarkistettavat-listan siivous 1.10.2026: turhat merkinnät pois, varmat korjaukset, otsikkoehdotukset (kuivaharjoitus; `-- --vie` varmuuskopion kanssa; idempotentti, ajettu productioniin) | `npm run siivoa:tarkistettavat` |
 
 **Datasetit:** migraatiot ja kehitys kirjoittavat aina `development`-datasettiin (`.env.local`). `production` on isän ylläpitämä tuotantodata, jota Vercel käyttää: sinne viedään vain puuttuvia dokumentteja (`--missing`) tai dokumenttikohtaisia patcheja, ja aina varmuuskopion jälkeen. Jos sisältö näyttää puuttuvan, tarkista ensin `NEXT_PUBLIC_SANITY_PROJECT_ID` ja `NEXT_PUBLIC_SANITY_DATASET`. Migraation sopimus ja tila: `docs/12-sisaltomigraatio.md`.
