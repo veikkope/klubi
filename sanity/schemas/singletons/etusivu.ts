@@ -112,7 +112,9 @@ export const etusivu = defineType({
         reason: 'Korvattu etusivun "Otteluohjelma ja tapahtumat" -lohkolla. Lisää tulevat ottelut Ottelut-osioon.',
       },
       readOnly: true,
-      hidden: ({ value }) => value === undefined,
+      // Pelattu ottelu näkyi lukittuna lomakkeella (docs/23 Y41). Data poistetaan
+      // siivousmigraatiossa; siihen asti kenttä on vain piilossa.
+      hidden: true,
       initialValue: undefined,
       options: { collapsible: true, collapsed: false },
       fields: [

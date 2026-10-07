@@ -1,6 +1,7 @@
 import { DocumentTextIcon } from "@sanity/icons";
 import { defineField, defineType } from "sanity";
 
+import { LITMANEN_SLUG } from "../../../lib/path";
 import { needsReviewField, tarkistettavaaField } from "../objects/contentMeta";
 
 /** Pelaajasivun osiot, joille lehtileike voi kuulua (docs/20 §2). */
@@ -29,9 +30,26 @@ export const lehtileike = defineType({
     defineField({
       name: "pelaaja",
       title: "Pelaaja",
-      description: "Kenen pelaajasivulla juttu näkyy.",
+      description:
+        "Lehtileikkeet näkyvät toistaiseksi vain Jari Litmasen osiossa. Muille pelaajille ei ole " +
+        "vielä leikesivua, joten valittavana on vain Litmanen.",
       type: "reference",
       to: [{ type: "pelaaja" }],
+      // Muiden pelaajien leikkeet eivät näkyisi missään (lib/path.ts documentRoute, docs/23 Y28).
+      options: {
+        disableNew: true,
+        filter: "slug.current == $slug",
+        filterParams: { slug: LITMANEN_SLUG },
+      },
+      // Uudessa leikkeessä Litmanen valmiina: ainoa vaihtoehto ei vaadi valintaa.
+      initialValue: async (_params, { getClient }) => {
+        const id = await getClient({ apiVersion: "2025-08-15" }).fetch<string | null>(
+          `*[_type == "pelaaja" && slug.current == $slug && !(_id in path("drafts.**"))][0]._id`,
+          { slug: LITMANEN_SLUG },
+        );
+        // Ilman Litmasta kenttä jää tyhjäksi (Sanity hyväksyy tyhjän alkuarvon).
+        return (id ? { _ref: id } : undefined) as { _ref: string };
+      },
       validation: (rule) => rule.required().error("Valitse pelaaja."),
     }),
     defineField({

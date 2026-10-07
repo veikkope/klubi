@@ -172,6 +172,10 @@ export const uutinen = defineType({
       title: "Kirjoittaja",
       type: "reference",
       to: [{ type: "hallitusJasen" }],
+      // Ei käytössä yhdessäkään uutisessa, ja viittaus estäisi hallituksen jäsenen
+      // poiston sekä näyttäisi vanhalla jutulla nykyisen roolin (docs/23 Y39).
+      // Piilossa, kunnes kirjoittajamallista päätetään; näkyy, jos arvo on jo.
+      hidden: ({ value }) => !value,
       group: "sisalto",
     }),
     needsReviewField("sisalto"),

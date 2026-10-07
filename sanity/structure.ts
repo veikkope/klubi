@@ -266,7 +266,37 @@ export const structure: StructureResolver = (S) =>
       S.divider(),
 
       lista(S, "klubiToiminta", "Klubin toiminta"),
-      lista(S, "hallitusJasen", "Hallitus"),
+      S.listItem()
+        .title("Hallitus")
+        .schemaType("hallitusJasen")
+        .child(
+          S.list()
+            .title("Hallitus")
+            .items([
+              S.listItem()
+                .title("Nykyinen hallitus")
+                .schemaType("hallitusJasen")
+                .child(
+                  S.documentList()
+                    .title("Nykyinen hallitus")
+                    .schemaType("hallitusJasen")
+                    .filter(`_type == "hallitusJasen" && nykyinen != false`)
+                    .defaultOrdering([{ field: "order", direction: "asc" }]),
+                ),
+              // Jäsentä ei poisteta, vaan Nykyinen jäsen -rasti otetaan pois (docs/09).
+              S.listItem()
+                .title("Entiset jäsenet")
+                .schemaType("hallitusJasen")
+                .child(
+                  S.documentList()
+                    .title("Entiset jäsenet")
+                    .schemaType("hallitusJasen")
+                    .filter(`_type == "hallitusJasen" && nykyinen == false`)
+                    .defaultOrdering([{ field: "name", direction: "asc" }])
+                    .initialValueTemplates([]),
+                ),
+            ]),
+        ),
 
       S.divider(),
 

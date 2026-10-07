@@ -21,6 +21,15 @@ export const hallitusJasen = defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
+      name: "nykyinen",
+      title: "Nykyinen jäsen",
+      description:
+        "Kun jäsen jää hallituksesta, ota rasti pois. Älä poista jäsentä: hän siirtyy listaan " +
+        "Entiset jäsenet, eikä näy enää hallitussivulla.",
+      type: "boolean",
+      initialValue: true,
+    }),
+    defineField({
       name: "image",
       title: "Profiilikuva",
       type: "imageWithAlt",
@@ -58,6 +67,11 @@ export const hallitusJasen = defineType({
     },
   ],
   preview: {
-    select: { title: "name", subtitle: "role", media: "image" },
+    select: { title: "name", role: "role", nykyinen: "nykyinen", media: "image" },
+    prepare: ({ title, role, nykyinen, media }) => ({
+      title,
+      subtitle: nykyinen === false ? `Entinen · ${role ?? ""}` : role,
+      media,
+    }),
   },
 });

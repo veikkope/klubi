@@ -200,7 +200,7 @@ export type HallitusJasen = {
 };
 
 export const hallitusListQuery = defineQuery(`
-  *[_type == "hallitusJasen"] | order(order asc, name asc){
+  *[_type == "hallitusJasen" && nykyinen != false] | order(order asc, name asc){
     _id,
     name,
     role,
