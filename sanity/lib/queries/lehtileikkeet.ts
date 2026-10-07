@@ -2,6 +2,7 @@
  * Lehtileikkeet (docs/20): pelaajasivun lehtijutut osioittain.
  */
 import { defineQuery } from "next-sanity";
+import { NAKYVA_UUTINEN } from "@/sanity/lib/queries/julkaisu";
 import type { PortableTextBlock } from "@portabletext/react";
 
 import { kuva, runko } from "@/sanity/lib/queries/kuvat";
@@ -80,7 +81,7 @@ export const lehtileikeYhteenvetoQuery = defineQuery(`
  */
 export const uutisetTunnisteenMukaanQuery = defineQuery(`
   {
-    "items": *[_type == "uutinen" && defined(slug.current) && count((tunnisteet[])[lower(@) == $tunniste]) > 0
+    "items": *[${NAKYVA_UUTINEN} && count((tunnisteet[])[lower(@) == $tunniste]) > 0
       && ($otsikossa == null || title match $otsikossa)]
       | order(publishedAt desc)[0...$maara]{
       _id,
@@ -92,7 +93,7 @@ export const uutisetTunnisteenMukaanQuery = defineQuery(`
       coverImage{${kuva}},
       categories
     },
-    "total": count(*[_type == "uutinen" && defined(slug.current) && count((tunnisteet[])[lower(@) == $tunniste]) > 0])
+    "total": count(*[${NAKYVA_UUTINEN} && count((tunnisteet[])[lower(@) == $tunniste]) > 0])
   }
 `);
 

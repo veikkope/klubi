@@ -4,6 +4,7 @@
  */
 
 import type { PortableTextBlock } from "@portabletext/react";
+import type { TilastoDoc } from "@/sanity/lib/queries/arkisto";
 
 export type SanityImage = {
   _key?: string;
@@ -136,6 +137,8 @@ export type SivuData = {
   /** Itsenäinen 2–3 virkkeen tiivistelmä — sivun ingressi ja siteerattava vastaus. */
   tiivistelma?: string | null;
   body?: PortableTextBlock[] | null;
+  /** Sivun Taulukot-kenttä (jalkapalloTilasto-viittaukset). Poistetun viittauksen kohdalla null. */
+  tilastot?: (TilastoDoc | null)[] | null;
   /**
    * SEO-kentät ovat litteitä, koska `seo` on Studion kenttäryhmän nimi eikä
    * kenttä. Objektimuotoinen `seo`-projektio palautti aina nullin.

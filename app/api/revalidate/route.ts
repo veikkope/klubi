@@ -33,6 +33,8 @@ const RIIPPUVAT: Record<string, string[]> = {
   kaupunki: ["ravintola"],
   // Kategorian nimi näkyy uutiskorteissa ja uutissivuilla.
   uutisKategoria: ["uutinen"],
+  // Taulukko näkyy myös sivuilla, joiden Taulukot-kenttä viittaa siihen.
+  jalkapalloTilasto: ["sivu"],
 };
 
 interface WebhookPayload {

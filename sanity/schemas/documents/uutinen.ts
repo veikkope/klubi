@@ -56,6 +56,10 @@ export const uutinen = defineType({
     defineField({
       name: "publishedAt",
       title: "Julkaisuaika",
+      description:
+        "Uutinen näkyy sivustolla tästä hetkestä alkaen. Ajastus: valitse tuleva aika ja paina " +
+        "Julkaise. Uutinen odottaa piilossa ja tulee näkyviin itsestään noin minuutin kuluessa " +
+        "valitusta ajasta. Listassa se näkyy siihen asti merkinnällä Ajastettu.",
       type: "datetime",
       initialValue: () => new Date().toISOString(),
       validation: (rule) => rule.required(),
@@ -310,10 +314,14 @@ export const uutinen = defineType({
   preview: {
     select: { title: "title", date: "publishedAt", media: "coverImage", needsReview: "needsReview" },
     prepare({ title, date, media, needsReview }) {
-      const formatted = date
-        ? new Date(date).toLocaleDateString("fi-FI")
-        : "Ei päivämäärää";
-      return { title: needsReview ? `⚠ ${title}` : title, subtitle: formatted, media };
+      const aika = date ? new Date(date) : null;
+      // Tuleva julkaisuaika = ajastettu (sanity/lib/queries/julkaisu.ts).
+      const subtitle = !aika
+        ? "Ei päivämäärää"
+        : aika.getTime() > Date.now()
+          ? `Ajastettu ${aika.toLocaleString("fi-FI", { dateStyle: "short", timeStyle: "short" })}`
+          : aika.toLocaleDateString("fi-FI");
+      return { title: needsReview ? `⚠ ${title}` : title, subtitle, media };
     },
   },
 });

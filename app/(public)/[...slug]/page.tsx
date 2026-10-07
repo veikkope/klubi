@@ -4,6 +4,7 @@ import { Container } from "@/components/layout/container";
 import { Breadcrumbs, type Crumb } from "@/components/layout/breadcrumbs";
 import { SanityImage } from "@/components/sanity-image";
 import { PortableText } from "@/components/portable-text";
+import { StatSections } from "../jalkapalloarkisto/_tilastot/stat-sections";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import {
   allSivuSlugsQuery,
@@ -35,6 +36,7 @@ async function getSivu(segments: string[]) {
   return sanityFetch<SivuWithAncestors>({
     query: sivuWithAncestorsQuery,
     params: { slug, ancestors: ancestorSlugs(segments) },
+    // Taulukon muutos tyhjentää tagin "sivu" (RIIPPUVAT, app/api/revalidate).
     tags: ["sivu", `sivu:${slug}`],
     fallback: { sivu: null, ancestors: [] },
   });
@@ -78,6 +80,8 @@ export default async function SivuPage({
   ];
 
   const hasHero = Boolean(sivu.hero?.asset);
+  // Poistettu taulukko jää viittaukseksi ilman kohdetta: ohitetaan.
+  const tilastot = (sivu.tilastot ?? []).filter((t) => t !== null);
   const lead = sivu.tiivistelma || sivu.ingress;
   // WCAG 3.1.2: vieraskielinen sisältö merkitään, sivupohja (murupolku) on suomea.
   const kieli = sivu.kieli && sivu.kieli !== "fi" ? sivu.kieli : undefined;
@@ -139,6 +143,17 @@ export default async function SivuPage({
           <PortableText value={sivu.body} ylinOtsikko={2} />
         </div>
       </Container>
+
+      {tilastot.length > 0 && (
+        <Container className="pb-16">
+          <section aria-labelledby="sivun-taulukot">
+            <h2 id="sivun-taulukot" className="font-display text-3xl leading-tight">
+              Taulukot
+            </h2>
+            <StatSections tilastot={tilastot} headingLevel="h3" className="mt-6" />
+          </section>
+        </Container>
+      )}
     </article>
   );
 }

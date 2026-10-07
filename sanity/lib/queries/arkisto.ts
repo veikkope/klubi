@@ -59,7 +59,8 @@ export interface TilastoSummary {
   updatedAt: string | null;
 }
 
-const tilastoProjection = /* groq */ `
+/** Taulukon kentät. Jaettu: sama projektio arkistossa ja sivujen Taulukot-kentässä. */
+export const tilastoProjection = /* groq */ `
   _id,
   _updatedAt,
   title,

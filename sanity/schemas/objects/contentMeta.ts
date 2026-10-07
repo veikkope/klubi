@@ -82,10 +82,14 @@ export const needsReviewField = (group?: string) =>
     name: "needsReview",
     title: "Vaatii tarkistuksen",
     description:
-      "Migraatio ei saanut kaikkea tietoa varmasti oikein. Tarkista sisältö ja " +
-      "ota rasti pois kun olet käynyt sen läpi.",
+      "Migraatio ei saanut kaikkea tietoa varmasti oikein. Tarkista sisältö, ota rasti pois " +
+      "ja paina lopuksi Julkaise: ennen julkaisua sivusto ja Tarkistettavat-lista näyttävät " +
+      "yhä vanhaa.",
     type: "boolean",
     initialValue: false,
+    // Vain migraation merkitsemille: uudessa dokumentissa rasti vain hämmentäisi.
+    // Syyllinen dokumentti pysyy näkyvissä myös rastin poiston jälkeen (syy säilyy).
+    hidden: ({ document }) => !document?.needsReview && !document?.tarkistettavaa,
     ...(group ? { group } : {}),
   });
 

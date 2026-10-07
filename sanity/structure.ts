@@ -1,6 +1,9 @@
 import {
   ArchiveIcon,
+  BellIcon,
+  ClockIcon,
   CommentIcon,
+  EditIcon,
   ControlsIcon,
   DatabaseIcon,
   EnvelopeIcon,
@@ -39,7 +42,82 @@ const TARKISTETTAVAT: { tyyppi: string; otsikko: string }[] = [
   { tyyppi: "pelaaja", otsikko: "Pelaajat" },
   { tyyppi: "lehtileike", otsikko: "Lehtileikkeet" },
   { tyyppi: "arvokisa", otsikko: "Arvokisat" },
+  { tyyppi: "sivu", otsikko: "Sivut" },
+  { tyyppi: "tapahtuma", otsikko: "Tapahtumat" },
+  { tyyppi: "galleriaAlbumi", otsikko: "Galleria-albumit" },
 ];
+
+/** Lomakkeen luonnoksena tallentamat arvostelut: Studio hakee listat luonnosnäkymässä (ks. Ravintolat). */
+const ODOTTAVAT_ARVOSTELUT = `_type == "ravintolaKayttajaArvostelu" && _originalId in path("drafts.**")`;
+
+/**
+ * "Tehtävät sinulle" (docs/23 Y11, Y35): kaikki, mikä odottaa sihteerin
+ * toimia, yhdessä paikassa. Tyhjä lista = ei tehtävää.
+ */
+const tehtavat = (S: StructureBuilder) =>
+  S.listItem()
+    .title("Tehtävät sinulle")
+    .icon(BellIcon)
+    .child(
+      S.list()
+        .title("Tehtävät sinulle")
+        .items([
+          S.listItem()
+            .title("Arvostelut odottavat hyväksyntää")
+            .schemaType("ravintolaKayttajaArvostelu")
+            .child(
+              S.documentList()
+                .title("Odottavat hyväksyntää")
+                .schemaType("ravintolaKayttajaArvostelu")
+                .filter(ODOTTAVAT_ARVOSTELUT)
+                .defaultOrdering([{ field: "submittedAt", direction: "desc" }]),
+            ),
+          S.listItem()
+            .title("Uudet kommentit (7 päivää)")
+            .icon(CommentIcon)
+            .child(
+              S.documentList()
+                .title("Uudet kommentit (7 päivää)")
+                .schemaType("kommentti")
+                .filter(`_type == "kommentti" && dateTime(lahetetty) > dateTime(now()) - 60*60*24*7`)
+                .defaultOrdering([{ field: "lahetetty", direction: "desc" }]),
+            ),
+          // Luonnos, jota ei ole julkaistu: sivusto näyttää yhä vanhaa. Arvostelut
+          // ovat omalla listallaan, ja järjestelmädokumentit jätetään pois.
+          S.listItem()
+            .title("Julkaisemattomat muutokset")
+            .icon(EditIcon)
+            .child(
+              S.documentList()
+                .title("Julkaisemattomat muutokset")
+                .filter(
+                  `_originalId in path("drafts.**") && !(_type match "sanity.*") && !(_type in $pois)`,
+                )
+                .params({ pois: ["ravintolaKayttajaArvostelu", "varmuuskopio"] })
+                .defaultOrdering([{ field: "_updatedAt", direction: "desc" }]),
+            ),
+          S.listItem()
+            .title("Ajastetut uutiset")
+            .icon(ClockIcon)
+            .child(
+              S.documentList()
+                .title("Ajastetut uutiset (julkaisuaika tulevaisuudessa)")
+                .schemaType("uutinen")
+                .filter(`_type == "uutinen" && dateTime(publishedAt) > dateTime(now())`)
+                .defaultOrdering([{ field: "publishedAt", direction: "asc" }]),
+            ),
+          S.listItem()
+            .title("Vaatii tarkistuksen (kaikki)")
+            .icon(WarningOutlineIcon)
+            .child(
+              S.documentList()
+                .title("Vaatii tarkistuksen")
+                .filter(`needsReview == true && _type in $tyypit`)
+                .params({ tyypit: TARKISTETTAVAT.map(({ tyyppi }) => tyyppi) })
+                .defaultOrdering([{ field: "_updatedAt", direction: "desc" }]),
+            ),
+        ]),
+    );
 
 const lista = (S: StructureBuilder, tyyppi: string, otsikko: string) =>
   S.listItem().title(otsikko).schemaType(tyyppi).child(S.documentTypeList(tyyppi).title(otsikko));
@@ -48,6 +126,8 @@ export const structure: StructureResolver = (S) =>
   S.list()
     .title("Sisältö")
     .items([
+      tehtavat(S),
+
       S.listItem()
         .title("Sivun asetukset")
         .icon(ControlsIcon)
@@ -221,7 +301,7 @@ export const structure: StructureResolver = (S) =>
                   S.documentList()
                     .title("Odottavat hyväksyntää")
                     .schemaType("ravintolaKayttajaArvostelu")
-                    .filter(`_type == "ravintolaKayttajaArvostelu" && _originalId in path("drafts.**")`)
+                    .filter(ODOTTAVAT_ARVOSTELUT)
                     .defaultOrdering([{ field: "submittedAt", direction: "desc" }]),
                 ),
               S.listItem()

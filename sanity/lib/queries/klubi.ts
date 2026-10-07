@@ -14,7 +14,8 @@
  */
 
 import { defineQuery } from "next-sanity";
-import { kuva, lqip, runko } from "@/sanity/lib/queries/kuvat";
+import { kuva, runko } from "@/sanity/lib/queries/kuvat";
+import { tilastoProjection } from "@/sanity/lib/queries/arkisto";
 
 import type { PortableTextBlock } from "@portabletext/react";
 import type { SanityImage } from "@/lib/types";
@@ -51,22 +52,7 @@ export const klubiSivuQuery = defineQuery(`
     ingress,
     hero{${kuva}},
     body[]{${runko}},
-    tilastot[]->{
-      _id,
-      _updatedAt,
-      title,
-      "slug": slug.current,
-      tiivistelma,
-      category,
-      intro[]{${runko}},
-      columns[]{ key, label, type },
-      rows[]{ cells[]{ key, value } },
-      lisatiedot[]{${runko}},
-      kuvat[]{ _key, alt, caption, asset, hotspot, crop, ${lqip} },
-      paivitetty,
-      jarjestys,
-      "sources": coalesce(sources, [])
-    },
+    tilastot[]->{ ${tilastoProjection} },
     seoTitle,
     seoDescription
   }
@@ -177,22 +163,7 @@ export const klubiToimintaBySlugQuery = defineQuery(`
       linkki{ url, teksti },
       kuvat[]{${kuva}}
     },
-    tilastot[]->{
-      _id,
-      _updatedAt,
-      title,
-      "slug": slug.current,
-      tiivistelma,
-      category,
-      intro[]{${runko}},
-      columns[]{ key, label, type },
-      rows[]{ cells[]{ key, value } },
-      lisatiedot[]{${runko}},
-      kuvat[]{ _key, alt, caption, asset, hotspot, crop, ${lqip} },
-      paivitetty,
-      jarjestys,
-      "sources": coalesce(sources, [])
-    }
+    tilastot[]->{ ${tilastoProjection} }
   }
 `);
 

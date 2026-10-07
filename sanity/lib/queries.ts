@@ -18,6 +18,8 @@
  */
 
 import { kuva, runko, ruutukuva } from "@/sanity/lib/queries/kuvat";
+import { tilastoProjection } from "@/sanity/lib/queries/arkisto";
+import { NAKYVA_UUTINEN } from "@/sanity/lib/queries/julkaisu";
 import { uutisenKategoriat } from "@/sanity/lib/queries/kategoriat";
 
 export const navigationQuery = /* groq */ `
@@ -58,6 +60,7 @@ export const sivuWithAncestorsQuery = /* groq */ `
       ingress,
       tiivistelma,
       body[]{${runko}},
+      tilastot[]->{ ${tilastoProjection} },
       seoTitle,
       seoDescription,
       "updatedAt": _updatedAt
@@ -75,7 +78,7 @@ export const allSivuSlugsQuery = /* groq */ `
 
 /** Uusimmat uutiset etusivun nostoon. */
 export const recentUutisetQuery = /* groq */ `
-  *[_type == "uutinen" && defined(slug.current)]
+  *[${NAKYVA_UUTINEN}]
     | order(publishedAt desc)[0...$count]{
     _id,
     title,

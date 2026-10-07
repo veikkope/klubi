@@ -1,4 +1,5 @@
 import { JULKINEN_RAVINTOLA } from "@/lib/ravintola-arvosana";
+import { JULKAISTU } from "@/sanity/lib/queries/julkaisu";
 import { defineQuery } from "next-sanity";
 
 /**
@@ -17,7 +18,8 @@ export interface SitemapRow {
 
 /** Dokumenttityypit joilla on yksi sivu per dokumentti. */
 export const sitemapByTypeQuery = defineQuery(`
-  *[_type == $type && defined(slug.current) && ($type != "ravintola" || ${JULKINEN_RAVINTOLA})]
+  *[_type == $type && defined(slug.current) && ($type != "ravintola" || ${JULKINEN_RAVINTOLA})
+    && ($type != "uutinen" || ${JULKAISTU})]
     | order(_updatedAt desc) {
     "slug": slug.current,
     "updatedAt": _updatedAt
@@ -59,7 +61,7 @@ export const sitemapTilastotQuery = defineQuery(`
 
 /** Uutisarkiston vuodet — omat reittinsä /uutiset/arkisto/[vuosi]. */
 export const sitemapArchiveYearsQuery = defineQuery(`
-  *[_type == "uutinen" && defined(publishedAt)]
+  *[_type == "uutinen" && defined(publishedAt) && ${JULKAISTU}]
     | order(publishedAt desc) {
       "slug": string::split(publishedAt, "-")[0],
       "updatedAt": _updatedAt

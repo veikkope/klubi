@@ -14,6 +14,7 @@
  */
 
 import { defineQuery } from "next-sanity";
+import { NAKYVA_UUTINEN } from "@/sanity/lib/queries/julkaisu";
 import { kuva, runko } from "@/sanity/lib/queries/kuvat";
 import { uutisenKategoriat } from "@/sanity/lib/queries/kategoriat";
 import { JULKINEN_RAVINTOLA } from "@/lib/ravintola-arvosana";
@@ -54,9 +55,11 @@ export const etusivuQuery = defineQuery(`
       select(
         defined(heroNosto->slug.current)
           && (!defined(heroNostoAsti) || dateTime(heroNostoAsti) > dateTime(now()))
+          // Ajastettu juttu nousee pääjutuksi vasta julkaisuajastaan.
+          && (!defined(heroNosto->publishedAt) || dateTime(heroNosto->publishedAt) <= dateTime(now()))
           => heroNosto->{${nostoKortti}}
       ),
-      *[_type == "uutinen" && defined(slug.current)] | order(publishedAt desc)[0]{${nostoKortti}}
+      *[${NAKYVA_UUTINEN}] | order(publishedAt desc)[0]{${nostoKortti}}
     ),
     heroCtas[]{ label, href, primary },
     seuraavaOttelu{ ottelu, kilpailu, aika },

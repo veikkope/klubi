@@ -12,6 +12,7 @@
  */
 
 import { defineQuery } from "next-sanity";
+import { NAKYVA_UUTINEN } from "@/sanity/lib/queries/julkaisu";
 import { kuva, runko } from "@/sanity/lib/queries/kuvat";
 import { uutisenKategoriat } from "@/sanity/lib/queries/kategoriat";
 import type { PortableTextBlock } from "@portabletext/react";
@@ -96,7 +97,7 @@ const tapahtumaCardFields = `
       image{${kuva}}`;
 
 /** Julkaistu, näkyvä uutinen. */
-const uutinenFilter = `_type == "uutinen" && defined(slug.current)`;
+const uutinenFilter = NAKYVA_UUTINEN;
 
 /** Kategoriasuodatin on valinnainen: null = kaikki. `$category` = kategorian _id. */
 const uutinenListFilter = `${uutinenFilter} && ($category == null || references($category))`;
