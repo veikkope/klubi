@@ -50,6 +50,15 @@ toimii niiden varassa. Kehittäjä hoitaa ne.
 
 ## Studion valikko
 
+- **Tehtävät sinulle:** aloita tästä. Kaikki, mikä odottaa sinua, yhdessä paikassa.
+  Tyhjä lista tarkoittaa, ettei siinä ole tehtävää.
+  - **Arvostelut odottavat hyväksyntää:** kävijöiden ravintola-arvostelut
+  - **Uudet kommentit (7 päivää):** lue ja piilota tarvittaessa
+  - **Julkaisemattomat muutokset:** muokkaukset, joita et ole vielä julkaissut.
+    Sivustolla näkyy niissä yhä vanha versio. Avaa ja paina **Julkaise**, tai hylkää
+    muutos (⋯ → **Hylkää muutokset**).
+  - **Ajastetut uutiset:** uutiset, joiden julkaisuaika on tulevaisuudessa
+  - **Vaatii tarkistuksen (kaikki):** migraation merkitsemät dokumentit yhdessä listassa
 - **Sivun asetukset**
   - **Etusivu:** etusivun yläosa (pääjuttu, pikalinkit) ja lohkot
   - **Navigaatio:** yläpalkin linkit
@@ -92,6 +101,12 @@ Tämä korvaa blogiin kirjoittamisen. Studio toimii myös puhelimen selaimessa.
    pelaajat, stadionit, lehtileikkeet).
 5. **Kategoriat:** rastita sopivat (esim. Palloveikkaus, Matkakuvaus, Tapahtumat).
 6. **Julkaise**.
+
+**Ajastus:** jos haluat uutisen näkyviin myöhemmin (esim. vuosikokouskutsu maanantaina
+klo 8), valitse **Julkaisuaika**-kenttään se hetki ja paina **Julkaise** heti. Uutinen
+odottaa piilossa ja tulee näkyviin itsestään noin minuutin kuluessa valitusta ajasta.
+Listassa ja kohdassa **Tehtävät sinulle → Ajastetut uutiset** sen kohdalla lukee
+*Ajastettu* ja aika.
 
 ### Jakokuva (kun linkki jaetaan WhatsAppissa tai Facebookissa)
 
@@ -241,6 +256,10 @@ poistaa seuroja (kirjoita nimi kuten Veikkausliigan sivuilla ja paina Enter).
 3. Ilmoittautumislinkki tai -sähköposti (valinnainen).
 4. **Julkaise**. Tapahtuma näkyy etusivulla ja /tapahtumat-sivulla, kunnes se on ohi.
 
+Niin kauan kuin yhtään tapahtumaa ei ole, Tapahtumat-osio on piilossa valikosta,
+alatunnisteesta ja hakukoneilta. Se tulee näkyviin itsestään ensimmäisen tapahtuman
+julkaisun jälkeen. Sama koskee Kuvagalleriaa ja albumeita.
+
 **Jakokuva:** kun tapahtuman linkki jaetaan WhatsAppissa tai Facebookissa, esikatselun
 kuvana on tapahtuman **kansikuva**. Ilman kansikuvaa käytetään kuvausta: ensin siinä
 olevaa kuvaa, sitten YouTube-videon kuvaa, ja jos kumpaakaan ei ole, klubin logoa.
@@ -256,6 +275,10 @@ aikaa, koska otsikko näkyy esikatselussa kuvan vieressä. Lisätietoa kohdassa
    /klubi/historia. Osa poluista on varattu (esim. uutiset, ravintolat), ja Studio kertoo
    niistä.
 3. Ingressi ja sisältö. **Julkaise**.
+
+**Taulukot sivulle:** sivun kohtaan **Taulukot** voi valita taulukoita (esim. tulokset),
+jotka näkyvät sivun lopussa. Taulukot tehdään kohdassa **Jalkapalloarkisto → Tilastot**
+kategorialla *Klubin omat tilastot*.
 
 Jos sivu on kirjoitettu muulla kielellä (esim. englanninkielinen esittely), valitse
 **Sisällön kieli**. Ruudunlukija ääntää tekstin silloin oikein.
