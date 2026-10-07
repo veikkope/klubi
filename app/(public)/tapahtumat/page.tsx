@@ -8,6 +8,7 @@ import { JsonLd } from "@/components/seo/json-ld";
 import { rootCrumb } from "@/lib/nav-sections";
 import { breadcrumbSchema, collectionPageSchema } from "@/lib/schema-org";
 import { buildMetadata } from "@/lib/seo";
+import { haeTyhjatOsiot } from "@/sanity/lib/tyhjat-osiot";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import {
   menneetTapahtumatQuery,
@@ -28,11 +29,16 @@ const LEAD =
 
 const trail = [rootCrumb, { label: "Tapahtumat" }];
 
-export const metadata: Metadata = buildMetadata({
-  title: "Tapahtumat",
-  description: LEAD,
-  path: PATH,
-});
+export async function generateMetadata(): Promise<Metadata> {
+  // Tyhjä osio ei näy valikossa eikä sitemapissa, eikä sitä indeksoida (lib/osiot.ts).
+  const tyhja = (await haeTyhjatOsiot()).has(PATH);
+  return buildMetadata({
+    title: "Tapahtumat",
+    description: LEAD,
+    path: PATH,
+    noIndex: tyhja,
+  });
+}
 
 export default async function TapahtumatPage() {
   const [upcoming, past] = await Promise.all([

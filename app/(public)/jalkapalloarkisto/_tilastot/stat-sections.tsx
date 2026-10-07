@@ -21,7 +21,7 @@ import { karsintaPath } from "./helpers";
  * jaetut `components/`-kansiot ovat vain luku rinnakkaisajon aikana.
  */
 
-const emptyMessageDefault = "Tilastoja ei ole vielä lisätty Studiossa.";
+const emptyMessageDefault = "Tilastoja ei ole vielä lisätty.";
 
 export function ArkistoEmpty({
   title = "Ei vielä tilastoja",
@@ -143,7 +143,7 @@ export function TilastoBody({
           caption={tilasto.title}
           columns={tilasto.columns ?? []}
           rows={tilasto.rows ?? []}
-          emptyLabel="Taulukon rivejä ei ole vielä lisätty Studiossa."
+          emptyLabel="Taulukon rivejä ei ole vielä lisätty."
         />
       )}
 

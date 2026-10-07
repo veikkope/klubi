@@ -12,6 +12,8 @@ import { LITMANEN_PATH, LITMANEN_SLUG, documentRoute } from "@/lib/path";
 import { TUNNISTE_INDEKSOI_VAHINTAAN, tunnisteSlug } from "@/lib/tunnisteet";
 import { uutisetTunnisteetQuery, type TunnisteRivi } from "@/sanity/lib/queries/uutiset";
 import { absoluteUrl } from "@/lib/site";
+import { onTyhjassaOsiossa } from "@/lib/osiot";
+import { haeTyhjatOsiot } from "@/sanity/lib/tyhjat-osiot";
 
 /**
  * Sitemap.
@@ -120,6 +122,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     sivut,
     arkistoRows,
     tunnisteRivit,
+    tyhjat,
   ] = await Promise.all([
     rowsFor("uutinen"),
     rowsFor("tapahtuma"),
@@ -145,9 +148,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       tags: ["uutinen"],
       fallback: [],
     }),
+    haeTyhjatOsiot(),
   ]);
 
-  const staticEntries: Entry[] = STATIC_ROUTES.map((route) => ({
+  // Tyhjä osio (esim. Galleria ilman albumeita) on noindex, joten ei sitemapiin (lib/osiot.ts).
+  const staticEntries: Entry[] = STATIC_ROUTES.filter((route) => !onTyhjassaOsiossa(route.path, tyhjat)).map((route) => ({
     url: absoluteUrl(route.path),
     lastModified: new Date(),
     priority: route.priority,

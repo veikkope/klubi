@@ -61,7 +61,7 @@ export default async function LitmasenLoukkaantumisetPage() {
         <StatSections
           tilastot={tilastot}
           headingLevel="h3"
-          emptyMessage="Loukkaantumistaulukkoa ei ole vielä lisätty Studiossa Jari Litmasen pelaajasivulle."
+          emptyMessage="Loukkaantumistaulukkoa ei ole vielä julkaistu."
           className="mt-6"
         />
       </section>

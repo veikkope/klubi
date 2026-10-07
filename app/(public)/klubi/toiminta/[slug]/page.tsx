@@ -142,7 +142,7 @@ export default async function ToimintaDetailPage({
             ) : (
               <EmptyState
                 title="Kuvausta ei ole vielä lisätty"
-                description="Sisältöä ei ole vielä lisätty Studiossa."
+                description="Tämän toimintamuodon esittely julkaistaan pian."
               />
             )}
           </div>
@@ -186,7 +186,7 @@ export default async function ToimintaDetailPage({
               <div className="mt-6">
                 <EmptyState
                   title="Vuosimerkintöjä ei ole vielä lisätty"
-                  description="Sisältöä ei ole vielä lisätty Studiossa. Merkinnät lisätään toimintamuodon kohtaan “Vuosittain”."
+                  description="Vuosittaiset merkinnät julkaistaan tällä sivulla pian."
                 />
               </div>
             ) : (

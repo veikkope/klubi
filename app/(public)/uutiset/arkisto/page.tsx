@@ -72,8 +72,8 @@ export default async function UutisarkistoPage() {
           <div className="mt-12 rounded-2xl border border-dashed border-border bg-surface p-10 text-center">
             <p className="font-display text-2xl">Arkisto on vielä tyhjä</p>
             <p className="mx-auto mt-2 max-w-md text-muted">
-              Vuodet ilmestyvät tähän automaattisesti sitä mukaa kun uutisia
-              julkaistaan Studiossa — luetteloa ei tarvitse ylläpitää käsin.
+              Uutisia ei ole vielä julkaistu. Vuodet ilmestyvät tähän
+              uutisten mukana.
             </p>
             <p className="mt-6">
               <Link href="/uutiset" className="text-accent underline decoration-1 underline-offset-4 hover:decoration-2">

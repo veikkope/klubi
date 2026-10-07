@@ -285,7 +285,7 @@ function EmptyState({ category }: { category: KategoriaSivulle | null }) {
       <p className="mx-auto mt-2 max-w-md text-muted">
         {category
           ? "Kokeile toista kategoriaa tai palaa kaikkiin uutisiin."
-          : "Uutiset lisätään Sanity Studiossa. Heti kun ensimmäinen uutinen on julkaistu, se ilmestyy tähän."}
+          : "Uutisia ei ole vielä julkaistu."}
       </p>
       <div className="mt-6 flex flex-wrap justify-center gap-3">
         {category && (

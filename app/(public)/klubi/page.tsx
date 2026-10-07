@@ -123,7 +123,7 @@ export default async function KlubiPage() {
           </div>
         ) : (
           <div className="mt-10">
-            <EmptyState description="Yhdistyksen esittely lisätään Sanity Studiossa sivulle, jonka polku on “klubi”." />
+            <EmptyState description="Yhdistyksen esittely julkaistaan tällä sivulla pian." />
           </div>
         )}
 
@@ -147,7 +147,7 @@ export default async function KlubiPage() {
             <div className="mt-6">
               <EmptyState
                 title="Toimintamuotoja ei ole vielä lisätty"
-                description="Sisältöä ei ole vielä lisätty Studiossa."
+                description="Toimintamuodot esitellään tällä sivulla pian."
               />
             </div>
           ) : (

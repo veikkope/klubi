@@ -91,7 +91,7 @@ export default async function LitmasenPatsasPage() {
         </section>
       ) : (
         <div className="mt-12">
-          <ArkistoEmpty title="Ei vielä patsaskuvia" message="Kuvat lisätään Studiossa Jari Litmasen sivun Patsas-välilehdellä." />
+          <ArkistoEmpty title="Ei vielä patsaskuvia" message="Patsaan kuvia ei ole vielä julkaistu." />
         </div>
       )}
 

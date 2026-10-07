@@ -249,7 +249,7 @@ export default async function JalkapalloarkistoPage() {
           <div className="mt-12">
             <ArkistoEmpty
               title="Arkisto odottaa sisältöä"
-              message="Tilastoja ei ole vielä lisätty Studiossa. Osiot ovat valmiina, ja taulukot ilmestyvät heti kun ne tallennetaan."
+              message="Tilastoja ei ole vielä lisätty. Taulukot julkaistaan tällä sivulla myöhemmin."
             />
           </div>
         )}

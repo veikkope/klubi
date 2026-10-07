@@ -310,7 +310,7 @@ function EmptyState({
             ? "Kokeile väljempiä rajauksia, esimerkiksi matalampaa arvosanaa tai laajempaa aluetta."
             : hasAnyContent
               ? "Arvostelut ovat juuri nyt piilossa. Tarkista rajaukset tai palaa hetken kuluttua."
-              : "Ravintola-arvostelut lisätään Sanity Studiossa. Kun ensimmäinen arvostelu on tallennettu, se ilmestyy tähän."}
+              : "Ravintola-arvioita ei ole vielä julkaistu."}
       </p>
       {isFiltered && (
         <Link

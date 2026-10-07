@@ -98,7 +98,7 @@ export default async function ToimintaPage() {
           <div className="mt-10">
             <EmptyState
               title="Toimintamuotoja ei ole vielä lisätty"
-              description="Sisältöä ei ole vielä lisätty Studiossa. Toimintamuodot lisätään Sanity Studiossa kohtaan “Klubin toiminta”."
+              description="Toimintamuodot esitellään tällä sivulla pian."
             />
           </div>
         ) : (

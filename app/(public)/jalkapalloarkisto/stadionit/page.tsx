@@ -131,8 +131,8 @@ export default async function StadionitPage() {
 
       {groups.length === 0 ? (
         <p className="mt-10 rounded-2xl border border-dashed border-border bg-surface p-8 text-center text-muted">
-          Stadioneja ei ole vielä lisätty. Ne ilmestyvät tänne heti kun ne on
-          kirjattu Studioon.
+          Stadioneja ei ole vielä lisätty. Ne julkaistaan tälle sivulle
+          myöhemmin.
         </p>
       ) : (
         <div className="mt-12 space-y-14">

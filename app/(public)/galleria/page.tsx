@@ -11,6 +11,7 @@ import {
 } from "@/sanity/lib/queries/galleria";
 import { breadcrumbSchema, collectionPageSchema } from "@/lib/schema-org";
 import { buildMetadata } from "@/lib/seo";
+import { haeTyhjatOsiot } from "@/sanity/lib/tyhjat-osiot";
 import { rootCrumb } from "@/lib/nav-sections";
 
 export const revalidate = 3600;
@@ -25,10 +26,13 @@ const trail = [rootCrumb, { label: title }];
 const EAGER_COUNT = 3;
 
 export async function generateMetadata(): Promise<Metadata> {
+  // Tyhjä osio ei näy valikossa eikä sitemapissa, eikä sitä indeksoida (lib/osiot.ts).
+  const tyhja = (await haeTyhjatOsiot()).has("/galleria");
   return buildMetadata({
     title,
     description: lead,
     path: "/galleria",
+    noIndex: tyhja,
   });
 }
 
@@ -82,8 +86,8 @@ function EmptyState() {
     <div className="rounded-2xl border border-dashed border-border bg-surface p-10 text-center">
       <p className="font-display text-2xl">Ei vielä albumeita</p>
       <p className="mx-auto mt-2 max-w-md text-muted">
-        Kuva-albumit lisätään Sanity Studiossa. Heti kun ensimmäinen albumi on
-        julkaistu, se ilmestyy tänne.
+        Klubin tapahtumien ja matkojen kuvat julkaistaan täällä. Ensimmäinen
+        albumi on tulossa.
       </p>
     </div>
   );

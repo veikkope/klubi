@@ -53,7 +53,7 @@ export default async function LitmanenLehtileikkeetPage() {
         {leikkeet.length > 0 ? (
           <LeikeLista leikkeet={leikkeet} />
         ) : (
-          <ArkistoEmpty title="Ei vielä lehtileikkeitä" message="Lehtileikkeet lisätään Studiossa kohdassa Jalkapalloarkisto → Lehtileikkeet." />
+          <ArkistoEmpty title="Ei vielä lehtileikkeitä" message="Lehtileikkeitä ei ole vielä julkaistu." />
         )}
       </div>
     </Container>

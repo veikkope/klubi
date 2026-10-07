@@ -122,8 +122,8 @@ export default async function ArvokisatPage() {
 
       {groups.length === 0 ? (
         <p className="mt-10 rounded-2xl border border-dashed border-border bg-surface p-8 text-center text-muted">
-          Arvokisoja ei ole vielä lisätty. Ne julkaistaan tälle sivulle heti kun
-          ne on kirjattu Studioon.
+          Arvokisoja ei ole vielä lisätty. Ne julkaistaan tälle sivulle
+          myöhemmin.
         </p>
       ) : (
         <div className="mt-12 space-y-14">

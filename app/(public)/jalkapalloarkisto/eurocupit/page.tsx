@@ -100,7 +100,7 @@ export default async function EurocupitPage() {
           <div className="mt-12">
             <ArkistoEmpty
               title="Ei vielä eurocup-tilastoja"
-              message="Tilastoja ei ole vielä lisätty Studiossa. Kilpailusivut ovat valmiina odottamassa taulukoita."
+              message="Tilastoja ei ole vielä lisätty. Kilpailujen taulukot julkaistaan tällä sivulla myöhemmin."
             />
           </div>
         )}

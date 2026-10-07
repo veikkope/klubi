@@ -75,7 +75,7 @@ export default async function TunnisteetPage() {
           <div className="rounded-2xl border border-dashed border-border bg-surface p-10 text-center">
             <p className="font-display text-2xl">Ei vielä tunnisteita</p>
             <p className="mx-auto mt-2 max-w-md text-muted">
-              Tunnisteet lisätään uutisiin Sanity Studiossa. Ne ilmestyvät tähän heti julkaisun jälkeen.
+              Uutisten aiheita ei ole vielä merkitty.
             </p>
           </div>
         </Container>

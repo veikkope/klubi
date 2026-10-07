@@ -7,6 +7,8 @@ import { SocialIcon, socialLabels } from "@/components/ui/social-icon";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import { contactQuery } from "@/sanity/lib/queries";
 import { defaultContact } from "@/lib/defaults";
+import { piilotaTyhjat } from "@/lib/osiot";
+import { haeTyhjatOsiot } from "@/sanity/lib/tyhjat-osiot";
 import type { ContactData } from "@/lib/types";
 
 /**
@@ -41,11 +43,16 @@ const linkColumns: { title: string; links: { label: string; href: string }[] }[]
 const linkClass = "text-on-chrome-muted no-underline hover:text-on-chrome hover:underline";
 
 export async function Footer() {
-  const contact = await sanityFetch<ContactData>({
-    query: contactQuery,
-    tags: ["yhteystiedot"],
-    fallback: defaultContact,
-  });
+  const [contact, tyhjat] = await Promise.all([
+    sanityFetch<ContactData>({
+      query: contactQuery,
+      tags: ["yhteystiedot"],
+      fallback: defaultContact,
+    }),
+    haeTyhjatOsiot(),
+  ]);
+  // Tyhjät osiot (esim. Kuvagalleria ilman albumeita) piiloon, lib/osiot.ts.
+  const sarakkeet = linkColumns.map((col) => ({ ...col, links: piilotaTyhjat(col.links, tyhjat) }));
 
   const year = new Date().getFullYear();
   const socials = contact.socials ?? [];
@@ -76,7 +83,7 @@ export async function Footer() {
           />
         </Link>
 
-        {linkColumns.map((col) => (
+        {sarakkeet.map((col) => (
           <nav key={col.title} aria-label={col.title} className="flex flex-col gap-2.5">
             <h2 className="mb-1 font-sans text-[15px] font-semibold text-on-chrome">{col.title}</h2>
             <ul className="flex flex-col gap-2.5">
