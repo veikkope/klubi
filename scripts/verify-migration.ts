@@ -22,6 +22,7 @@
  */
 import { existsSync } from "node:fs";
 import { isSummaryRow } from "./lib/normalize-cell";
+import { sanityWriteToken } from "./lib/sanity-token";
 
 const DATASET = "development";
 const MIGRATED_TYPES = ["uutinen", "jalkapalloTilasto", "arvokisa", "pelaaja", "stadion", "klubiToiminta", "sivu", "ravintola"];
@@ -43,7 +44,8 @@ type Doc = Record<string, unknown> & { _id: string; _type: string };
 async function fetchAll(): Promise<Doc[]> {
   if (existsSync(".env.local")) process.loadEnvFile(".env.local");
   const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
-  const token = process.env.SANITY_API_WRITE_TOKEN ?? process.env.SANITY_API_READ_TOKEN;
+  // Token aina: yksityinen datasetti palauttaa ilman sitä tyhjän tuloksen virheettä.
+  const token = sanityWriteToken() ?? process.env.SANITY_API_READ_TOKEN;
   if (!projectId) throw new Error("NEXT_PUBLIC_SANITY_PROJECT_ID puuttuu .env.localista");
   const query = `*[!(_type match "sanity.*") && !(_id in path("_.**"))]`;
   const url =

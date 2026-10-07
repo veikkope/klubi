@@ -23,6 +23,7 @@
 import { existsSync } from "node:fs";
 
 import { documentRoute, routableProjection, type RoutableDoc } from "../lib/path";
+import { sanityWriteToken } from "./lib/sanity-token";
 
 const BASE_URL = process.env.BASE_URL ?? "http://localhost:3000";
 const CONCURRENCY = Number(process.env.CONCURRENCY ?? 6);
@@ -52,7 +53,8 @@ async function fetchDocs(): Promise<MigratedDoc[]> {
   if (existsSync(".env.local")) process.loadEnvFile(".env.local");
   const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
   if (!projectId) throw new Error("NEXT_PUBLIC_SANITY_PROJECT_ID puuttuu .env.localista");
-  const token = process.env.SANITY_API_WRITE_TOKEN ?? process.env.SANITY_API_READ_TOKEN;
+  // Token aina: yksityinen datasetti palauttaa ilman sitä tyhjän tuloksen virheettä.
+  const token = sanityWriteToken() ?? process.env.SANITY_API_READ_TOKEN;
   const query = /* groq */ `*[
     !(_id in path("drafts.**"))
     && (defined(legacyUrl) || defined(muutLegacyUrlit) || defined(blogspot.id))

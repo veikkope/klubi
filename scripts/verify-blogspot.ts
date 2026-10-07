@@ -25,6 +25,7 @@ import { load } from "cheerio";
 
 import type { BlogspotPost } from "./lib/blogspot";
 import { looksLikeFilename } from "./lib/derive-alt";
+import { sanityWriteToken } from "./lib/sanity-token";
 
 const DATASET = process.env.SANITY_VERIFY_DATASET ?? "development";
 const POSTS = join(process.cwd(), "data", "blogspot", "posts.json");
@@ -53,7 +54,8 @@ async function query<T>(groq: string): Promise<T> {
   if (existsSync(".env.local")) process.loadEnvFile(".env.local");
   const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
   if (!projectId) throw new Error("NEXT_PUBLIC_SANITY_PROJECT_ID puuttuu .env.localista");
-  const token = process.env.SANITY_API_WRITE_TOKEN ?? process.env.SANITY_API_READ_TOKEN;
+  // Token aina: yksityinen datasetti palauttaa ilman sitä tyhjän tuloksen virheettä.
+  const token = sanityWriteToken() ?? process.env.SANITY_API_READ_TOKEN;
   const url =
     `https://${projectId}.api.sanity.io/v2024-10-01/data/query/${DATASET}` +
     `?query=${encodeURIComponent(groq)}&perspective=published`;

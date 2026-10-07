@@ -128,7 +128,7 @@ export const legacyRedirects: Redirect[] = [
   { source: "/puutteellisetjarjestelyt.htm", destination: "/jalkapalloarkisto/tilastot/puutteelliset-jarjestelyt", permanent: true },
   { source: "/ruokailu.htm", destination: "/ravintolat", permanent: true },
   { source: "/ruokailubelgia.htm", destination: "/ravintolat?maa=belgia", permanent: true },
-  { source: "/ruokailuespanja.htm", destination: "/ravintolat?kaupunki=madrid", permanent: true },
+  { source: "/ruokailuespanja.htm", destination: "/ravintolat?kaupunki=madrid&lopettaneet=1", permanent: true },
   { source: "/ruokailuhameenlinna.htm", destination: "/ravintolat?kaupunki=hameenlinna", permanent: true },
   { source: "/ruokailuheinola.htm", destination: "/ravintolat?maakunta=paijat-hame", permanent: true },
   { source: "/ruokailuhelsinki.htm", destination: "/ravintolat?kaupunki=helsinki&lopettaneet=1", permanent: true },

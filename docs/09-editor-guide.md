@@ -5,7 +5,12 @@
 > Studio on suomeksi. Suluissa on englanninkielinen nimi, jos jokin kohta näkyy
 > vielä englanniksi.
 >
-> Versio 2.2 (5.10.2026). Lisätty YouTube-video ja jakokuva.
+> Versio 2.3 (7.10.2026). Blogi on siirtynyt Studioon, ja vanhan version voi palauttaa
+> varmuuskopiosta.
+
+> **Uudet jutut kirjoitetaan nyt Studioon, ei enää blogiin.** Blogspot-blogi on
+> siirretty kokonaan tälle sivustolle (Uutiset), ja blogin osoitteet ohjaavat tänne.
+> Blogiin kirjoitettu juttu ei enää näy missään. Ohje: *Uutisen kirjoittaminen* alla.
 
 ## Tärkeät linkit
 
@@ -51,7 +56,7 @@ toimii niiden varassa. Kehittäjä hoitaa ne.
   - **Yhteystiedot:** osoite, sähköposti, puhelin ja some. Näkyvät footerissa ja yhteystietosivulla
   - **Varmuuskopiot:** automaattiset viikkokopiot ja poistettujen palautus (ks. alla)
 - **Tarkistettavat:** migraation merkitsemät dokumentit tyypeittäin (ks. alla)
-- **Uutiset:** tiedotteet ja blogikirjoitukset, myös blogin kaikki 528 kirjoitusta vuodesta 2007
+- **Uutiset:** tiedotteet ja blogikirjoitukset, myös blogin kaikki 530 kirjoitusta vuodesta 2007
 - **Uutiskategoriat:** uutisten kategoriat ja suodattimen valinnat
 - **Kommentit ja veikkaukset:** jäsenten viestit uusin ensin sekä piilotetut
 - **Ottelut:** etusivun ja /ottelut-sivun otteluohjelma
@@ -65,6 +70,8 @@ toimii niiden varassa. Kehittäjä hoitaa ne.
 ## Yleiset toimenpiteet
 
 ### Uutisen kirjoittaminen
+
+Tämä korvaa blogiin kirjoittamisen. Studio toimii myös puhelimen selaimessa.
 
 1. **Uutiset** → **+** (Luo uusi).
 2. **Otsikko**, sen jälkeen **Polku** → *Luo* (Generate). **Julkaisuaika** on oletuksena nyt.

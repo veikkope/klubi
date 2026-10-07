@@ -41,6 +41,7 @@ import { MAAKUNNAT, SUOMI } from "../lib/maakunnat";
 import { isCountryLevelPlace } from "../lib/places";
 import { slugify as placeSlug } from "../lib/slugify";
 import { JULKINEN_RAVINTOLA } from "../lib/ravintola-arvosana";
+import { sanityWriteToken } from "./lib/sanity-token";
 
 const STATUS_FILE = join(process.cwd(), "data", "crawl-status.tsv");
 const MANUAL_FILE = join(process.cwd(), "data", "manual-redirects.csv");
@@ -377,17 +378,6 @@ function ravintolaPageDestinations(docs: LegacyDoc[]): {
 }
 
 async function fetchLegacyDocs(): Promise<LegacyDoc[]> {
-  if (existsSync(".env.local")) process.loadEnvFile(".env.local");
-  const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
-  if (!projectId) {
-    throw new Error(
-      "NEXT_PUBLIC_SANITY_PROJECT_ID puuttuu. Aja `npm run redirects -- --offline`, " +
-        "jos haluat generoida ohjaukset pelkillä säännöillä.",
-    );
-  }
-  // Luku on turvallista mistä tahansa datasetista; oletus on migraation development.
-  const dataset = process.env.SANITY_REDIRECTS_DATASET ?? process.env.NEXT_PUBLIC_SANITY_DATASET ?? "development";
-  const token = process.env.SANITY_API_WRITE_TOKEN ?? process.env.SANITY_API_READ_TOKEN;
   const query = /* groq */ `*[
     !(_id in path("drafts.**"))
     && (defined(legacyUrl) || defined(muutLegacyUrlit))
@@ -401,17 +391,19 @@ async function fetchLegacyDocs(): Promise<LegacyDoc[]> {
     "closed": select(_type == "ravintola" => closed),
     "piilotettu": select(_type == "ravintola" => !${JULKINEN_RAVINTOLA})
   }`;
-  const url =
-    `https://${projectId}.api.sanity.io/v2024-10-01/data/query/${dataset}` +
-    `?query=${encodeURIComponent(query)}&perspective=published`;
-  const res = await fetch(url, {
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
-    signal: AbortSignal.timeout(60_000),
-  });
-  if (!res.ok) throw new Error(`Sanity-kysely epäonnistui: HTTP ${res.status}`);
-  const body = (await res.json()) as { result: LegacyDoc[] };
-  console.log(`Sanity (${dataset}): ${body.result.length} dokumenttia, joilla vanha osoite`);
-  return body.result;
+  const docs = await sanityQuery<LegacyDoc[]>(query);
+  console.log(`Sanity (${redirectsDataset()}): ${docs.length} dokumenttia, joilla vanha osoite`);
+  // Tyhjä tulos tarkoittaa lähes aina puuttuvaa lukuoikeutta (yksityinen
+  // datasetti ilman tokenia), ei sitä, että ohjaukset olisi poistettu. Tyhjä
+  // lib/redirects.ts rikkoisi satoja vanhoja osoitteita hiljaa.
+  if (docs.length === 0) {
+    throw new Error(
+      `Sanity (${redirectsDataset()}) palautti 0 dokumenttia, joilla on vanha osoite. ` +
+        "Tarkista lukuoikeus (`npx sanity login` tai SANITY_API_WRITE_TOKEN .env.local-tiedostossa) " +
+        "ja datasetti. lib/redirects.ts jätettiin ennalleen.",
+    );
+  }
+  return docs;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -444,14 +436,28 @@ async function blogspotDestinations(offline: boolean): Promise<Map<string, strin
   return out;
 }
 
+function redirectsDataset(): string {
+  return process.env.SANITY_REDIRECTS_DATASET ?? process.env.NEXT_PUBLIC_SANITY_DATASET ?? "development";
+}
+
+/**
+ * Luku tokenilla: production on yksityinen Growth-kokeilun ajan, ja ilman
+ * tokenia kysely palauttaisi tyhjän tuloksen virheettä. `sanityWriteToken`
+ * käyttää .env.local-tiedoston tokenia tai Sanity CLI:n kirjautumista.
+ */
 async function sanityQuery<T>(query: string): Promise<T> {
   if (existsSync(".env.local")) process.loadEnvFile(".env.local");
   const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
-  if (!projectId) throw new Error("NEXT_PUBLIC_SANITY_PROJECT_ID puuttuu.");
-  const dataset = process.env.SANITY_REDIRECTS_DATASET ?? process.env.NEXT_PUBLIC_SANITY_DATASET ?? "development";
-  const token = process.env.SANITY_API_WRITE_TOKEN ?? process.env.SANITY_API_READ_TOKEN;
+  if (!projectId) {
+    throw new Error(
+      "NEXT_PUBLIC_SANITY_PROJECT_ID puuttuu. Aja `npm run redirects -- --offline`, " +
+        "jos haluat generoida ohjaukset pelkillä säännöillä.",
+    );
+  }
+  // Luku on turvallista mistä tahansa datasetista; oletus on migraation development.
+  const token = sanityWriteToken() ?? process.env.SANITY_API_READ_TOKEN;
   const url =
-    `https://${projectId}.api.sanity.io/v2024-10-01/data/query/${dataset}` +
+    `https://${projectId}.api.sanity.io/v2024-10-01/data/query/${redirectsDataset()}` +
     `?query=${encodeURIComponent(query)}&perspective=published`;
   const res = await fetch(url, {
     headers: token ? { Authorization: `Bearer ${token}` } : {},
@@ -627,6 +633,12 @@ async function main() {
   const blogspot = await blogspotDestinations(offline);
   if (offline && blogspot.size === 0) {
     console.warn("\nHUOM: --offline ilman data/normalized/blogspot-map.json-tiedostoa: blogiohjaukset hoitaa vain app/blogspot-reitti.");
+  }
+  if (!offline && blogspot.size === 0) {
+    throw new Error(
+      `Sanity (${redirectsDataset()}) palautti 0 Blogspot-uutista. Tarkista lukuoikeus ja datasetti. ` +
+        "lib/redirects.ts jätettiin ennalleen.",
+    );
   }
   const blogspotLines = [...blogspot.entries()]
     .sort(([a], [b]) => a.localeCompare(b))

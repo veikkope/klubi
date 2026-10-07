@@ -266,6 +266,35 @@ Studioon. Siihen asti:
    5. Teeman ohjausskripti (§5)
    6. Isä julkaisee tästä eteenpäin Studiossa (docs/09 "Uutisen lisääminen")
 
+**Tila 7.10.2026 (päätös: katkaistaan nyt, docs/23 §0):**
+- ✅ 1. `sync:blogspot` (development: 530 kirjoitusta), `verify:blogspot` (development
+  ja production: 530/530, ei puuttuvia) ja `sync:blogspot:production`: 1041/1041
+  dokumenttia (kirjoitukset ja kommentit) jo productionissa, ei vietävää.
+- ✅ 2. Deploy: ohjausreitti on jo tuotannossa. Uutta koodia ei tarvita.
+- ✅ 3. Domain on Vercelissä, ja
+  `/blogspot/2019/03/milano-euroopan-renessanssin.html` palauttaa 308 →
+  `/uutiset/2019-03-10-milano-euroopan-renessanssin-synnyinseutu`. Edellytys täyttyy.
+- ☐ 4–5. **Bloggerissa (isän tunnuksilla):** ensin muuttoilmoitus (alla), heti sen
+  jälkeen teeman skripti (§5). Samana päivänä: blogin seuraajat näkevät ilmoituksen
+  syötteessä, ja blogissa käyvä ohjautuu uudelle sivustolle. Tarkistus skriptin
+  jälkeen: avaa `https://lahdensuomalainenklubi.blogspot.com/2019/03/milano-euroopan-renessanssin.html`
+  → päätyy uutissivulle.
+- ☐ 6. Isän ensimmäinen juttu kirjoitetaan yhdessä Studiossa (docs/09, ohjeen alun huomautus).
+- Huomio: Kesäkauden päätös 29.08.2026 (`uutinen-blogspot-8779245195012282126`):
+  blogin pieni 320 px:n kuvabanneri (`5c335d8c564b-kuva.png`) puuttuu sisällöstä, ja
+  kansikuvan alt-teksti on kuvaaja ("Kuva: Joakim Ström"), ei kuvaus. Isä tarkistaa
+  Studiossa (Tarkistettavat).
+
+Muuttoilmoituksen teksti blogiin (otsikko ja teksti):
+
+> **Klubin blogi on muuttanut**
+>
+> Lahden Suomalaisen Klubin jutut, palloveikkaukset ja matkakuvaukset löytyvät nyt
+> klubin omalta sivustolta: **www.lahdensuomalainenklubi.com**. Kaikki blogin
+> kirjoitukset vuodesta 2007 lähtien on siirretty sinne kommentteineen, ja vanhat
+> linkit ohjaavat automaattisesti oikeaan juttuun. Kommentoida ja veikata voi jatkossa
+> uuden sivuston uutisten alla. Tähän blogiin ei enää kirjoiteta. Nähdään siellä!
+
 > **Varoitus: dev → production -vienti.** CLAUDE.md:n `dataset import … --replace`
 > korvaa productionin koko sisällön. Kun isä on aloittanut muokkaamisen
 > productionissa, sama komento tuhoaisi hänen muutoksensa. Ensimmäisen julkaisun
