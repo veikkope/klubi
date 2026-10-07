@@ -10,8 +10,9 @@ import {
   TagIcon,
   WarningOutlineIcon,
 } from "@sanity/icons";
-import type { StructureBuilder, StructureResolver } from "sanity/structure";
+import type { DefaultDocumentNodeResolver, StructureBuilder, StructureResolver } from "sanity/structure";
 import { JULKINEN_RAVINTOLA } from "../lib/ravintola-arvosana";
+import { PalautaPoistettu } from "./components/varmuuskopio/palauta-poistettu";
 
 
 /**
@@ -266,3 +267,15 @@ export const structure: StructureResolver = (S) =>
             ]),
         ),
     ]);
+
+/**
+ * Varmuuskopiolla on lomakkeen rinnalla "Palauta poistettu" -välilehti
+ * (docs/23 Y32). Muut dokumentit näytetään tavalliseen tapaan.
+ */
+export const defaultDocumentNode: DefaultDocumentNodeResolver = (S, { schemaType }) =>
+  schemaType === "varmuuskopio"
+    ? S.document().views([
+        S.view.form().title("Tiedot"),
+        S.view.component(PalautaPoistettu).title("Palauta poistettu"),
+      ])
+    : S.document();

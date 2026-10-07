@@ -6,11 +6,12 @@ import { fiFILocale } from "@sanity/locale-fi-fi";
 
 import { apiVersion, dataset, projectId } from "./sanity/env";
 import { schemaTypes, singletonTypes } from "./sanity/schemas";
-import { structure } from "./sanity/structure";
+import { defaultDocumentNode, structure } from "./sanity/structure";
 import { locations } from "./sanity/presentation";
 import { HylkaaArvostelu } from "./sanity/actions/hylkaa-arvostelu";
 import { HyvaksyJaLuoRavintola, ilmanJulkaisuaEhdotukselle } from "./sanity/actions/hyvaksy-ja-luo-ravintola";
 import { PiilotaKommentti, PoistaKommentti } from "./sanity/actions/kommentin-moderointi";
+import { PalautaVarmuuskopiosta } from "./sanity/actions/palauta-varmuuskopiosta";
 
 export default defineConfig({
   name: "klubi",
@@ -52,11 +53,15 @@ export default defineConfig({
       if (singletonTypes.has(context.schemaType)) {
         // Julkaisun peruminen veisi etusivulta, valikosta ym. sisällön ja
         // korvaisi sen koodin oletuksilla, joten se on poissa kuten poisto.
-        return input.filter(
-          ({ action }) => action !== "duplicate" && action !== "delete" && action !== "unpublish",
-        );
+        return [
+          ...input.filter(({ action }) => action !== "duplicate" && action !== "delete" && action !== "unpublish"),
+          PalautaVarmuuskopiosta,
+        ];
       }
-      return input;
+      // Vanhemman kuin 3 päivän virheen korjaus ilman kehittäjää (ilmaistason
+      // historia on 3 päivää, docs/23 Y32). Toiminto piilottaa itsensä tyypeiltä,
+      // joita ei palauteta (lib/palautus.ts).
+      return [...input, PalautaVarmuuskopiosta];
     },
     newDocumentOptions: (prev, { creationContext }) => {
       if (creationContext.type === "global") {
@@ -71,7 +76,7 @@ export default defineConfig({
     // Sisältö on ensimmäinen näkymä: sihteeri aloittaa selkeästä valikosta.
     // Esikatselu on sen rinnalla, ja jokaisessa dokumentissa on linkki sivulle,
     // jolla se näkyy (sanity/presentation.ts).
-    structureTool({ title: "Sisältö", structure }),
+    structureTool({ title: "Sisältö", structure, defaultDocumentNode }),
     presentationTool({
       title: "Esikatselu",
       resolve: locations,

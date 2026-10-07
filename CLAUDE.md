@@ -69,6 +69,8 @@ public/                Staattiset tiedostot (favicon, robots, kuvat joita Sanity
 | Vie uutta sisältöä `development` → `production` | **Vain lisäys:** `npx sanity dataset import data/migration-<tyyppi>.ndjson --dataset production --missing`. **Ei koskaan `--replace` koko datasettiin**: isä muokkaa productionia (docs/17 §D) |
 | Varmuuskopio productionista | `npm run backup` → `varmuuskopiot/` (gitignoressa, kuvineen). Aina ennen isompaa muutosta. Lisäksi automaattinen viikkokopio Studioon (`/api/varmuuskopio`, docs/17 §D) |
 | Testaa varmuuskopion säännöt | `npm run test:varmuuskopio` |
+| Testaa varmuuskopiosta palauttamisen säännöt (Studion Palauta varmuuskopiosta / Palauta poistettu) | `npm run test:palautus` |
+| Sanityn taso ja oikeudet (tilaus, datasetin näkyvyys, tokenien ja käyttäjien roolit, sivusto; vain luku). Aja Growth-kokeilun päätyttyä 26.10.2026 ja kun lomakkeet lakkaavat toimimasta | `npm run tarkista:sanity-taso` |
 | Testaa uutishaun hakusanat | `npm run test:haku` |
 | Testaa lukuaika ja ingressisääntö (uutiset, ravintola-arviot) | `npm run test:artikkeli` |
 | Testaa uutisten tunnisteet | `npm run test:tunnisteet` |
@@ -155,6 +157,7 @@ Täydellinen työnkulku: `docs/10-agent-workflow.md`.
 | Litmanen-osio (lehtileikkeet, patsas, loukkaantumiset) | `docs/20-litmanen-osio.md` |
 | Klubilaisten arvosanat (ruokailutaulukko, laskenta) | `docs/21-klubilaisten-arvosanat.md` |
 | Julkaisuvalmiusauditointi 5.10.2026 | `docs/22-julkaisuvalmius.md` |
+| Ylläpidettävyys ilman kehittäjää, päätökset 7.10.2026 | `docs/23-yllapidettavyys.md` |
 | Tyyliopas (lopullinen, HTML) | `docs/design-handoff/` |
 
 <!-- BEGIN:nextjs-agent-rules -->

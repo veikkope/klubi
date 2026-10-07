@@ -39,8 +39,8 @@ toimii niiden varassa. Kehittäjä hoitaa ne.
   yläosassa on myös linkki sivulle, jolla sisältö näkyy.
 - **Versiohistoria:** oikean yläkulman kellokuvakkeesta näet aiemmat versiot ja voit
   palauttaa niistä minkä tahansa. **Historia säilyy vain 3 päivää** (Sanityn ilmainen
-  taso). Jos huomaat virheen myöhemmin, kerro kehittäjälle: sisältö palautetaan
-  viikoittaisesta varmuuskopiosta (ks. Varmuuskopiot).
+  taso). Vanhemman virheen voit korjata itse viikoittaisesta varmuuskopiosta:
+  dokumentin **⋯** → **Palauta varmuuskopiosta** (ks. Varmuuskopiot).
 - **Pakolliset kentät** näkyvät punaisella. Julkaisu onnistuu vasta, kun ne on täytetty.
 
 ## Studion valikko
@@ -49,7 +49,7 @@ toimii niiden varassa. Kehittäjä hoitaa ne.
   - **Etusivu:** etusivun yläosa (pääjuttu, pikalinkit) ja lohkot
   - **Navigaatio:** yläpalkin linkit
   - **Yhteystiedot:** osoite, sähköposti, puhelin ja some. Näkyvät footerissa ja yhteystietosivulla
-  - **Varmuuskopiot:** automaattiset viikkokopiot (ks. alla). Sinun ei tarvitse tehdä niille mitään.
+  - **Varmuuskopiot:** automaattiset viikkokopiot ja poistettujen palautus (ks. alla)
 - **Tarkistettavat:** migraation merkitsemät dokumentit tyypeittäin (ks. alla)
 - **Uutiset:** tiedotteet ja blogikirjoitukset, myös blogin kaikki 528 kirjoitusta vuodesta 2007
 - **Uutiskategoriat:** uutisten kategoriat ja suodattimen valinnat
@@ -603,7 +603,9 @@ Jos joku pyytää poistamaan tietonsa (kommentti, veikkaus tai arvostelu kuvinee
 | Julkaisu ei onnistu | Punaiset kentät ovat pakollisia. Vieritä alas, täytä ja yritä uudelleen |
 | Muutos ei näy sivulla | Tarkista, että painoit **Julkaise**. Sivu päivittyy yleensä sekunneissa, viimeistään minuutissa |
 | Linkki ei toimi | Ulkoinen linkki alkaa `https://`, sivuston oma polku `/` (esim. `/uutiset`) |
-| Jotain meni pieleen | Kellokuvake → versiohistoria → palauta edellinen versio |
+| Jotain meni pieleen (alle 3 päivää sitten) | Kellokuvake → versiohistoria → palauta edellinen versio |
+| Jotain meni pieleen (yli 3 päivää sitten) | Dokumentin **⋯** → **Palauta varmuuskopiosta** → valitse viikko → tarkista → **Julkaise** |
+| Poistin vahingossa | **Sivun asetukset → Varmuuskopiot** → uusin kopio → välilehti **Palauta poistettu** |
 
 ## Mitä EI saa tehdä
 
@@ -627,20 +629,44 @@ Varmuuskopiot**, ja 12 uusinta säilyy (noin kolme kuukautta).
   tiedostokentän **⋯** → **Lataa**. Esimerkiksi kerran kuussa riittää.
 - Kuvat eivät ole kopiossa: ne säilyvät Sanityssa, ja kehittäjä ottaa kuvista
   erillisen kopion isompien muutosten yhteydessä.
-- Palautuksen tekee kehittäjä.
+
+### Vanhan version palautus
+
+Kun huomaat virheen, joka on tehty yli 3 päivää sitten (versiohistoria ei enää ulotu
+siihen):
+
+1. Avaa dokumentti, esim. uutinen tai sivu.
+2. Paina alhaalla oikealla Julkaise-painikkeen vieressä **⋯** → **Palauta varmuuskopiosta**.
+3. Näet viikot uusin ensin. Jokaisen kohdalla lukee, milloin dokumenttia oli muokattu,
+   tai "sama kuin nykyinen", jos se ei ole muuttunut. Paina sopivan viikon kohdalla **Palauta**.
+4. Vanha versio tulee **luonnokseksi**. Sivusto ei vielä muutu. Tarkista lomakkeelta,
+   että sisältö on oikea, ja paina **Julkaise**.
+5. Jos valitsit väärän viikon, palauta toinen viikko tai hylkää luonnos (⋯ → **Hylkää
+   muutokset**), jolloin kaikki jää ennalleen.
+
+### Poistetun dokumentin palautus
+
+1. **Sivun asetukset → Varmuuskopiot** → avaa uusin kopio, jossa dokumentti vielä oli.
+2. Valitse yläreunasta välilehti **Palauta poistettu**. Siinä ovat kaikki kopion jälkeen
+   poistetut dokumentit.
+3. Hae nimellä ja paina **Palauta** → **Avaa** → tarkista → **Julkaise**.
+
+Kommentteja ja kävijöiden arvosteluja ei palauteta: niiden poisto on moderointia.
+Koko sivuston palautuksen (esim. jos kaikki sisältö katoaa) tekee kehittäjä.
 
 ## Tuki
 
 Jos et tiedä, miten jokin tehdään, ota yhteyttä kehittäjään (yhteystiedot on annettu
-sinulle erikseen). Tuoreet muutokset (3 päivää) voit perua itse versiohistoriasta, vanhemmat
-kehittäjä palauttaa varmuuskopiosta.
+sinulle erikseen). Tuoreet muutokset (3 päivää) perut versiohistoriasta ja vanhemmat
+varmuuskopiosta (ks. Varmuuskopiot), molemmat itse.
 
 ### Jos kehittäjä ei ole tavoitettavissa
 
 Sivusto toimii ilman ylläpitoa: sisältö, kuvat ja varmuuskopiot ovat Sanityssa, joka
 kuuluu klubille. Kiireettömät asiat voivat odottaa.
 
-- **Sisältövirhe:** korjaa se Studiossa tai palauta edellinen versio versiohistoriasta.
+- **Sisältövirhe:** korjaa se Studiossa tai palauta edellinen versio versiohistoriasta tai
+  varmuuskopiosta.
 - **Sivusto ei aukea lainkaan:** tarkista ensin toisella laitteella tai verkolla. Jos vika
   jatkuu yli päivän, uusi ylläpitäjä tarvitsee tämän repositorion
   (github.com/veikkope/klubi) ja ohjeen docs/17 §A3, jossa siirto on kuvattu vaihe vaiheelta.

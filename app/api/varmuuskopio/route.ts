@@ -21,7 +21,8 @@ import { apiVersion, dataset, projectId } from "@/sanity/env";
  *    asetukset → Varmuuskopiot). Saman päivän uusinta korvaa edellisen.
  * 4. Vanhimmat poistetaan, kun kopioita on yli 12 (≈ kolme kuukautta).
  *
- * Palautus: lataa tiedosto Studiosta, pura (gunzip) ja
+ * Palautus: sihteeri palauttaa yksittäisen dokumentin Studiossa (lib/palautus.ts,
+ * docs/09 Varmuuskopiot). Koko datasetti: lataa tiedosto Studiosta, pura (gunzip) ja
  *   npx sanity dataset import varmuuskopio-<pvm>.ndjson --dataset production --missing
  * (tai yksittäinen dokumentti poimittuna). Kuvat eivät ole mukana: ne säilyvät
  * Sanityssa, ja täysi kopio kuvineen otetaan `npm run backup` -komennolla.

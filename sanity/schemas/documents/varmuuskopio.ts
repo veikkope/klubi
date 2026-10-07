@@ -25,7 +25,8 @@ export const varmuuskopio = defineType({
       title: "Tiedosto",
       description:
         "Sivuston julkaistu sisältö (tekstit ja tiedot, ei kuvia) yhtenä tiedostona. " +
-        "Lataa halutessasi talteen klubin omaan pilveen. Palautuksen tekee kehittäjä.",
+        "Lataa halutessasi talteen klubin omaan pilveen. Poistetun dokumentin palautat " +
+        "välilehdeltä Palauta poistettu, muutetun dokumentin sen omasta ⋯-valikosta.",
       type: "file",
     }),
     defineField({

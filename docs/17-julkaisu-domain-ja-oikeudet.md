@@ -208,6 +208,12 @@ riippuvainen web-muutoksesta C2:n jälkeen.
 - **Isä muokkaa productionia.** Tästä eteenpäin `development` → `production` -vientiä
   **`--replace`-tilassa ei saa tehdä**: se pyyhkisi isän muutokset. Uudet migraatiot
   viedään productioniin `--missing`-tilassa tai dokumenttikohtaisesti (CLAUDE.md).
+- **Sanityn taso:** Growth-kokeilu päättyy 26.10.2026 klo 16.30, ja projekti jää
+  ilmaistasolle (päätös 7.10.2026, docs/23 §0). Silloin datasetti muuttuu julkiseksi,
+  muut kuin Administrator-käyttäjät muuttuvat Viewereiksi ja historia lyhenee 3 päivään.
+  Robottitokenin Editor-rooli on sallittu ilmaistasolla. **Siirron jälkeen:**
+  `npm run tarkista:sanity-taso` (tilaus, näkyvyys, tokenien ja käyttäjien roolit,
+  sivusto), testikommentti sivustolla ja Vercel → Cron Jobs → `/api/varmuuskopio` → Run.
 - **Varmuuskopiot** (Sanityn Free-tasolla versiohistoria säilyy vain 3 päivää, ja
   Sanityn oma Backups-palvelu on vain Enterprise-tasolla):
   - **Automaattinen viikkokopio:** Vercel Cron (`vercel.json`, maanantaisin 01 UTC)
@@ -221,10 +227,18 @@ riippuvainen web-muutoksesta C2:n jälkeen.
     `SANITY_API_WRITE_TOKEN` (Editor) on jo asetettu.
   - **Seuranta:** Vercel → Cron Jobs näyttää ajot; epäonnistunut ajo = HTTP 500 ja
     syy lokissa. Studiossa uusimman kopion päiväys kertoo saman.
-  - **Palautus:** lataa kopio Studiosta, pura (`gunzip varmuuskopio-<pvm>.ndjson.gz`)
-    ja `npx sanity dataset import varmuuskopio-<pvm>.ndjson --dataset production
-    --missing` (puuttuvat dokumentit) tai poimi yksittäinen dokumentti ja
-    `--replace` vain sille. Varmuuskopio ensin (`npm run backup`).
+  - **Palautus Studiossa (isä, docs/09 Varmuuskopiot):** dokumentin ⋯ → **Palauta
+    varmuuskopiosta** (muuttunut dokumentti) ja varmuuskopion välilehti **Palauta
+    poistettu** (poistettu dokumentti). Selain lataa ja purkaa kopion, ja valittu versio
+    kirjoitetaan luonnokseksi; sivusto muuttuu vasta julkaisusta. Säännöt
+    `lib/palautus.ts` (`npm run test:palautus`), toiminto
+    `sanity/actions/palauta-varmuuskopiosta.tsx`, välilehti
+    `sanity/components/varmuuskopio/palauta-poistettu.tsx`. Kommentteja ja kävijöiden
+    arvosteluja ei palauteta.
+  - **Koko datasetin palautus (kehittäjä):** lataa kopio Studiosta, pura (`gunzip
+    varmuuskopio-<pvm>.ndjson.gz`) ja `npx sanity dataset import varmuuskopio-<pvm>.ndjson
+    --dataset production --missing` (puuttuvat dokumentit). Varmuuskopio ensin
+    (`npm run backup`).
   - **Täysi kopio kuvineen:** `npm run backup` ennen jokaista isompaa muutosta.
     Tiedosto: `varmuuskopiot/production-<pvm>.tar.gz` (gitignoressa, ~1 Gt).
 - **Sisällön jäädytys:** sovi isän kanssa päivä, jonka jälkeen vanhaa sivustoa ja blogia
