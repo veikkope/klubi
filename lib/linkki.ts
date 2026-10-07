@@ -52,3 +52,14 @@ function ohje(skeemat: readonly LinkkiSkeema[]): string {
     "."
   );
 }
+
+/**
+ * Sivuston oman linkin polku kohteen tarkistusta varten (Studion varoitus
+ * "Sivustolla ei ole sivua…", sanity/lib/linkin-kohde.ts): ilman ankkuria ja
+ * kyselyä. Muut kuin sisäiset linkit (https:, mailto:, //) → null.
+ */
+export function sisainenPolku(href: string | null | undefined): string | null {
+  if (!href || !href.startsWith("/") || href.startsWith("//") || /\s/.test(href)) return null;
+  const polku = href.split(/[?#]/)[0];
+  return polku.length > 1 ? polku.replace(/\/+$/, "") : "/";
+}

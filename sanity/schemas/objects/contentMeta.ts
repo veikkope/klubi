@@ -2,6 +2,7 @@ import { defineField, type Rule, type SanityDocumentLike, type SlugRule } from "
 
 import { tarkistaLinkki } from "../../../lib/linkki";
 import { apiVersion } from "../../env";
+import { linkinKohdeVaroitus } from "../../lib/linkin-kohde";
 
 /**
  * Kentät jotka toistuvat kaikissa sisältötyypeissä.
@@ -135,9 +136,13 @@ export const polkuMuuttunut = (rule: SlugRule) =>
  * Tyypillinen virhe on unohtunut kauttaviiva tai "www."-alku, jolloin linkki
  * osoittaisi nykyisen sivun alle ja päätyisi 404:ään (lib/linkki.ts).
  */
-export const linkkiValidointi = (rule: Rule) =>
-  rule.required().custom<string>((href) => tarkistaLinkki(href));
+export const linkkiValidointi = (rule: Rule) => [
+  rule.required().custom<string>((href) => tarkistaLinkki(href)),
+  linkinKohdeVaroitus(rule),
+];
 
 /** Sama kuin `linkkiValidointi`, mutta kentän saa jättää tyhjäksi. */
-export const valinnainenLinkkiValidointi = (rule: Rule) =>
-  rule.custom<string>((href) => tarkistaLinkki(href));
+export const valinnainenLinkkiValidointi = (rule: Rule) => [
+  rule.custom<string>((href) => tarkistaLinkki(href)),
+  linkinKohdeVaroitus(rule),
+];

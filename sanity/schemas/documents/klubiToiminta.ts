@@ -2,6 +2,7 @@ import { ConfettiIcon } from "@sanity/icons";
 import { defineField, defineType } from "sanity";
 
 import { tarkistaLinkki } from "../../../lib/linkki";
+import { linkinKohdeVaroitus } from "../../lib/linkin-kohde";
 import { seoFields } from "../objects/seoFields";
 import {
   legacyUrlField,
@@ -132,6 +133,7 @@ export const klubiToiminta = defineType({
                       .error("Tarkista linkki: https://… tai /polku."),
                     // uri() hyväksyisi myös "www.…"-muodon suhteellisena polkuna (→ 404).
                     rule.custom<string>((url) => tarkistaLinkki(url, ["http", "https"])),
+                    linkinKohdeVaroitus(rule),
                   ],
                 },
                 {

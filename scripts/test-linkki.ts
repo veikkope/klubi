@@ -6,7 +6,7 @@
  */
 import assert from "node:assert/strict";
 
-import { tarkistaLinkki } from "../lib/linkki";
+import { sisainenPolku, tarkistaLinkki } from "../lib/linkki";
 
 let ok = 0;
 function test(nimi: string, fn: () => void) {
@@ -86,6 +86,18 @@ test("täysi ohje mainitsee kaikki sallitut muodot", () => {
     virhe("uutiset"),
     'Sivuston oma sivu alkaa "/" (esim. /uutiset), ulkoinen osoite "https://", sähköposti "mailto:" ja puhelinnumero "tel:".',
   );
+});
+
+test("sisäisen linkin polku kohteen tarkistukseen", () => {
+  assert.equal(sisainenPolku("/uutiset"), "/uutiset");
+  assert.equal(sisainenPolku("/klubi/hallitus#jasenet"), "/klubi/hallitus", "ankkuri pois");
+  assert.equal(sisainenPolku("/ravintolat?kaupunki=lahti"), "/ravintolat", "kysely pois");
+  assert.equal(sisainenPolku("/tapahtumat/"), "/tapahtumat", "loppukauttaviiva pois");
+  assert.equal(sisainenPolku("/"), "/");
+  assert.equal(sisainenPolku("https://example.com/uutiset"), null, "ulkoinen");
+  assert.equal(sisainenPolku("//example.com"), null);
+  assert.equal(sisainenPolku("mailto:a@b.fi"), null);
+  assert.equal(sisainenPolku(""), null);
 });
 
 console.log(`\n${ok} testiä läpi.`);

@@ -1,6 +1,7 @@
 import { defineArrayMember, defineType } from "sanity";
 
 import { tarkistaLinkki } from "../../../lib/linkki";
+import { linkinKohdeVaroitus } from "../../lib/linkin-kohde";
 
 export const portableText = defineType({
   name: "portableText",
@@ -50,6 +51,7 @@ export const portableText = defineType({
                     })
                     .error("Tarkista linkki: https://…, mailto:, tel: tai /polku."),
                   rule.custom<string>((href) => tarkistaLinkki(href)),
+                  linkinKohdeVaroitus(rule),
                 ],
               },
               {
