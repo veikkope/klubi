@@ -160,6 +160,7 @@ Täydellinen työnkulku: `docs/10-agent-workflow.md`.
 | Klubilaisten arvosanat (ruokailutaulukko, laskenta) | `docs/21-klubilaisten-arvosanat.md` |
 | Julkaisuvalmiusauditointi 5.10.2026 | `docs/22-julkaisuvalmius.md` |
 | Ylläpidettävyys ilman kehittäjää, päätökset 7.10.2026 | `docs/23-yllapidettavyys.md` |
+| Vaihe 2: kehys Studioon, toteutussuunnitelma (askeleet 1–12, tuotantomuutokset) | `docs/24-vaihe2-toteutus.md` (+ `docs/24-liite-arkkitehdit.md`) |
 | Tyyliopas (lopullinen, HTML) | `docs/design-handoff/` |
 
 <!-- BEGIN:nextjs-agent-rules -->
