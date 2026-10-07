@@ -187,9 +187,9 @@ Hyvä tietää:
   klikkauksella.
 - Tunnisteita voi olla enintään 30 per uutinen.
 
-> **SEO**-välilehden **Blogin tunnisteet** on vain tallenne vanhan blogin tunnisteista.
-> Sen muokkaaminen ei muuta sivustoa. Sivustolla näkyvät tunnisteet muokataan
-> **Sisältö**-välilehden kentässä **Tunnisteet**.
+> **SEO**-välilehden **Blogin tunnisteet** on vain luettava tallenne vanhan blogin
+> tunnisteista. Sivustolla näkyvät tunnisteet muokataan **Sisältö**-välilehden kentässä
+> **Tunnisteet**.
 
 ### Veikkaus tai kommentit uutisen alle
 
@@ -290,7 +290,8 @@ Jos sivu on kirjoitettu muulla kielellä (esim. englanninkielinen esittely), val
    Teksti on pakollinen, koska ruudunlukija lukee sen näkövammaisille.
 3. **Julkaise**.
 
-Pakkaa yli 5 Mt:n kuvat ensin (esim. tinypng.com).
+Puhelimen ja kameran kuvat voi ladata sellaisenaan: sivusto pienentää ne kävijälle
+automaattisesti.
 
 ### Galleria-albumin lisääminen
 
@@ -334,6 +335,9 @@ yhteystietosivulla.
 1. **Sivun asetukset → Navigaatio**.
 2. Muokkaa linkkiä: klikkaa sitä ja muuta **Otsikko** tai **Linkki**.
 3. Uusi linkki: **+** listan alla. Linkki alkaa `/` (oma sivu) tai `https://` (muu sivusto).
+   Oman sivun linkki on sivun **Polku** kauttaviivalla alussa: sivu, jonka polku on
+   `klubi/historia`, saa linkin `/klubi/historia`. Studio varoittaa keltaisella, jos
+   osoitteessa ei ole sivua (kirjoitusvirhe tai sivua ei ole vielä julkaistu).
 4. Järjestys: vedä kahvasta (⋮⋮).
 5. Alavalikko: avaa linkki → **Alavalikko** → **+**.
 6. **Julkaise**.
@@ -346,7 +350,9 @@ Uusi jäsen: **Hallitus** → **+** → **Nimi**, **Rooli** (esim. Sihteeri) ja
 **Järjestysnumero** (1 näkyy ensin) → **Julkaise**. Kuva, esittely, sähköposti ja
 puhelin ovat vapaaehtoisia.
 
-Jäsen vaihtuu: avaa vanha jäsen → **⋯ → Poista**, ja lisää uusi.
+Jäsen vaihtuu: avaa vanha jäsen, ota rasti pois kohdasta **Nykyinen jäsen** ja
+**Julkaise**. Älä poista jäsentä: hän siirtyy listaan **Hallitus → Entiset jäsenet**
+eikä näy enää hallitussivulla. Lisää sitten uusi jäsen.
 
 ### Klubin toiminta: uusi vuosi
 
@@ -488,8 +494,8 @@ Valikon **Litmanen** alla on neljä sivua:
 | **Patsas** | Jari Litmasen sivun välilehti *Patsas* (paljastuspäivä, sijainti, esittely, kuvat) + lehtileikkeet, joiden *Sivu* on "Patsas". |
 | **Litmasen loukkaantumiset** | Jari Litmasen sivun *Tilastotaulukot* (välilehti *Ura*) + lehtileikkeet, joiden *Sivu* on "Terveys ja loukkaantumiset". Yhteenveto ja kaavio lasketaan taulukosta automaattisesti. |
 
-**Uusi lehtijuttu:** Jalkapalloarkisto → Lehtileikkeet → **+**. Täytä otsikko, pelaaja
-(Jari Litmanen), sivu, julkaisupäivä, lähde (esim. *is.fi*) ja teksti. Linkki
+**Uusi lehtijuttu:** Jalkapalloarkisto → Lehtileikkeet → **+**. Täytä otsikko (pelaajaksi
+on valmiina Jari Litmanen, sillä leikesivu on vain hänellä), sivu, julkaisupäivä, lähde (esim. *is.fi*) ja teksti. Linkki
 alkuperäiseen juttuun on valinnainen. Jutut järjestyvät sivulla julkaisupäivän mukaan
 uusin ensin, ja vuosilinkit päivittyvät itsestään. Sivulla näkyy jutun alku, ja loput
 avautuvat *Lue koko juttu* -painikkeesta.
@@ -504,7 +510,7 @@ korjaa otsikko ja ota *Vaatii tarkistuksen* -rasti pois.
 ### Järkytykset
 
 **Suomen jalkapallon TOP 10 järkytykset** on omalla sivullaan (`/jalkapalloarkisto/jarkytykset`,
-arkiston valikossa *TOP 10 järkytykset*). Taulukko löytyy Studiosta **Jalkapallotilastot**-listasta;
+arkiston valikossa *TOP 10 järkytykset*). Taulukko löytyy Studiosta kohdasta **Jalkapalloarkisto → Tilastot**;
 sivulle päätyvät kaikki taulukot, joiden kategoria on *Suomen jalkapallon järkytykset*.
 
 ### Maailman parhaat
@@ -632,7 +638,7 @@ Jos joku pyytää poistamaan tietonsa (kommentti, veikkaus tai arvostelu kuvinee
 |---|---|
 | Julkaisu ei onnistu | Punaiset kentät ovat pakollisia. Vieritä alas, täytä ja yritä uudelleen |
 | Muutos ei näy sivulla | Tarkista, että painoit **Julkaise**. Sivu päivittyy yleensä sekunneissa, viimeistään minuutissa |
-| Linkki ei toimi | Ulkoinen linkki alkaa `https://`, sivuston oma polku `/` (esim. `/uutiset`) |
+| Linkki ei toimi | Ulkoinen linkki alkaa `https://`, sivuston oma polku `/` (esim. `/uutiset`). Keltainen varoitus "Sivustolla ei ole sivua…" kertoo kirjoitusvirheestä tai julkaisemattomasta sivusta |
 | Jotain meni pieleen (alle 3 päivää sitten) | Kellokuvake → versiohistoria → palauta edellinen versio |
 | Jotain meni pieleen (yli 3 päivää sitten) | Dokumentin **⋯** → **Palauta varmuuskopiosta** → valitse viikko → tarkista → **Julkaise** |
 | Poistin vahingossa | **Sivun asetukset → Varmuuskopiot** → uusin kopio → välilehti **Palauta poistettu** |
@@ -644,8 +650,9 @@ Jos joku pyytää poistamaan tietonsa (kommentti, veikkaus tai arvostelu kuvinee
 - **Älä muuta julkaistun sivun Polkua**, koska se rikkoo linkit. Studio varoittaa
   keltaisella, jos polku poikkeaa julkaistusta. Jos muutos on pakko tehdä, kerro
   kehittäjälle, joka tekee ohjauksen. Klubin pääsivujen (Klubi, Hallitus, Toiminta,
-  Palloveikkaus) ja Jari Litmasen polut on lukittu kokonaan, koska sivusto hakee ne
-  polun perusteella.
+  Palloveikkaus), tietosuojaselosteen ja Jari Litmasen polut on lukittu kokonaan, koska
+  sivusto hakee ne polun perusteella. Klubin pääsivuja ja tietosuojaselostetta ei voi
+  myöskään poistaa eikä piilottaa, mutta niiden sisältöä saa muokata vapaasti.
 - **Älä muuta** kenttiä **Vanha osoite** tai **Alkuperäinen Blogspot-kirjoitus**. Vanhat linkit ohjautuvat niiden varassa.
 
 ## Varmuuskopiot
@@ -700,7 +707,8 @@ kuuluu klubille. Kiireettömät asiat voivat odottaa.
 - **Sivusto ei aukea lainkaan:** tarkista ensin toisella laitteella tai verkolla. Jos vika
   jatkuu yli päivän, uusi ylläpitäjä tarvitsee tämän repositorion
   (github.com/veikkope/klubi) ja ohjeen docs/17 §A3, jossa siirto on kuvattu vaihe vaiheelta.
-- **Domain tai sähköposti:** domainin uusinta hoidetaan rekisteröijän (Wepard) kautta,
-  ei sivuston kautta.
+- **Domain tai sähköposti:** domainin uusinta (seuraava 28.8.2027) hoidetaan
+  domainin rekisteröijän kautta, ei sivuston kautta. Rekisteröijä ja maksaja kirjataan
+  ohjeeseen docs/17.
 - **Älä anna** Sanityn tunnuksiasi tai tokeneita kenellekään. Uusi ylläpitäjä kutsutaan
   omalla sähköpostillaan: sanity.io/manage → projekti → **Members** → **Invite**.
