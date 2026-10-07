@@ -11,6 +11,7 @@ import {
   koodiinSidottuSlug,
 } from "../objects/contentMeta";
 import { KOODIIN_SIDOTUT_SIVUT } from "../../../lib/path";
+import { tarkistaSivunPolku } from "../../../lib/sivupolku";
 
 /**
  * Yleisen sisältösivun dokumenttityyppi. Yksi `sivu` per polku — slug voi
@@ -19,20 +20,6 @@ import { KOODIIN_SIDOTUT_SIVUT } from "../../../lib/path";
  * Polkurakenne renderöityy `/[...slug]`-reitissä. Studiossa slug muotoillaan
  * automaattisesti otsikosta, mutta käyttäjä saa muokata sitä.
  */
-
-const RESERVED_TOP_LEVEL = new Set([
-  "studio",
-  "api",
-  "yhteystiedot",
-  "tapahtumat",
-  "uutiset",
-  "ravintolat",
-  "jalkapalloarkisto",
-  "galleria",
-  "stadionit",
-]);
-
-const SEGMENT = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 /**
  * Slugify joka säilyttää kauttaviivat hierarkkista polkua varten.
@@ -49,24 +36,6 @@ function slugifyPath(input: string): string {
     .replace(/\/+/g, "/")
     .replace(/^[/-]+|[/-]+$/g, "")
     .slice(0, 96);
-}
-
-function validateSlugPath(slug: string | undefined): true | string {
-  if (!slug) return "Slug on pakollinen.";
-  if (slug.length > 96) return "Slug on liian pitkä (max 96 merkkiä).";
-  const segments = slug.split("/");
-  if (segments.length > 4) {
-    return "Liian monta tasoa polussa (max 4).";
-  }
-  for (const segment of segments) {
-    if (!SEGMENT.test(segment)) {
-      return `Virheellinen polun osa "${segment}". Käytä vain pieniä kirjaimia a-z, numeroita ja yksittäisiä yhdysmerkkejä.`;
-    }
-  }
-  if (RESERVED_TOP_LEVEL.has(segments[0])) {
-    return `"${segments[0]}" on varattu järjestelmäpolku — valitse toinen.`;
-  }
-  return true;
 }
 
 export const sivu = defineType({
@@ -92,7 +61,7 @@ export const sivu = defineType({
       description:
         'URL-osa. Vain pieniä kirjaimia, numeroita ja yhdysmerkkejä. ' +
         'Käytä "/" alasivuille — esim. "klubi/historia" → /klubi/historia. ' +
-        "Klubi-osion pääsivujen polut on lukittu, koska sivusto hakee ne polun perusteella.",
+        "Klubi-osion pääsivujen ja tietosuojaselosteen polut on lukittu, koska sivusto hakee ne polun perusteella.",
       type: "slug",
       readOnly: ({ document }) => koodiinSidottuSlug(document, KOODIIN_SIDOTUT_SIVUT),
       options: {
@@ -101,7 +70,7 @@ export const sivu = defineType({
         slugify: slugifyPath,
       },
       validation: (rule) => [
-        rule.required().custom((slug) => validateSlugPath(slug?.current)),
+        rule.required().custom((slug) => tarkistaSivunPolku(slug?.current)),
         polkuMuuttunut(rule),
       ],
       group: "sisalto",

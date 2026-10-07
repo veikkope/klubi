@@ -120,11 +120,15 @@ export const KLUBI_SIVU_SLUG = "klubi";
 export const HALLITUS_SIVU_SLUG = "klubi/hallitus";
 export const TOIMINTA_SIVU_SLUG = "klubi/toiminta";
 export const PALLOVEIKKAUS_SLUG = "klubi/palloveikkaus";
+/** Tietosuojaseloste: alatunniste ja lomakkeet linkittävät kiinteään osoitteeseen. */
+export const TIETOSUOJA_SLUG = "tietosuoja";
+export const TIETOSUOJA_PATH = `/${TIETOSUOJA_SLUG}`;
 export const KOODIIN_SIDOTUT_SIVUT: readonly string[] = [
   KLUBI_SIVU_SLUG,
   HALLITUS_SIVU_SLUG,
   TOIMINTA_SIVU_SLUG,
   PALLOVEIKKAUS_SLUG,
+  TIETOSUOJA_SLUG,
 ];
 
 /** Lehtileikkeen `osio` → Litmanen-osion sivu (docs/20). */

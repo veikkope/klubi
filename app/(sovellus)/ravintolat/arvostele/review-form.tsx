@@ -43,6 +43,7 @@ import {
   type Edistyminen,
   type Vaihe,
 } from "./vaiheet";
+import { TIETOSUOJA_PATH } from "@/lib/path";
 
 /**
  * Ravintola-arvostelu puhelimen sovelluksena: yksi asia näkymää kohden.
@@ -666,7 +667,7 @@ function Arvostelu({
         </section>
         <p className="text-sm text-muted">
           Luemme arvostelut ennen julkaisua.{" "}
-          <Link href="/tietosuoja" className="text-accent underline underline-offset-4">
+          <Link href={TIETOSUOJA_PATH} className="text-accent underline underline-offset-4">
             Tietosuoja
           </Link>
         </p>

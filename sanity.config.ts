@@ -12,6 +12,7 @@ import { HylkaaArvostelu } from "./sanity/actions/hylkaa-arvostelu";
 import { HyvaksyJaLuoRavintola, ilmanJulkaisuaEhdotukselle } from "./sanity/actions/hyvaksy-ja-luo-ravintola";
 import { PiilotaKommentti, PoistaKommentti } from "./sanity/actions/kommentin-moderointi";
 import { PalautaVarmuuskopiosta } from "./sanity/actions/palauta-varmuuskopiosta";
+import { lukitulleSivulle } from "./sanity/actions/lukittu-sivu";
 
 export default defineConfig({
   name: "klubi",
@@ -55,6 +56,15 @@ export default defineConfig({
         // korvaisi sen koodin oletuksilla, joten se on poissa kuten poisto.
         return [
           ...input.filter(({ action }) => action !== "duplicate" && action !== "delete" && action !== "unpublish"),
+          PalautaVarmuuskopiosta,
+        ];
+      }
+      // Lukittujen sivujen poisto ja julkaisun peruminen pois käytöstä (docs/23 Y21).
+      if (context.schemaType === "sivu") {
+        return [
+          ...input.map((toiminto) =>
+            toiminto.action === "delete" || toiminto.action === "unpublish" ? lukitulleSivulle(toiminto) : toiminto,
+          ),
           PalautaVarmuuskopiosta,
         ];
       }

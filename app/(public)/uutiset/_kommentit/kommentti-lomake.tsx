@@ -20,6 +20,7 @@ import {
   type KommenttiFormState,
   type Kommentointi,
 } from "./form-state";
+import { TIETOSUOJA_PATH } from "@/lib/path";
 
 /**
  * Kommentti- ja veikkauslomake uutisen alla (docs/15 §2).
@@ -259,7 +260,7 @@ export function KommenttiLomake({
           <p className="text-sm text-muted">
             Nimesi ja {onVeikkaus ? "veikkauksesi" : "kommenttisi"} näkyvät sivulla julkisesti heti lähettämisen jälkeen.
             Lue{" "}
-            <Link href="/tietosuoja" className="text-accent underline underline-offset-4">
+            <Link href={TIETOSUOJA_PATH} className="text-accent underline underline-offset-4">
               tietosuojaseloste
             </Link>
             .
