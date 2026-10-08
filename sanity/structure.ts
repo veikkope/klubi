@@ -28,6 +28,7 @@ import {
   type StudionRyhma,
 } from "../lib/osiosivut";
 import { PALLOVEIKKAUS_SLUG } from "../lib/path";
+import { TILASTORYHMAT, kategorianNimi, ryhmanKategoriat, ryhmanSuodatin } from "../lib/tilasto-kategoriat";
 import { OHJATTAVAT_TYYPIT, TUNNISTE_TYYPIT } from "../lib/ohjaukset";
 import { JULKINEN_RAVINTOLA } from "../lib/ravintola-arvosana";
 import { PalautaPoistettu } from "./components/varmuuskopio/palauta-poistettu";
@@ -139,6 +140,55 @@ const klubilaistenArvosanat = (S: StructureBuilder) =>
                 .title("Klubilaisten arvosanat")
                 .defaultOrdering([{ field: "paiva", direction: "desc" }]),
             ),
+        ]),
+    );
+
+/**
+ * Tilastot ryhmittäin (docs/24 askel 11, docs/23 Y36). Ryhmän + avaa uuden
+ * tilaston, jonka kategoria on valmiina (pohja jalkapalloTilasto-kategoria,
+ * sanity/pohjat.ts). Muut arkiston taulukot -ryhmään kuuluvat myös taulukot,
+ * joiden kategoria puuttuu, joten jokainen taulukko on täsmälleen yhdessä
+ * ryhmässä (lib/tilasto-kategoriat.ts, testattu).
+ * Polku: /studio/structure/jalkapalloarkisto;tilastot;tilastot-<ryhmä>.
+ */
+const tilastot = (S: StructureBuilder) =>
+  S.listItem()
+    .id("tilastot")
+    .title("Tilastot")
+    .schemaType("jalkapalloTilasto")
+    .child(
+      S.list()
+        .title("Tilastot")
+        .items([
+          ...TILASTORYHMAT.map(({ id, otsikko }) => {
+            const { filter, params } = ryhmanSuodatin(id);
+            return S.listItem()
+              .id(`tilastot-${id}`)
+              .title(otsikko)
+              .schemaType("jalkapalloTilasto")
+              .child(
+                S.documentList()
+                  .id(`tilastot-${id}`)
+                  .title(otsikko)
+                  .schemaType("jalkapalloTilasto")
+                  .filter(filter)
+                  .params(params)
+                  .defaultOrdering([{ field: "title", direction: "asc" }])
+                  .initialValueTemplates(
+                    ryhmanKategoriat(id).map((category) =>
+                      S.initialValueTemplateItem("jalkapalloTilasto-kategoria", { category })
+                        .id(`tilasto-${category}`)
+                        .title(kategorianNimi(category)),
+                    ),
+                  ),
+              );
+          }),
+          S.divider(),
+          S.listItem()
+            .id("tilastot-kaikki")
+            .title("Kaikki tilastot")
+            .schemaType("jalkapalloTilasto")
+            .child(S.documentTypeList("jalkapalloTilasto").title("Kaikki tilastot")),
         ]),
     );
 
@@ -585,7 +635,7 @@ export const structure: StructureResolver = (S) =>
           S.list()
             .title("Jalkapalloarkisto")
             .items([
-              lista(S, "jalkapalloTilasto", "Tilastot"),
+              tilastot(S),
               lista(S, "arvokisa", "Arvokisat"),
               lista(S, "pelaaja", "Pelaajat"),
               S.listItem()

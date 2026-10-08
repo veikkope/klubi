@@ -1,6 +1,7 @@
 import { BarChartIcon } from "@sanity/icons";
 import { defineField, defineType } from "sanity";
-import { HUUHKAJAT_OSIOT, osioLiittyyKauteen } from "../../../lib/huuhkajat-osiot";
+import { HUUHKAJAT_OSIOT, findHuuhkajatOsio, osioLiittyyKauteen } from "../../../lib/huuhkajat-osiot";
+import { TILASTO_KATEGORIA_VALINNAT, kategorianNimi } from "../../../lib/tilasto-kategoriat";
 import { MESTARUUSMAAT } from "../../../lib/ulkomaiset-mestarit";
 import { TaulukkoKontekstiInput } from "../../components/taulukkoeditori/konteksti";
 import { seoFields } from "../objects/seoFields";
@@ -50,35 +51,14 @@ export const jalkapalloTilasto = defineType({
       name: "category",
       title: "Kategoria",
       description:
-        "Vaikuttaa siihen, miten tilasto näytetään sivulla. Muu tilasto saa oman sivun osoitteeseen " +
-        "/jalkapalloarkisto/tilastot/… Uusi pysyvä arkiston osio vaatii kehittäjän.",
+        "Ratkaisee, millä sivulla taulukko näkyy. Tarkka sivu näkyy lomakkeen yläreunassa " +
+        "(Käytetty yhdellä sivulla: avaa nuolesta). " +
+        "Klubin omat tilastot ja pelaajatilastot näkyvät vasta, kun ne on lisätty sivun, klubin toiminnan " +
+        "tai pelaajan Taulukot-kenttään.",
       type: "string",
       options: {
-        list: [
-          { title: "FIFA-ranking", value: "fifa-ranking" },
-          { title: "Suomen mestarit", value: "champions" },
-          { title: "Huuhkajat (maajoukkueen tilastot)", value: "huuhkajat" },
-          { title: "Huuhkajien valmentajat", value: "valmentajat" },
-          { title: "Valmentajien palkat", value: "valmentajien-palkat" },
-          { title: "Vuoden pelaaja", value: "vuoden-pelaaja" },
-          { title: "Lupaavat pelaajat", value: "lupaavat" },
-          { title: "Ballon d'Or", value: "ballon-dor" },
-          { title: "Maailman paras avaus", value: "maailman-parhaat" },
-          { title: "Suomen jalkapallon saavutukset", value: "saavutukset" },
-          { title: "Suomen jalkapallon järkytykset", value: "jarkytykset" },
-          { title: "Champions League / Eurocup", value: "eurocup" },
-          { title: "Europa League / UEFA Cup", value: "uefa-cup" },
-          { title: "UEFA Super Cup", value: "super-cup" },
-          { title: "Conference League / Cup Winners' Cup", value: "conference-league" },
-          { title: "Intercontinental / Club World Cup", value: "intercontinental" },
-          { title: "Karsinta", value: "karsinta" },
-          { title: "Arvokisatilasto (MM, EM, Kansojen liiga)", value: "arvokisa" },
-          { title: "Pelaajatilasto (yksittäinen pelaaja)", value: "pelaaja" },
-          { title: "Ulkomaiden mestarit (Englanti, Venäjä …)", value: "ulkomaiset-mestarit" },
-          { title: "Palloliiton puheenjohtajat", value: "palloliitto" },
-          { title: "Klubin omat tilastot (veikkaus, mölkky, jouluruokailu)", value: "klubi" },
-          { title: "Muu tilasto", value: "muu" },
-        ],
+        // Kategoriat ja Studion ryhmät: lib/tilasto-kategoriat.ts (docs/24 askel 11).
+        list: TILASTO_KATEGORIA_VALINNAT,
         layout: "dropdown",
       },
       validation: (rule) => rule.required(),
@@ -206,9 +186,14 @@ export const jalkapalloTilasto = defineType({
     aiemmatPolutField("seo"),
   ],
   preview: {
-    select: { title: "title", category: "category", needsReview: "needsReview" },
-    prepare({ title, category, needsReview }) {
-      return { title: needsReview ? `⚠ ${title}` : title, subtitle: category };
+    select: { title: "title", category: "category", huuhkajatOsio: "huuhkajatOsio", needsReview: "needsReview" },
+    prepare({ title, category, huuhkajatOsio, needsReview }) {
+      // Alaotsikko: kategorian nimi ja Huuhkajat-taulukon osio (docs/24 askel 11).
+      const osio = category === "huuhkajat" && huuhkajatOsio ? findHuuhkajatOsio(huuhkajatOsio)?.title : undefined;
+      return {
+        title: needsReview ? `⚠ ${title}` : title,
+        subtitle: [kategorianNimi(category), osio].filter(Boolean).join(" · "),
+      };
     },
   },
 });

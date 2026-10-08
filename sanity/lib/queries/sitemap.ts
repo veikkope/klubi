@@ -42,6 +42,21 @@ export interface SitemapTilastoRow {
   updatedAt: string | null;
 }
 
+/**
+ * Taulukkoon viittaavat dokumentit, jotka näyttävät viittaamansa taulukot
+ * omalla sivullaan (arvokisa, pelaaja, klubin toiminta, sivu), vakaassa
+ * järjestyksessä. Ensimmäinen on taulukon `parent` (sitemap, ohjaukset);
+ * esikatselun Näkyy sivulla käyttää koko listaa (sanity/lib/queries/sijainti.ts).
+ */
+export const VIITTAAJAT = /* groq */ `*[
+      _type in ["arvokisa", "pelaaja", "klubiToiminta", "sivu"]
+      && references(^._id)
+      && !(_id in path("drafts.**"))
+    ] | order(_type asc, _id asc)`;
+
+/** Ensimmäinen viittaaja `RoutableDoc.parent`-muodossa. */
+export const VIITTAAJA = /* groq */ `${VIITTAAJAT}[0]{ _type, "slug": slug.current }`;
+
 export const sitemapTilastotQuery = defineQuery(`
   *[_type == "jalkapalloTilasto" && defined(slug.current)] | order(_updatedAt desc) {
     _id,
@@ -50,11 +65,7 @@ export const sitemapTilastotQuery = defineQuery(`
     category,
     huuhkajatOsio,
     mestaruusmaa,
-    "parent": *[
-      _type in ["arvokisa", "pelaaja", "klubiToiminta", "sivu"]
-      && references(^._id)
-      && !(_id in path("drafts.**"))
-    ] | order(_type asc, _id asc)[0]{ _type, "slug": slug.current },
+    "parent": ${VIITTAAJA},
     "updatedAt": _updatedAt
   }
 `);

@@ -109,7 +109,8 @@ export default defineConfig({
     structureTool({ title: "Sisältö", structure, defaultDocumentNode }),
     presentationTool({
       title: "Esikatselu",
-      resolve: locations,
+      // Funktiomuotoinen sijaintien ratkaisija (docs/24 askel 11, sanity/presentation.ts).
+      resolve: { locations },
       previewUrl: {
         preview: "/",
         previewMode: {

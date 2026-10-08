@@ -33,6 +33,7 @@ import { fetchVeikkausliigaText } from "@/lib/fetch-with-intermediate";
 import { HUUHKAJAT, normalizeTeam } from "@/lib/joukkueet";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import { tulevatOttelutQuery } from "@/sanity/lib/queries/ottelut";
+import { OTTELU_NAKYY_ALUN_JALKEEN_MS } from "@/lib/sijainnit";
 
 export type Ottelu = {
   id: string;
@@ -328,7 +329,7 @@ export async function getTulevatOttelut(
   }
 
   // Näytetään ottelut, jotka alkoivat enintään 2 h sitten (käynnissä olevat).
-  const cutoff = Date.now() - 2 * 60 * 60 * 1000;
+  const cutoff = Date.now() - OTTELU_NAKYY_ALUN_JALKEEN_MS;
   return [...byKey.values()]
     .map((o) => {
       const maajoukkue = isHuuhkajat(o.koti) || isHuuhkajat(o.vieras);

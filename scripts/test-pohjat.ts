@@ -268,12 +268,21 @@ async function main() {
         "uutinen-palloveikkaus-tilanne",
         "uutinen-palloveikkaus-kausi",
         "klubiArvio-ravintolalle",
+        "jalkapalloTilasto-kategoria",
       ],
     );
     // Parametria vaativat pohjat eivät näy Luo-valikossa.
     for (const t of tulos) {
       assert.equal(PIILOTETUT_POHJAT.has(t.id), Boolean(t.parameters?.length), t.id);
     }
+  });
+
+  await test("jalkapalloTilasto-kategoria: kategoria valmiina, tuntematon jätetään valitsematta", () => {
+    const pohja = pohjat([]).find((t) => t.id === "jalkapalloTilasto-kategoria")!;
+    assert.equal(pohja.schemaType, "jalkapalloTilasto");
+    const arvo = pohja.value as (p: { category: string }) => Record<string, unknown>;
+    assert.deepEqual(arvo({ category: "karsinta" }), { category: "karsinta" });
+    assert.deepEqual(arvo({ category: "vanha-arvo" }), {});
   });
 
   await test("sanity/pohjat: arvot haetaan kategorioineen (getClient)", async () => {

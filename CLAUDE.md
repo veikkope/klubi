@@ -87,6 +87,8 @@ public/                Staattiset tiedostot (favicon, robots, kuvat joita Sanity
 | Testaa valmiit pohjat ja [täytä]-säännön (vuosikokous, palloveikkaus, arvosana ravintolalle) | `npm run test:pohjat` |
 | Testaa Studion tilamerkit (Ajastettu, Tarkistettava, Odottaa toista arvioijaa, Piilotettu; pariteetti JULKINEN_RAVINTOLA) | `npm run test:tilamerkit` |
 | Testaa ohjausgeneraattorin syötteet ja tuloksen (crawl-status.tsv ↔ lib/redirects.ts, ei ketjuja, oletusdatasetti production) | `npm run test:ohjausgeneraattori` |
+| Testaa esikatselun sijainnit ja tilastoryhmät (Käytetty … sivulla kaikille tyypeille, taulukko usealla sivulla, vanhat sijainnit ennallaan, ryhmät eivät hukkaa taulukoita) | `npm run test:sijainnit` |
+| Tarkista taulukoiden sijainnit productionia ja sivustoa vasten (vain luku; `BASE_URL=…`, `SANITY_DATASET=…` muu kohde) | `npm run verify:sijainnit` |
 | Testaa uutishaun hakusanat | `npm run test:haku` |
 | Testaa lukuaika ja ingressisääntö (uutiset, ravintola-arviot) | `npm run test:artikkeli` |
 | Testaa uutisten tunnisteet | `npm run test:tunnisteet` |

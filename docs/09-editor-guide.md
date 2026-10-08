@@ -77,7 +77,10 @@ niin oikea lomake aukeaa.
 - **Luonnos kesken:** voit sulkea dokumentin milloin tahansa, sillä luonnos säilyy.
   Keskeneräiset luonnokset tunnistaa merkistä listassa.
 - **Esikatselu:** yläpalkin **Esikatselu** näyttää sivun luonnoksineen. Dokumentin
-  yläosassa on myös linkki sivulle, jolla sisältö näkyy.
+  yläosassa kohta **Käytetty yhdellä sivulla** (tai *Käytetty 2 sivulla*) kertoo, millä
+  sivulla sisältö näkyy: avaa se nuolesta, ja linkki avaa sivun esikatseluun. Näin on
+  myös tilastoissa, otteluissa, hallituksen jäsenissä, kommenteissa, arvosanoissa,
+  uutiskategorioissa ja ohjauksissa. Pelatun ottelun kohdalla lukee *Ottelu on jo pelattu*.
 - **Versiohistoria:** oikean yläkulman kellokuvakkeesta näet aiemmat versiot ja voit
   palauttaa niistä minkä tahansa. **Historia säilyy vain 3 päivää** (Sanityn ilmainen
   taso). Vanhemman virheen voit korjata itse viikoittaisesta varmuuskopiosta:
@@ -602,8 +605,8 @@ Hyvä tietää:
    kartan tai lomakkeen (ks. *Tekstin lisäosat*). **Julkaise**.
 
 **Taulukot sivulle:** sivun kohtaan **Taulukot** voi valita taulukoita (esim. tulokset),
-jotka näkyvät sivun lopussa. Taulukot tehdään kohdassa **Jalkapalloarkisto → Tilastot**
-kategorialla *Klubin omat tilastot*.
+jotka näkyvät sivun lopussa. Taulukot tehdään kohdassa **Jalkapalloarkisto → Tilastot →
+Klubin omat tilastot → +** (kategoria on valmiina).
 
 Jos sivu on kirjoitettu muulla kielellä (esim. englanninkielinen esittely), valitse
 **Sisällön kieli**. Ruudunlukija ääntää tekstin silloin oikein.
@@ -980,9 +983,29 @@ esimerkiksi `klubi/palloveikkaus/mestarisarja`.
 
 ### Taulukon muokkaaminen (tilastot, palloveikkaus, mölkky)
 
-Taulukot löytyvät kohdasta **Jalkapalloarkisto → Tilastot**. Avaa taulukko ja valitse
-välilehti **Tilastodata**. Taulukko toimii kuten Excel. Sama editori on myös tekstin
-**Taulukko**-lisäosassa (ks. *Tekstin lisäosat*), ja alla olevat ohjeet pätevät siihen.
+Taulukot löytyvät kohdasta **Jalkapalloarkisto → Tilastot**, ryhmiteltyinä: **Klubin omat
+tilastot** (veikkaus, mölkky, jouluruokailu), **Huuhkajat**, **Karsinnat**, **Arvokisat** ja
+**Muut arkiston taulukot**. Kaikki ovat myös kohdassa **Kaikki tilastot**. Listan
+alarivillä näkyy taulukon kategoria (ja Huuhkajat-taulukoissa osio). Avaa taulukko ja
+valitse välilehti **Tilastodata**.
+
+**Millä sivulla taulukko näkyy?** Lomakkeen yläreunassa lukee **Käytetty yhdellä
+sivulla** (tai *Käytetty 2 sivulla*). Avaa se nuolesta: linkki vie sivulle juuri
+taulukon kohdalle. Jos yläreunassa lukee **Taulukko ei näy vielä millään sivulla.
+Lisää se sivun, klubin toiminnan tai pelaajan Taulukot-kenttään ja julkaise.**, taulukko
+on klubin oma tilasto tai pelaajatilasto, jota mikään sivu ei vielä käytä: lisää se
+sivun, klubin toiminnan tai pelaajan kohtaan **Taulukot** ja julkaise. Jos siinä lukee
+**Täytä Osoite sivustolla -kenttä (Luo-painike) ja julkaise.**, uudelta taulukolta
+puuttuu vielä osoite: paina kentän **Osoite sivustolla** vieressä **Luo**. Muissa
+kategorioissa sivu määräytyy kategoriasta.
+
+**Uusi taulukko:** avaa ryhmä ja paina **+**. Klubin omissa tilastoissa, Huuhkajissa,
+Karsinnoissa ja Arvokisoissa + avaa heti uuden taulukon, jonka kategoria on valmiina.
+**Muut arkiston taulukot** -ryhmässä + näyttää ensin kategorialistan: valitse siitä
+taulukon kategoria.
+
+Taulukko toimii kuten Excel. Sama editori on myös tekstin **Taulukko**-lisäosassa
+(ks. *Tekstin lisäosat*), ja alla olevat ohjeet pätevät siihen.
 
 - **Solun muuttaminen:** napsauta solua ja kirjoita. Muutos tallentuu, kun siirryt
   pois solusta. **Enter** siirtää alas, **nuolinäppäimet** solusta toiseen ja
@@ -1012,12 +1035,14 @@ Huuhkajat-sivu on jaettu aiheisiin, ja jokaisella aiheella on oma sivunsa
 (Pelaajatilastot, Huuhkaja-arvostelu, Kansojen liiga, Paras avauskokoonpano,
 Englannin pääsarjassa).
 
-1. **Jalkapalloarkisto → Tilastot** → **+**.
-2. **Kategoria:** *Huuhkajat (maajoukkueen tilastot)*.
+1. **Jalkapalloarkisto → Tilastot → Huuhkajat** → **+**.
+2. **Kategoria** on valmiina: *Huuhkajat (maajoukkueen tilastot)*.
 3. **Osio Huuhkajat-sivulla:** valitse aihe. Ilman valintaa taulukkoa ei voi julkaista.
 4. **Järjestys sivulla:** pienempi luku näkyy osion sivulla ylempänä.
 5. Täytä taulukko välilehdellä **Tilastodata** (ks. edellä), esim. **Tuo Excelistä**.
 6. **Julkaise**. Uusi osio ilmestyy Huuhkajat-sivulle vasta, kun siinä on taulukko.
+   Lomakkeen yläreunan **Käytetty yhdellä sivulla** näyttää osion sivun. Kansojen liigan
+   taulukolla sivuja on kaksi, kun kauden karsintasivu on valittu (ks. alla).
 
 Karsintasarjat (kategoria *Karsinta*) ovat omia sivujaan, ja ne listataan
 Huuhkajat-sivun alaosassa uusin ensin. Kansojen liigan kaudet näkyvät samassa

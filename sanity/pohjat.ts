@@ -11,6 +11,7 @@ import {
   type KategoriaRivi,
 } from "../lib/pohjat";
 import { osioSivu, osioSivuSiemen } from "../lib/osiosivut";
+import { tilastoKategoria } from "../lib/tilasto-kategoriat";
 import { apiVersion } from "./env";
 import { singletonTypes } from "./schemas";
 
@@ -28,13 +29,19 @@ import { singletonTypes } from "./schemas";
  *   Sanity yhdistää pohjan arvot niiden päälle.
  * - `klubiArvio-ravintolalle`: ravintolan + kohdassa Ravintolat → Klubilaisten
  *   arvosanat → Ravintoloittain (ravintola ja tämä päivä valmiina).
+ * - `jalkapalloTilasto-kategoria`: tilastoryhmän + kohdassa Jalkapalloarkisto →
+ *   Tilastot → ryhmä (kategoria valmiina, docs/24 askel 11).
  */
 
 /** Ajastettujen tehtävien kirjoittamat tyypit: ei pohjaa (docs/24 §2.7). */
 const AJASTUKSEN_TYYPIT: ReadonlySet<string> = new Set(["varmuuskopio", "sivustonTila"]);
 
 /** Pohjat, jotka tarvitsevat parametrin: ne eivät näy Luo-valikossa. */
-export const PIILOTETUT_POHJAT: ReadonlySet<string> = new Set(["lukittu-sivu", "klubiArvio-ravintolalle"]);
+export const PIILOTETUT_POHJAT: ReadonlySet<string> = new Set([
+  "lukittu-sivu",
+  "klubiArvio-ravintolalle",
+  "jalkapalloTilasto-kategoria",
+]);
 
 const lukittuSivu: Template<{ slug: string }> = {
   id: "lukittu-sivu",
@@ -128,6 +135,15 @@ const klubiArvioRavintolalle: Template<{ ravintolaId: string }> = {
   },
 };
 
+/** Tilasto valmiilla kategorialla; tuntematon kategoria jätetään valitsematta. */
+const tilastoKategoriaan: Template<{ category: string }> = {
+  id: "jalkapalloTilasto-kategoria",
+  title: "Tilasto tähän ryhmään",
+  schemaType: "jalkapalloTilasto",
+  parameters: [{ name: "category", type: "string" }],
+  value: ({ category }: { category: string }) => (tilastoKategoria(category) ? { category } : {}),
+};
+
 export function pohjat(prev: Template[]): Template[] {
   return [
     ...prev.filter(({ schemaType }) => !singletonTypes.has(schemaType) && !AJASTUKSEN_TYYPIT.has(schemaType)),
@@ -136,5 +152,6 @@ export function pohjat(prev: Template[]): Template[] {
     palloveikkausTilanne,
     palloveikkausKausi,
     klubiArvioRavintolalle as Template,
+    tilastoKategoriaan as Template,
   ];
 }
