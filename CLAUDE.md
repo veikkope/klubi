@@ -72,7 +72,8 @@ public/                Staattiset tiedostot (favicon, robots, kuvat joita Sanity
 | Testaa varmuuskopiosta palauttamisen säännöt (Studion Palauta varmuuskopiosta / Palauta poistettu) | `npm run test:palautus` |
 | Testaa tyhjien osioiden piilotuksen (valikko, alatunniste, sitemap) | `npm run test:osiot` |
 | Testaa sivun polkusäännöt (varatut polut, lukitut sivut, jokainen app-reitti varattu) | `npm run test:sivupolku` |
-| Testaa tekstin lohkot ja uutiskortin (kuvasarja, korttikuvan varakäytös, jakokuva, tekstin alku kortissa; GROQ groq-js:llä) | `npm run test:lohkot` |
+| Testaa tekstin lohkot ja uutiskortin (lohkojen järjestys, kuvasarja, huomiolaatikon sävy, liitetiedosto, korttikuvan varakäytös, jakokuva, tekstin alku kortissa; GROQ groq-js:llä: liite ja painike) | `npm run test:lohkot` |
+| Testaa upotuslohkon säännöt (Google Maps, Google Forms, Vimeo; vieraat palvelut, javascript:/data:, liitetty iframe-HTML → vain osoite) | `npm run test:upotus` |
 | Testaa osioiden sivut (rekisteri, lukitus, reittien kattavuus, oletustekstit, siemen ei muuta näkymää eikä meta-kuvauksia) | `npm run test:osiosivut` |
 | Testaa päävalikon linkit ja siitä johdetun alatunnisteen (Sivusto-sarake, alavalikot sarakkeina, tyhjät osiot) | `npm run test:navigaatio` |
 | Testaa linkkien migraation säännöt (viittaus vain yksiselitteiseen julkaistuun dokumenttiin, muut Muu osoite, kävijän osoite ei muutu, idempotentti) | `npm run test:linkit-migraatio` |

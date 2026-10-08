@@ -18,7 +18,7 @@
  */
 
 import { KUVAN_MIN_LEVEYS_SISALTO } from "@/lib/sisaltolohkot";
-import { kohdeProjektio, tiedostoProjektio } from "@/sanity/lib/queries/linkki";
+import { kohdeProjektio, linkkiProjektio, tiedostoProjektio } from "@/sanity/lib/queries/linkki";
 
 /** Sumea esikatselu data-URL:na. Rajattuihin projektioihin: `{ alt, asset, ${lqip} }`. */
 export const lqip = `"lqip": asset->metadata.lqip`;
@@ -38,10 +38,15 @@ export const kuva = `..., ${lqip}`;
  * Tekstin linkit (docs/24 askel 4): Sivuston sivu -linkin kohde ja tiedoston
  * tiedot puretaan, jotta `linkinOsoite` (components/portable-text.tsx) voi
  * laskea osoitteen. Jokainen tekstikenttä kulkee tämän fragmentin kautta.
+ *
+ * Tekstilohkot (docs/24 askel 6): liitteen tiedoston osoite, tyyppi ja koko
+ * (`liitetiedosto`) sekä painikkeen linkin kohde ja tiedosto.
  */
 export const runko = `...,
   _type == "imageWithAlt" => { ${lqip} },
   _type == "kuvasarja" => { "kuvat": kuvat[defined(asset)]{ ${kuva}, ${vari} } },
+  _type == "liite" => { "liitetiedosto": tiedosto.asset->${tiedostoProjektio} },
+  _type == "painike" => { "linkki": linkki{ ${linkkiProjektio} } },
   _type == "block" => { "markDefs": markDefs[]{
     ...,
     _type == "link" => {

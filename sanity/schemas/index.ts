@@ -9,6 +9,11 @@ import { kokoonpano } from "./objects/kokoonpano";
 import { youtubeVideo } from "./objects/youtubeVideo";
 import { paivattyKuva } from "./objects/paivattyKuva";
 import { linkki } from "./objects/linkki";
+import { upotus } from "./objects/upotus";
+import { huomio } from "./objects/huomio";
+import { painike } from "./objects/painike";
+import { liite } from "./objects/liite";
+import { taulukko } from "./objects/taulukko";
 
 import { sivu } from "./documents/sivu";
 import { tapahtuma } from "./documents/tapahtuma";
@@ -53,6 +58,11 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   youtubeVideo,
   paivattyKuva,
   linkki,
+  upotus,
+  huomio,
+  painike,
+  liite,
+  taulukko,
   sivu,
   tapahtuma,
   ottelu,

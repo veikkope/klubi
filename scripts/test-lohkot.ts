@@ -1,7 +1,8 @@
 /**
- * Tekstin lohkojen, kuvien poiminnan ja uutiskortin testit (docs/24 askel 2 ja 2b):
- * lib/sisaltolohkot.ts sekä GROQ-projektiot `runko`, `korttikuva()` ja
- * `uutisKortti` groq-js:llä ajettuina (sama kielen toteutus kuin Sanityssa).
+ * Tekstin lohkojen, kuvien poiminnan ja uutiskortin testit (docs/24 askeleet 2,
+ * 2b ja 6): lib/sisaltolohkot.ts, liitetiedoston säännöt (lib/liite.ts) sekä
+ * GROQ-projektiot `runko`, `korttikuva()` ja `uutisKortti` groq-js:llä
+ * ajettuina (sama kielen toteutus kuin Sanityssa).
  *
  * Ajo: npm run test:lohkot
  */
@@ -10,11 +11,16 @@ import assert from "node:assert/strict";
 import { evaluate, parse } from "groq-js";
 
 import { lukuaika } from "../lib/artikkeli";
+import { LIITTEEN_PAATE_VIRHE, liitteenTiedot, tarkistaLiitetiedosto } from "../lib/liite";
+import { linkinOsoite, type LinkkiData } from "../lib/linkki";
 import {
+  HUOMION_SAVYT,
   KUVAN_MIN_LEVEYS_SISALTO,
   PERUSLOHKOT,
   RIKKAAT_LOHKOT,
   ensimmainenIsoKuva,
+  huomionSavy,
+  huomionSavynNimi,
   korttiOte,
   korttiTeksti,
   kuvanMitat,
@@ -66,6 +72,37 @@ async function main() {
     assert.ok((RIKKAAT_LOHKOT as readonly string[]).includes("kuvasarja"));
   });
 
+  await test("RIKKAAT_LOHKOT: yhdeksän lohkoa lopullisessa järjestyksessä (docs/24 §2.3)", () => {
+    assert.deepEqual(
+      [...RIKKAAT_LOHKOT],
+      ["imageWithAlt", "kuvasarja", "youtubeVideo", "upotus", "huomio", "painike", "liite", "taulukko", "kokoonpano"],
+    );
+  });
+
+  await test("huomionSavy: tunnettu arvo säilyy, muu → tieto", () => {
+    assert.equal(huomionSavy("tarkea"), "tarkea");
+    assert.equal(huomionSavy("tieto"), "tieto");
+    assert.equal(huomionSavy("x"), "tieto");
+    assert.equal(huomionSavy(undefined), "tieto");
+    assert.equal(huomionSavy(null), "tieto");
+    assert.equal(huomionSavynNimi("tarkea"), "Tärkeä");
+    assert.equal(huomionSavynNimi(undefined), "Tiedote");
+    assert.deepEqual(
+      HUOMION_SAVYT.map((s) => s.value),
+      ["tieto", "tarkea"],
+    );
+  });
+
+  await test("tarkistaLiitetiedosto: pdf, docx ja xlsx kelpaavat, exe ei, tyhjä kelpaa", () => {
+    const tiedosto = (ref: string) => ({ asset: { _ref: ref } });
+    assert.equal(tarkistaLiitetiedosto(tiedosto("file-9f8e7d-pdf")), true);
+    assert.equal(tarkistaLiitetiedosto(tiedosto("file-9f8e7d-docx")), true);
+    assert.equal(tarkistaLiitetiedosto(tiedosto("file-9f8e7d-xlsx")), true);
+    assert.equal(tarkistaLiitetiedosto(tiedosto("file-9f8e7d-exe")), LIITTEEN_PAATE_VIRHE);
+    assert.equal(tarkistaLiitetiedosto(undefined), true);
+    assert.equal(liitteenTiedot({ extension: "pdf", size: 245760 }), "PDF, 240 kt");
+  });
+
   await test("kuvanMitat: mitat viittauksesta, tiedosto tai puuttuva → null", () => {
     assert.deepEqual(kuvanMitat({ asset: { _ref: "image-abc-2016x1512-jpg" } }), { w: 2016, h: 1512 });
     assert.equal(kuvanMitat({ asset: { _ref: "file-abc-pdf" } }), null);
@@ -103,6 +140,23 @@ async function main() {
     assert.notEqual(lukuaika(pelkka), null);
   });
 
+  await test("lukuaika ei muutu huomiolaatikon ja taulukon kanssa", () => {
+    const sanoja = Array.from({ length: 400 }, (_, i) => `sana${i}`).join(" ");
+    const pelkka = [kappale(sanoja)];
+    const lohkoilla = [
+      kappale(sanoja),
+      { _type: "huomio", _key: "h", savy: "tarkea", otsikko: "Jäsenmaksu", teksti: "Maksa jäsenmaksu kuun loppuun mennessä." },
+      {
+        _type: "taulukko",
+        _key: "t",
+        otsikko: "Tulokset",
+        columns: [{ _key: "c", key: "nimi", label: "Nimi", type: "text" }],
+        rows: [{ _key: "r", cells: [{ _key: "s", key: "nimi", value: "Pekka Pelaaja ja monta muuta sanaa" }] }],
+      },
+    ];
+    assert.equal(lukuaika(lohkoilla), lukuaika(pelkka));
+  });
+
   await test("korttiOte: välilyönnit yhdeksi, enintään 200 merkkiä sanarajalla ja …", () => {
     assert.equal(korttiOte(null), null);
     assert.equal(korttiOte("   \n "), null);
@@ -138,6 +192,46 @@ async function main() {
     },
   });
   const dataset = [
+    {
+      _id: "file-9f8e7d-pdf",
+      _type: "sanity.fileAsset",
+      url: "https://cdn.sanity.io/files/p/d/9f8e7d.pdf",
+      originalFilename: "kutsu.pdf",
+      extension: "pdf",
+      size: 245760,
+    },
+    { _id: "sivu-klubi", _type: "sivu", title: "Klubi", slug: { current: "klubi" } },
+    {
+      _id: "lohkot",
+      _type: "sivu",
+      title: "Lohkot",
+      slug: { current: "lohkot" },
+      body: [
+        {
+          _type: "liite",
+          _key: "l",
+          otsikko: "Vuosikokouskutsu",
+          tiedosto: { _type: "file", asset: { _type: "reference", _ref: "file-9f8e7d-pdf" } },
+        },
+        {
+          _type: "painike",
+          _key: "p1",
+          teksti: "Lue lisää",
+          linkki: { _type: "linkki", tyyppi: "sivu", kohde: { _type: "reference", _ref: "sivu-klubi" } },
+        },
+        {
+          _type: "painike",
+          _key: "p2",
+          teksti: "Kutsu",
+          linkki: {
+            _type: "linkki",
+            tyyppi: "tiedosto",
+            tiedosto: { _type: "file", asset: { _type: "reference", _ref: "file-9f8e7d-pdf" } },
+          },
+        },
+        { _type: "huomio", _key: "h", savy: "tarkea", teksti: "Huom!" },
+      ],
+    },
     asset("kansi", 1200),
     asset("pieni", 397),
     asset("iso", 2016),
@@ -248,6 +342,30 @@ async function main() {
       ["lqip-pieni", "lqip-iso"],
     );
     assert.equal(bBody[0].lqip, undefined, "tekstikappale ei saa lqip-kenttää");
+  });
+
+  await test("groq (g): runko purkaa liitteen tiedoston ja painikkeen linkin", async () => {
+    const body = await aja<Record<string, unknown>[]>(`*[_id == "lohkot"][0].body[]{${runko}}`);
+    const liite = body.find((b) => b._type === "liite") as {
+      otsikko: string;
+      liitetiedosto: { url: string; originalFilename: string; extension: string; size: number };
+    };
+    assert.equal(liite.otsikko, "Vuosikokouskutsu");
+    assert.equal(liite.liitetiedosto.extension, "pdf");
+    assert.equal(liite.liitetiedosto.size, 245760);
+    assert.equal(liite.liitetiedosto.originalFilename, "kutsu.pdf");
+    assert.equal(liite.liitetiedosto.url, "https://cdn.sanity.io/files/p/d/9f8e7d.pdf");
+
+    const painikkeet = body.filter((b) => b._type === "painike") as { teksti: string; linkki: LinkkiData }[];
+    assert.equal(painikkeet[0].linkki.kohde?._type, "sivu");
+    assert.equal(painikkeet[0].linkki.kohde?.slug, "klubi");
+    assert.equal(linkinOsoite(painikkeet[0].linkki), "/klubi");
+    assert.equal(painikkeet[1].linkki.tiedosto?.extension, "pdf");
+    assert.equal(linkinOsoite(painikkeet[1].linkki), "https://cdn.sanity.io/files/p/d/9f8e7d.pdf");
+
+    // Muut lohkot kulkevat sellaisenaan.
+    const huomio = body.find((b) => b._type === "huomio");
+    assert.deepEqual(huomio, { _type: "huomio", _key: "h", savy: "tarkea", teksti: "Huom!" });
   });
 
   await test("groq (f): Lyhenne, Tiivistelmä ja tekstin alku kortissa", () => {

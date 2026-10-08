@@ -11,6 +11,11 @@ import { SanityImage } from "./sanity-image";
 import { Kokoonpano, type KokoonpanoData } from "./kokoonpano";
 import { YoutubeVideo, type YoutubeVideoData } from "./youtube-video";
 import { Kuvasarja, type KuvasarjaData } from "./kuvasarja";
+import { LiiteKortti, type LiiteData } from "./liite-kortti";
+import { Huomiolaatikko, type HuomioData } from "./huomiolaatikko";
+import { Upotus, type UpotusData } from "./upotus";
+import { LinkButton } from "@/components/ui/button";
+import { StatTable, type StatColumn, type StatRow } from "@/components/ui/stat-table";
 import { UusiValilehti } from "@/components/ui/uusi-valilehti";
 import { liitteenTiedot } from "@/lib/liite";
 import { linkinOsoite, linkinTyyppi, type LinkkiData } from "@/lib/linkki";
@@ -87,7 +92,69 @@ const lohkot = {
   kuvasarja: ({ value }: { value: KuvasarjaData }) => (
     <Kuvasarja value={{ kuvat: value?.kuvat ?? [], kuvaus: value?.kuvaus, asettelu: value?.asettelu }} />
   ),
+  // Tekstilohkot (docs/24 askel 6). Upotus tulkitaan palvelimella; selaimeen
+  // menee vain valmis osoite, ei liitettyä tekstiä.
+  upotus: ({ value }: { value: UpotusData }) => (
+    <Upotus value={{ osoite: value?.osoite, otsikko: value?.otsikko, kuvateksti: value?.kuvateksti }} />
+  ),
+  huomio: ({ value }: { value: HuomioData }) => (
+    <Huomiolaatikko savy={value?.savy} otsikko={value?.otsikko} teksti={value?.teksti} />
+  ),
+  // Painike: kohde linkkiobjektista (Sivuston sivu / Muu osoite / Tiedosto).
+  // Ilman toimivaa kohdetta tai tekstiä painiketta ei näytetä.
+  painike: ({ value }: { value: { teksti?: string | null; linkki?: LinkkiData | null } }) => {
+    const href = stegaClean(linkinOsoite(value?.linkki));
+    const teksti = value?.teksti?.trim();
+    if (!href || !teksti) return null;
+    return (
+      <p className="mt-6">
+        <LinkButton href={href} size="lg">
+          {value.teksti}
+        </LinkButton>
+      </p>
+    );
+  },
+  liite: ({ value }: { value: LiiteData }) => (
+    <LiiteKortti otsikko={value?.otsikko} liitetiedosto={value?.liitetiedosto} />
+  ),
+  taulukko: ({ value }: { value: TaulukkoData }) => {
+    const sarakkeet = taulukonSarakkeet(value?.columns);
+    if (sarakkeet.length === 0) return null;
+    return (
+      <div className="mt-8">
+        <StatTable
+          caption={value.otsikko?.trim() || "Taulukko"}
+          captionVisible
+          columns={sarakkeet}
+          rows={taulukonRivit(value.rows)}
+        />
+      </div>
+    );
+  },
 } satisfies Record<RikasLohko, PortableTextTypeComponent>;
+
+type TaulukkoData = {
+  otsikko?: string | null;
+  columns?: { key?: string | null; label?: string | null; type?: string | null }[] | null;
+  rows?: { cells?: { key?: string | null; value?: string | null }[] | null }[] | null;
+};
+
+/**
+ * Taulukon sarakkeet ja rivit `StatTable`lle. Sarake- ja soluavaimet sekä
+ * tyyppi puhdistetaan stega-merkeistä: luonnosnäkymässä ne olisivat muuten
+ * eri merkkijonoja, eikä solu löytäisi saraketta. Näkyvät tekstit säilyvät.
+ */
+function taulukonSarakkeet(columns: TaulukkoData["columns"]): StatColumn[] {
+  return (columns ?? []).flatMap((c) =>
+    c?.key ? [{ key: stegaClean(c.key), label: c.label ?? "", type: stegaClean(c.type ?? "text") as StatColumn["type"] }] : [],
+  );
+}
+
+function taulukonRivit(rows: TaulukkoData["rows"]): StatRow[] {
+  return (rows ?? []).map((r) => ({
+    cells: (r?.cells ?? []).flatMap((c) => (c?.key ? [{ key: stegaClean(c.key), value: c.value }] : [])),
+  }));
+}
 
 const components: PortableTextComponents = {
   block: {

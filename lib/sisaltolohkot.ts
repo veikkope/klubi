@@ -4,8 +4,8 @@
  * Puhdas moduuli: vain suhteelliset ja `import type` -tuonnit, jotta testit
  * (scripts/test-lohkot.ts) ajautuvat tsx:llä.
  *
- * - `RIKKAAT_LOHKOT`: lohkot, jotka isä voi lisätä uutisen, tapahtuman ja
- *   klubin toiminnan tekstiin (+ -valikko). Sivu saa saman joukon askeleessa 6.
+ * - `RIKKAAT_LOHKOT`: lohkot, jotka isä voi lisätä sivun, uutisen, tapahtuman
+ *   ja klubin toiminnan tekstiin (+ -valikko).
  * - `PERUSLOHKOT`: tavallisen `portableText`-kentän lohkot (arkisto,
  *   ravintola-arvio, lehtileike …). Järjestys ennallaan.
  * - Kuvien poiminta tekstistä: korttikuvan varakäytös (GROQ `korttikuva()`
@@ -13,10 +13,23 @@
  */
 
 /**
- * Rikkaan sisällön muut kuin tekstilohkot, Studion valikon järjestyksessä.
- * Askel 6 lisää upotuksen, huomion, painikkeen, liitteen ja taulukon.
+ * Rikkaan sisällön muut kuin tekstilohkot, Studion valikon järjestyksessä
+ * (docs/24 §2.3). Valikkoa ei ryhmitellä: `options.insertMenu` ei vaikuta
+ * tekstieditorin työkalupalkkiin (sanity 5.31), joten järjestys, otsikot ja
+ * ikonit ohjaavat valintaa. Kuvat ja video ensin, sitten tiedotteet ja
+ * tiedostot, lopuksi taulukot.
  */
-export const RIKKAAT_LOHKOT = ["imageWithAlt", "kuvasarja", "youtubeVideo", "kokoonpano"] as const;
+export const RIKKAAT_LOHKOT = [
+  "imageWithAlt",
+  "kuvasarja",
+  "youtubeVideo",
+  "upotus",
+  "huomio",
+  "painike",
+  "liite",
+  "taulukko",
+  "kokoonpano",
+] as const;
 export type RikasLohko = (typeof RIKKAAT_LOHKOT)[number];
 
 /** Tavallisen `portableText`-kentän lohkot: nykyiset kolme, järjestys ennallaan. */
@@ -93,4 +106,22 @@ export function korttiOte(teksti: string | null | undefined, max = 200): string 
  */
 export function korttiTeksti(k: { excerpt?: string | null; ote?: string | null }): string | null {
   return k.excerpt?.trim() || korttiOte(k.ote);
+}
+
+/** Huomiolaatikon sävyt (docs/24 askel 6). `title` Studioon, `nimi` ruudunlukijalle. */
+export const HUOMION_SAVYT = [
+  { value: "tieto", title: "Tiedote (sininen)", nimi: "Tiedote" },
+  { value: "tarkea", title: "Tärkeä (keltainen)", nimi: "Tärkeä" },
+] as const;
+export type HuomionSavy = (typeof HUOMION_SAVYT)[number]["value"];
+
+/** Sävy arvosta. Tuntematon tai puuttuva → "tieto" (tavallinen tiedote). */
+export function huomionSavy(arvo: unknown): HuomionSavy {
+  return HUOMION_SAVYT.some((s) => s.value === arvo) ? (arvo as HuomionSavy) : "tieto";
+}
+
+/** Sävyn nimi ("Tiedote" tai "Tärkeä"). */
+export function huomionSavynNimi(arvo: unknown): string {
+  const savy = huomionSavy(arvo);
+  return HUOMION_SAVYT.find((s) => s.value === savy)!.nimi;
 }

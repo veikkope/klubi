@@ -73,7 +73,8 @@ import { TuontiDialogi } from "./TuontiDialogi";
 
 /**
  * Tilastotaulukon editori (docs/19): taulukkolaskennan kaltainen ruudukko
- * `jalkapalloTilasto`-dokumentin `columns`- ja `rows`-kentille.
+ * `jalkapalloTilasto`-dokumentin ja tekstin Taulukko-lohkon `columns`- ja
+ * `rows`-kentille.
  *
  * Tietomalli on ennallaan (sarakkeet + rivien avain–arvo-solut), joten
  * sivuston kyselyt ja taulukko toimivat sellaisenaan. Editori piilottaa
@@ -81,7 +82,9 @@ import { TuontiDialogi } from "./TuontiDialogi";
  */
 export function TaulukkoEditori(props: ArrayOfObjectsInputProps) {
   const patch = useDokumenttiPatch();
-  const sarakkeet = useFormValue(["columns"]) as Sarake[] | undefined;
+  // Sarakkeet ovat rivien rinnalla samassa objektissa: dokumentin juuressa
+  // (jalkapalloTilasto) tai tekstin taulukkolohkossa (docs/24 askel 6).
+  const sarakkeet = useFormValue([...props.path.slice(0, -1), "columns"]) as Sarake[] | undefined;
   // Ilman dokumentin juurisyötettä (konteksti) ei voi muokata sarakkeita:
   // näytetään Sanityn oletussyöte, jotta data on silti muokattavissa.
   if (!patch) return props.renderDefault(props);

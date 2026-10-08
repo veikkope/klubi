@@ -45,19 +45,28 @@ tahansa YouTube-videon osoitemuoto, `lib/youtube.ts`; `t=`/`start=` → aloitusk
 painalluksesta `youtube-nocookie.com`-osoitteesta (ei evästeitä eikä YouTuben
 skriptejä ennen toistoa). Ilman JavaScriptiä painike on linkki YouTubeen.
 
-### `rikasSisalto` (docs/24 askel 2)
+### `rikasSisalto` (docs/24 askeleet 2 ja 6)
 
 Laajennettu tekstikenttä (`sanity/schemas/objects/rikasSisalto.ts`): sama
 tekstilohko kuin `portableText`issa (`tekstiLohko`, `portableText.ts`) ja lisäksi
-`RIKKAAT_LOHKOT` (`lib/sisaltolohkot.ts`) Studion valikon järjestyksessä:
-`imageWithAlt`, `kuvasarja`, `youtubeVideo`, `kokoonpano`. Askel 6 lisää
-upotuksen, huomiolaatikon, painikkeen, liitteen ja taulukon.
+yhdeksän lohkoa `RIKKAAT_LOHKOT` (`lib/sisaltolohkot.ts`) Studion työkalupalkin
+järjestyksessä: `imageWithAlt`, `kuvasarja`, `youtubeVideo`, `upotus`, `huomio`,
+`painike`, `liite`, `taulukko`, `kokoonpano`.
 
-- **Käyttöpaikat:** `uutinen.body`, `tapahtuma.description` ja
-  `klubiToiminta.kuvaus`. `sivu.body` siirtyy tähän askeleessa 6. Muut
-  tekstikentät (arkisto, ravintola-arvio, lehtileike, tilastojen johdannot,
-  etusivun esittely) pysyvät `portableText`-tyyppisinä, ja niiden lohkot ovat
-  `PERUSLOHKOT` (`imageWithAlt`, `kokoonpano`, `youtubeVideo`).
+- **Käyttöpaikat:** `sivu.body` (askel 6), `uutinen.body`, `tapahtuma.description`
+  ja `klubiToiminta.kuvaus`. Muut tekstikentät (arkisto, ravintola-arvio,
+  lehtileike, tilastojen johdannot, etusivun esittely) pysyvät
+  `portableText`-tyyppisinä, ja niiden lohkot ovat `PERUSLOHKOT` (`imageWithAlt`,
+  `kokoonpano`, `youtubeVideo`).
+- **Valikko ilman ryhmiä (tarkistettu 8.10.2026, sanity 5.31.2):**
+  `options.insertMenu` ei vaikuta tekstieditoriin. Työkalupalkki rakentaa
+  lisäyspainikkeet funktiolla `getInsertMenuItems(schemaTypes)`, joka lukee vain
+  skeematyypit (otsikko ja ikoni), ei optionsia; vain taulukkokenttä (array input)
+  lukee `insertMenu`n. Asetus jätettiin siksi pois, ja valintaa ohjaavat järjestys,
+  otsikot ja ikonit. Painikkeet ovat `CollapseMenu`ssa: kun tila loppuu (ja aina, kun
+  työkalupalkki on alle 400 px leveä), painikkeet siirtyvät ⋯-painikkeen (*Näytä
+  lisää*) valikkoon nimineen eivätkä katoa. Puhelimen leveys tarkistetaan
+  developmentin Studiossa askeleen 6 hyväksynnässä (docs/24).
 - **Ei datamuutosta:** Portable Text -taulukko tallentuu ilman taulukon
   tyyppinimeä, ja vanhoissa rungoissa on vain lohkot, jotka uusi tyyppi sallii.
 - **Renderöinti:** `components/portable-text.tsx` (`lohkot … satisfies
@@ -82,6 +91,76 @@ kuvissa (`galleriaKuva`) alt on suositus, ja yhteinen kuvaus on pakollinen: ilma
 kuvakohtaista alt-tekstiä kuva nimetään muodossa "Klubin vappu 2026, kuva 3/9"
 (ruudun `aria-label` ja suurennoksen alt), joten jokaisella kuvalla on aina
 merkityksellinen kuvaus.
+
+**`upotus`** (Kartta, lomake tai Vimeo-video, `sanity/schemas/objects/upotus.ts`,
+`components/upotus.tsx`, säännöt `lib/upotus.ts`):
+
+| Kenttä | Tyyppi | Pakollinen | Kuvaus |
+|---|---|---|---|
+| osoite | text (3 riviä) | kyllä | Upotuskoodi (iframe-HTML) tai osoite. Validointi `upotuksenVirhe`: suomenkielinen ohje jakolinkille, lomakkeen muokkausosoitteelle, lyhytlinkille, YouTubelle ja muille palveluille |
+| otsikko | string, 3–120 merkkiä | kyllä | Näkyy kortissa ennen latausta ja on iframen `title` |
+| kuvateksti | string | ei | `figcaption` |
+
+Sallittu lista (`tulkitseUpotus`, testit `npm run test:upotus`):
+
+| Palvelu | Hyväksytyt osoitteet | Iframen `src` | Koko |
+|---|---|---|---|
+| Google Maps | `www.google.com`, `google.com`, `maps.google.com`: polku `/maps/embed…`, tai `/maps?…&output=embed` | sellaisenaan (https) | suhde 4/3 |
+| Google My Maps | vain `www.google.com/maps/d/embed?mid=…` | rakennetaan uudelleen: `mid` ja sallitut `ll`, `z`, `ehbc`; muut parametrit pois | suhde 4/3 |
+| Google Forms | `docs.google.com/forms/d/e/<id>/viewform` | `…/viewform?embedded=true` | korkeus iframesta tai 900 px, rajat 400–3000 |
+| Vimeo | `vimeo.com/<id>[/<hash>]`, `vimeo.com/channels/<nimi>/<id>`, `player.vimeo.com/video/<id>[?h=<hash>]` | `https://player.vimeo.com/video/<id>?dnt=1[&h=<hash>]&autoplay=1` (lukija on jo painanut "Näytä video") | suhde 16/9 |
+
+- Iframe-koodista luetaan vain ensimmäisen iframen `src` ja `height`. Tulkinta
+  tehdään palvelimella (`components/upotus.tsx`), ja selaimen komponentille
+  (`components/upotus-kehys.tsx`) välitetään vain valmis osoite, koko ja tekstit:
+  liitetty HTML tai raaka `osoite` ei päädy sivun HTML:ään eikä RSC-dataan.
+- `http:` muutetaan `https:`ksi, ja protokollaton osoite (`//…` tai `vimeo.com/…`)
+  saa `https:`n. `javascript:`, `data:` ja muut protokollat, käyttäjätunnukset ja
+  muut portit hylätään, samoin kaikki muut isännät (myös `www.google.com.evil.example`).
+- Sivulla ensin kortti (otsikko, latausteksti, painike `aria-describedby`llä ja
+  "Avaa palvelussa" -linkki, joka toimii ilman JavaScriptiä). Painikkeen saavutettava
+  nimi sisältää otsikon ("Näytä kartta: …"), jotta saman sivun upotukset erottuvat.
+  Painalluksesta iframe, jolla `sandbox="allow-scripts allow-same-origin allow-forms
+  allow-popups"` (Mapsilla lisäksi `allow-popups-to-escape-sandbox`, jotta "Näytä
+  isompi kartta" aukeaa normaalisti), suppea `allow` (Vimeo `autoplay; fullscreen;
+  picture-in-picture`, muut tyhjä) ja `loading="lazy"`; fokus siirtyy iframeen. Säiliö varaa tilan valmiiksi. `osoite` puhdistetaan
+  stega-merkeistä ennen tulkintaa.
+
+**`huomio`** (Huomiolaatikko, `huomio.ts`, `components/huomiolaatikko.tsx`):
+
+| Kenttä | Tyyppi | Pakollinen | Kuvaus |
+|---|---|---|---|
+| savy | `tieto` \| `tarkea` (radio, `HUOMION_SAVYT`) | ei, oletus `tieto` | Tiedote (sininen) tai Tärkeä (keltainen). Tuntematon → `tieto` (`huomionSavy`, `stegaClean`) |
+| otsikko | string, enintään 80 | ei | Kappale (`<p>`), ei otsikkotagi, jotta sisällön otsikkohierarkia ei muutu |
+| teksti | text (4 riviä) | kyllä, enintään 600 (varoitus yli 400) | Rivinvaihdot säilyvät |
+
+Sivulla `<div role="note" aria-label={otsikko tai sävyn nimi}>`, vasen reuna ja
+tausta sävyn mukaan sekä ikoni (Info tai TriangleAlert), joten merkitys ei ole
+pelkässä värissä.
+
+**`painike`** (Painike, `painike.ts`): `teksti` (string, pakollinen, varoitus yli 40
+merkistä) ja `linkki` (`linkki`-objekti, `vaadiLinkki`). GROQ `runko` purkaa
+linkin `linkkiProjektio`lla, ja sivulla `LinkButton` (`size="lg"`) osoitteeseen
+`linkinOsoite(linkki)`. Ilman toimivaa kohdetta tai tekstiä painiketta ei näytetä.
+
+**`liite`** (Liite (PDF, Word, Excel), `liite.ts`, `components/liite-kortti.tsx`):
+`otsikko` (Linkin teksti, 3–100 merkkiä, pakollinen) ja `tiedosto`
+(`liitetiedostoKentta()`, pakollinen: PDF, docx tai xlsx, varoitus yli 15 Mt,
+kuvaus kertoo julkisuudesta, K4). GROQ `runko` lisää kentän `liitetiedosto`
+(`url`, `originalFilename`, `extension`, `size`). Sivulla linkki
+`tiedostonOsoite`-funktiolla, koko teksti linkin sisällä: "otsikko (PDF, 240 kt)".
+
+**`taulukko`** (Taulukko, `taulukko.ts`): `otsikko` (pakollinen, `caption`),
+`columns` ja `rows` samoilla määrittelyillä kuin `jalkapalloTilasto`ssa
+(`taulukkoKentat.ts`: `sarakkeetKentta`, `rivitKentta`), taulukkoeditori
+dialogissa (`options.modal` `width: "auto"`), juurisyötteenä
+`TaulukkoKontekstiInput`. Sivulla `StatTable` (`captionVisible`), vain kun
+sarakkeita on. **Taulukko on tekstiin upotettu eikä viittaus** (poikkeus docs/23
+Y15:n kohdasta 3): oma, yhteen juttuun kuuluva sisältö upotetaan, ja
+uudelleenkäytettävä tilasto viitataan sivun Taulukot-kentällä
+(`jalkapalloTilasto`). Upotettuna isän ei tarvitse luoda erillistä dokumenttia
+otsikkoineen, osoitteineen ja kategorioineen, ja olemassa oleva editori toimii
+sellaisenaan.
 
 **Kuvien poiminta tekstistä** (`lib/sisaltolohkot.ts`): `sisallonKuvat`
 (yksittäiset kuvat ja kuvasarjojen kuvat järjestyksessä), `ensimmainenIsoKuva`
@@ -151,7 +230,7 @@ Jokainen linkki valitaan kolmesta vaihtoehdosta. Kenttäjoukko
 | korttiteksti | text, max 140 (varoitus) | ei | Vain jalkapalloarkiston 16 osion sivulla: "Teksti arkiston etusivun kortissa". Tyhjä = koodin oletus |
 | hero | image (alt pakollinen) | ei | Iso kuva sivun yläosassa |
 | ingress | text | ei | Vanha kenttä: näkyy sivulla vain, jos `tiivistelma` on tyhjä. Studiossa piilossa, kun tyhjä (`hidden: ({ value }) => !value`) |
-| body | portableText | kyllä | Pääsisältö (otsikot, listat, lainaukset, kuvat). Vaihtuu `rikasSisalto`ksi askeleessa 6 (docs/24) |
+| body | rikasSisalto | kyllä | Pääsisältö (otsikot, listat, lainaukset, kuvat ja tekstilohkot, ks. `rikasSisalto`). Tyyppi vaihdettu askeleessa 6 (docs/24) ilman datamuutosta |
 | tilastot | array of reference → jalkapalloTilasto | ei | Taulukot sivun lopussa |
 | seoTitle, seoDescription | string | ei | SEO-overrides |
 
@@ -302,8 +381,8 @@ Vain julkaistut arvostelut näkyvät. Uuden ravintolan arvostelun julkaisu vaati
 | kaudenOttelut | reference → jalkapalloTilasto (`category == "karsinta"`) | suositus (varoitus), kun osio on "kansojen-liiga" (`kaudenOttelut: true` tiedostossa `lib/huuhkajat-osiot.ts`) | Saman kauden karsintasivu. Karsintasivu näyttää taulukon taulukkonsa ja lisätietojen välissä (`karsintaBySlugQuery` → `kaudenTaulukot`), osiosivu linkittää taulukolta karsintasivulle. Migraatio ja `npm run patch:kansojen-liiga` parittavat saman `legacyUrl`:n perusteella. |
 | mestaruusmaa | string (enum `lib/ulkomaiset-mestarit.ts`: "englanti", "venaja") | suositus (varoitus), kun category = "ulkomaiset-mestarit" | Maasivu `/jalkapalloarkisto/ulkomaiset-mestarit/[maa]`. Arvo on pysyvä URL-segmentti. Puuttuva → päätellään slugin etuliitteestä ("venajan-"), muuten "englanti". |
 | intro | portableText | ei | Johdanto |
-| columns | array of objects { key, label, type } | kyllä | Taulukon sarakkeet |
-| rows | array of objects (key-value) | kyllä | Taulukon rivit |
+| columns | array of objects { key, label, type } | kyllä | Taulukon sarakkeet (`sarakkeetKentta`, `taulukkoKentat.ts`; sama kuin tekstin `taulukko`-lohkossa) |
+| rows | array of objects (key-value) | kyllä | Taulukon rivit (`rivitKentta`, taulukkoeditori; juurisyöte `TaulukkoKontekstiInput`) |
 | sources | array of url | ei | Lähteet |
 
 ### 10. `galleria-albumi`

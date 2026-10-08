@@ -3,7 +3,8 @@ import { insert, set, setIfMissing, unset, type FormPatch, type Path } from "san
 import { normalisoiArvo, type SarakeTyyppi } from "../../../lib/taulukko";
 
 /**
- * Taulukkoeditorin muutokset Sanity-patcheina dokumentin juuresta.
+ * Taulukkoeditorin muutokset Sanity-patcheina taulukon sisältävän objektin
+ * juuresta (dokumentti tai tekstin taulukkolohko, konteksti.tsx).
  *
  * Patchit ovat pieniä ja kohdistuvat `_key`-polkuihin (yksi solu, yksi rivi),
  * eivät koko taulukon ylikirjoituksia. Näin kaksi yhtä aikaa muokkaavaa

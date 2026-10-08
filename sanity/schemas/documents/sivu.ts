@@ -164,7 +164,7 @@ export const sivu = defineType({
     defineField({
       name: "body",
       title: "Pääsisältö",
-      type: "portableText",
+      type: "rikasSisalto",
       hidden: ({ document, value }) => piilotaKentta(slugOf(document), "body", value),
       group: "sisalto",
     }),

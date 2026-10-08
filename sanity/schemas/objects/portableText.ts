@@ -59,10 +59,10 @@ export const tekstiLohko = defineArrayMember({
 });
 
 /**
- * Tavallinen tekstikenttä (sivu, arkisto, ravintola-arvio, lehtileike,
- * tilastojen johdannot …): kuva, kokoonpano ja YouTube-video (`PERUSLOHKOT`).
- * Uutisen, tapahtuman ja klubin toiminnan teksti on `rikasSisalto`
- * (kuvasarja ym.); sivu siirtyy siihen askeleessa 6 (docs/24).
+ * Tavallinen tekstikenttä (arkisto, ravintola-arvio, lehtileike, tilastojen
+ * johdannot …): kuva, kokoonpano ja YouTube-video (`PERUSLOHKOT`). Sivun,
+ * uutisen, tapahtuman ja klubin toiminnan teksti on `rikasSisalto`
+ * (kuvasarja, liite, huomiolaatikko ym., docs/24 askeleet 2 ja 6).
  */
 export const portableText = defineType({
   name: "portableText",

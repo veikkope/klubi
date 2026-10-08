@@ -64,8 +64,8 @@ vuosilinkki ja tekstin linkit) valitset ensin **Mihin linkki vie?**:
   **Tiedosto on julkinen:** se löytyy sivuston tietokannasta, vaikka et
   linkittäisi sitä, ja myös tiedoston alkuperäinen nimi näkyy. Älä liitä
   jäsenluetteloita, pöytäkirjoja, joissa on henkilötietoja, tai muuta
-  luottamuksellista. Jos lisäsit vahingossa väärän tiedoston, poista se linkistä
-  ja kerro kehittäjälle, joka poistaa sen myös tietokannasta. Sivulla linkin
+  luottamuksellista. Jos lisäsit vahingossa väärän tiedoston, ks. *Tekstin
+  lisäosat → Liite → Väärä tiedosto*. Sivulla linkin
   perässä näkyy tiedoston tyyppi ja koko, esim. "(PDF, 240 kt)".
 
 Listan alla näkyy, mihin linkki vie, esim. "→ /klubi/toiminta/matkailu".
@@ -141,13 +141,13 @@ Tämä korvaa blogiin kirjoittamisen. Studio toimii myös puhelimen selaimessa.
    uutislistassa, etusivulla ja jaossa käytetään tekstin ensimmäistä isoa kuvaa
    (myös kuvasarjasta). Keltainen varoitus kertoo, jos uutisessa ei ole kuvaa
    lainkaan; uutisen voi silti julkaista. Sisältöön voi lisätä otsikoita, listoja,
-   linkkejä ja **kuvia tekstin sekaan**: paina **+** tekstin kohdalla → *Kuva*.
+   linkkejä ja **kuvia tekstin sekaan**: napsauta tekstiin kohtaan ja paina työkalupalkin kuvakuvaketta *Kuva*.
    **Kuvajutussa** (esim. matkan tai juhlan kuvat) käytä yksittäisten kuvien sijaan
    **kuvasarjaa**: kaikki kuvat kerralla ja yksi yhteinen kuvaus (ks.
    kohta *Tekstin lisäosat* alla).
    **YouTube-video** lisätään samalla tavalla: napsauta Sisältö-kentän tekstiin ja paina
-   kentän työkalupalkin oikeasta reunasta toistokolmiota ▷ (kapealla näytöllä **+**-valikosta
-   *YouTube-video*). Liitä videon
+   kentän työkalupalkin oikeasta reunasta toistokolmiota ▷ (kapealla näytöllä **⋯**-painikkeesta
+   *Näytä lisää* → *YouTube-video*). Liitä videon
    osoite (YouTubessa videon alta **Jaa** → **Kopioi**) ja kirjoita lyhyt otsikko, esim.
    "Huuhkajien maali Unkaria vastaan 2023". Sivulla näkyy videon kuva ja toistopainike;
    video alkaa, kun lukija painaa sitä. Jos haluat videon alkavan tietystä kohdasta,
@@ -156,10 +156,12 @@ Tämä korvaa blogiin kirjoittamisen. Studio toimii myös puhelimen selaimessa.
    **Linkki tekstiin:** maalaa sana tai lause → työkalupalkin ketjukuvake → valitse
    **Mihin linkki vie?** (ks. *Linkit* yllä). Esim. toiseen uutiseen: Sivuston sivu
    → kirjoita uutisen otsikon alkua → valitse.
-   Video toimii samoin kaikissa tekstikentissä, joissa on **+**: sivut, tapahtumat,
+   Video toimii samoin kaikissa tekstikentissä, joiden työkalupalkissa on lisäosien
+   kuvakkeet: sivut, tapahtumat,
    ravintolat ja jalkapalloarkisto (tilastojen esittelyt ja lisätiedot, arvokisat,
-   pelaajat, stadionit, lehtileikkeet). Kuvasarja sen sijaan toimii vain uutisissa,
-   tapahtumissa ja klubin toiminnassa.
+   pelaajat, stadionit, lehtileikkeet). Kuvasarja ja muut lisäosat (liite,
+   huomiolaatikko, painike, taulukko, kartta tai lomake) toimivat sivuilla, uutisissa,
+   tapahtumissa ja klubin toiminnassa (ks. *Tekstin lisäosat*).
 5. **Kategoriat:** rastita sopivat (esim. Palloveikkaus, Matkakuvaus, Tapahtumat).
 6. **Julkaise**.
 
@@ -184,21 +186,109 @@ Listassa ja kohdassa **Tehtävät sinulle → Ajastetut uutiset** sen kohdalla l
 
 ### Tekstin lisäosat (+ -valikko)
 
-Tekstikentän **+**-valikosta (leveällä näytöllä työkalupalkin oikean reunan
-kuvakkeista) voi lisätä tekstin sekaan muutakin kuin tekstiä. Kuva, YouTube-video ja
-kokoonpano toimivat kaikissa tekstikentissä, joissa on **+**. Alla olevat lisäosat
-toimivat **uutisissa, tapahtumissa ja klubin toiminnassa**. Sivuilla (**Sivut**) niitä
-ei vielä ole.
+Tekstikentän työkalupalkin oikeassa reunassa on kuvake jokaiselle lisäosalle
+(viemällä hiiren kuvakkeen päälle näet nimen, esim. *Lisää Huomiolaatikko*).
+Kapealla näytöllä, esim. puhelimessa, osa kuvakkeista siirtyy **⋯**-painikkeen
+(*Näytä lisää*) taakse: paina sitä, niin kaikki lisäosat näkyvät listana nimineen.
+Napsauta ensin tekstiin kohtaan, johon lisäosa tulee.
 
-| Lisäosa | Milloin | Miten |
-|---|---|---|
-| **Kuvasarja (useita kuvia)** | Useampi kuva samasta aiheesta, esim. matkan, juhlan tai ottelun kuvat | Ks. alla |
+Kuva, YouTube-video ja kokoonpano toimivat kaikissa tekstikentissä, joissa on
+lisäosia. Muut alla olevat lisäosat toimivat **sivuilla, uutisissa, tapahtumissa ja
+klubin toiminnassa** (eivät esim. ravintola-arvioissa tai jalkapalloarkiston
+teksteissä).
+
+Lisäosat työkalupalkin järjestyksessä:
+
+| Lisäosa | Milloin | Miten | Huomioita |
+|---|---|---|---|
+| **Kuva** | Yksi kuva tekstin seassa | Raahaa kuva, kirjoita **Vaihtoehtoinen teksti** | Kuvaus on pakollinen |
+| **Kuvasarja (useita kuvia)** | Useampi kuva samasta aiheesta, esim. matkan, juhlan tai ottelun kuvat | Ks. *Kuvasarja* alla | Yli 60 kuvalle galleria-albumi |
+| **YouTube-video** | Video YouTubesta | Ks. *Uutisen kirjoittaminen* yllä | |
+| **Kartta, lomake tai Vimeo-video** | Kartta kokoontumispaikkaan, ilmoittautumislomake, Vimeo-video | Ks. *Kartta, lomake tai Vimeo-video* alla | Muut palvelut eivät käy |
+| **Huomiolaatikko** | Lyhyt ilmoitus, joka erottuu tekstistä (esim. jäsenmaksun eräpäivä) | Valitse sävy, kirjoita teksti ja halutessasi otsikko | Enintään 600 merkkiä |
+| **Painike** | Selvä toiminto, esim. *Ilmoittaudu* tai *Lue säännöt* | Kirjoita **Painikkeen teksti** ja valitse **Mihin painike vie** kuten linkissä (ks. *Linkit*) | Lyhyt teksti, enintään noin 40 merkkiä |
+| **Liite (PDF, Word, Excel)** | Kutsu, säännöt, ohjelma tai muu tiedosto | Kirjoita **Linkin teksti** ja raahaa tiedosto kenttään **Tiedosto** | **Tiedosto on julkinen** (ks. *Liite* alla) |
+| **Taulukko** | Pieni taulukko juuri tähän juttuun, esim. turnauksen tulokset | Kirjoita **Taulukon otsikko**, sitten solut kuten Excelissä (ks. *Taulukon muokkaaminen*) | Monessa paikassa näytettävä tilasto tehdään Jalkapalloarkistoon (ks. *Taulukko* alla) |
+| **Kokoonpano pelikentällä** | Avauskokoonpano pelikentälle | Ks. *Kokoonpano pelikentälle* | |
+
+**Huomiolaatikko:**
+
+- **Tiedote (sininen)** tavalliseen ilmoitukseen, esim. "Kevätkokous pidetään
+  huhtikuussa."
+- **Tärkeä (keltainen)** vain, kun lukijan pitää toimia: määräaika, muutos tai
+  peruutus. Jos kaikki on tärkeää, mikään ei erotu.
+- Kirjoita lyhyesti, muutama rivi. Rivinvaihdot säilyvät. Linkin tai
+  ilmoittautumisen saat lisäämällä laatikon alle **Painikkeen**.
+
+**Painike:** painike näkyy sivulla sinisenä nappina. Jos valittu sivu ei ole
+julkaistu tai osoite on virheellinen, painiketta ei näytetä lainkaan (sama kuin
+linkeissä). Toiselle sivustolle vievä painike avautuu uuteen välilehteen.
+
+**Liite:**
+
+1. **Linkin teksti:** mikä tiedosto on, esim. "Vuosikokouskutsu 2027" tai "Klubin
+   säännöt". Sivulla perään tulee tyyppi ja koko, esim. "Klubin säännöt (PDF, 240 kt)".
+2. **Tiedosto:** PDF, Word (.docx) tai Excel (.xlsx). Muut tiedostot eivät käy.
+   Wordista saat PDF:n valitsemalla **Tallenna nimellä → PDF**. Älä liitä skannattuja
+   kuvia PDF:nä: ruudunlukija ei osaa lukea niitä. Studio varoittaa, jos tiedosto on yli
+   15 Mt.
+3. **Tiedosto on julkinen.** Se löytyy sivuston tietokannasta, vaikka sitä ei
+   linkitettäisi mihinkään, ja myös tiedoston alkuperäinen nimi näkyy (esim.
+   *jasenluettelo_2026.pdf*). Älä liitä jäsenluetteloita, pöytäkirjoja, joissa on
+   henkilötietoja, tai muuta luottamuksellista.
+4. **Väärä tiedosto:** poista Liite-lohko (tai vaihda tiedosto) ja **Julkaise**. Yöllinen
+   huolto poistaa tiedoston tietokannasta itsestään, kun mikään ei ole käyttänyt sitä
+   7 päivään. Jos tiedosto pitää saada pois heti (esim. siinä on henkilötietoja):
+   julkaisun jälkeen lisää mihin tahansa tekstiin uusi Liite-lohko, paina kentässä
+   **Tiedosto** **Valitse**, etsi tiedosto listasta, avaa rivin valikko ja valitse
+   **Poista**. Sulje lista. Apuna käytetty Liite-lohko jäi luonnokseksi: poista se
+   painamalla alhaalla **Julkaise**-painikkeen vieressä olevaa nuolta (tai **⋯**) →
+   **Hylkää muutokset** → vahvista. Näin julkaistu sivu pysyy ennallaan. (Jos
+   dokumentti on uusi eikä sitä ole vielä julkaistu, poista vain apulohko.) Studio ei
+   poista tiedostoa, jota jokin sivu vielä käyttää. Jos poisto ei onnistu, kerro
+   kehittäjälle.
+
+**Taulukko:**
+
+- Taulukko aukeaa omaan ikkunaansa. Kirjoita **Taulukon otsikko**, esim.
+  "Mölkkyturnauksen tulokset 2026": se näkyy taulukon yläpuolella ja kertoo
+  ruudunlukijalle, mistä taulukossa on kyse.
+- Solut, sarakkeet ja Excelistä liittäminen toimivat kuten tilastoissa (ks. *Taulukon
+  muokkaaminen*). Nopein tapa: kopioi alue Excelistä (Ctrl+C), napsauta ensimmäistä
+  solua ja liitä (Ctrl+V).
+- **Ero sivun Taulukot-kenttään:** tekstin Taulukko kuuluu vain tähän juttuun.
+  Tilasto, joka näytetään monessa paikassa tai jota päivitetään vuosia (esim.
+  palloveikkauksen tulokset), tehdään kohtaan **Jalkapalloarkisto → Tilastot** ja
+  valitaan sivulle kentässä **Taulukot**.
+
+**Kartta, lomake tai Vimeo-video:**
+
+Kenttään **Upotuskoodi tai osoite** liitetään palvelun antama koodi. Sivulla näkyy
+ensin otsikko ja painike (esim. *Näytä kartta*), ja palvelu ladataan vasta, kun lukija
+painaa sitä. Näin Google ja Vimeo eivät aseta evästeitä ennen kuin lukija haluaa.
+
+- **Google Maps -kartta:** avaa paikka Google Mapsissa → **Jaa** → välilehti **Upota
+  kartta** → **Kopioi HTML**. Liitä koko koodi kenttään. Pelkkä jakolinkki
+  (*maps.app.goo.gl/…*) ei käy. Oman kartan (Google My Maps, esim. useita paikkoja
+  merkittynä) upotuskoodi saadaan kartan valikosta (⋮) kohdasta, jolla kartta upotetaan
+  sivustolle (englanniksi *Embed on my site*).
+- **Google Forms -lomake:** avaa lomake muokattavaksi → **Lähetä** → välilehti **<>**
+  (upota) → **Kopioi**. Liitä koko koodi. Lomakkeen muokkausosoite ja lyhytlinkki
+  (*forms.gle/…*) eivät käy.
+- **Vimeo-video:** kopioi videon osoite selaimen osoiteriviltä, esim.
+  *https://vimeo.com/123456789*. Myös Vimeon upotuskoodi käy.
+- **YouTube-videolle** on oma lisäosansa *YouTube-video*.
+- **Mitä upotuksessa on:** lyhyt otsikko, esim. "Kartta: klubin kokoontumispaikka" tai
+  "Ilmoittautuminen pikkujouluihin". Se näkyy painikkeen yläpuolella, ja ruudunlukija
+  lukee sen.
+- Muita palveluja (esim. Facebook, Instagram) ei voi upottaa. Lisää niihin tekstiin
+  linkki tai **Painike**.
 
 **Kuvasarja:**
 
-1. Napsauta tekstiin kohtaan, johon kuvat tulevat, ja valitse **+** →
-   *Kuvasarja (useita kuvia)*. Leveällä näytöllä sama löytyy työkalupalkin
-   kuvakkeesta, jossa on kaksi kuvaa päällekkäin.
+1. Napsauta tekstiin kohtaan, johon kuvat tulevat, ja paina työkalupalkin
+   kuvaketta, jossa on kaksi kuvaa päällekkäin (*Kuvasarja (useita kuvia)*).
+   Kapealla näytöllä se löytyy **⋯**-painikkeen (*Näytä lisää*) takaa.
 2. **Kuvat:** raahaa kaikki kuvat kerralla tietokoneen kansiosta kenttään. Järjestä
    raahaamalla. Puhelimessa paina **Lisää kohde** ja kuvan kohdalla **Lataa**.
 3. **Mitä kuvissa on (yhteinen kuvaus):** lyhyt kuvaus koko sarjasta, esim. "Klubin
@@ -415,7 +505,9 @@ Hyvä tietää:
 2. **Otsikko** ja **Osoite sivustolla**: `klubi/historia` näkyy osoitteessa
    /klubi/historia. Osa osoitteista on varattu (esim. uutiset, ravintolat), ja Studio kertoo
    niistä.
-3. **Tiivistelmä sivun alussa** (2–3 virkettä) ja **Pääsisältö**. **Julkaise**.
+3. **Tiivistelmä sivun alussa** (2–3 virkettä) ja **Pääsisältö**. Pääsisältöön voi lisätä
+   samat lisäosat kuin uutiseen: liitteen, huomiolaatikon, painikkeen, taulukon ja
+   kartan tai lomakkeen (ks. *Tekstin lisäosat*). **Julkaise**.
 
 **Taulukot sivulle:** sivun kohtaan **Taulukot** voi valita taulukoita (esim. tulokset),
 jotka näkyvät sivun lopussa. Taulukot tehdään kohdassa **Jalkapalloarkisto → Tilastot**
@@ -724,7 +816,8 @@ esimerkiksi `klubi/palloveikkaus/mestarisarja`.
 ### Taulukon muokkaaminen (tilastot, palloveikkaus, mölkky)
 
 Taulukot löytyvät kohdasta **Jalkapalloarkisto → Tilastot**. Avaa taulukko ja valitse
-välilehti **Tilastodata**. Taulukko toimii kuten Excel.
+välilehti **Tilastodata**. Taulukko toimii kuten Excel. Sama editori on myös tekstin
+**Taulukko**-lisäosassa (ks. *Tekstin lisäosat*), ja alla olevat ohjeet pätevät siihen.
 
 - **Solun muuttaminen:** napsauta solua ja kirjoita. Muutos tallentuu, kun siirryt
   pois solusta. **Enter** siirtää alas, **nuolinäppäimet** solusta toiseen ja
@@ -780,7 +873,7 @@ Avauskokoonpanot (esim. Huuhkaja-arvostelun "Huuhkajat avauskokoonpano
 2005–2025") piirretään sivulle pelikentäksi.
 
 1. Avaa tilasto ja tekstikenttä, esim. **Lisätiedot taulukon jälkeen**.
-2. Valitse tekstieditorin **+**-valikosta **Kokoonpano pelikentällä**
+2. Valitse tekstieditorin työkalupalkista (kapealla näytöllä **⋯**) **Kokoonpano pelikentällä**
    (olemassa olevaa voi muokata klikkaamalla sitä).
 3. **Otsikko**, esim. "Huuhkajat avauskokoonpano 2005–2025 (91 ottelua)".
 4. **Rivit hyökkäyksestä maalivahtiin:** ylin rivi on hyökkäys, alin
@@ -816,6 +909,13 @@ Näitä ei ollut vanhalla sivulla. Tarkista, että ne on täytetty:
 - [ ] Tulevat tapahtumat (Tapahtumat)
 - [ ] Etusivun kuvat: taustakuva ja Klubista-kuva (Sivuston asetukset → Etusivu)
 - [ ] Tietosuojaselosteen vahvistus hallitukselta (Sivut → Tietosuojaseloste)
+- [ ] Tietosuojaselosteeseen kappale ulkoisista upotuksista, esim.: "Sivuilla voi olla
+  Google Maps -karttoja, Google Forms -lomakkeita ja Vimeo-videoita. Ne ladataan vasta,
+  kun painat niiden painiketta. Silloin Google tai Vimeo voi tallentaa evästeitä
+  laitteellesi." (Sivut → Tietosuojaseloste)
+- [ ] Tietosuojaselosteeseen kappale julkisista tiedostoista: "Sivustolle ladatut
+  tiedostot ja kuvat ovat julkisia. Ne poistetaan, kun niitä ei enää käytetä."
+  (Sivut → Tietosuojaseloste)
 
 ## Tietosuojapyynnöt
 
@@ -835,6 +935,8 @@ Jos joku pyytää poistamaan tietonsa (kommentti, veikkaus tai arvostelu kuvinee
 | Linkki ei toimi | Valitse sivuston omalle sivulle **Sivuston sivu** (ks. *Linkit*). Muu osoite alkaa `https://`, `mailto:` tai `tel:`. Keltainen varoitus "Sivustolla ei ole sivua…" kertoo kirjoitusvirheestä tai julkaisemattomasta sivusta |
 | Linkki katosi valikosta tai tekstistä | Valittua sivua ei ole julkaistu, uutinen on ajastettu tai ravintola odottaa toista arvioijaa. Tekstissä sana näkyy silloin ilman linkkiä, ja valikosta kohta jää pois. Linkki palaa itsestään, kun sivu julkaistaan (ajastettu uutinen noin minuutin kuluessa julkaisuajasta) |
 | En voi poistaa sivua tai uutista, tai sen julkaisua ei voi perua | Johonkin (esim. valikkoon tai Matkailu-sivulle) on tehty linkki tähän sivuun. Ikkuna sanoo "Et ehkä voi poistaa …, koska seuraavat asiakirjat viittaavat siihen", tai tulee ilmoitus "… Tämä yleensä tarkoittaa, että muut dokumentit viittaavat siihen.". Avaa listassa näkyvä dokumentti napsauttamalla, vaihda tai poista linkki ja paina **Julkaise**. Poista sen jälkeen. Älä paina **Poista joka tapauksessa**, koska se ei onnistu |
+| Upotus ei kelpaa (punainen virhe kentässä *Upotuskoodi tai osoite*) | Lue virheen ohje. Kopioi upotuskoodi palvelun **Jaa**- tai **Upota**-valikosta (Google Maps: Jaa → Upota kartta → Kopioi HTML; Google Forms: Lähetä → <> → Kopioi). Jakolinkki ja lyhytlinkki eivät käy. Vain Google Maps, Google Forms ja Vimeo ovat sallittuja |
+| Liite ei kelpaa | Vain PDF, Word (.docx) ja Excel (.xlsx). Tallenna tiedosto ensin johonkin näistä muodoista (esim. Wordissa Tallenna nimellä → PDF) |
 | Jotain meni pieleen (alle 3 päivää sitten) | Kellokuvake → versiohistoria → palauta edellinen versio |
 | Jotain meni pieleen (yli 3 päivää sitten) | Dokumentin **⋯** → **Palauta varmuuskopiosta** → valitse viikko → tarkista → **Julkaise** |
 | Poistin vahingossa | **Sivuston asetukset → Varmuuskopiot** → uusin kopio → välilehti **Palauta poistettu** |

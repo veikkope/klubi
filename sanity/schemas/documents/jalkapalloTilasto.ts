@@ -2,8 +2,7 @@ import { BarChartIcon } from "@sanity/icons";
 import { defineField, defineType } from "sanity";
 import { HUUHKAJAT_OSIOT, osioLiittyyKauteen } from "../../../lib/huuhkajat-osiot";
 import { MESTARUUSMAAT } from "../../../lib/ulkomaiset-mestarit";
-import { TilastoDokumenttiInput } from "../../components/taulukkoeditori/konteksti";
-import { TaulukkoEditori } from "../../components/taulukkoeditori/TaulukkoEditori";
+import { TaulukkoKontekstiInput } from "../../components/taulukkoeditori/konteksti";
 import { seoFields } from "../objects/seoFields";
 import {
   legacyUrlField,
@@ -14,6 +13,7 @@ import {
   polkuMuuttunut,
 } from "../objects/contentMeta";
 import { HAKUKONEET_RYHMA, OSOITE_OTSIKKO } from "../objects/sanasto";
+import { rivitKentta, sarakkeetKentta } from "../objects/taulukkoKentat";
 
 export const jalkapalloTilasto = defineType({
   name: "jalkapalloTilasto",
@@ -21,7 +21,7 @@ export const jalkapalloTilasto = defineType({
   type: "document",
   icon: BarChartIcon,
   // Taulukkoeditori muokkaa sekä sarakkeita että rivejä (docs/19).
-  components: { input: TilastoDokumenttiInput },
+  components: { input: TaulukkoKontekstiInput },
   groups: [
     { name: "perustiedot", title: "Perustiedot", default: true },
     { name: "data", title: "Tilastodata" },
@@ -155,72 +155,8 @@ export const jalkapalloTilasto = defineType({
       type: "portableText",
       group: "perustiedot",
     }),
-    defineField({
-      name: "columns",
-      title: "Taulukon sarakkeet",
-      description: "Määrittele sarakkeiden avain, otsikko ja tyyppi.",
-      type: "array",
-      // Sarakkeita muokataan taulukkoeditorin otsikkoriviltä (rows-kenttä).
-      hidden: true,
-      of: [
-        {
-          type: "object",
-          fields: [
-            { name: "key", title: "Avain (data-key)", type: "string", validation: (rule) => rule.required() },
-            { name: "label", title: "Otsikko (näkyvä)", type: "string", validation: (rule) => rule.required() },
-            {
-              name: "type",
-              title: "Tyyppi",
-              type: "string",
-              options: {
-                list: [
-                  { title: "Teksti", value: "text" },
-                  { title: "Numero", value: "number" },
-                  { title: "Päivämäärä", value: "date" },
-                  { title: "Vuosi", value: "year" },
-                  { title: "Linkki", value: "link" },
-                ],
-              },
-              initialValue: "text",
-            },
-          ],
-          preview: { select: { title: "label", subtitle: "key" } },
-        },
-      ],
-      group: "data",
-    }),
-    defineField({
-      name: "rows",
-      title: "Taulukko",
-      description:
-        "Muokkaa soluja kuten Excelissä. Sarakkeen nimen, tyypin ja järjestyksen saa " +
-        "muutettua otsikon ⋮-valikosta, rivit rivinumeron vierestä.",
-      type: "array",
-      components: { input: TaulukkoEditori },
-      of: [
-        {
-          type: "object",
-          fields: [
-            {
-              name: "cells",
-              title: "Solut",
-              type: "array",
-              of: [
-                {
-                  type: "object",
-                  fields: [
-                    { name: "key", title: "Sarake-avain", type: "string", validation: (rule) => rule.required() },
-                    { name: "value", title: "Arvo", type: "string" },
-                  ],
-                  preview: { select: { title: "key", subtitle: "value" } },
-                },
-              ],
-            },
-          ],
-        },
-      ],
-      group: "data",
-    }),
+    sarakkeetKentta({ group: "data" }),
+    rivitKentta({ group: "data" }),
     defineField({
       name: "lisatiedot",
       title: "Lisätiedot taulukon jälkeen",

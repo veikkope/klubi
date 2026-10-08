@@ -19,6 +19,9 @@ taulukoiden päivittäminen oli sihteerille käytännössä mahdotonta.
 
 ## 2. Ratkaisu
 
+Sama editori on käytössä myös tekstin **Taulukko**-lohkossa (sivu, uutinen,
+tapahtuma, klubin toiminta; docs/24 askel 6, docs/05 `rikasSisalto`).
+
 `rows`-kentällä on oma syöte, taulukkolaskennan kaltainen ruudukko
 (`sanity/components/taulukkoeditori/`). **Tietomalli on ennallaan**, joten
 migraatiota ei tarvita, ja GROQ-kyselyt ja sivuston `StatTable` toimivat
@@ -66,16 +69,26 @@ varoituksen.
 
 ## 4. Tekninen rakenne
 
-- **`konteksti.tsx`**: dokumentin juurisyöte (`components.input` tyypillä
-  `jalkapalloTilasto`) välittää juuren `onChange`-funktion kontekstissa. Kentän
-  oma `onChange` näkee vain `rows`-polun, mutta sarakemuutokset koskevat myös
-  `columns`-kenttää. Ilman kontekstia editori näyttää Sanityn oletussyötteen.
+- **`konteksti.tsx`**: `TaulukkoKontekstiInput` on taulukon sisältävän objektin
+  juurisyöte (`components.input` tyypeillä `jalkapalloTilasto` ja tekstin
+  `taulukko`-lohko, docs/24 askel 6; aiemmin nimeltään `TilastoDokumenttiInput`).
+  Se välittää objektin `onChange`-funktion kontekstissa. Kentän oma `onChange`
+  näkee vain `rows`-polun, mutta sarakemuutokset koskevat myös `columns`-kenttää.
+  Objektin `onChange` ottaa patchit objektin omasta juuresta, joten samat patchit
+  toimivat dokumentissa ja tekstilohkossa. Ilman kontekstia editori näyttää
+  Sanityn oletussyötteen.
+- **Kentät** `columns` ja `rows` määritellään kerran (`sanity/schemas/objects/
+  taulukkoKentat.ts`: `sarakkeetKentta`, `rivitKentta`), ja tallennusmuoto on
+  sama molemmissa käyttöpaikoissa.
 - **`patchit.ts`**: muutokset pieninä, `_key`-polkuihin kohdistuvina patcheina
   (`set`, `unset`, `insert`, `setIfMissing`). Yksi solu, rivi tai sarake kerrallaan,
   ei koko taulukon ylikirjoitusta, joten samanaikaiset muokkaukset eivät kumoa
   toisiaan ja versiohistoriasta näkee, mikä muuttui. Ainoa koko taulukon
   korvaus on tuonnin *Korvaa koko taulukko*, ja siihen tarvitaan erillinen valinta.
-- **`TaulukkoEditori.tsx`**: ruudukko. Solut ovat hallitsemattomia syötteitä
+- **`TaulukkoEditori.tsx`**: ruudukko. Sarakkeet luetaan rivien rinnalta
+  suhteellisella polulla `useFormValue([...props.path.slice(0, -1), "columns"])`,
+  joten editori toimii sekä dokumentin juuressa että tekstin taulukkolohkossa
+  (lohko avautuu dialogiin, `options.modal` `width: "auto"`). Solut ovat hallitsemattomia syötteitä
   (`defaultValue`, avaimena tallennettu arvo), joten kirjoittaminen ei renderöi
   taulukkoa uudelleen. Rivit on muistettu (`memo`), ja toiminnot luodaan kerran
   ja lukevat tuoreen tilan vasta tapahtumahetkellä, joten solun tallennus

@@ -1,6 +1,7 @@
-import { defineField, type FileRule } from "sanity";
+import { DocumentPdfIcon } from "@sanity/icons";
+import { defineField, defineType, type FileRule } from "sanity";
 
-import { LIITE_ISO_TAVUA, LIITTEEN_ACCEPT, tarkistaLiitetiedosto } from "../../../lib/liite";
+import { LIITE_ISO_TAVUA, LIITTEEN_ACCEPT, liitteenTiedot, tarkistaLiitetiedosto } from "../../../lib/liite";
 import { apiVersion } from "../../env";
 
 /**
@@ -20,8 +21,10 @@ type Asetukset = {
   name?: string;
   title?: string;
   description?: string;
-  /** Virhe "Lisää tiedosto.", kun kenttä on käytössä ja tyhjä. */
+  /** Virhe (`tyhjaVirhe`), kun kenttä on käytössä ja tyhjä. */
   pakollinen?: boolean;
+  /** Pakollisen tyhjän kentän virhe. */
+  tyhjaVirhe?: string;
   /** Onko kenttä käytössä (esim. linkin tyyppi on Tiedosto). Muuten säännöt ohitetaan. */
   aktiivinen?: (parent: unknown) => boolean;
   hidden?: (konteksti: { parent?: unknown; value?: unknown }) => boolean;
@@ -38,6 +41,7 @@ export function liitetiedostoKentta({
   title = "Tiedosto",
   description = LIITTEEN_KUVAUS,
   pakollinen = true,
+  tyhjaVirhe = "Lisää tiedosto.",
   aktiivinen = () => true,
   hidden,
   kayttamatonVaroitus,
@@ -53,7 +57,7 @@ export function liitetiedostoKentta({
     validation: (rule: FileRule) => [
       rule.custom((arvo, konteksti) => {
         if (!aktiivinen(konteksti.parent)) return true;
-        if (!arvo?.asset?._ref) return pakollinen ? "Lisää tiedosto." : true;
+        if (!arvo?.asset?._ref) return pakollinen ? tyhjaVirhe : true;
         return tarkistaLiitetiedosto(arvo);
       }),
       rule
@@ -83,3 +87,41 @@ export function liitetiedostoKentta({
     ],
   });
 }
+
+/**
+ * Tekstin liitelohko (docs/24 askel 6): linkki tiedostoon, jonka perässä
+ * sivulla näkyvät tyyppi ja koko, esim. "Vuosikokouskutsu 2027 (PDF, 240 kt)".
+ */
+export const liite = defineType({
+  name: "liite",
+  title: "Liite (PDF, Word, Excel)",
+  type: "object",
+  icon: DocumentPdfIcon,
+  fields: [
+    defineField({
+      name: "otsikko",
+      title: "Linkin teksti",
+      type: "string",
+      description:
+        'Mikä tiedosto on, esim. "Vuosikokouskutsu 2027" tai "Klubin säännöt". Sivulla näkyy myös tiedoston tyyppi ja koko.',
+      validation: (rule) => rule.required().min(3).max(100).error("Kirjoita liitteelle nimi (3–100 merkkiä)."),
+    }),
+    liitetiedostoKentta({ tyhjaVirhe: "Valitse tiedosto." }),
+  ],
+  preview: {
+    select: {
+      otsikko: "otsikko",
+      paate: "tiedosto.asset.extension",
+      koko: "tiedosto.asset.size",
+      nimi: "tiedosto.asset.originalFilename",
+    },
+    prepare: ({ otsikko, paate, koko, nimi }) => {
+      const tiedot = liitteenTiedot({ extension: paate, size: koko });
+      return {
+        title: otsikko || nimi || "Liite",
+        subtitle: tiedot ? `Liite · ${tiedot}` : "Liite · tiedosto puuttuu",
+        media: DocumentPdfIcon,
+      };
+    },
+  },
+});
