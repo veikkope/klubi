@@ -495,7 +495,7 @@ async function main() {
       alkuperainenArvio: { ratingOverall: 8 },
     };
     const kysely = `*[_type == "ravintola" && ${JULKINEN_RAVINTOLA}]._id`;
-    const julkiset = (docs: unknown[]) => evaluate(parse(kysely), { dataset: docs }).then((t) => t.get());
+    const julkiset = (docs: unknown[]) => Promise.resolve(evaluate(parse(kysely), { dataset: docs })).then((t) => t.get());
     return Promise.all([julkiset([ravintola]), julkiset([{ ...tyhjennaKopiosta(ravintola), _id: "r2" }])]).then(
       ([alkuperainen, kopio]) => {
         assert.deepEqual(alkuperainen, ["r1"], "alkuperäinen on julkinen");

@@ -2270,7 +2270,7 @@ async function parseSingletonit(): Promise<Singletonit> {
   return {
     etusivu: {
       heroEyebrow: defaultEtusivu.heroEyebrow ?? undefined,
-      heroTitle: defaultEtusivu.heroTitle,
+      heroTitle: defaultEtusivu.heroTitle ?? "",
       heroDescription: defaultEtusivu.heroDescription,
       heroCtas: (defaultEtusivu.heroCtas ?? []).map((c) => ({ label: c.label, href: c.href, primary: Boolean(c.primary) })),
       ...(seuraava ? { seuraavaOttelu: seuraava } : {}),

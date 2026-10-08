@@ -326,12 +326,15 @@ test("onLinkkiTaytetty valitun tyypin mukaan", () => {
   assert.equal(onLinkkiTaytetty(undefined), false);
 });
 
+/** Vanha linkkiobjekti ylimääräisine kenttineen (href), kuten se tulee Studion lomakkeelta. */
+const vanhaLinkki = (o: { tyyppi?: string; href?: string }): { tyyppi?: string | null } => o;
+
 test("vanhan linkin Osoite-kenttä ei piiloudu tyhjennettäessä, ja tyhjä pakollinen linkki on virhe", () => {
   // Vanha valikkolinkki ilman tyyppiä: isä tyhjentää osoitteen.
-  assert.equal(osoiteKaytossa({ href: "/ottelut" }), true);
+  assert.equal(osoiteKaytossa(vanhaLinkki({ href: "/ottelut" })), true);
   assert.equal(osoiteKaytossa({}), true, "tyyppi puuttuu: kenttä pysyy näkyvissä");
   assert.equal(osoiteKaytossa({ tyyppi: "osoite" }), true);
-  assert.equal(osoiteKaytossa({ tyyppi: "sivu", href: "/vanha" }), false);
+  assert.equal(osoiteKaytossa(vanhaLinkki({ tyyppi: "sivu", href: "/vanha" })), false);
   assert.equal(osoiteKaytossa({ tyyppi: "tiedosto" }), false);
   assert.match(String(tarkistaOsoite("", {}, true)), /Valitse yltä, mihin linkki vie, tai kirjoita osoite/);
   assert.match(String(tarkistaOsoite(undefined, { tyyppi: "osoite" }, true)), /Kirjoita osoite/);
@@ -339,7 +342,7 @@ test("vanhan linkin Osoite-kenttä ei piiloudu tyhjennettäessä, ja tyhjä pako
   assert.equal(tarkistaOsoite("", { tyyppi: "sivu" }, true), true, "ei käytössä");
   assert.match(String(tarkistaOsoite("www.x.fi", {}, true)), /https:\/\//);
   assert.equal(tarkistaOsoite("/ottelut", {}, true), true);
-  assert.equal(valittuTyyppi({ href: "/x" }), null, "vanha linkki: ei valintaa");
+  assert.equal(valittuTyyppi(vanhaLinkki({ href: "/x" })), null, "vanha linkki: ei valintaa");
 });
 
 test("kaksoisluku: keskeneräinen uusi linkki ei kadota vanhaa osoitetta, mutta siitä varoitetaan", () => {

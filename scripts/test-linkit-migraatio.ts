@@ -262,7 +262,7 @@ test("etusivu: pikalinkit taulukkona, lohkon ctaLinkki omalla polullaan, ctaHref
     ctaLinkki: { _type: "linkki", ...viittaus("sivu-klubi") },
   });
   assert.deepEqual(uusi.blocks[2].ctaLinkki, { _type: "linkki", tyyppi: "osoite", href: "/jalkapalloarkisto/arvokisat#x" });
-  assert.equal(uusi.heroCtas[1].tyyppi, "osoite");
+  assert.equal((uusi.heroCtas[1] as { tyyppi?: string }).tyyppi, "osoite");
 });
 
 test("klubin toiminta: url → viittaus tai osoite (href kopioidaan), url säilyy", () => {
