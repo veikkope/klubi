@@ -68,6 +68,15 @@ Toteutus: per-sivu komponentti `<JsonLd schema={...} />` joka renderöi `<script
 ### Lähde
 `lib/redirects.ts` (versioitu Gitissä) → ladataan `next.config.ts`:n `redirects()`-funktiosta.
 
+### Generaattori (`npm run redirects`)
+`scripts/generate-redirects.ts` kirjoittaa `lib/redirects.ts`:n. Päivitetty 8.10.2026 (docs/24 askel 12, docs/23 Y19:n loppu):
+
+- **Datasetti:** `SANITY_REDIRECTS_DATASET`, sitten `NEXT_PUBLIC_SANITY_DATASET` (myös `.env.local`), muuten **production**. Skripti vain lukee, joten production on turvallinen oletus; isä muokkaa sitä ja Vercel rakentaa siitä. Developmentin migraatioajon jälkeen: `SANITY_REDIRECTS_DATASET=development npm run redirects`.
+- **Token:** luku tehdään tokenilla (`scripts/lib/sanity-token.ts`: `.env.local`-tiedoston `SANITY_API_WRITE_TOKEN` tai Sanity CLI:n kirjautuminen), koska yksityinen datasetti palauttaa ilman tokenia tyhjän tuloksen virheettä. Skripti kieltäytyy kirjoittamasta, jos Sanity palauttaa 0 blogikirjoitusta.
+- **Syötteet gitissä:** vanhan sivuston osoitteet ovat `data/crawl-status.tsv`:ssä (198 riviä, tila, koko ja polku; ei henkilötietoja). Tiedosto on gitissä (`.gitignore`-poikkeus), joten ohjaukset voi generoida myös vanhan sivuston poistuttua. Blogiohjausten lähde on Sanityn `blogspot.polku`, joten `data/normalized/blogspot-map.json` ei ole gitissä. `data/manual-redirects.csv`:tä ei ole; tiedosto luetaan, jos se luodaan.
+- **`--offline`** käyttää vain skriptin sääntöjä. Tulos **ei** ole sama kuin Sanity-ajossa: siitä puuttuvat taulukoiden ankkurit, ravintolasivujen tarkat näkymät, uutisiin osoittavat .htm-ohjaukset ja blogiohjaukset. Sitä ei commitoida; se on vain varajärjestely, jos Sanity ei ole käytettävissä.
+- **Tarkistus:** ajon jälkeen `git diff lib/redirects.ts`. 8.10.2026 productionia vasten (957 dokumenttia, 200 vanhaa osoitetta, 530 blogikirjoitusta) tulos oli tavulleen sama kuin gitissä. `npm run test:ohjausgeneraattori` (osa `npm test`:iä) varmistaa ilman Sanityä, että jokaisella `crawl-status.tsv`:n osoitteella on täsmälleen yksi ohjaus, kohteet ovat sivuston polkuja eivätkä ketjuudu toiseen kiinteään ohjaukseen ja oletusdatasetti on production.
+
 ### Strategia
 - **Kovat redirectit** (yksittäinen vanha URL → yksittäinen uusi URL): suora mapping
 - **Pehmeät redirectit** (kategoria → hakemisto): query-parametri. Vanhat ravintolasivut (`ruokailu*.htm`) ohjautuvat tarkimpaan hakemistonäkymään, joka näyttää kaikki sivun ravintolat (ks. "Ravintolasivujen ohjaukset" alla).
@@ -230,7 +239,7 @@ Ajonaikaista legacyUrl-hakua ei tehdä. Kaikilla 188 .htm-osoitteella ja 530 blo
 staattinen ohjaus, ja kaikki 689 kohdetta vastaavat 200:lla. Kun migroidun dokumentin
 osoite muuttuu, ketju on staattinen 308 → vanha polku → aiempi osoite 308 → uusi polku
 (kaksi hyppyä). `npm run redirects` päivittää staattisen kohteen suoraksi, kun kehittäjä
-ajaa sen. Poistetun dokumentin osoitteen hoitaa isän ohjaus nykyisestä osoitteesta
+ajaa sen (oletuksena productionia vasten, ks. "Generaattori"). Poistetun dokumentin osoitteen hoitaa isän ohjaus nykyisestä osoitteesta
 (docs/09 "Lyhytosoite esitteeseen", kohta Poistettu tai yhdistetty sivu).
 
 **Muistiin Sanityn pääversiopäivitykseen:** tarkista, että `delta::operation()` ja

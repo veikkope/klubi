@@ -1,8 +1,13 @@
 /**
  * Generoi `lib/redirects.ts`:n vanhan sivuston URL-listasta.
  *
- * Ajo: `npm run redirects`            (lukee Sanityn development-datasetin)
+ * Ajo: `npm run redirects`            (lukee Sanityn production-datasetin, vain luku)
  *      `npm run redirects -- --offline` (vain säännöt; ei Sanity-yhteyttä)
+ *
+ * Datasetti: `SANITY_REDIRECTS_DATASET`, sitten `NEXT_PUBLIC_SANITY_DATASET`
+ * (myös .env.local), muuten `production`. Production on oletus, koska isä
+ * muokkaa sitä ja Vercel rakentaa siitä; skripti vain lukee. Lukeminen vaatii
+ * tokenin (scripts/lib/sanity-token.ts), koska datasetti voi olla yksityinen.
  *
  * Lähteet etusijajärjestyksessä (ensimmäinen osuma voittaa):
  *  1. data/manual-redirects.csv  — käsin tehdyt poikkeukset (`vanha,uusi` per rivi)
@@ -13,6 +18,10 @@
  *     sivuille, joilla ei ole omaa dokumenttia (kehykset, hubit, yhdistetyt).
  *
  * Kaikki vanhat osoitteet: data/crawl-status.tsv (tuotettu `npm run crawl`).
+ * Tiedosto on gitissä, joten generaattori toimii myös vanhan sivuston poistuttua.
+ * `--offline` käyttää vain sääntöjä: se ei tuota samaa tiedostoa kuin Sanity-ajo
+ * (ei ankkureita, ravintolasivujen tarkkoja näkymiä eikä blogiohjauksia ilman
+ * data/normalized/blogspot-map.json-tiedostoa), joten sen tulosta ei commitoida.
  *
  * Miksi generoitu eikä käsin ylläpidetty: vanhoja URL:eja on 198. Käsin
  * ylläpidetty lista ajautuu erilleen todellisuudesta hiljaa, ja jokainen
@@ -437,7 +446,7 @@ async function blogspotDestinations(offline: boolean): Promise<Map<string, strin
 }
 
 function redirectsDataset(): string {
-  return process.env.SANITY_REDIRECTS_DATASET ?? process.env.NEXT_PUBLIC_SANITY_DATASET ?? "development";
+  return process.env.SANITY_REDIRECTS_DATASET ?? process.env.NEXT_PUBLIC_SANITY_DATASET ?? "production";
 }
 
 /**
@@ -454,7 +463,7 @@ async function sanityQuery<T>(query: string): Promise<T> {
         "jos haluat generoida ohjaukset pelkillä säännöillä.",
     );
   }
-  // Luku on turvallista mistä tahansa datasetista; oletus on migraation development.
+  // Vain luku, joten mikä tahansa datasetti on turvallinen; oletus on production.
   const token = sanityWriteToken() ?? process.env.SANITY_API_READ_TOKEN;
   const url =
     `https://${projectId}.api.sanity.io/v2024-10-01/data/query/${redirectsDataset()}` +

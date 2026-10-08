@@ -1411,6 +1411,8 @@ Muut testit:
 
 Ajonaikaista legacyUrl-hakua ei tehdä: kaikilla 188 .htm-osoitteella ja 530 blogipolulla on staattinen ohjaus, ja kaikki 689 kohdetta vastaavat 200:lla.
 
+**Toteutettu 8.10.2026.** Generaattorin oletus on production (vain luku; `SANITY_REDIRECTS_DATASET` ja `NEXT_PUBLIC_SANITY_DATASET` ohittavat), kommentit korjattu, `data/crawl-status.tsv` gitissä (`.gitignore`-poikkeus) ja docs/07:ään luku "Generaattori". Uusi testi `npm run test:ohjausgeneraattori` (osa `npm test`:iä): crawlin jokaisella osoitteella täsmälleen yksi ohjaus, kohteet omia polkuja ilman ketjuja, oletusdatasetti production. **Poikkeama hyväksymiskriteeriin:** `--offline` ei tuota samaa tiedostoa eikä ole koskaan tuottanut (Sanity on auktoritatiivinen: offline-ajosta puuttuvat ankkurit, ravintolasivujen tarkat näkymät, uutisiin osoittavat .htm-ohjaukset ja 530 blogiohjausta; ero noin 600 riviä). Kriteeri todennettiin siksi Sanity-ajolla: `npm run redirects` oletusdatasetillä (production, CLI-token, vain luku) tuotti `lib/redirects.ts`:n tavulleen samana kuin gitissä (200 vanhaa osoitetta, 530 blogikirjoitusta, 44 ravintolasivua 100 %).
+
 ---
 
 ## 5. Tuotantomuutokset (kehittäjä tekee erikseen, ei toteutusaskeleissa)

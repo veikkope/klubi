@@ -55,6 +55,8 @@ next-env.d.ts
 # vanhan sivuston raakakopio (regeneroitavissa crawlilla)
 /data/raw-html/
 /data/crawl-status.tsv
+# Ohjausgeneraattorin syöte gitissä: ohjaukset voi generoida myös vanhan sivuston poistuttua (docs/24 askel 12)
+!/data/crawl-status.tsv
 /data/external-links.txt
 /data/normalized/
 /sanity/extract.json
