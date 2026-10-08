@@ -83,6 +83,22 @@ niin oikea lomake aukeaa.
   taso). Vanhemman virheen voit korjata itse viikoittaisesta varmuuskopiosta:
   dokumentin **⋯** → **Palauta varmuuskopiosta** (ks. Varmuuskopiot).
 - **Pakolliset kentät** näkyvät punaisella. Julkaisu onnistuu vasta, kun ne on täytetty.
+- **Julkaisun tila ja merkit (dokumentin alapalkki):** dokumentin alareunassa, **Julkaise**-
+  painikkeen vasemmalla puolella, näet saman palkin tiedot:
+  - Sanityn oma tila: onko muutos vielä luonnos vai julkaistu.
+  - Tilamerkit, jotka kertovat sen, mitä et muuten näkisi. Kun viet osoittimen merkin
+    päälle, näet selityksen:
+    - **Ajastettu** (uutinen): julkaisuaika on tulevaisuudessa. Selitys kertoo, milloin
+      uutinen tulee sivustolle. Jos selityksessä lukee "kun painat Julkaise", uusi aika
+      on vasta luonnoksessa.
+    - **Tarkistettava:** migraatio merkitsi tämän tarkistettavaksi. Lue kohta **Mitä
+      tarkistaa** (ks. *Tarkistettavat*).
+    - **Odottaa toista arvioijaa** (ravintola): ravintola ei vielä näy sivustolla, koska
+      sillä on alle kahden klubilaisen arvosanat (ks. *Kahden klubilaisen sääntö*).
+    - **Piilotettu** (kommentti): kommentti ei näy sivulla. Palautus: **Näytä sivulla**.
+
+  Entiset hallituksen jäsenet eivät saa merkkiä: ne löytyvät listasta **Klubi → Hallitus →
+  Entiset jäsenet**.
 
 ### Linkit
 
@@ -163,7 +179,8 @@ toinen.
   - **Palloveikkaus:** Palloveikkaus-sivu ja **Veikkausten alasivut**
   - **Yhteystiedot:** **Osoite, sähköposti ja some** (näkyvät alatunnisteessa ja
     yhteystietosivulla) sekä Yhteystiedot-sivun otsikko ja johdanto
-- **Ravintolat:** ravintolat, **odottavat arvostelut**, klubilaisten arvosanat ja kaupungit
+- **Ravintolat:** ravintolat, **odottavat arvostelut**, klubilaisten arvosanat
+  (**Ravintoloittain** tai **Kaikki**) ja kaupungit
 - **Jalkapalloarkisto:** tilastot, arvokisat, pelaajat ja stadionit
 - **Osioiden sivut:** listasivujen otsikot, johdannot ja hakukonetekstit (Uutiset ja
   tapahtumat, Ravintolat, Jalkapalloarkisto). Ks. *Osioiden sivut* alla.
@@ -227,7 +244,29 @@ Tiivistelmään.
 klo 8), valitse **Julkaisuaika**-kenttään se hetki ja paina **Julkaise** heti. Uutinen
 odottaa piilossa ja tulee näkyviin itsestään noin minuutin kuluessa valitusta ajasta.
 Listassa ja kohdassa **Tehtävät sinulle → Ajastetut uutiset** sen kohdalla lukee
-*Ajastettu* ja aika.
+*Ajastettu* ja aika, ja uutisen alapalkissa (Julkaise-painikkeen vieressä) on merkki **Ajastettu**.
+
+### Valmiit pohjat (vuosikokouskutsu, palloveikkaus)
+
+Toistuvat uutiset aloitetaan valmiista pohjasta, jossa otsikko, Lyhenne, kategoriat,
+tunnisteet ja teksti ovat valmiina:
+
+1. **Uutiset** → **+** (tai yläpalkin **Luo**) → valitse pohja:
+   - **Vuosikokouskutsu:** kokouksen järjestysnumero ja vuosi ovat valmiina, kategoria
+     Tapahtumat.
+   - **Palloveikkauksen tilanne:** kierroksen jälkeinen tilanne, kategoriat Jalkapallo ja
+     Palloveikkaus.
+   - **Palloveikkaus: uusi kausi:** säännöt ja veikkauslomake (sarjajärjestys) valmiina.
+     Lisää välilehdellä **Kommentit ja veikkaus** joukkueet ja **Veikkaus sulkeutuu**
+     (ks. *Veikkaus tai kommentit uutisen alle*).
+2. Täytä kaikki hakasulkeissa olevat kohdat, esim. `[täytä: kellonaika]` → `11.30`.
+   Poista samalla hakasulkeet.
+3. Paina **Osoite sivustolla** → *Luo* vasta, kun otsikko on valmis.
+4. **Julkaise**.
+
+Jos jokin `[täytä: …]`-kohta jää tekstiin, kenttä näkyy punaisena ("Täytä vielä
+hakasulkeissa olevat kohdat: …"), eikä uutista voi julkaista. Tavallisen uutisen saat
+valitsemalla pohjan **Uutinen**.
 
 ### Tekstin lisäosat (+ -valikko)
 
@@ -446,7 +485,8 @@ Jäsenet voivat jättää veikkauksen tai kommentin uutisen alle, ja viesti näk
 Kuka tahansa voi kirjoittaa pelkällä nimellään. Asiattomat viestit piilotetaan jälkikäteen
 (ks. alla), ja kommentoinnin voi sulkea uutiselta rastin poistamalla.
 
-**Palloveikkaus (joukkueet järjestykseen):**
+**Palloveikkaus (joukkueet järjestykseen):** nopein tapa on pohja **Palloveikkaus: uusi
+kausi** (ks. *Valmiit pohjat*), jolloin kohdat 1–3 ovat valmiina. Käsin:
 1. Tee uutinen, esim. "Palloveikkaus 2027", ja kirjoita ohjeet tekstiin.
 2. Välilehti **Kommentit ja veikkaus** → rasti **Salli kommentit**.
 3. Lomakkeen tyyppi **Sarjajärjestys**. **Joukkueet**: kaikki sarjan joukkueet, yksi per rivi.
@@ -467,7 +507,7 @@ määrä (oletus 4) ja kysytäänkö maalikuningas.
 Asiaton viesti: avaa kommentti ja paina alareunan **Piilota sivulta**. Kommentti
 katoaa sivulta heti, eikä Julkaise-painallusta tarvita. Kommentti säilyy Studiossa,
 ja sen saa takaisin samasta painikkeesta (**Näytä sivulla**). Listassa piilotetun
-kommentin edessä on 🚫.
+kommentin edessä on 🚫, ja kommentin alapalkissa on merkki **Piilotettu**.
 
 Pysyvä poisto (esim. jäsen pyytää poistamaan tietonsa): alareunan **⋯ → Poista
 pysyvästi**. Poistettua ei voi palauttaa.
@@ -774,10 +814,12 @@ ennen ruokailutaulukossa: jokaisen klubilaisen ruoka, hinta ja viihtyvyys, ja
 ravintolan arvosana on niiden keskiarvo (ilman painotuksia). Arvosanaa ei
 kirjoiteta käsin, ja ravintolan arvosanakentät ovat lukittuja.
 
-- **Pisteiden lisääminen:** Ravintolat → **Klubilaisten arvosanat** → **+**. Valitse
-  ravintola ja klubilainen, anna pisteet ja päivä → **Julkaise**. Arvosana päivittyy
-  sivulle itsestään.
-- **Uusintakäynti:** avaa klubilaisen arvosana (sama lista, hae ravintolan nimellä),
+- **Pisteiden lisääminen:** Ravintolat → **Klubilaisten arvosanat** → **Ravintoloittain**
+  → valitse ravintola → **+**. Ravintola ja tämä päivä ovat valmiina: valitse klubilainen,
+  anna pisteet (ja muuta päivää tarvittaessa) → **Julkaise**. Arvosana päivittyy sivulle
+  itsestään. Samassa listassa näet ravintolan kaikki klubilaisten arvosanat uusin ensin.
+  (Myös **Kaikki (uusin ensin)** → **+** toimii, mutta silloin ravintola valitaan itse.)
+- **Uusintakäynti:** avaa klubilaisen arvosana (Ravintoloittain → ravintola),
   muuta pisteet ja päivä → **Julkaise**. Uusin arvosana korvaa vanhan, joten
   samaa klubilaista ei lasketa kahdesti. Studio varoittaa, jos yrität lisätä
   klubilaiselle toisen arvosanan samaan ravintolaan.
@@ -792,7 +834,8 @@ kirjoiteta käsin, ja ravintolan arvosanakentät ovat lukittuja.
 
 **Kahden klubilaisen sääntö:** ravintola näkyy sivustolla vasta, kun vähintään kaksi
 klubilaista on arvioinut sen. Siihen asti se odottaa listassa **Ravintolat → Odottavat
-toista arvioijaa**, ja se tulee sivulle itsestään, kun toinen arvosana lisätään.
+toista arvioijaa**, ravintolan alapalkissa on merkki **Odottaa toista arvioijaa**, ja se
+tulee sivulle itsestään, kun toinen arvosana lisätään.
 Klubilaiset näkevät samat paikat sivulla **/ravintolat/odottavat** (painike
 Ravintola-arviot-sivun otsikon alla; haku nimellä tai kaupungilla) ja arvostelun
 ravintolavaiheessa, ja voivat arvostella ne sieltä suoraan.
@@ -1016,7 +1059,7 @@ dokumentit rastilla **Vaatii tarkistuksen** ja kirjoitti syyn kenttään
 
 Lista siivottiin 1.10.2026: turhat merkinnät poistettiin ja varmat korjaukset tehtiin.
 Ajantasainen määrä näkyy valikossa **Tarkistettavat**. Merkki ⚠ nimen edessä kertoo
-saman listoissa.
+saman listoissa, ja dokumentin alapalkissa on merkki **Tarkistettava**.
 
 ## Täytä itse — puuttuvat tiedot
 
@@ -1055,6 +1098,7 @@ Jos joku pyytää poistamaan tietonsa (kommentti, veikkaus tai arvostelu kuvinee
 |---|---|
 | Aloituksessa on punainen rivi | Lue rivin ohje. Sisältösi on tallessa, ja voit jatkaa työtä normaalisti. Kerro kehittäjälle rivin otsikko ja teksti |
 | Julkaisu ei onnistu | Punaiset kentät ovat pakollisia. Vieritä alas, täytä ja yritä uudelleen |
+| Unohdin [täytä]-kohdan (punainen "Täytä vielä hakasulkeissa olevat kohdat") | Pohjasta tehdyssä uutisessa on vielä kohta `[täytä: …]` otsikossa, Lyhenteessä tai tekstissä. Virhe luettelee kohdat. Kirjoita tilalle oikea tieto ja poista hakasulkeet, sitten **Julkaise** |
 | Muutos ei näy sivulla | Tarkista, että painoit **Julkaise**. Sivu päivittyy yleensä sekunneissa, viimeistään minuutissa |
 | Linkki ei toimi | Valitse sivuston omalle sivulle **Sivuston sivu** (ks. *Linkit*). Muu osoite alkaa `https://`, `mailto:` tai `tel:`. Keltainen varoitus "Sivustolla ei ole sivua…" kertoo kirjoitusvirheestä tai julkaisemattomasta sivusta |
 | Linkki katosi valikosta tai tekstistä | Valittua sivua ei ole julkaistu, uutinen on ajastettu tai ravintola odottaa toista arvioijaa. Tekstissä sana näkyy silloin ilman linkkiä, ja valikosta kohta jää pois. Linkki palaa itsestään, kun sivu julkaistaan (ajastettu uutinen noin minuutin kuluessa julkaisuajasta) |

@@ -293,7 +293,7 @@ Listanäkymässä järjestys: `startsAt` desc (tulevat ensin).
 
 | Kenttä | Tyyppi | Pakollinen | Kuvaus |
 |---|---|---|---|
-| title | string | kyllä | |
+| title | string | kyllä | Virhe, jos tekstissä on valmiin pohjan `[täytä: …]`-kohta (myös `excerpt` ja `body`, docs/24 askel 10) |
 | slug | slug | kyllä | |
 | publishedAt | datetime | kyllä | Julkaisuaika |
 | tiivistelma | text | ei | Tiivistelmä jutun alussa; jos tyhjä, jutun alussa näkyy `excerpt` |
@@ -541,6 +541,34 @@ Studion rakenne on `sanity/structure.ts` (kiinteät `.id()`-tunnukset, docs/24 �
 - **Klubi** (`klubi`): Yhteystiedot-singleton on kohdassa Klubi → Yhteystiedot → Osoite, sähköposti ja some, Yhteystiedot-sivun otsikon ja johdannon rinnalla.
 - `asetukset`-singleton ei ole valikossa (mikään sen kentistä ei vaikuta sivustoon).
 - **Tehtävät sinulle** (`tehtavat`) rakennetaan rekisteristä `sanity/lib/tehtavat.ts` (`TEHTAVAT`: arvostelut, kommentit, julkaisemattomat, ajastetut, tarkistettavat), josta Aloitus-työkalu (`sanity/plugins/aloitus.tsx`, Studion oletusnäkymä) laskee samat laskurit. Polut: `/studio/structure/tehtavat;<id>`.
+- **Ravintolat → Klubilaisten arvosanat** (`ravintolat;arvosanat`, docs/24 askel 10): **Ravintoloittain** (`arvosanat-ravintoloittain`: ravintola → sen `klubiArvio`-dokumentit, uusin ensin; listan + käyttää pohjaa `klubiArvio-ravintolalle`, ravintolan tunnus ilman `drafts.`-etuliitettä) ja **Kaikki (uusin ensin)** (`arvosanat-kaikki`).
+
+## Valmiit pohjat ja tilamerkit (docs/24 askel 10)
+
+**Pohjat** (`sanity/pohjat.ts`, arvot `lib/pohjat.ts`):
+
+| Pohja (id) | Tyyppi | Arvot |
+|---|---|---|
+| Vuosikokouskutsu (`uutinen-vuosikokous`) | uutinen | Otsikko `Lahden Suomalainen Klubi ry - vuosikokous <vuosi>`, Lyhenne ja ensimmäinen kappale `…:n <vuosi − 2007>. vuosikokous pidetään [täytä: …]`, kategoria Tapahtumat (slug `tapahtumaraportti`), tunnisteet, neljä kappaletta |
+| Palloveikkauksen tilanne (`uutinen-palloveikkaus-tilanne`) | uutinen | Otsikko `Palloveikkaus tilanne <vuosi> / [täytä: kierros]`, kategoriat Jalkapallo ja Palloveikkaus, tunnisteet |
+| Palloveikkaus: uusi kausi (`uutinen-palloveikkaus-kausi`) | uutinen | Otsikko `Palloveikkaus <vuosi>`, säännöt Lyhenteessä, `kommentointi: { kaytossa: true, tyyppi: "sarjajarjestys" }` (joukkueet ja sulkeutumisaika täytetään itse) |
+| Klubilaisen arvosana tälle ravintolalle (`klubiArvio-ravintolalle`, parametri `ravintolaId`) | klubiArvio | `ravintola`-viittaus ja `paiva` = tämä päivä Helsingin aikaa. Jos ravintolaa ei ole julkaistu (tai tarkistus epäonnistuu), viittaus on Sanityn oman viittauskentän tapaan `_weak: true, _strengthenOnPublish: { type: "ravintola" }`, ja julkaisu vahvistaa sen |
+
+- Kategoriat haetaan Studiossa slugilla tai aiemmalla polulla (`KATEGORIAT_KYSELY`), tunnuksia ei kovakoodata. Puuttuva kategoria tai haun virhe: kategoria jää pois, ja pohja toimii silti.
+- Kenttien omat oletukset (esim. `kommentointi.tyyppi`, `publishedAt`, `needsReview`) säilyvät: Sanity yhdistää pohjan arvot niiden päälle (testattu `resolveInitialValue`-funktiolla).
+- Parametria vaativat pohjat (`lukittu-sivu`, `klubiArvio-ravintolalle`) ovat `PIILOTETUT_POHJAT`-joukossa: ne avataan vain Studion rakenteesta.
+- **`[täytä: …]`-sääntö:** `uutinen.title`, `excerpt` ja `body` (`taytaVielaSaanto`, virhetaso) estävät julkaisun, jos tekstiin jää kohta `[täytä: …]` (isot ja pienet kirjaimet; tekstieditorissa kappaleen spanit yhdessä, muut lohkot eivät). `TAYTA` on ilman g-lippua (ei `lastIndex`-tilaa), kaikki kohdat poimitaan `matchAll`-kutsulla. Pohjissa ei ole henkilötietoja (datasetti on julkinen).
+
+**Tilamerkit** (`document.badges`, `sanity/merkit.ts`, säännöt `lib/tilamerkit.ts`), aina tekstinä ja selitteellä:
+
+| Merkki | Tyypit | Ehto | Väri |
+|---|---|---|---|
+| Ajastettu | uutinen | `publishedAt` tulevaisuudessa (luonnos, jos sellainen on, muuten julkaistu). Selite "Tulee sivustolle <pvm klo>.", luonnoksen uudella ajalla "…, kun painat Julkaise." | primary |
+| Tarkistettava | `TARKISTETTAVAT_TYYPIT` (`sanity/lib/tehtavat.ts`) | `needsReview == true` | warning |
+| Odottaa toista arvioijaa | ravintola | julkaistu ja `!onJulkinenRavintola` (JS-vastine `JULKINEN_RAVINTOLA`-ehdolle, pariteetti testattu groq-js:llä) | warning |
+| Piilotettu | kommentti | `piilotettu == true` (julkaistu versio ratkaisee) | danger |
+
+Karsittu 8.10.2026 (docs/24 luku 6): "Ei vielä sivustolla" (Sanityn oma tila näyttää saman) ja "Entinen jäsen" (Hallitus-ryhmän listat).
 
 ## Validointisäännöt
 
@@ -592,7 +620,7 @@ yhä `title asc`), `arvokisa.alkuPvm/loppuPvm/hopea/pronssi`, `pelaaja.tilastot`
 
 **`klubilainen`** (dokumentti): `nimi` (pakollinen), `taulukkoNumero` (vain luku, ruokailutaulukon arvioijanumero).
 
-**`klubiArvio`** (dokumentti): `ravintola` (viite, pakollinen), `arvioija` (viite `klubilainen`, pakollinen; varoitus jos klubilaisella on jo arvosana samaan ravintolaan), `ratingFood`/`ratingPrice`/`ratingAtmosphere` (1–5, pakollinen), `paiva` (pakollinen; uusin voimassa), `kaynnit` (date[], tiedoksi), `tuotu` (vain luku: ruokailutaulukosta).
+**`klubiArvio`** (dokumentti): `ravintola` (viite, pakollinen), `arvioija` (viite `klubilainen`, pakollinen; varoitus jos klubilaisella on jo arvosana samaan ravintolaan), `ratingFood`/`ratingPrice`/`ratingAtmosphere` (1–5, pakollinen), `paiva` (pakollinen; uusin voimassa), `kaynnit` (date[], tiedoksi), `tuotu` (vain luku: ruokailutaulukosta). Pohja `klubiArvio-ravintolalle` täyttää ravintolan ja päivän (Ravintolat → Klubilaisten arvosanat → Ravintoloittain → ravintola → +).
 
 **`ravintolaKayttajaArvostelu.arvioija`**: viite `klubilainen`. Lomake täyttää, kun arvostelija valitsee nimensä klubilaisten listasta (muistetaan laitteelle) tai kirjoittaa täsmälleen saman nimen; puuttuessa varoitus. `comment` on vapaaehtoinen (4.10.2026): pelkät arvosanat riittävät. Klubilaiseen liitetty arvostelu on klubilaisen arvosana.
 

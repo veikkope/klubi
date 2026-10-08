@@ -15,6 +15,7 @@ import { KategoriatInput } from "../../components/kategoriat/KategoriatInput";
 import { TunnisteetInput } from "../../components/tunnisteet/TunnisteetInput";
 import { tarkistaTunnisteet } from "../../../lib/tunnisteet";
 import { ensimmainenIsoKuva } from "../../../lib/sisaltolohkot";
+import { taytaVielaSaanto } from "../../../lib/pohjat";
 
 /** Uutisosion kiinteät reitit app/(public)/uutiset/-kansiossa. */
 const VARATUT_POLUT = new Set(["arkisto", "tunniste", "tunnisteet"]);
@@ -34,7 +35,8 @@ export const uutinen = defineType({
       name: "title",
       title: "Otsikko",
       type: "string",
-      validation: (rule) => rule.required(),
+      // Valmiin pohjan [täytä: …] -kohta estää julkaisun (lib/pohjat.ts, docs/24 askel 10).
+      validation: (rule) => [rule.required(), rule.custom(taytaVielaSaanto)],
       group: "sisalto",
     }),
     defineField({
@@ -85,8 +87,10 @@ export const uutinen = defineType({
         "alku. Näkyy myös jutun alussa, jos Tiivistelmä on tyhjä.",
       type: "text",
       rows: 2,
-      validation: (rule) =>
+      validation: (rule) => [
         rule.max(200).warning("Lyhenne näkyy listassa enintään noin 200 merkin pituisena."),
+        rule.custom(taytaVielaSaanto),
+      ],
       group: "sisalto",
     }),
     defineField({
@@ -116,13 +120,15 @@ export const uutinen = defineType({
       description:
         "Uutisen teksti. Ei pakollinen, jos uutinen linkittää alkuperäiseen " +
         "kirjoitukseen (kenttä Alkuperäinen kirjoitus).",
-      validation: (rule) =>
+      validation: (rule) => [
         rule.custom((value, context) =>
           (Array.isArray(value) && value.length > 0) ||
           (context.document as { ulkoinenLinkki?: string } | undefined)?.ulkoinenLinkki
             ? true
             : "Sisältö on pakollinen."
         ),
+        rule.custom(taytaVielaSaanto),
+      ],
       group: "sisalto",
     }),
     defineField({

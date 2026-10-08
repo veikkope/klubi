@@ -69,7 +69,7 @@ public/                Staattiset tiedostot (favicon, robots, kuvat joita Sanity
 | Hae Blogspot-blogi paikallisesti | `npm run blogspot:fetch` → `data/blogspot/` (gitignoressa) |
 | Blogi → `development` | `npm run migrate:blogspot` (ensimmäinen kerta) · `npm run sync:blogspot` (vain uudet, säilyttää Studion muokkaukset) |
 | Blogin uudet kirjoitukset → `production` | `npm run sync:blogspot:production` (kuivaharjoitus) · `-- --vie` (varmuuskopio + `--missing` + tarkistus) |
-| Generoi redirectit | `npm run redirects` |
+| Generoi redirectit (lukee productionia, vain luku; tarkista `git diff lib/redirects.ts`) | `npm run redirects` |
 | Vie uutta sisältöä `development` → `production` | **Vain lisäys:** `npx sanity dataset import data/migration-<tyyppi>.ndjson --dataset production --missing`. **Ei koskaan `--replace` koko datasettiin**: isä muokkaa productionia (docs/17 §D) |
 | Varmuuskopio productionista | `npm run backup` → `varmuuskopiot/` (gitignoressa, kuvineen). Aina ennen isompaa muutosta. Lisäksi automaattinen viikkokopio Studioon (`/api/varmuuskopio`, docs/17 §D) |
 | Testaa varmuuskopion säännöt | `npm run test:varmuuskopio` |
@@ -84,6 +84,9 @@ public/                Staattiset tiedostot (favicon, robots, kuvat joita Sanity
 | Sanityn taso ja oikeudet (tilaus, datasetin näkyvyys, tokenien ja käyttäjien roolit, sivusto; vain luku). Aja Growth-kokeilun päätyttyä 26.10.2026 ja kun lomakkeet lakkaavat toimimasta | `npm run tarkista:sanity-taso` |
 | Testaa ajonaikaiset ohjaukset (lyhytosoitteet, aiemmat osoitteet, webhookin yhdistäminen, reittien ohjaaTaiEiLoydy) | `npm run test:ohjaukset` |
 | Päästä päähän -testi: ohjaukset ja aiemmat osoitteet (luo ja poistaa testisivun ja kaksi ohjausta; netto 0). `-- --paikallinen`: development + localhost (palvelin development-datasetillä, `SANITY_REVALIDATE_SECRET` ja `SANITY_API_WRITE_TOKEN` asetettuina), webhook simuloidaan. Ilman valitsinta: production ja aito webhook, varmuuskopio ensin, webhook-jono tyhjänä (docs/24 P8) | `npm run e2e:ohjaukset` |
+| Testaa valmiit pohjat ja [täytä]-säännön (vuosikokous, palloveikkaus, arvosana ravintolalle) | `npm run test:pohjat` |
+| Testaa Studion tilamerkit (Ajastettu, Tarkistettava, Odottaa toista arvioijaa, Piilotettu; pariteetti JULKINEN_RAVINTOLA) | `npm run test:tilamerkit` |
+| Testaa ohjausgeneraattorin syötteet ja tuloksen (crawl-status.tsv ↔ lib/redirects.ts, ei ketjuja, oletusdatasetti production) | `npm run test:ohjausgeneraattori` |
 | Testaa uutishaun hakusanat | `npm run test:haku` |
 | Testaa lukuaika ja ingressisääntö (uutiset, ravintola-arviot) | `npm run test:artikkeli` |
 | Testaa uutisten tunnisteet | `npm run test:tunnisteet` |

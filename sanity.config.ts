@@ -15,6 +15,7 @@ import { PalautaVarmuuskopiosta } from "./sanity/actions/palauta-varmuuskopiosta
 import { lukitulleSivulle } from "./sanity/actions/lukittu-sivu";
 import { kopioiPohjaksi, varoitaVanhoistaOsoitteista } from "./sanity/actions/vanhat-osoitteet";
 import { PIILOTETUT_POHJAT, pohjat } from "./sanity/pohjat";
+import { merkitTyypille } from "./sanity/merkit";
 import { aloitus } from "./sanity/plugins/aloitus";
 
 export default defineConfig({
@@ -25,10 +26,13 @@ export default defineConfig({
   dataset,
   schema: {
     types: schemaTypes,
-    // Singletoneja, varmuuskopioita ja sivuston tilaa ei luoda käsin; osion sivun pohja (sanity/pohjat.ts).
+    // Singletoneja, varmuuskopioita ja sivuston tilaa ei luoda käsin; osion sivun ja valmiit pohjat (sanity/pohjat.ts).
     templates: pohjat,
   },
   document: {
+    // Tilamerkit (Ajastettu, Tarkistettava, Odottaa toista arvioijaa, Piilotettu)
+    // Sanityn omien perään (docs/24 askel 10, sanity/merkit.ts).
+    badges: (prev, { schemaType }) => [...prev, ...merkitTyypille(schemaType)],
     actions: (input, context) => {
       if (context.schemaType === "ravintolaKayttajaArvostelu") {
         // Ensisijainen toiminto, kun kävijä ehdotti uutta ravintolaa. "Hylkää
@@ -88,7 +92,7 @@ export default defineConfig({
       return [...input.map(turvallinen), PalautaVarmuuskopiosta];
     },
     newDocumentOptions: (prev, { creationContext }) => {
-      // Parametria vaativat pohjat (osion sivu) avataan vain Studion rakenteesta.
+      // Parametria vaativat pohjat (osion sivu, ravintolan arvosana) avataan vain Studion rakenteesta.
       const nakyvat = prev.filter((templateItem) => !PIILOTETUT_POHJAT.has(templateItem.templateId));
       if (creationContext.type === "global") {
         return nakyvat.filter((templateItem) => !singletonTypes.has(templateItem.templateId));

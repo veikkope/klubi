@@ -93,6 +93,55 @@ const tehtavat = (S: StructureBuilder) =>
         ),
     );
 
+/**
+ * Klubilaisten arvosanat (docs/24 askel 10, docs/23 Y37): ravintoloittain tai
+ * kaikki uusin ensin. Ravintolan listan + avaa arvosanan, jossa ravintola ja
+ * tämä päivä ovat valmiina (pohja klubiArvio-ravintolalle, sanity/pohjat.ts).
+ * Polku: /studio/structure/ravintolat;arvosanat;arvosanat-ravintoloittain.
+ */
+const klubilaistenArvosanat = (S: StructureBuilder) =>
+  S.listItem()
+    .id("arvosanat")
+    .title("Klubilaisten arvosanat")
+    .schemaType("klubiArvio")
+    .child(
+      S.list()
+        .title("Klubilaisten arvosanat")
+        .items([
+          S.listItem()
+            .id("arvosanat-ravintoloittain")
+            .title("Ravintoloittain")
+            .schemaType("ravintola")
+            .child(
+              S.documentTypeList("ravintola")
+                .title("Valitse ravintola")
+                .defaultOrdering([{ field: "name", direction: "asc" }])
+                .child((ravintolaId) => {
+                  // Luonnoksen tunnus ilman drafts.-etuliitettä: arvosana viittaa julkaistuun.
+                  const id = ravintolaId.replace(/^drafts\./, "");
+                  return S.documentList()
+                    .title("Klubilaisten arvosanat")
+                    .schemaType("klubiArvio")
+                    .filter(`_type == "klubiArvio" && ravintola._ref == $id`)
+                    .params({ id })
+                    .defaultOrdering([{ field: "paiva", direction: "desc" }])
+                    .initialValueTemplates([
+                      S.initialValueTemplateItem("klubiArvio-ravintolalle", { ravintolaId: id }),
+                    ]);
+                }),
+            ),
+          S.listItem()
+            .id("arvosanat-kaikki")
+            .title("Kaikki (uusin ensin)")
+            .schemaType("klubiArvio")
+            .child(
+              S.documentTypeList("klubiArvio")
+                .title("Klubilaisten arvosanat")
+                .defaultOrdering([{ field: "paiva", direction: "desc" }]),
+            ),
+        ]),
+    );
+
 const lista = (S: StructureBuilder, tyyppi: string, otsikko: string, id?: string) => {
   const kohta = S.listItem().title(otsikko).schemaType(tyyppi).child(S.documentTypeList(tyyppi).title(otsikko));
   return id ? kohta.id(id) : kohta;
@@ -522,14 +571,7 @@ export const structure: StructureResolver = (S) =>
                     .title("Kaikki arvostelut")
                     .defaultOrdering([{ field: "submittedAt", direction: "desc" }]),
                 ),
-              S.listItem()
-                .title("Klubilaisten arvosanat")
-                .schemaType("klubiArvio")
-                .child(
-                  S.documentTypeList("klubiArvio")
-                    .title("Klubilaisten arvosanat")
-                    .defaultOrdering([{ field: "paiva", direction: "desc" }]),
-                ),
+              klubilaistenArvosanat(S),
               lista(S, "klubilainen", "Klubilaiset"),
               lista(S, "kaupunki", "Kaupungit"),
             ]),
