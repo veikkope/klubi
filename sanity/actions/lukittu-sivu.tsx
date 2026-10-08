@@ -17,7 +17,12 @@ function onLukittu({ id, draft, published }: DocumentActionProps): boolean {
   return onLukittuSivu(id, slug);
 }
 
+/** Sama kääre samalle toiminnolle: Sanity tunnistaa toiminnon funktion perusteella. */
+const kaareet = new WeakMap<DocumentActionComponent, DocumentActionComponent>();
+
 export function lukitulleSivulle(alkuperainen: DocumentActionComponent): DocumentActionComponent {
+  const vanha = kaareet.get(alkuperainen);
+  if (vanha) return vanha;
   const Kaare: DocumentActionComponent = (props) => {
     const tulos = alkuperainen(props);
     if (!tulos || !onLukittu(props)) return tulos;
@@ -31,5 +36,6 @@ export function lukitulleSivulle(alkuperainen: DocumentActionComponent): Documen
   };
   Kaare.action = alkuperainen.action;
   Kaare.displayName = `Lukittu(${alkuperainen.displayName ?? alkuperainen.action ?? "toiminto"})`;
+  kaareet.set(alkuperainen, Kaare);
   return Kaare;
 }

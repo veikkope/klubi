@@ -25,19 +25,24 @@ import {
   aiempienPolkujenMutaatiot,
   itsekorjausSallittu,
   KOPIOSTA_POISTETTAVAT,
+  KOPIOSTA_POISTETTAVAT_TYYPEITTAIN,
   normalisoiPolku,
   omaPolku,
+  nykyinenOsoite,
   osoitteenMuutos,
+  poistonVaroitus,
   polunMuutosViesti,
   ratkaiseOhjaus,
   tarkistaOhjauksenLahde,
   tyhjennaKopiosta,
+  vanhatOsoitteet,
   yhdistaAiemmatPolut,
   type AiempiDokumentti,
   type OhjausKartta,
   type OhjausRivi,
 } from "../lib/ohjaukset";
 import { KOODIIN_SIDOTUT_SIVUT } from "../lib/path";
+import { JULKINEN_RAVINTOLA } from "../lib/ravintola-arvosana";
 import { blogspotRedirects, legacyRedirects } from "../lib/redirects";
 import type { RavintolatFacetData } from "../sanity/lib/queries/ravintolat";
 import { ohjauskarttaQuery } from "../sanity/lib/queries/ohjaukset";
@@ -416,11 +421,168 @@ async function main() {
     assert.equal(itsekorjausSallittu(null, "/b", "/c", nyt), false);
   });
 
-  await test("tyhjennaKopiosta: kopio ei peri vanhoja osoitteita", () => {
-    assert.ok(KOPIOSTA_POISTETTAVAT.includes("aiemmatPolut") && KOPIOSTA_POISTETTAVAT.includes("muutLegacyUrlit"));
-    const doc = { _id: "a", _type: "sivu", title: "T", body: [1], aiemmatPolut: ["/x"], muutLegacyUrlit: ["/y.htm"] };
-    assert.deepEqual(tyhjennaKopiosta(doc), { _id: "a", _type: "sivu", title: "T", body: [1] });
-    assert.deepEqual(doc.aiemmatPolut, ["/x"], "alkuperäinen ennallaan");
+  // Askel 9: Kopioi pohjaksi. Jokainen poistettava kenttä omana tapauksenaan (Liite A).
+  const pohja = {
+    _id: "a",
+    _type: "uutinen",
+    title: "Otsikko",
+    body: [{ _type: "block", children: [{ text: "x" }] }],
+    excerpt: "Lyhenne",
+    kategoria: { _ref: "k" },
+  };
+  const poistettavat: Record<string, unknown> = {
+    slug: { current: "otsikko" },
+    legacyUrl: "/vanha.htm",
+    muutLegacyUrlit: ["/toinen.htm"],
+    aiemmatPolut: ["/uutiset/aiempi"],
+    blogspot: { id: "1", polku: "/2019/05/x.html", url: "https://x.blogspot.com/2019/05/x.html" },
+    needsReview: true,
+    tarkistettavaa: "Tarkista päivä",
+    automaattinenArvosana: { arvioijia: 3, viimeisinArvio: "2026-01-01" },
+    publishedAt: "2019-05-01T10:00:00Z",
+  };
+  await test("KOPIOSTA_POISTETTAVAT: lista vastaa suunnitelmaa (docs/24 askel 9)", () => {
+    assert.deepEqual([...KOPIOSTA_POISTETTAVAT].sort(), Object.keys(poistettavat).sort());
+  });
+  for (const [kentta, arvo] of Object.entries(poistettavat)) {
+    await test(`tyhjennaKopiosta: ${kentta} ei siirry kopioon`, () => {
+      const doc = { ...pohja, [kentta]: arvo };
+      const kopio = tyhjennaKopiosta(doc);
+      assert.equal(kentta in kopio, false, kentta);
+      assert.deepEqual(kopio, pohja, "muu sisältö säilyy");
+      assert.deepEqual((doc as Record<string, unknown>)[kentta], arvo, "alkuperäinen ennallaan");
+    });
+  }
+  await test("tyhjennaKopiosta: kaikki kerralla, alkuperäinen ennallaan", () => {
+    const doc = { ...pohja, ...poistettavat };
+    const ennen = structuredClone(doc);
+    assert.deepEqual(tyhjennaKopiosta(doc), pohja);
+    assert.deepEqual(doc, ennen);
+  });
+  await test("KOPIOSTA_POISTETTAVAT: kentät ovat olemassa skeemoissa", () => {
+    const skeemat = [
+      ...readdirSync("sanity/schemas/documents").map((n) => join("sanity/schemas/documents", n)),
+      "sanity/schemas/objects/contentMeta.ts",
+    ]
+      .map((f) => readFileSync(f, "utf-8"))
+      .join("\n");
+    for (const kentta of KOPIOSTA_POISTETTAVAT) {
+      assert.ok(skeemat.includes(`name: "${kentta}"`), `kenttää ${kentta} ei löydy skeemoista`);
+    }
+    for (const [tyyppi, kentat] of Object.entries(KOPIOSTA_POISTETTAVAT_TYYPEITTAIN)) {
+      const skeema = readFileSync(join("sanity/schemas/documents", `${tyyppi}.ts`), "utf-8");
+      for (const kentta of kentat) {
+        for (const osa of kentta.split(".")) {
+          assert.ok(skeema.includes(`name: "${osa}"`), `${tyyppi}: kenttää ${kentta} ei löydy skeemasta`);
+        }
+      }
+    }
+  });
+
+  await test("tyhjennaKopiosta: ravintolan kopio ei ole julkinen (kahden klubilaisen sääntö)", () => {
+    const ravintola = {
+      _id: "r1",
+      _type: "ravintola",
+      name: "Kuu",
+      slug: { current: "kuu" },
+      city: { _ref: "lahti" },
+      review: [{ _type: "block" }],
+      ratingOverall: 8,
+      ratingFood: 8,
+      ratingPrice: 7,
+      ratingAtmosphere: 9,
+      stars: 4,
+      alkuperainenArvio: { ratingOverall: 8 },
+    };
+    const kysely = `*[_type == "ravintola" && ${JULKINEN_RAVINTOLA}]._id`;
+    const julkiset = (docs: unknown[]) => evaluate(parse(kysely), { dataset: docs }).then((t) => t.get());
+    return Promise.all([julkiset([ravintola]), julkiset([{ ...tyhjennaKopiosta(ravintola), _id: "r2" }])]).then(
+      ([alkuperainen, kopio]) => {
+        assert.deepEqual(alkuperainen, ["r1"], "alkuperäinen on julkinen");
+        assert.deepEqual(kopio, [], "kopio odottaa klubilaisten arvosanoja");
+        const k = tyhjennaKopiosta(ravintola);
+        for (const kentta of KOPIOSTA_POISTETTAVAT_TYYPEITTAIN.ravintola) assert.equal(kentta in k, false, kentta);
+        assert.equal(k.name, "Kuu");
+        assert.deepEqual(k.city, { _ref: "lahti" });
+        assert.equal(ravintola.ratingOverall, 8, "alkuperäinen ennallaan");
+      },
+    );
+  });
+
+  await test("tyhjennaKopiosta: tyyppikohtaiset kentät vain omalta tyypiltä", () => {
+    // klubiArvion rating*-kentät ovat klubilaisen omat arvosanat: säilyvät. `tuotu` poistuu.
+    const arvio = { _id: "a", _type: "klubiArvio", ravintola: { _ref: "r" }, ratingFood: 8, ratingPrice: 7, ratingAtmosphere: 9, tuotu: true };
+    assert.deepEqual(tyhjennaKopiosta(arvio), { _id: "a", _type: "klubiArvio", ravintola: { _ref: "r" }, ratingFood: 8, ratingPrice: 7, ratingAtmosphere: 9 });
+    assert.deepEqual(tyhjennaKopiosta({ _id: "k", _type: "klubilainen", nimi: "N", taulukkoNumero: 3 }), { _id: "k", _type: "klubilainen", nimi: "N" });
+    // Uutisen veikkaus: sulkeutumisaika pois, muut asetukset säilyvät; alkuperäinen ennallaan.
+    const uutinen = { _id: "u", _type: "uutinen", kommentointi: { kaytossa: true, tyyppi: "veikkaus", sulkeutuu: "2026-01-01T00:00:00Z" } };
+    assert.deepEqual(tyhjennaKopiosta(uutinen).kommentointi, { kaytossa: true, tyyppi: "veikkaus" });
+    assert.equal(uutinen.kommentointi.sulkeutuu, "2026-01-01T00:00:00Z", "alkuperäinen ennallaan");
+    assert.deepEqual(tyhjennaKopiosta({ _id: "u", _type: "uutinen", kommentointi: null }).kommentointi, null);
+    // Sivulla samannimiset kentät eivät poistu.
+    assert.equal(tyhjennaKopiosta({ _id: "s", _type: "sivu", stars: 3 }).stars, 3);
+  });
+
+  // Askel 9: poiston turva (K3). Nykyinen osoite ensimmäisenä.
+  await test("vanhatOsoitteet: nykyinen osoite ensin, sitten legacy, blogi ja aiemmat", () => {
+    const doc = {
+      _id: "drafts.u1",
+      _type: "uutinen",
+      slug: { current: "uusi" },
+      legacyUrl: "blogi2006.htm",
+      muutLegacyUrlit: ["/vanha2.htm", ""],
+      blogspot: { polku: "/2019/05/x.html" },
+      aiemmatPolut: ["/uutiset/vanha", "/uutiset/uusi"],
+    };
+    assert.deepEqual(vanhatOsoitteet(doc), [
+      "/uutiset/uusi",
+      "/blogi2006.htm",
+      "/vanha2.htm",
+      "/blogspot/2019/05/x.html",
+      "/uutiset/vanha",
+    ]);
+    assert.equal(nykyinenOsoite(doc), "/uutiset/uusi");
+  });
+  await test("vanhatOsoitteet: sivu, kategoria, kaupunki ja tyhjä dokumentti", () => {
+    assert.deepEqual(vanhatOsoitteet({ _id: "s", _type: "sivu", slug: { current: "klubi/historia" }, aiemmatPolut: ["/klubi/tarina"] }), [
+      "/klubi/historia",
+      "/klubi/tarina",
+    ]);
+    assert.deepEqual(vanhatOsoitteet({ _id: "k", _type: "uutisKategoria", slug: { current: "jasenet" }, aiemmatPolut: ["jasentieto"] }), [
+      "/uutiset?kategoria=jasenet",
+      "/uutiset?kategoria=jasentieto",
+    ]);
+    assert.deepEqual(vanhatOsoitteet({ _id: "c", _type: "kaupunki", slug: { current: "lahti" }, aiemmatPolut: ["lahti-fi"] }), [
+      "/ravintolat?kaupunki=lahti",
+      "/ravintolat?kaupunki=lahti-fi",
+    ]);
+    assert.deepEqual(vanhatOsoitteet({ _id: "x", _type: "sivu" }), []);
+    assert.deepEqual(vanhatOsoitteet(null), []);
+    assert.deepEqual(vanhatOsoitteet(undefined), []);
+    // Ilman osoitetta: vain vanhat.
+    assert.deepEqual(vanhatOsoitteet({ _id: "u", _type: "uutinen", legacyUrl: "/a.htm" }), ["/a.htm"]);
+  });
+  await test("poistonVaroitus: vain kun omaan sivuun ohjautuu vanhoja osoitteita", () => {
+    const vanhat = Array.from({ length: 7 }, (_, i) => `/vanha-${i}.htm`);
+    assert.deepEqual(
+      poistonVaroitus({ _id: "r", _type: "ravintola", slug: { current: "kuu" }, legacyUrl: vanhat[0], muutLegacyUrlit: vanhat.slice(1) }),
+      { nykyinen: "/ravintolat/kuu", vanhat: vanhat.slice(0, 5), muita: 2 },
+    );
+    assert.deepEqual(poistonVaroitus({ _id: "s", _type: "sivu", slug: { current: "a" }, aiemmatPolut: ["/b"] }), {
+      nykyinen: "/a",
+      vanhat: ["/b"],
+      muita: 0,
+    });
+    // Ei vanhoja osoitteita, ei osoitetta, tunnistetyyppi tai taulukko toisen sivun ankkurina → ei varoitusta.
+    assert.equal(poistonVaroitus({ _id: "s", _type: "sivu", slug: { current: "a" } }), null);
+    assert.equal(poistonVaroitus({ _id: "s", _type: "sivu", legacyUrl: "/a.htm" }), null);
+    assert.equal(poistonVaroitus({ _id: "k", _type: "uutisKategoria", slug: { current: "a" }, aiemmatPolut: ["b"] }), null);
+    assert.equal(
+      poistonVaroitus({ _id: "t", _type: "jalkapalloTilasto", slug: { current: "x" }, category: "huuhkajat", legacyUrl: "/x.htm" }),
+      null,
+    );
+    // Aiempi osoite, joka on sama kuin nykyinen (eri kirjoitusasu), ei ole vanha.
+    assert.equal(poistonVaroitus({ _id: "s", _type: "sivu", slug: { current: "a" }, aiemmatPolut: ["/A/"] }), null);
   });
 
   await test("webhookin käsittely: vanha projektio, luonti, ei muutosta, osoitteen muutos", () => {

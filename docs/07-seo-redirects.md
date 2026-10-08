@@ -175,10 +175,21 @@ reittiä ei tallenneta, jos siinä on ankkuri: se on osion yhteinen sivu (esim.
   julkaistulle ja mahdolliselle luonnokselle `unset(['aiemmatPolut[@ == "/vanha"]'])`
   (esim. `npx sanity documents query` -tarkistus ennen ja jälkeen). Webhook ei palauta
   osoitetta, koska osoite ei muuttunut eikä edellinen versio ole tuore.
-- **Kopioi:** Studion Kopioi jättää `aiemmatPolut`- ja `muutLegacyUrlit`-kentät pois
-  (`KOPIOSTA_POISTETTAVAT`, `sanity/actions/kopio-ilman-osoitteita.tsx`, Sanityn @beta
-  `mapDocument`: tarkista pääversiopäivityksessä). Muuten kopio veisi alkuperäisen vanhat
-  osoitteet. Askel 9 laajentaa listan.
+- **Kopioi pohjaksi (askel 9):** Studion Kopioi on "Kopioi pohjaksi", joka jättää pois
+  osoitteen (`slug`), `legacyUrl`-, `muutLegacyUrlit`-, `aiemmatPolut`- ja `blogspot`-kentät,
+  tarkistusliput (`needsReview`, `tarkistettavaa`), ravintolan `automaattinenArvosana`-kentän
+  ja uutisen `publishedAt`-kentän sekä tyyppikohtaiset kentät (`KOPIOSTA_POISTETTAVAT`,
+  `KOPIOSTA_POISTETTAVAT_TYYPEITTAIN`, `kopioiPohjaksi` tiedostossa
+  `sanity/actions/vanhat-osoitteet.tsx`). Muuten kopio veisi alkuperäisen vanhat osoitteet.
+  **Sanityn @beta-rajapinta** `mapDocument` (DuplicateActionProps): tarkista
+  pääversiopäivityksessä, että kopio on yhä ilman näitä kenttiä.
+- **Poiston turva (askel 9, K3):** Poista ja Poista julkaisu näyttävät ensin varoituksen,
+  jos dokumentin omaan sivuun ohjautuu vanhoja osoitteita (`poistonVaroitus`,
+  `vanhatOsoitteet` tiedostossa `lib/ohjaukset.ts`; `varoitaVanhoistaOsoitteista`).
+  Ylimpänä on nykyinen osoite, koska staattiset ohjaukset ja aiemmat osoitteet vievät
+  siihen, ja isän ohjaus tehdään siitä poiston jälkeen (ennen poistoa HEAD antaa 200, ja
+  `lahdeOnVapaa` hylkää osoitteen). Tunnistetyypit ja toisen sivun ankkurina näkyvät
+  taulukot ohitetaan: niiden poisto ei vie vanhoja linkkejä 404:ään.
 - Ristiriidassa uudelleenyritys tuoreella haulla (enintään 3). Lopullinen epäonnistuminen
   → `console.error` ja vastaus 500, jolloin Sanity yrittää webhookia uudelleen.
 - Webhookin oma patch laukaisee uuden webhookin, jonka `before().slug` on sama kuin

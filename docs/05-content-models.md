@@ -58,6 +58,19 @@ pelkkä tunniste, kuvaus `AIEMMAT_TUNNISTEET_KUVAUS`. Kenttä täyttyy vain webh
 osoite ohjautuu automaattisesti; sivulla lisäksi alasivujen määrä. Varmuuskopiosta
 palautus yhdistää aiemmat osoitteet nykyiseen (`luonnosVarmuuskopiosta(doc, nykyinen)`).
 
+**Kopioi pohjaksi ja poiston turva** (docs/24 askel 9, `sanity/actions/vanhat-osoitteet.tsx`):
+Studion Kopioi jättää kopiosta pois kentät `KOPIOSTA_POISTETTAVAT` (`lib/ohjaukset.ts`):
+`slug`, `legacyUrl`, `muutLegacyUrlit`, `aiemmatPolut`, `blogspot` (uutinen), `needsReview`,
+`tarkistettavaa`, `automaattinenArvosana` (ravintola) ja `publishedAt` (uutinen; pakollinen,
+valitaan uudelleen). Lisäksi tyyppikohtaisesti (`KOPIOSTA_POISTETTAVAT_TYYPEITTAIN`):
+ravintolalta vanhan sivuston arvosanat (`ratingOverall`, `ratingFood`, `ratingPrice`,
+`ratingAtmosphere`, `stars`, `alkuperainenArvio`; muuten kopio täyttäisi
+`JULKINEN_RAVINTOLA`-ehdon heti), uutiselta `kommentointi.sulkeutuu`, klubiArviolta `tuotu`
+ja klubilaiselta `taulukkoNumero`. klubiArvion samannimiset `rating*`-kentät säilyvät. Uuden kopioitavan kentän, joka sitoo dokumentin vanhaan osoitteeseen
+tai migraatioon, pitää kuulua listaan (testi `npm run test:ohjaukset` tarkistaa, että
+listan kentät ovat skeemoissa). Poisto ja julkaisun poisto varoittavat, jos dokumentin
+omaan sivuun ohjautuu vanhoja osoitteita (`poistonVaroitus`).
+
 ### `rikasSisalto` (docs/24 askeleet 2 ja 6)
 
 Laajennettu tekstikenttä (`sanity/schemas/objects/rikasSisalto.ts`): sama

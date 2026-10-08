@@ -1,4 +1,4 @@
-import { defineConfig } from "sanity";
+import { defineConfig, type DocumentActionComponent } from "sanity";
 import { structureTool } from "sanity/structure";
 import { presentationTool } from "sanity/presentation";
 import { visionTool } from "@sanity/vision";
@@ -13,7 +13,7 @@ import { HyvaksyJaLuoRavintola, ilmanJulkaisuaEhdotukselle } from "./sanity/acti
 import { PiilotaKommentti, PoistaKommentti } from "./sanity/actions/kommentin-moderointi";
 import { PalautaVarmuuskopiosta } from "./sanity/actions/palauta-varmuuskopiosta";
 import { lukitulleSivulle } from "./sanity/actions/lukittu-sivu";
-import { kopioIlmanVanhojaOsoitteita } from "./sanity/actions/kopio-ilman-osoitteita";
+import { kopioiPohjaksi, varoitaVanhoistaOsoitteista } from "./sanity/actions/vanhat-osoitteet";
 import { PIILOTETUT_POHJAT, pohjat } from "./sanity/pohjat";
 import { aloitus } from "./sanity/plugins/aloitus";
 
@@ -62,16 +62,22 @@ export default defineConfig({
           PalautaVarmuuskopiosta,
         ];
       }
+      // Poisto ja Poista julkaisu varoittavat vanhoista osoitteista, ja Kopioi
+      // on "Kopioi pohjaksi" (docs/24 askel 9, sanity/actions/vanhat-osoitteet.tsx).
+      const turvallinen = (toiminto: DocumentActionComponent) =>
+        toiminto.action === "duplicate"
+          ? kopioiPohjaksi(toiminto)
+          : toiminto.action === "delete" || toiminto.action === "unpublish"
+            ? varoitaVanhoistaOsoitteista(toiminto)
+            : toiminto;
       // Lukittujen sivujen poisto, julkaisun peruminen ja kopiointi pois käytöstä
-      // (docs/23 Y21, docs/24 askel 3).
+      // (docs/23 Y21, docs/24 askel 3). Lukitus kääritään uloimmaksi.
       if (context.schemaType === "sivu") {
         return [
           ...input.map((toiminto) =>
-            toiminto.action === "duplicate"
-              ? lukitulleSivulle(kopioIlmanVanhojaOsoitteita(toiminto))
-              : toiminto.action === "delete" || toiminto.action === "unpublish"
-                ? lukitulleSivulle(toiminto)
-                : toiminto,
+            toiminto.action === "duplicate" || toiminto.action === "delete" || toiminto.action === "unpublish"
+              ? lukitulleSivulle(turvallinen(toiminto))
+              : toiminto,
           ),
           PalautaVarmuuskopiosta,
         ];
@@ -79,11 +85,7 @@ export default defineConfig({
       // Vanhemman kuin 3 päivän virheen korjaus ilman kehittäjää (ilmaistason
       // historia on 3 päivää, docs/23 Y32). Toiminto piilottaa itsensä tyypeiltä,
       // joita ei palauteta (lib/palautus.ts).
-      // Kopio ei peri vanhoja osoitteita (docs/24 askel 8).
-      return [
-        ...input.map((toiminto) => (toiminto.action === "duplicate" ? kopioIlmanVanhojaOsoitteita(toiminto) : toiminto)),
-        PalautaVarmuuskopiosta,
-      ];
+      return [...input.map(turvallinen), PalautaVarmuuskopiosta];
     },
     newDocumentOptions: (prev, { creationContext }) => {
       // Parametria vaativat pohjat (osion sivu) avataan vain Studion rakenteesta.

@@ -308,18 +308,159 @@ export function itsekorjausSallittu(
   return Number.isFinite(aika) && nyt.getTime() - aika <= ITSEKORJAUS_IKKUNA_MS;
 }
 
-/**
- * Kopio (Studion Kopioi) ei saa periä kenttiä, joiden varassa vanhat
- * osoitteet ohjautuvat: muuten kopio (uudempi `_updatedAt`) veisi
- * alkuperäisen vanhat osoitteet. Askel 9 laajentaa listaa (Kopioi pohjaksi).
- */
-export const KOPIOSTA_POISTETTAVAT: readonly string[] = ["aiemmatPolut", "muutLegacyUrlit"];
+/* -------------------------------------------------------------------------- */
+/* Poiston turva ja Kopioi pohjaksi (docs/24 askel 9)                         */
+/* -------------------------------------------------------------------------- */
 
-/** Uusi olio ilman `KOPIOSTA_POISTETTAVAT`-kenttiä; alkuperäinen ennallaan. */
+/**
+ * Kentät, jotka eivät siirry kopioon (Studion "Kopioi pohjaksi"):
+ *  - osoite ja vanhat osoitteet: muuten kaksi dokumenttia väittäisi omakseen
+ *    saman vanhan osoitteen, ja `ratkaiseOhjaus` valitsisi uudemman (kopion)
+ *  - vanhan sivuston ja blogin tiedot sekä migraation tarkistusliput
+ *  - ravintolan laskettu arvosana (kopiolla ei ole klubilaisten arvosanoja)
+ *  - uutisen julkaisuaika: muuten kopio saisi vanhan päivän ja menisi
+ *    listassa vuosien taakse (kenttä on pakollinen, joten se valitaan uudelleen)
+ */
+export const KOPIOSTA_POISTETTAVAT: readonly string[] = [
+  "slug",
+  "legacyUrl",
+  "muutLegacyUrlit",
+  "aiemmatPolut",
+  "blogspot",
+  "needsReview",
+  "tarkistettavaa",
+  "automaattinenArvosana",
+  "publishedAt",
+];
+
+/**
+ * Tyyppikohtaiset lisäkentät (pisteellä erotettu polku objektin sisään).
+ * Tyyppikohtaisia, koska samanniminen kenttä voi olla toisella tyypillä
+ * sisältöä (esim. klubiArvion `rating*` on klubilaisen oma arvosana).
+ *  - ravintola: vanhan sivuston arvosanat. Muuten kopio täyttäisi
+ *    `JULKINEN_RAVINTOLA`-ehdon heti (kahden klubilaisen sääntö ohittuisi),
+ *    arvosanakentät aukeaisivat ja ensimmäinen klubilaisen arvosana
+ *    tallentaisi kopioidut luvut aiemmaksi arvosanaksi.
+ *  - uutinen: veikkauksen sulkeutumisaika (muuten uusi veikkaus olisi heti suljettu).
+ *  - klubiArvio: `tuotu` (ruokailutaulukon tuonti vaikuttaa arvosanan laskentaan).
+ *  - klubilainen: `taulukkoNumero` (ruokailutaulukon tuonnin tunniste).
+ */
+export const KOPIOSTA_POISTETTAVAT_TYYPEITTAIN: Readonly<Record<string, readonly string[]>> = {
+  ravintola: ["ratingOverall", "ratingFood", "ratingPrice", "ratingAtmosphere", "stars", "alkuperainenArvio"],
+  uutinen: ["kommentointi.sulkeutuu"],
+  klubiArvio: ["tuotu"],
+  klubilainen: ["taulukkoNumero"],
+};
+
+/** Poistaa polun (esim. "kommentointi.sulkeutuu") kopioimalla matkan objektit; alkuperäinen ennallaan. */
+function poistaPolku(kohde: Record<string, unknown>, polku: string): void {
+  const [ensimmainen, ...loput] = polku.split(".");
+  if (loput.length === 0) {
+    delete kohde[ensimmainen];
+    return;
+  }
+  const sisa = kohde[ensimmainen];
+  if (!sisa || typeof sisa !== "object" || Array.isArray(sisa)) return;
+  const kopio = { ...(sisa as Record<string, unknown>) };
+  poistaPolku(kopio, loput.join("."));
+  kohde[ensimmainen] = kopio;
+}
+
+/** Kaikki kopiosta poistettavat kentät tyypille. */
+export function kopiostaPoistettavat(tyyppi: string | null | undefined): readonly string[] {
+  return [...KOPIOSTA_POISTETTAVAT, ...(KOPIOSTA_POISTETTAVAT_TYYPEITTAIN[tyyppi ?? ""] ?? [])];
+}
+
+/** Uusi olio ilman kopiosta poistettavia kenttiä (`kopiostaPoistettavat`); alkuperäinen ennallaan. */
 export function tyhjennaKopiosta<T extends Record<string, unknown>>(doc: T): T {
   const kopio: Record<string, unknown> = { ...doc };
-  for (const kentta of KOPIOSTA_POISTETTAVAT) delete kopio[kentta];
+  for (const kentta of kopiostaPoistettavat(typeof doc._type === "string" ? doc._type : null)) poistaPolku(kopio, kentta);
   return kopio as T;
+}
+
+function merkkijono(arvo: unknown): string | null {
+  return typeof arvo === "string" && arvo.trim() !== "" ? arvo.trim() : null;
+}
+
+function alkuKauttaviivalla(polku: string): string {
+  return polku.startsWith("/") ? polku : `/${polku}`;
+}
+
+/** Tunnistetyypin suodatinosoite: uutiskategoria ja kaupunki. */
+function tunnisteenOsoite(tyyppi: string, tunniste: string): string {
+  return tyyppi === "kaupunki" ? `/ravintolat?kaupunki=${tunniste}` : `/uutiset?kategoria=${tunniste}`;
+}
+
+/**
+ * Studion dokumentin reittitiedot (slug on Studiossa objekti `{ current }`).
+ * Rajoitus: viittaajaa (`parent`) ei tunneta. Toisen dokumentin viittaama
+ * karsinta- tai muu-taulukko näkyy todellisuudessa viittaajan sivulla
+ * ankkurina, mutta tässä sen osoitteeksi lasketaan oma sivu
+ * (/jalkapalloarkisto/karsinnat/… tai /jalkapalloarkisto/tilastot/…), joten
+ * varoitus voi näyttää väärän nykyisen osoitteen. Harvinainen: hyväksytty.
+ */
+function reittiTiedot(doc: Record<string, unknown>): RoutableDoc {
+  const slug = doc.slug as { current?: unknown } | string | null | undefined;
+  return {
+    _id: String(doc._id ?? "").replace(/^drafts\./, ""),
+    _type: String(doc._type ?? ""),
+    slug: merkkijono(typeof slug === "object" && slug !== null ? slug.current : slug),
+    category: merkkijono(doc.category),
+    huuhkajatOsio: merkkijono(doc.huuhkajatOsio),
+    mestaruusmaa: merkkijono(doc.mestaruusmaa),
+  };
+}
+
+/** Dokumentin nykyinen osoite sivustolla (tunnistetyypeillä suodatinosoite) tai null. */
+export function nykyinenOsoite(doc: Record<string, unknown> | null | undefined): string | null {
+  if (!doc) return null;
+  const reitti = reittiTiedot(doc);
+  if (TUNNISTE_TYYPIT.has(reitti._type)) return reitti.slug ? tunnisteenOsoite(reitti._type, reitti.slug) : null;
+  return documentHref(reitti);
+}
+
+/**
+ * Poisto- ja Poista julkaisu -varoituksen osoitteet (K3): ensin dokumentin
+ * nykyinen osoite, sitten vanhan sivuston osoitteet (`legacyUrl`,
+ * `muutLegacyUrlit`), blogin osoite (`/blogspot` + `blogspot.polku`) ja
+ * aiemmat osoitteet. Staattiset ohjaukset (lib/redirects.ts) ja aiemmat
+ * osoitteet vievät nykyiseen osoitteeseen. Tyhjät ja toistot pois.
+ */
+export function vanhatOsoitteet(doc: Record<string, unknown> | null | undefined): string[] {
+  if (!doc) return [];
+  const tyyppi = String(doc._type ?? "");
+  const tunniste = TUNNISTE_TYYPIT.has(tyyppi);
+  const lista = (arvo: unknown) => (Array.isArray(arvo) ? arvo.map(merkkijono).filter((p): p is string => p !== null) : []);
+  const blogi = merkkijono((doc.blogspot as { polku?: unknown } | null | undefined)?.polku);
+  const legacy = merkkijono(doc.legacyUrl);
+  const osoitteet = [
+    nykyinenOsoite(doc),
+    ...(legacy ? [alkuKauttaviivalla(legacy)] : []),
+    ...lista(doc.muutLegacyUrlit).map(alkuKauttaviivalla),
+    ...(blogi ? [`/blogspot${alkuKauttaviivalla(blogi)}`] : []),
+    ...lista(doc.aiemmatPolut).map((p) => (tunniste ? tunnisteenOsoite(tyyppi, p) : alkuKauttaviivalla(p))),
+  ];
+  return [...new Set(osoitteet.filter((p): p is string => p !== null))];
+}
+
+/** Dialogin lista: näytettävät osoitteet (enintään `max` vanhaa) ja piiloon jäävien määrä. */
+export type PoistonVaroitus = { nykyinen: string; vanhat: string[]; muita: number };
+
+/**
+ * Varoitetaanko poistosta tai julkaisun poistosta: vain kun dokumentilla on
+ * oma sivu (ei ankkuria toisella sivulla) ja siihen ohjautuu vanhoja
+ * osoitteita. Tunnistetyypit (uutiskategoria, kaupunki) ohitetaan: niiden
+ * vanhat linkit näyttävät poiston jälkeen koko listan, eivät "Sivua ei
+ * löytynyt", eikä kyselyosaa voi ohjata.
+ */
+export function poistonVaroitus(doc: Record<string, unknown> | null | undefined, max = 5): PoistonVaroitus | null {
+  if (!doc || TUNNISTE_TYYPIT.has(String(doc._type ?? ""))) return null;
+  const reitti = documentRoute(reittiTiedot(doc));
+  if (!reitti || reitti.anchor) return null;
+  const nykyinen = reitti.path;
+  const kaikki = vanhatOsoitteet(doc).filter((p) => p !== nykyinen && normalisoiPolku(p) !== normalisoiPolku(nykyinen));
+  if (kaikki.length === 0) return null;
+  return { nykyinen, vanhat: kaikki.slice(0, max), muita: Math.max(0, kaikki.length - max) };
 }
 
 /** Webhookin `before()`-projektio (docs/17 §D). */

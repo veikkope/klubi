@@ -472,9 +472,12 @@ kommentin edessä on 🚫.
 Pysyvä poisto (esim. jäsen pyytää poistamaan tietonsa): alareunan **⋯ → Poista
 pysyvästi**. Poistettua ei voi palauttaa.
 
-> **Älä käytä Kopioi (Duplicate) -toimintoa vanhoille blogikirjoituksille**, koska kopio
-> saisi blogin alkuperätiedot. Tee uusi uutinen tyhjästä ja kopioi joukkueet
-> tekstinä edellisestä veikkauksesta.
+> **Kopioi pohjaksi** (⋯-valikko) tekee kopion ilman osoitetta ja vanhan blogin tietoja.
+> Anna kopiolle uusi otsikko ja paina osoitteen kohdalla **Luo**. Uutisessa valitse myös
+> **Julkaisuaika** (kalenterista **Aseta nykyiseen aikaan**): kopio ei peri vanhaa päivää,
+> jottei se jää listassa vanhojen juttujen joukkoon. Veikkauksessa valitse myös **Veikkaus
+> sulkeutuu**: kopio ei peri vanhaa sulkeutumisaikaa, jottei uusi veikkaus ole heti
+> suljettu. Näin edellisen veikkauksen joukkueet saa pohjaksi.
 
 ### Ottelun lisääminen otteluohjelmaan
 
@@ -579,8 +582,12 @@ ohjautuu uuteen. Sivusto tekee ohjauksen itse muutamassa sekunnissa, ja vanhat l
   lyhytosoitteet → Muuttuneet osoitteet (automaattiset)**. Kenttä täyttyy itsestään, etkä
   voi muuttaa sitä.
 - Jos palautat osoitteen aiempaan, se poistuu Aiemmista osoitteista itsestään.
-- **Kopioi** (⋯-valikko) ei kopioi Aiempia osoitteita: vanhat osoitteet ohjautuvat yhä
-  alkuperäiseen.
+- **Kopioi pohjaksi** (⋯-valikko) ei kopioi osoitetta eikä Aiempia osoitteita: vanhat
+  osoitteet ohjautuvat yhä alkuperäiseen. Kun painat kopion osoitteen kohdalla **Luo**,
+  osoite tehdään otsikosta ilman yläsivua. **Alasivun** kopiossa kirjoita osoitteen alkuun
+  yläsivun osoite, esim. `klubi/historia/2000-luku`.
+- **Ravintolan** kopio ei saa arvosanoja: se odottaa piilossa, kunnes kaksi klubilaista on
+  arvioinut sen, kuten uusi ravintola.
 - **Alasivut:** sivun alasivujen osoitteet (esim. klubi/historia/1990-luku) eivät muutu
   mukana. Studio kertoo, montako alasivua sivulla on: muuta niiden osoitteet erikseen.
 - **Taulukko**, joka näkyy osana toista sivua (esim. mestarit), näkyy samalla sivulla kuin
@@ -614,10 +621,22 @@ myöhemmin: vanha esite vie silloin uuteen kohteeseen.
 - **Keltainen varoitus "Tämä osoite ohjautuu nyt automaattisesti sivulle …"**: osoite on
   jonkin sivun aiempi osoite. Ohjauksesi korvaa automaattisen ohjauksen.
 
-**Poistettu tai yhdistetty sivu:** jos sisältö on siirtynyt toiselle sivulle, 1) poista
-vanha sivu (⋯ → **Poista** tai **Poista julkaisu**) ja 2) tee ohjaus vanhan sivun osoitteesta uuteen sivuun
-(ohjeet yllä). Ohjaus onnistuu heti poiston jälkeen, kun osoitteessa ei enää ole sivua.
-Vanhan sivuston osoitteet, jotka veivät poistettuun sivuun, ohjautuvat silloin perille.
+**Poistettu tai yhdistetty sivu:** jos sisältö on siirtynyt toiselle sivulle:
+
+1. Poista tai piilota vanha sivu: ⋯ → **Poista** tai **Poista julkaisu**. Jos sivuun
+   ohjautuu vanhoja osoitteita (vanhan sivuston .htm-osoitteet, blogin osoite tai Aiemmat
+   osoitteet), Studio näyttää ensin ikkunan: ylimpänä sivun **nykyinen osoite** ja sen alla
+   vanhat osoitteet. Paina **Poista silti** (tai **Poista julkaisu silti**). Sen jälkeen
+   avautuu aina vielä Sanityn oma ikkuna **Poista dokumentti?** (tai **Peruuta dokumentin
+   julkaisu?**): paina siinä **Poista nyt** (tai **Peruuta julkaisu nyt**). Jos ikkuna
+   kertoo, että muut asiakirjat viittaavat sivuun, katso *Tyypilliset tilanteet*.
+2. Tee heti ohjaus sivun **nykyisestä osoitteesta** (ikkunan ylin osoite) uuteen sivuun:
+   **Sivuston asetukset → Ohjaukset ja lyhytosoitteet → Lyhytosoitteet ja ohjaukset** →
+   **+** (ohjeet yllä).
+
+Ohjausta ei voi tehdä ennen poistoa, koska osoitteessa on silloin vielä sivu ("Osoitteessa
+… on jo sivu"). Osoite vapautuu muutamassa sekunnissa poiston jälkeen. Yksi ohjaus riittää:
+vanhat osoitteet kulkevat nykyisen osoitteen kautta ja ohjautuvat silloin perille.
 
 ### Kuvan vaihtaminen
 
@@ -1046,7 +1065,7 @@ Jos joku pyytää poistamaan tietonsa (kommentti, veikkaus tai arvostelu kuvinee
 | Jotain meni pieleen (yli 3 päivää sitten) | Dokumentin **⋯** → **Palauta varmuuskopiosta** → valitse viikko → tarkista → **Julkaise** |
 | Poistin vahingossa | **Sivuston asetukset → Varmuuskopiot** → uusin kopio → välilehti **Palauta poistettu** |
 | Vaihdoin sivun osoitteen | Sinun ei tarvitse tehdä mitään: vanha osoite ohjautuu uuteen (ks. *Osoitteen muuttaminen*) |
-| Poistin sivun, jonka sisältö siirtyi toiselle sivulle | Tee ohjaus poistetun sivun osoitteesta uuteen sivuun (ks. *Lyhytosoite esitteeseen*, kohta Poistettu tai yhdistetty sivu) |
+| Poistin sivun, jonka sisältö siirtyi toiselle sivulle | Tee ohjaus poistetun sivun nykyisestä osoitteesta (poistoikkunan ylin osoite) uuteen sivuun. Vanhat osoitteet kulkevat sen kautta, joten yksi ohjaus riittää (ks. *Lyhytosoite esitteeseen*, kohta Poistettu tai yhdistetty sivu) |
 | Lyhytosoite ei toimi | Osoitteessa on sivu (sivu voittaa aina ohjauksen), tai ohjaus on julkaisematta. Avaa ohjaus ja lue punainen tai keltainen teksti |
 
 ## Mitä EI saa tehdä
