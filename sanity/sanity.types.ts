@@ -412,6 +412,17 @@ export type Geopoint = {
   alt?: number;
 };
 
+export type Ohjaus = {
+  _id: string;
+  _type: "ohjaus";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  lahde?: string;
+  minne?: Linkki;
+  muistiinpano?: string;
+};
+
 export type SivustonTila = {
   _id: string;
   _type: "sivustonTila";
@@ -568,6 +579,7 @@ export type JalkapalloTilasto = {
   seoDescription?: string;
   legacyUrl?: string;
   muutLegacyUrlit?: Array<string>;
+  aiemmatPolut?: Array<string>;
 };
 
 export type Slug = {
@@ -852,6 +864,7 @@ export type Sivu = {
   seoDescription?: string;
   legacyUrl?: string;
   muutLegacyUrlit?: Array<string>;
+  aiemmatPolut?: Array<string>;
 };
 
 export type UutisKategoriaReference = {
@@ -909,6 +922,7 @@ export type Uutinen = {
   seoDescription?: string;
   legacyUrl?: string;
   muutLegacyUrlit?: Array<string>;
+  aiemmatPolut?: Array<string>;
   blogspot?: {
     id?: string;
     url?: string;
@@ -956,6 +970,7 @@ export type Tapahtuma = {
   seoTitle?: string;
   seoDescription?: string;
   legacyUrl?: string;
+  aiemmatPolut?: Array<string>;
 };
 
 export type Ravintola = {
@@ -1011,6 +1026,7 @@ export type Ravintola = {
   seoDescription?: string;
   legacyUrl?: string;
   muutLegacyUrlit?: Array<string>;
+  aiemmatPolut?: Array<string>;
 };
 
 export type KlubiToiminta = {
@@ -1076,6 +1092,7 @@ export type KlubiToiminta = {
   seoDescription?: string;
   legacyUrl?: string;
   muutLegacyUrlit?: Array<string>;
+  aiemmatPolut?: Array<string>;
 };
 
 export type Arvokisa = {
@@ -1114,6 +1131,7 @@ export type Arvokisa = {
   seoDescription?: string;
   legacyUrl?: string;
   muutLegacyUrlit?: Array<string>;
+  aiemmatPolut?: Array<string>;
 };
 
 export type Stadion = {
@@ -1142,6 +1160,7 @@ export type Stadion = {
   seoDescription?: string;
   legacyUrl?: string;
   muutLegacyUrlit?: Array<string>;
+  aiemmatPolut?: Array<string>;
 };
 
 export type Pelaaja = {
@@ -1201,6 +1220,7 @@ export type Pelaaja = {
   seoDescription?: string;
   legacyUrl?: string;
   muutLegacyUrlit?: Array<string>;
+  aiemmatPolut?: Array<string>;
 };
 
 export type GalleriaAlbumi = {
@@ -1223,6 +1243,7 @@ export type GalleriaAlbumi = {
   needsReview?: boolean;
   tarkistettavaa?: string;
   legacyUrl?: string;
+  aiemmatPolut?: Array<string>;
 };
 
 export type Kaupunki = {
@@ -1233,6 +1254,7 @@ export type Kaupunki = {
   _rev: string;
   name?: string;
   slug?: Slug;
+  aiemmatPolut?: Array<string>;
   country?: string;
   maakunta?:
     | "uusimaa"
@@ -1380,6 +1402,7 @@ export type AllSanitySchemaTypes =
   | Navigaatio
   | Yhteystiedot
   | Geopoint
+  | Ohjaus
   | SivustonTila
   | Varmuuskopio
   | Kommentti
@@ -7581,6 +7604,424 @@ export type UutisetTunnisteenMukaanQueryResult = {
   total: number;
 };
 
+// Source: sanity/lib/queries/ohjaukset.ts
+// Variable: ohjauskarttaQuery
+// Query: {  "ohjaukset": *[_type == "ohjaus" && defined(lahde)] | order(_id asc){ _id, lahde, minne{ tyyppi,  href,  "kohde": kohde->{  _id,  _type,  "slug": slug.current,  "nimi": coalesce(title, name),  "piilossa": (_type == "uutinen" && !(!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now()))) || (_type == "ravintola" && !(  automaattinenArvosana.arvioijia >= 2  || (!defined(automaattinenArvosana) && (defined(ratingOverall) || defined(stars)))))},  "tiedosto": tiedosto.asset->{ url, originalFilename, extension, size } } },  "dokumentit": *[_type in ["sivu", "uutinen", "tapahtuma", "ravintola", "galleriaAlbumi", "klubiToiminta", "arvokisa", "pelaaja", "stadion", "jalkapalloTilasto"]    && count(aiemmatPolut) > 0    && !(_type == "uutinen" && !(!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now())))    && !(_type == "ravintola" && !(  automaattinenArvosana.arvioijia >= 2  || (!defined(automaattinenArvosana) && (defined(ratingOverall) || defined(stars)))))]{   _id,  _type,  "slug": slug.current,  category,  huuhkajatOsio,  mestaruusmaa,  osio,  "pelaajaSlug": pelaaja->slug.current,  "parent": *[    _type in ["arvokisa", "pelaaja", "klubiToiminta", "sivu"]    && references(^._id)    && !(_id in path("drafts.**"))  ] | order(_type asc, _id asc)[0]{ _type, "slug": slug.current }, aiemmatPolut, _updatedAt }}
+export type OhjauskarttaQueryResult = {
+  ohjaukset: Array<{
+    _id: string;
+    lahde: string;
+    minne: {
+      tyyppi: "osoite" | "sivu" | "tiedosto" | null;
+      href: string | null;
+      kohde:
+        | {
+            _id: string;
+            _type: "arvokisa";
+            slug: string | null;
+            nimi: string | null;
+            piilossa: false;
+          }
+        | {
+            _id: string;
+            _type: "galleriaAlbumi";
+            slug: string | null;
+            nimi: string | null;
+            piilossa: false;
+          }
+        | {
+            _id: string;
+            _type: "klubiToiminta";
+            slug: string | null;
+            nimi: string | null;
+            piilossa: false;
+          }
+        | {
+            _id: string;
+            _type: "pelaaja";
+            slug: string | null;
+            nimi: string | null;
+            piilossa: false;
+          }
+        | {
+            _id: string;
+            _type: "ravintola";
+            slug: string | null;
+            nimi: string | null;
+            piilossa: boolean | false | null;
+          }
+        | {
+            _id: string;
+            _type: "sivu";
+            slug: string | null;
+            nimi: string | null;
+            piilossa: false;
+          }
+        | {
+            _id: string;
+            _type: "stadion";
+            slug: string | null;
+            nimi: string | null;
+            piilossa: false;
+          }
+        | {
+            _id: string;
+            _type: "tapahtuma";
+            slug: string | null;
+            nimi: string | null;
+            piilossa: false;
+          }
+        | {
+            _id: string;
+            _type: "uutinen";
+            slug: string | null;
+            nimi: string | null;
+            piilossa: boolean | false | null;
+          }
+        | null;
+      tiedosto: {
+        url: string | null;
+        originalFilename: string | null;
+        extension: string | null;
+        size: number | null;
+      } | null;
+    } | null;
+  }>;
+  dokumentit: Array<
+    | {
+        _id: string;
+        _type: "arvokisa";
+        slug: string | null;
+        category: null;
+        huuhkajatOsio: null;
+        mestaruusmaa: null;
+        osio: null;
+        pelaajaSlug: null;
+        parent:
+          | {
+              _type: "arvokisa";
+              slug: string | null;
+            }
+          | {
+              _type: "klubiToiminta";
+              slug: string | null;
+            }
+          | {
+              _type: "pelaaja";
+              slug: string | null;
+            }
+          | {
+              _type: "sivu";
+              slug: string | null;
+            }
+          | null;
+        aiemmatPolut: Array<string> | null;
+        _updatedAt: string;
+      }
+    | {
+        _id: string;
+        _type: "galleriaAlbumi";
+        slug: string | null;
+        category: null;
+        huuhkajatOsio: null;
+        mestaruusmaa: null;
+        osio: null;
+        pelaajaSlug: null;
+        parent:
+          | {
+              _type: "arvokisa";
+              slug: string | null;
+            }
+          | {
+              _type: "klubiToiminta";
+              slug: string | null;
+            }
+          | {
+              _type: "pelaaja";
+              slug: string | null;
+            }
+          | {
+              _type: "sivu";
+              slug: string | null;
+            }
+          | null;
+        aiemmatPolut: Array<string> | null;
+        _updatedAt: string;
+      }
+    | {
+        _id: string;
+        _type: "jalkapalloTilasto";
+        slug: string | null;
+        category:
+          | "arvokisa"
+          | "ballon-dor"
+          | "champions"
+          | "conference-league"
+          | "eurocup"
+          | "fifa-ranking"
+          | "huuhkajat"
+          | "intercontinental"
+          | "jarkytykset"
+          | "karsinta"
+          | "klubi"
+          | "lupaavat"
+          | "maailman-parhaat"
+          | "muu"
+          | "palloliitto"
+          | "pelaaja"
+          | "saavutukset"
+          | "super-cup"
+          | "uefa-cup"
+          | "ulkomaiset-mestarit"
+          | "valmentajat"
+          | "valmentajien-palkat"
+          | "vuoden-pelaaja"
+          | null;
+        huuhkajatOsio:
+          | "avauskokoonpano"
+          | "englanti"
+          | "huuhkaja-arvostelu"
+          | "kansojen-liiga"
+          | "muut"
+          | "pelaajatilastot"
+          | null;
+        mestaruusmaa: "englanti" | "venaja" | null;
+        osio: null;
+        pelaajaSlug: null;
+        parent:
+          | {
+              _type: "arvokisa";
+              slug: string | null;
+            }
+          | {
+              _type: "klubiToiminta";
+              slug: string | null;
+            }
+          | {
+              _type: "pelaaja";
+              slug: string | null;
+            }
+          | {
+              _type: "sivu";
+              slug: string | null;
+            }
+          | null;
+        aiemmatPolut: Array<string> | null;
+        _updatedAt: string;
+      }
+    | {
+        _id: string;
+        _type: "klubiToiminta";
+        slug: string | null;
+        category: null;
+        huuhkajatOsio: null;
+        mestaruusmaa: null;
+        osio: null;
+        pelaajaSlug: null;
+        parent:
+          | {
+              _type: "arvokisa";
+              slug: string | null;
+            }
+          | {
+              _type: "klubiToiminta";
+              slug: string | null;
+            }
+          | {
+              _type: "pelaaja";
+              slug: string | null;
+            }
+          | {
+              _type: "sivu";
+              slug: string | null;
+            }
+          | null;
+        aiemmatPolut: Array<string> | null;
+        _updatedAt: string;
+      }
+    | {
+        _id: string;
+        _type: "pelaaja";
+        slug: string | null;
+        category: null;
+        huuhkajatOsio: null;
+        mestaruusmaa: null;
+        osio: null;
+        pelaajaSlug: null;
+        parent:
+          | {
+              _type: "arvokisa";
+              slug: string | null;
+            }
+          | {
+              _type: "klubiToiminta";
+              slug: string | null;
+            }
+          | {
+              _type: "pelaaja";
+              slug: string | null;
+            }
+          | {
+              _type: "sivu";
+              slug: string | null;
+            }
+          | null;
+        aiemmatPolut: Array<string> | null;
+        _updatedAt: string;
+      }
+    | {
+        _id: string;
+        _type: "ravintola";
+        slug: string | null;
+        category: null;
+        huuhkajatOsio: null;
+        mestaruusmaa: null;
+        osio: null;
+        pelaajaSlug: null;
+        parent:
+          | {
+              _type: "arvokisa";
+              slug: string | null;
+            }
+          | {
+              _type: "klubiToiminta";
+              slug: string | null;
+            }
+          | {
+              _type: "pelaaja";
+              slug: string | null;
+            }
+          | {
+              _type: "sivu";
+              slug: string | null;
+            }
+          | null;
+        aiemmatPolut: Array<string> | null;
+        _updatedAt: string;
+      }
+    | {
+        _id: string;
+        _type: "sivu";
+        slug: string | null;
+        category: null;
+        huuhkajatOsio: null;
+        mestaruusmaa: null;
+        osio: null;
+        pelaajaSlug: null;
+        parent:
+          | {
+              _type: "arvokisa";
+              slug: string | null;
+            }
+          | {
+              _type: "klubiToiminta";
+              slug: string | null;
+            }
+          | {
+              _type: "pelaaja";
+              slug: string | null;
+            }
+          | {
+              _type: "sivu";
+              slug: string | null;
+            }
+          | null;
+        aiemmatPolut: Array<string> | null;
+        _updatedAt: string;
+      }
+    | {
+        _id: string;
+        _type: "stadion";
+        slug: string | null;
+        category: null;
+        huuhkajatOsio: null;
+        mestaruusmaa: null;
+        osio: null;
+        pelaajaSlug: null;
+        parent:
+          | {
+              _type: "arvokisa";
+              slug: string | null;
+            }
+          | {
+              _type: "klubiToiminta";
+              slug: string | null;
+            }
+          | {
+              _type: "pelaaja";
+              slug: string | null;
+            }
+          | {
+              _type: "sivu";
+              slug: string | null;
+            }
+          | null;
+        aiemmatPolut: Array<string> | null;
+        _updatedAt: string;
+      }
+    | {
+        _id: string;
+        _type: "tapahtuma";
+        slug: string | null;
+        category: null;
+        huuhkajatOsio: null;
+        mestaruusmaa: null;
+        osio: null;
+        pelaajaSlug: null;
+        parent:
+          | {
+              _type: "arvokisa";
+              slug: string | null;
+            }
+          | {
+              _type: "klubiToiminta";
+              slug: string | null;
+            }
+          | {
+              _type: "pelaaja";
+              slug: string | null;
+            }
+          | {
+              _type: "sivu";
+              slug: string | null;
+            }
+          | null;
+        aiemmatPolut: Array<string> | null;
+        _updatedAt: string;
+      }
+    | {
+        _id: string;
+        _type: "uutinen";
+        slug: string | null;
+        category: null;
+        huuhkajatOsio: null;
+        mestaruusmaa: null;
+        osio: null;
+        pelaajaSlug: null;
+        parent:
+          | {
+              _type: "arvokisa";
+              slug: string | null;
+            }
+          | {
+              _type: "klubiToiminta";
+              slug: string | null;
+            }
+          | {
+              _type: "pelaaja";
+              slug: string | null;
+            }
+          | {
+              _type: "sivu";
+              slug: string | null;
+            }
+          | null;
+        aiemmatPolut: Array<string> | null;
+        _updatedAt: string;
+      }
+  >;
+};
+
 // Source: sanity/lib/queries/ottelut.ts
 // Variable: tulevatOttelutQuery
 // Query: *[_type == "ottelu" && defined(aika) && dateTime(aika) > dateTime(now()) - 60*60*24]    | order(aika asc){    _id,    aika,    koti,    vieras,    kilpailu,    stadion,    klubiPaikalla,    vierasmatka  }
@@ -7607,7 +8048,7 @@ export type RavintolatCountQueryResult = number;
 
 // Source: sanity/lib/queries/ravintolat.ts
 // Variable: ravintolatFacetsQuery
-// Query: {  "places": *[_type == "kaupunki" && defined(slug.current)      && count(*[_type == "ravintola" && references(^._id) && (  automaattinenArvosana.arvioijia >= 2  || (!defined(automaattinenArvosana) && (defined(ratingOverall) || defined(stars))))]) > 0]    | order(name asc){      name,      "slug": slug.current,      country,      maakunta,      "count": count(*[_type == "ravintola" && references(^._id) && closed != true && (  automaattinenArvosana.arvioijia >= 2  || (!defined(automaattinenArvosana) && (defined(ratingOverall) || defined(stars))))])    },  "total": count(*[_type == "ravintola" && defined(slug.current) && closed != true && (  automaattinenArvosana.arvioijia >= 2  || (!defined(automaattinenArvosana) && (defined(ratingOverall) || defined(stars))))]),  "closedCount": count(*[_type == "ravintola" && closed == true && (  automaattinenArvosana.arvioijia >= 2  || (!defined(automaattinenArvosana) && (defined(ratingOverall) || defined(stars))))]),  "firstVisitYear": *[_type == "ravintola" && defined(visitedAt) && (  automaattinenArvosana.arvioijia >= 2  || (!defined(automaattinenArvosana) && (defined(ratingOverall) || defined(stars))))]    | order(visitedAt asc)[0].visitedAt}
+// Query: {  "places": *[_type == "kaupunki" && defined(slug.current)      && count(*[_type == "ravintola" && references(^._id) && (  automaattinenArvosana.arvioijia >= 2  || (!defined(automaattinenArvosana) && (defined(ratingOverall) || defined(stars))))]) > 0]    | order(name asc){      name,      "slug": slug.current,      country,      maakunta,      aiemmatPolut,      "count": count(*[_type == "ravintola" && references(^._id) && closed != true && (  automaattinenArvosana.arvioijia >= 2  || (!defined(automaattinenArvosana) && (defined(ratingOverall) || defined(stars))))])    },  "total": count(*[_type == "ravintola" && defined(slug.current) && closed != true && (  automaattinenArvosana.arvioijia >= 2  || (!defined(automaattinenArvosana) && (defined(ratingOverall) || defined(stars))))]),  "closedCount": count(*[_type == "ravintola" && closed == true && (  automaattinenArvosana.arvioijia >= 2  || (!defined(automaattinenArvosana) && (defined(ratingOverall) || defined(stars))))]),  "firstVisitYear": *[_type == "ravintola" && defined(visitedAt) && (  automaattinenArvosana.arvioijia >= 2  || (!defined(automaattinenArvosana) && (defined(ratingOverall) || defined(stars))))]    | order(visitedAt asc)[0].visitedAt}
 export type RavintolatFacetsQueryResult = {
   places: Array<{
     name: string | null;
@@ -7634,6 +8075,7 @@ export type RavintolatFacetsQueryResult = {
       | "uusimaa"
       | "varsinais-suomi"
       | null;
+    aiemmatPolut: Array<string> | null;
     count: number;
   }>;
   total: number;
@@ -9003,10 +9445,11 @@ declare module "@sanity/client" {
     '\n  *[_type == "lehtileike" && pelaaja._ref == $pelaaja && osio == $osio && defined(julkaistu)]\n    | order(julkaistu desc, otsikko asc){\n    _id,\n    otsikko,\n    julkaistu,\n    lahde,\n    linkki,\n    teksti[]{...,\n  _type == "imageWithAlt" => { "lqip": asset->metadata.lqip },\n  _type == "kuvasarja" => { "kuvat": kuvat[defined(asset)]{ ..., "lqip": asset->metadata.lqip, "vari": asset->metadata.palette.dominant.background } },\n  _type == "liite" => { "liitetiedosto": tiedosto.asset->{ url, originalFilename, extension, size } },\n  _type == "painike" => { "linkki": linkki{ tyyppi,\n  href,\n  "kohde": kohde->{\n  _id,\n  _type,\n  "slug": slug.current,\n  "nimi": coalesce(title, name),\n  "piilossa": (_type == "uutinen" && !(!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now()))) || (_type == "ravintola" && !(\n  automaattinenArvosana.arvioijia >= 2\n  || (!defined(automaattinenArvosana) && (defined(ratingOverall) || defined(stars)))\n))\n},\n  "tiedosto": tiedosto.asset->{ url, originalFilename, extension, size } } },\n  _type == "block" => { "markDefs": markDefs[]{\n    ...,\n    _type == "link" => {\n      "kohde": kohde->{\n  _id,\n  _type,\n  "slug": slug.current,\n  "nimi": coalesce(title, name),\n  "piilossa": (_type == "uutinen" && !(!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now()))) || (_type == "ravintola" && !(\n  automaattinenArvosana.arvioijia >= 2\n  || (!defined(automaattinenArvosana) && (defined(ratingOverall) || defined(stars)))\n))\n},\n      "tiedosto": tiedosto.asset->{ url, originalFilename, extension, size }\n    }\n  } }}\n  }\n': LehtileikkeetQueryResult;
     '\n  {\n    "lehtileikkeet": {\n      "maara": count(*[_type == "lehtileike" && pelaaja._ref == $pelaaja && osio == "lehtileikkeet" && defined(julkaistu)]),\n      "ensimmainen": *[_type == "lehtileike" && pelaaja._ref == $pelaaja && osio == "lehtileikkeet" && defined(julkaistu)] | order(julkaistu asc)[0].julkaistu,\n      "viimeisin": *[_type == "lehtileike" && pelaaja._ref == $pelaaja && osio == "lehtileikkeet" && defined(julkaistu)] | order(julkaistu desc)[0].julkaistu\n    },\n    "patsas": {\n      "maara": count(*[_type == "lehtileike" && pelaaja._ref == $pelaaja && osio == "patsas" && defined(julkaistu)]),\n      "ensimmainen": *[_type == "lehtileike" && pelaaja._ref == $pelaaja && osio == "patsas" && defined(julkaistu)] | order(julkaistu asc)[0].julkaistu,\n      "viimeisin": *[_type == "lehtileike" && pelaaja._ref == $pelaaja && osio == "patsas" && defined(julkaistu)] | order(julkaistu desc)[0].julkaistu\n    },\n    "terveys": {\n      "maara": count(*[_type == "lehtileike" && pelaaja._ref == $pelaaja && osio == "terveys" && defined(julkaistu)]),\n      "ensimmainen": *[_type == "lehtileike" && pelaaja._ref == $pelaaja && osio == "terveys" && defined(julkaistu)] | order(julkaistu asc)[0].julkaistu,\n      "viimeisin": *[_type == "lehtileike" && pelaaja._ref == $pelaaja && osio == "terveys" && defined(julkaistu)] | order(julkaistu desc)[0].julkaistu\n    },\n    "uusimmat": *[_type == "lehtileike" && pelaaja._ref == $pelaaja && defined(julkaistu)]\n      | order(julkaistu desc)[0...3]{\n      _id,\n      otsikko,\n      julkaistu,\n      lahde,\n      linkki,\n      osio,\n      "ote": pt::text(teksti[_type == "block"][0])\n    }\n  }\n': LehtileikeYhteenvetoQueryResult;
     '\n  {\n    "items": *[_type == "uutinen" && defined(slug.current) && (!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now())) && count((tunnisteet[])[lower(@) == $tunniste]) > 0\n      && ($otsikossa == null || title match $otsikossa)]\n      | order(publishedAt desc)[0...$maara]{\n      _id,\n      title,\n      "slug": slug.current,\n      publishedAt,\n      tiivistelma,\n      "excerpt": coalesce(excerpt, tiivistelma),\n      "ote": select(!defined(excerpt) && !defined(tiivistelma) =>\n        pt::text(body[_type == "block" && style == "normal" && !defined(listItem)][0...3])),\n      "categories": (kategoriat[]->{ _id, "value": slug.current, "label": nimi })[defined(value) && defined(label)],\n      "coverImage": coalesce(\n    select(defined(coverImage.asset) => coverImage),\n    body[(_type == "imageWithAlt" && asset->metadata.dimensions.width >= 600) || (_type == "kuvasarja" && count(kuvat[asset->metadata.dimensions.width >= 600]) > 0)][0]{\n      "k": select(_type == "kuvasarja" => kuvat[asset->metadata.dimensions.width >= 600][0], @)\n    }.k\n  ){..., "lqip": asset->metadata.lqip}\n    },\n    "total": count(*[_type == "uutinen" && defined(slug.current) && (!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now())) && count((tunnisteet[])[lower(@) == $tunniste]) > 0])\n  }\n': UutisetTunnisteenMukaanQueryResult;
+    '{\n  "ohjaukset": *[_type == "ohjaus" && defined(lahde)] | order(_id asc){ _id, lahde, minne{ tyyppi,\n  href,\n  "kohde": kohde->{\n  _id,\n  _type,\n  "slug": slug.current,\n  "nimi": coalesce(title, name),\n  "piilossa": (_type == "uutinen" && !(!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now()))) || (_type == "ravintola" && !(\n  automaattinenArvosana.arvioijia >= 2\n  || (!defined(automaattinenArvosana) && (defined(ratingOverall) || defined(stars)))\n))\n},\n  "tiedosto": tiedosto.asset->{ url, originalFilename, extension, size } } },\n  "dokumentit": *[_type in ["sivu", "uutinen", "tapahtuma", "ravintola", "galleriaAlbumi", "klubiToiminta", "arvokisa", "pelaaja", "stadion", "jalkapalloTilasto"]\n    && count(aiemmatPolut) > 0\n    && !(_type == "uutinen" && !(!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now())))\n    && !(_type == "ravintola" && !(\n  automaattinenArvosana.arvioijia >= 2\n  || (!defined(automaattinenArvosana) && (defined(ratingOverall) || defined(stars)))\n))]{ \n  _id,\n  _type,\n  "slug": slug.current,\n  category,\n  huuhkajatOsio,\n  mestaruusmaa,\n  osio,\n  "pelaajaSlug": pelaaja->slug.current,\n  "parent": *[\n    _type in ["arvokisa", "pelaaja", "klubiToiminta", "sivu"]\n    && references(^._id)\n    && !(_id in path("drafts.**"))\n  ] | order(_type asc, _id asc)[0]{ _type, "slug": slug.current }\n, aiemmatPolut, _updatedAt }\n}': OhjauskarttaQueryResult;
     '\n  *[_type == "ottelu" && defined(aika) && dateTime(aika) > dateTime(now()) - 60*60*24]\n    | order(aika asc){\n    _id,\n    aika,\n    koti,\n    vieras,\n    kilpailu,\n    stadion,\n    klubiPaikalla,\n    vierasmatka\n  }\n': TulevatOttelutQueryResult;
     '\n  *[_type == "etusivu"][0].blocks[_type == "otteluohjelma"][0].seurat\n': OttelujenSeuratQueryResult;
     '\n  count(*[\n  _type == "ravintola" && defined(slug.current) && (\n  automaattinenArvosana.arvioijia >= 2\n  || (!defined(automaattinenArvosana) && (defined(ratingOverall) || defined(stars)))\n)\n  && ($citySlug == null || city->slug.current == $citySlug)\n  && ($countryNames == null || city->country in $countryNames)\n  && ($maakuntaSlugs == null\n      || (city->country == "Suomi" && city->maakunta in $maakuntaSlugs))\n  && ($minRating == null || coalesce(ratingOverall, stars, 0) >= $minRating)\n  && ($terms == null || [name, city->name, city->country] match $terms)\n  && ($includeClosed == true || $terms != null || closed != true)\n])\n': RavintolatCountQueryResult;
-    '{\n  "places": *[_type == "kaupunki" && defined(slug.current)\n      && count(*[_type == "ravintola" && references(^._id) && (\n  automaattinenArvosana.arvioijia >= 2\n  || (!defined(automaattinenArvosana) && (defined(ratingOverall) || defined(stars)))\n)]) > 0]\n    | order(name asc){\n      name,\n      "slug": slug.current,\n      country,\n      maakunta,\n      "count": count(*[_type == "ravintola" && references(^._id) && closed != true && (\n  automaattinenArvosana.arvioijia >= 2\n  || (!defined(automaattinenArvosana) && (defined(ratingOverall) || defined(stars)))\n)])\n    },\n  "total": count(*[_type == "ravintola" && defined(slug.current) && closed != true && (\n  automaattinenArvosana.arvioijia >= 2\n  || (!defined(automaattinenArvosana) && (defined(ratingOverall) || defined(stars)))\n)]),\n  "closedCount": count(*[_type == "ravintola" && closed == true && (\n  automaattinenArvosana.arvioijia >= 2\n  || (!defined(automaattinenArvosana) && (defined(ratingOverall) || defined(stars)))\n)]),\n  "firstVisitYear": *[_type == "ravintola" && defined(visitedAt) && (\n  automaattinenArvosana.arvioijia >= 2\n  || (!defined(automaattinenArvosana) && (defined(ratingOverall) || defined(stars)))\n)]\n    | order(visitedAt asc)[0].visitedAt\n}': RavintolatFacetsQueryResult;
+    '{\n  "places": *[_type == "kaupunki" && defined(slug.current)\n      && count(*[_type == "ravintola" && references(^._id) && (\n  automaattinenArvosana.arvioijia >= 2\n  || (!defined(automaattinenArvosana) && (defined(ratingOverall) || defined(stars)))\n)]) > 0]\n    | order(name asc){\n      name,\n      "slug": slug.current,\n      country,\n      maakunta,\n      aiemmatPolut,\n      "count": count(*[_type == "ravintola" && references(^._id) && closed != true && (\n  automaattinenArvosana.arvioijia >= 2\n  || (!defined(automaattinenArvosana) && (defined(ratingOverall) || defined(stars)))\n)])\n    },\n  "total": count(*[_type == "ravintola" && defined(slug.current) && closed != true && (\n  automaattinenArvosana.arvioijia >= 2\n  || (!defined(automaattinenArvosana) && (defined(ratingOverall) || defined(stars)))\n)]),\n  "closedCount": count(*[_type == "ravintola" && closed == true && (\n  automaattinenArvosana.arvioijia >= 2\n  || (!defined(automaattinenArvosana) && (defined(ratingOverall) || defined(stars)))\n)]),\n  "firstVisitYear": *[_type == "ravintola" && defined(visitedAt) && (\n  automaattinenArvosana.arvioijia >= 2\n  || (!defined(automaattinenArvosana) && (defined(ratingOverall) || defined(stars)))\n)]\n    | order(visitedAt asc)[0].visitedAt\n}': RavintolatFacetsQueryResult;
     '\n  *[_type == "ravintola" && slug.current == $slug && (\n  automaattinenArvosana.arvioijia >= 2\n  || (!defined(automaattinenArvosana) && (defined(ratingOverall) || defined(stars)))\n)][0]{\n    \n  _id,\n  name,\n  "slug": slug.current,\n  "city": city->{ name, "slug": slug.current, country },\n  stars,\n  ratingOverall,\n  ratingFood,\n  ratingPrice,\n  ratingAtmosphere,\n  priceLevel,\n  closed,\n  tiivistelma,\n  tuomio,\n  stadionHuomio,\n  "tuoreinArvio": select(\n  automaattinenArvosana.viimeisinArvio > coalesce(coalesce(visits[0], visitedAt), "") => automaattinenArvosana.viimeisinArvio,\n  coalesce(visits[0], visitedAt)\n),\n  "image": images[0]{..., "lqip": asset->metadata.lqip}\n,\n    _updatedAt,\n    address,\n    postalCode,\n    phone,\n    website,\n    location,\n    closedNote,\n    pros,\n    cons,\n    visitedAt,\n    visits,\n    // Klubilaisten hyv\xE4ksyttyjen arvostelujen k\xE4yntip\xE4iv\xE4t: klubin k\xE4yntej\xE4\n    // nekin. Vanhoissa arvosteluissa ei ole k\xE4yntip\xE4iv\xE4\xE4 \u2192 l\xE4hetysaika.\n    "arvostelujenKaynnit": *[_type == "ravintolaKayttajaArvostelu" && !(_id in path("drafts.**"))\n      && restaurant._ref == ^._id && defined(arvioija)]{ "p": coalesce(kayntipaiva, submittedAt) }.p,\n    visitContext,\n    automaattinenArvosana,\n    review[]{...,\n  _type == "imageWithAlt" => { "lqip": asset->metadata.lqip },\n  _type == "kuvasarja" => { "kuvat": kuvat[defined(asset)]{ ..., "lqip": asset->metadata.lqip, "vari": asset->metadata.palette.dominant.background } },\n  _type == "liite" => { "liitetiedosto": tiedosto.asset->{ url, originalFilename, extension, size } },\n  _type == "painike" => { "linkki": linkki{ tyyppi,\n  href,\n  "kohde": kohde->{\n  _id,\n  _type,\n  "slug": slug.current,\n  "nimi": coalesce(title, name),\n  "piilossa": (_type == "uutinen" && !(!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now()))) || (_type == "ravintola" && !(\n  automaattinenArvosana.arvioijia >= 2\n  || (!defined(automaattinenArvosana) && (defined(ratingOverall) || defined(stars)))\n))\n},\n  "tiedosto": tiedosto.asset->{ url, originalFilename, extension, size } } },\n  _type == "block" => { "markDefs": markDefs[]{\n    ...,\n    _type == "link" => {\n      "kohde": kohde->{\n  _id,\n  _type,\n  "slug": slug.current,\n  "nimi": coalesce(title, name),\n  "piilossa": (_type == "uutinen" && !(!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now()))) || (_type == "ravintola" && !(\n  automaattinenArvosana.arvioijia >= 2\n  || (!defined(automaattinenArvosana) && (defined(ratingOverall) || defined(stars)))\n))\n},\n      "tiedosto": tiedosto.asset->{ url, originalFilename, extension, size }\n    }\n  } }},\n    ottelupaivana,\n    images[]{..., "lqip": asset->metadata.lqip},\n    seoTitle,\n    seoDescription,\n    "related": *[_type == "ravintola" && defined(slug.current) && (\n  automaattinenArvosana.arvioijia >= 2\n  || (!defined(automaattinenArvosana) && (defined(ratingOverall) || defined(stars)))\n)\n      && _id != ^._id && closed != true && city._ref == ^.city._ref]\n      | order(round(coalesce(ratingOverall, stars, 0), 1) desc,\n  coalesce(automaattinenArvosana.arvioijia, 0) desc,\n  coalesce(select(\n  automaattinenArvosana.viimeisinArvio > coalesce(coalesce(visits[0], visitedAt), "") => automaattinenArvosana.viimeisinArvio,\n  coalesce(visits[0], visitedAt)\n), "0000-00-00") desc, name asc)[0...3]{\n  _id,\n  name,\n  "slug": slug.current,\n  "city": city->{ name, "slug": slug.current, country },\n  stars,\n  ratingOverall,\n  ratingFood,\n  ratingPrice,\n  ratingAtmosphere,\n  priceLevel,\n  closed,\n  tiivistelma,\n  tuomio,\n  stadionHuomio,\n  "tuoreinArvio": select(\n  automaattinenArvosana.viimeisinArvio > coalesce(coalesce(visits[0], visitedAt), "") => automaattinenArvosana.viimeisinArvio,\n  coalesce(visits[0], visitedAt)\n),\n  "image": images[0]{..., "lqip": asset->metadata.lqip}\n}\n  }\n': RavintolaBySlugQueryResult;
     '\n  *[_type == "ravintolaKayttajaArvostelu" && restaurant._ref == $id && !(_id in path("drafts.**"))]\n    | order(submittedAt desc){\n      _id,\n      reviewerName,\n      // Liitetty klubilaiseen: merkki nimen viereen, arvosana lasketaan mukaan.\n      "klubilainen": defined(arvioija),\n      ratingFood,\n      ratingPrice,\n      ratingAtmosphere,\n      "rating": math::avg([ratingFood, ratingPrice, ratingAtmosphere]),\n      comment,\n      "kuvat": kuvat[defined(asset)]{ _key, alt, asset, "vari": asset->metadata.palette.dominant.background },\n      submittedAt\n    }\n': RavintolaArvostelutQueryResult;
     '\n  *[_type == "ravintola" && defined(slug.current) && (\n  automaattinenArvosana.arvioijia >= 2\n  || (!defined(automaattinenArvosana) && (defined(ratingOverall) || defined(stars)))\n)].slug.current\n': RavintolaSlugsQueryResult;

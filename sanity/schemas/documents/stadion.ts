@@ -2,12 +2,13 @@ import { CubeIcon } from "@sanity/icons";
 import { defineField, defineType } from "sanity";
 import { seoFields } from "../objects/seoFields";
 import {
+  aiemmatPolutField,
   legacyUrlField,
   muutLegacyUrlitField,
   needsReviewField,
+  polkuMuuttunut,
   tarkistettavaaField,
   tiivistelmaField,
-  polkuMuuttunut,
 } from "../objects/contentMeta";
 import { HAKUKONEET_RYHMA, OSOITE_OTSIKKO } from "../objects/sanasto";
 
@@ -31,7 +32,7 @@ export const stadion = defineType({
     defineField({
       name: "slug",
       title: OSOITE_OTSIKKO,
-      description: "Muodostuu nimestä: paina Luo. Stadionin osoite on /jalkapalloarkisto/stadionit/tämä-osa. (Aiemmin kentän nimi oli Polku.)",
+      description: "Muodostuu nimestä: paina Luo. Stadionin osoite on /jalkapalloarkisto/stadionit/tämä-osa. Jos muutat julkaistun stadionin osoitetta, vanha osoite ohjautuu uuteen automaattisesti. (Aiemmin kentän nimi oli Polku.)",
       type: "slug",
       options: { source: "name", maxLength: 80 },
       validation: (rule) => [rule.required(), polkuMuuttunut(rule)],
@@ -93,6 +94,7 @@ export const stadion = defineType({
     ...seoFields,
     legacyUrlField("seo"),
     muutLegacyUrlitField("seo"),
+    aiemmatPolutField("seo"),
   ],
   preview: {
     select: { title: "name", city: "city.name", capacity: "capacity", media: "images.0", needsReview: "needsReview" },

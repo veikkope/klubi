@@ -1,11 +1,12 @@
 import { ImagesIcon } from "@sanity/icons";
 import { defineField, defineType } from "sanity";
 import {
+  aiemmatPolutField,
   legacyUrlField,
   needsReviewField,
+  polkuMuuttunut,
   tarkistettavaaField,
   tiivistelmaField,
-  polkuMuuttunut,
 } from "../objects/contentMeta";
 import { OSOITE_OTSIKKO } from "../objects/sanasto";
 
@@ -24,7 +25,7 @@ export const galleriaAlbumi = defineType({
     defineField({
       name: "slug",
       title: OSOITE_OTSIKKO,
-      description: "Muodostuu otsikosta: paina Luo. Albumin osoite on /galleria/tämä-osa. (Aiemmin kentän nimi oli Polku.)",
+      description: "Muodostuu otsikosta: paina Luo. Albumin osoite on /galleria/tämä-osa. Jos muutat julkaistun albumin osoitetta, vanha osoite ohjautuu uuteen automaattisesti. (Aiemmin kentän nimi oli Polku.)",
       type: "slug",
       options: { source: "title", maxLength: 80 },
       validation: (rule) => [rule.required(), polkuMuuttunut(rule)],
@@ -61,6 +62,7 @@ export const galleriaAlbumi = defineType({
     needsReviewField(),
     tarkistettavaaField(),
     legacyUrlField(),
+    aiemmatPolutField(),
   ],
   orderings: [
     { title: "Päivämäärä (uusin ensin)", name: "dateDesc", by: [{ field: "date", direction: "desc" }] },

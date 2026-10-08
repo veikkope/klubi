@@ -5,12 +5,13 @@ import { puuttuukoLinkinKohde } from "../../../lib/linkki";
 import { linkkiKentat } from "../objects/linkki";
 import { seoFields } from "../objects/seoFields";
 import {
+  aiemmatPolutField,
   legacyUrlField,
   muutLegacyUrlitField,
   needsReviewField,
+  polkuMuuttunut,
   tarkistettavaaField,
   tiivistelmaField,
-  polkuMuuttunut,
 } from "../objects/contentMeta";
 import { HAKUKONEET_RYHMA, OSOITE_OTSIKKO } from "../objects/sanasto";
 
@@ -46,7 +47,7 @@ export const klubiToiminta = defineType({
     defineField({
       name: "slug",
       title: OSOITE_OTSIKKO,
-      description: "Muodostuu otsikosta: paina Luo. Toimintamuodon osoite on /klubi/toiminta/tämä-osa. (Aiemmin kentän nimi oli Polku.)",
+      description: "Muodostuu otsikosta: paina Luo. Toimintamuodon osoite on /klubi/toiminta/tämä-osa. Jos muutat julkaistun toimintamuodon osoitetta, vanha osoite ohjautuu uuteen automaattisesti. (Aiemmin kentän nimi oli Polku.)",
       type: "slug",
       options: { source: "title", maxLength: 80 },
       validation: (rule) => [rule.required(), polkuMuuttunut(rule)],
@@ -186,6 +187,7 @@ export const klubiToiminta = defineType({
     ...seoFields,
     legacyUrlField("seo"),
     muutLegacyUrlitField("seo"),
+    aiemmatPolutField("seo"),
   ],
   orderings: [
     {

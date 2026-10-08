@@ -1,6 +1,6 @@
 import { PinIcon } from "@sanity/icons";
 import { defineField, defineType } from "sanity";
-import { polkuMuuttunut } from "../objects/contentMeta";
+import { AIEMMAT_TUNNISTEET_KUVAUS, aiemmatPolutField, polkuMuuttunut } from "../objects/contentMeta";
 
 import { MAAKUNNAT, SUOMI, maakuntaTitle } from "../../../lib/maakunnat";
 
@@ -22,13 +22,16 @@ export const kaupunki = defineType({
       name: "slug",
       title: "Osoite suodattimessa",
       type: "slug",
-      description: "Muodostuu nimestä: paina Luo. Esim. /ravintolat?kaupunki=lahti.",
+      description:
+        "Muodostuu nimestä: paina Luo. Esim. /ravintolat?kaupunki=lahti. Jos muutat julkaistun " +
+        "kaupungin osoitetta, vanhat linkit ohjautuvat uuteen automaattisesti.",
       options: { source: "name", maxLength: 60 },
       validation: (rule) => [
         rule.required().error("Paina Luo, niin osoite muodostuu nimestä."),
         polkuMuuttunut(rule),
       ],
     }),
+    aiemmatPolutField(undefined, AIEMMAT_TUNNISTEET_KUVAUS),
     defineField({
       name: "country",
       title: "Maa",

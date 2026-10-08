@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 
 import { JsonLd } from "@/components/seo/json-ld";
 import { HUUHKAJAT_OSIOT, findHuuhkajatOsio } from "@/lib/huuhkajat-osiot";
@@ -15,6 +14,7 @@ import {
   type HuuhkajatHub,
   type TilastoDoc,
 } from "@/sanity/lib/queries/arkisto";
+import { ohjaaTaiEiLoydy } from "@/sanity/lib/ohjaus";
 
 import { ArkistoPage } from "../../_tilastot/arkisto-page";
 import {
@@ -69,7 +69,7 @@ export default async function HuuhkajatOsioPage({
 }) {
   const { osio: value } = await params;
   const osio = findHuuhkajatOsio(value);
-  if (!osio) notFound();
+  if (!osio) return ohjaaTaiEiLoydy(huuhkajatOsioPath(value));
 
   const [tilastot, hub] = await Promise.all([
     sanityFetch<TilastoDoc[]>({
@@ -87,7 +87,7 @@ export default async function HuuhkajatOsioPage({
   ]);
 
   // Tyhjää osiota ei julkaista: hub ei linkitä siihen eikä sitemap listaa sitä.
-  if (tilastot.length === 0) notFound();
+  if (tilastot.length === 0) return ohjaaTaiEiLoydy(huuhkajatOsioPath(value));
 
   const path = huuhkajatOsioPath(osio.value);
   const trail = arkistoTrail(

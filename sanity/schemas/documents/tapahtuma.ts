@@ -2,11 +2,12 @@ import { CalendarIcon } from "@sanity/icons";
 import { defineField, defineType } from "sanity";
 import { seoFields } from "../objects/seoFields";
 import {
+  aiemmatPolutField,
   legacyUrlField,
   needsReviewField,
+  polkuMuuttunut,
   tarkistettavaaField,
   tiivistelmaField,
-  polkuMuuttunut,
 } from "../objects/contentMeta";
 import { HAKUKONEET_RYHMA, OSOITE_OTSIKKO } from "../objects/sanasto";
 
@@ -31,7 +32,7 @@ export const tapahtuma = defineType({
     defineField({
       name: "slug",
       title: OSOITE_OTSIKKO,
-      description: "Muodostuu otsikosta: paina Luo. Tapahtuman osoite on /tapahtumat/tämä-osa. (Aiemmin kentän nimi oli Polku.)",
+      description: "Muodostuu otsikosta: paina Luo. Tapahtuman osoite on /tapahtumat/tämä-osa. Jos muutat julkaistun tapahtuman osoitetta, vanha osoite ohjautuu uuteen automaattisesti. (Aiemmin kentän nimi oli Polku.)",
       type: "slug",
       options: { source: "title", maxLength: 80 },
       validation: (rule) => [rule.required(), polkuMuuttunut(rule)],
@@ -105,6 +106,7 @@ export const tapahtuma = defineType({
     tarkistettavaaField("perustiedot"),
     ...seoFields,
     legacyUrlField("seo"),
+    aiemmatPolutField("seo"),
   ],
   orderings: [
     {

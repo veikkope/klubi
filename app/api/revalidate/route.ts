@@ -4,8 +4,14 @@ import { createClient } from "next-sanity";
 import { parseBody } from "next-sanity/webhook";
 
 import { LINKIN_KOHDETYYPIT } from "@/lib/linkki";
+import { OHJATTAVAT_TYYPIT, type EnnenTiedot } from "@/lib/ohjaukset";
 import { paivitaArvosanat } from "@/lib/ravintola-arvosana";
 import { apiVersion, dataset, projectId } from "@/sanity/env";
+import {
+  aiemmanOsoitteenKasittely,
+  tallennaAiempiOsoite,
+  type TallennuksenTulos,
+} from "@/sanity/lib/aiemmat-polut";
 
 /**
  * Sanity-webhook: tyhjentää välimuistin kun sisältö muuttuu.
@@ -13,15 +19,25 @@ import { apiVersion, dataset, projectId } from "@/sanity/env";
  * Ilman tätä isän Studiossa tekemä muutos näkyisi vasta kun sivun
  * välimuistin 60 sekunnin ikkuna (sanity/lib/fetch.ts) umpeutuu. Webhookin kanssa se näkyy sekunneissa.
  *
- * Sanity Studiossa: API → Webhooks → luo webhook
- *   URL:     https://www.lahdensuomalainenklubi.com/api/revalidate
- *   Dataset: production
- *   Trigger: Create, Update, Delete
- *   Secret:  sama arvo kuin SANITY_REVALIDATE_SECRET
- *   Payload: `{ "_type": _type, "slug": slug.current }`
+ * Sanityssa (sanity.io/manage → API → Webhooks, docs/17 §D, docs/07):
+ *   Nimi:     Sivuston päivitys (revalidate)
+ *   URL:      https://www.lahdensuomalainenklubi.com/api/revalidate
+ *   Dataset:  production
+ *   Trigger:  Create, Update, Delete (ei luonnoksia)
+ *   Filter:   defined(_type) && !(_type match "sanity.*") && !(_type in ["sivustonTila", "varmuuskopio"])
+ *   Projection (docs/24 §2.5, askeleesta 8 alkaen):
+ *     { _id, _type, "slug": slug.current, "operaatio": delta::operation(),
+ *       "ennen": before(){ _updatedAt, "slug": slug.current, aiemmatPolut, category, huuhkajatOsio, mestaruusmaa } }
+ *   API-versio: v2021-03-25 (delta::operation() ja before() toimivat)
+ *   Secret:   sama arvo kuin SANITY_REVALIDATE_SECRET
+ *
+ * Vanha projektio `{_type, "slug": slug.current}` toimii yhä (välimuisti
+ * tyhjenee), mutta aiempia osoitteita ei silloin tallenneta: käsittelijä
+ * kirjaa varoituksen.
  *
  * Cache-tagit ovat dokumenttityypin nimiä — sama merkkijono jonka sivut
- * antavat `sanityFetch({ tags })`-kutsussa.
+ * antavat `sanityFetch({ tags })`-kutsussa. Tagi `ohjaus` on 404-haaran
+ * ohjauskartalla (sanity/lib/ohjaus.ts).
  */
 
 const secret = process.env.SANITY_REVALIDATE_SECRET;
@@ -60,8 +76,13 @@ function yhdista(...taulut: Record<string, string[]>[]): Record<string, string[]
 const RIIPPUVAT = yhdista(SISALLON_RIIPPUVAT, LINKIT);
 
 interface WebhookPayload {
+  _id?: string;
   _type?: string;
-  slug?: string;
+  slug?: string | null;
+  /** `delta::operation()`: puuttuu vanhasta projektiosta. */
+  operaatio?: "create" | "update" | "delete";
+  /** `before()`-projektio: null luonnissa. */
+  ennen?: EnnenTiedot | null;
 }
 
 /**
@@ -75,15 +96,21 @@ const OHITETTAVAT = new Set(["sivustonTila", "varmuuskopio"]);
 /** Tyypit, joiden muutos voi muuttaa ravintolan arvosanaa. */
 const ARVOSANAAN_VAIKUTTAVAT = new Set(["ravintolaKayttajaArvostelu", "klubiArvio"]);
 
+/** Kirjoittava client (raw: myös luonnokset näkyvät), tai null, jos token puuttuu. */
+function kirjoittavaClient() {
+  const token = process.env.SANITY_API_WRITE_TOKEN;
+  if (!token || !projectId) return null;
+  return createClient({ projectId, dataset, apiVersion, token, useCdn: false, perspective: "raw" });
+}
+
 /** Virhe ei kaada välimuistin tyhjennystä: arvosana korjaantuu seuraavalla ajolla. */
 async function laskeArvosanat(): Promise<void> {
-  const token = process.env.SANITY_API_WRITE_TOKEN;
-  if (!token || !projectId) {
+  const client = kirjoittavaClient();
+  if (!client) {
     console.error("[revalidate] arvosanoja ei laskettu: SANITY_API_WRITE_TOKEN puuttuu.");
     return;
   }
   try {
-    const client = createClient({ projectId, dataset, apiVersion, token, useCdn: false, perspective: "raw" });
     const muutokset = await paivitaArvosanat(client);
     if (muutokset.length > 0) {
       console.log(`[revalidate] arvosana päivitetty: ${muutokset.map((m) => m.name).join(", ")}`);
@@ -119,6 +146,32 @@ export async function POST(request: NextRequest): Promise<Response> {
 
     // Tyypin tagi kattaa listaukset; slug-tagi yksittäisen dokumentin sivun.
     const tags = [body._type];
+
+    // Osoitteen muutos: vanha osoite talteen ennen välimuistin tyhjennystä,
+    // jotta seuraava renderöinti näkee sen (docs/24 askel 8, K2).
+    let tallennus: TallennuksenTulos = "ei-muutosta";
+    const kasittely = aiemmanOsoitteenKasittely(body);
+    if (kasittely === "varoitus") {
+      console.warn(
+        "[revalidate] webhookin projektiosta puuttuu operaatio: aiempia osoitteita ei tallenneta " +
+          "(docs/07 Ajonaikaiset ohjaukset).",
+      );
+    } else if (kasittely === "tarkista" && body._id && body.ennen) {
+      const client = kirjoittavaClient();
+      if (!client) {
+        console.error("[revalidate] aiempaa osoitetta ei tallennettu: SANITY_API_WRITE_TOKEN puuttuu.");
+      } else {
+        tallennus = await tallennaAiempiOsoite(client, {
+          _id: body._id,
+          _type: body._type,
+          slug: body.slug,
+          ennen: body.ennen,
+        });
+      }
+    }
+    // Ohjauskartta riippuu ohjauksista ja ohjattavien dokumenttien osoitteista.
+    if (OHJATTAVAT_TYYPIT.has(body._type) || tallennus === "ok") tags.push("ohjaus");
+
     if (body.slug) tags.push(`${body._type}:${body.slug}`);
     // Tyypit, jotka näkyvät toisen tyypin sivuilla: hyväksytty arvostelu ja
     // kaupungin nimi näkyvät ravintolasivulla, joka hakee tagilla "ravintola".
@@ -135,8 +188,12 @@ export async function POST(request: NextRequest): Promise<Response> {
     // revalidate) näyttäisi ensimmäiselle kävijälle vielä vanhan sivun, jolloin
     // julkaisija ei näkisi muutostaan heti (docs/09 lupaa sen sekunneissa).
     // Next 16:n ohje webhookeille: revalidateTag.md, "Route Handler".
-    for (const tag of tags) revalidateTag(tag, { expire: 0 });
+    for (const tag of new Set(tags)) revalidateTag(tag, { expire: 0 });
 
+    // Vanha osoite jäi tallentamatta: 500, jotta Sanity yrittää webhookia uudelleen.
+    if (tallennus === "virhe") {
+      return Response.json({ revalidated: true, tags, message: "Aiempaa osoitetta ei tallennettu." }, { status: 500 });
+    }
     return Response.json({ revalidated: true, tags, now: Date.now() });
   } catch (error) {
     // Yksityiskohdat vain palvelimen lokiin, ei kutsujalle.

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
 
 import { KlubiSivuPage, fetchKlubiSivu } from "../../_components/klubi-sivu";
 import { buildMetadata, resolveDescription } from "@/lib/seo";
+import { ohjaaTaiEiLoydy } from "@/sanity/lib/ohjaus";
 
 import {
   PALLOVEIKKAUS_PATH,
@@ -61,7 +61,7 @@ export default async function VeikkausPage({
     fetchKlubiSivu(`${PALLOVEIKKAUS_SLUG}/${osa}`),
     fetchVeikkaukset(),
   ]);
-  if (!sivu) notFound();
+  if (!sivu) return ohjaaTaiEiLoydy(`/klubi/palloveikkaus/${osa}`);
 
   return (
     <KlubiSivuPage

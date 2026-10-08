@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 
 import { NewsCard } from "@/components/news-card";
 import { Card, CardArrow, CardBody, CardEyebrow, CardTitle } from "@/components/ui/card";
@@ -19,6 +18,7 @@ import {
 } from "@/lib/path";
 import { buildMetadata, resolveDescription } from "@/lib/seo";
 import { tunnisteHref } from "@/lib/tunnisteet";
+import { ohjaaTaiEiLoydy } from "@/sanity/lib/ohjaus";
 
 import { PelaajaProfiili } from "../_pelaaja/pelaaja-profiili";
 import {
@@ -45,7 +45,7 @@ const osioOtsikko = "font-display text-2xl text-foreground sm:text-3xl";
 
 export default async function LitmanenPage() {
   const pelaaja = await haeLitmanen();
-  if (!pelaaja) notFound();
+  if (!pelaaja) return ohjaaTaiEiLoydy(LITMANEN_PATH);
 
   const [yhteenveto, uutiset] = await Promise.all([
     haeLehtileikeYhteenveto(pelaaja._id),

@@ -45,6 +45,19 @@ tahansa YouTube-videon osoitemuoto, `lib/youtube.ts`; `t=`/`start=` → aloitusk
 painalluksesta `youtube-nocookie.com`-osoitteesta (ei evästeitä eikä YouTuben
 skriptejä ennen toistoa). Ilman JavaScriptiä painike on linkki YouTubeen.
 
+**`aiemmatPolutField(group?, kuvaus?)`** (docs/24 askel 8, Y18): kenttä `aiemmatPolut`
+(string[], tags, "Aiemmat osoitteet", `readOnly`, piilossa kun tyhjä). Webhook
+(`app/api/revalidate`, `sanity/lib/aiemmat-polut.ts`) lisää vanhan osoitteen, kun
+julkaistun dokumentin osoite muuttuu, ja 404-haara ohjaa sen nykyiseen osoitteeseen 308:lla
+(`lib/ohjaukset.ts`, docs/07 "Ajonaikaiset ohjaukset"). Ohjattavissa tyypeissä
+(`OHJATTAVAT_TYYPIT`: sivu, uutinen, tapahtuma, ravintola, galleriaAlbumi, klubiToiminta,
+arvokisa, pelaaja, stadion, jalkapalloTilasto) arvo on täysi polku (`/uutiset/vanha`), ryhmässä
+`seo` (galleriaAlbumi ilman ryhmää). Tunnistetyypeissä (`uutisKategoria`, `kaupunki`) arvo on
+pelkkä tunniste, kuvaus `AIEMMAT_TUNNISTEET_KUVAUS`. Kenttä täyttyy vain webhookin kautta.
+`polkuMuuttunut(rule)` on nyt sininen tieto (`.info()`, tekstit `polunMuutosViesti`): vanha
+osoite ohjautuu automaattisesti; sivulla lisäksi alasivujen määrä. Varmuuskopiosta
+palautus yhdistää aiemmat osoitteet nykyiseen (`luonnosVarmuuskopiosta(doc, nykyinen)`).
+
 ### `rikasSisalto` (docs/24 askeleet 2 ja 6)
 
 Laajennettu tekstikenttä (`sanity/schemas/objects/rikasSisalto.ts`): sama
@@ -352,6 +365,8 @@ Vain julkaistut arvostelut näkyvät. Uuden ravintolan arvostelun julkaisu vaati
 
 **Esikatselu:** nimi + "maakunta, maa" (esim. "Lahti — Päijät-Häme, Suomi").
 
+**Aiemmat osoitteet** (`aiemmatPolut`, docs/24 askel 8): webhook tallentaa vanhan tunnisteen, kun kaupungin osoite muuttuu. Hakemisto (`korjaaKaupunki`, `components/ravintola-filters.tsx`) ohjaa vanhan `?kaupunki=`-linkin nykyiseen, joten 49 vanhan sivuston .htm-ohjausta pysyy kunnossa.
+
 **Maa-tason viite:** dokumentti, jonka nimi on sama kuin maa ("Portugali", "Ruotsi", "Venäjä"), on ravintolaputken viite silloin, kun ravintolan kaupunki ei selviä lähteestä. Se ei näy hakemiston kaupunkisuodattimessa (`lib/places.ts` → `isCountryLevelPlace`), mutta sen ravintolat löytyvät maasuodattimella. Erillistä lippukenttää ei ole, jotta isän ei tarvitse ylläpitää sitä.
 
 **Data:** ravintolaputki (`scripts/import-ravintolat.ts`) ja stadionputki (`scripts/import-stadionit.ts`) täyttävät maakunnan taulukosta `scripts/lib/maakunnat.ts` (Tilastokeskuksen kunta–maakuntaluokitus 2025, 309 kuntaa + nimetyt taajamat → kunta). Tuntematon paikkakunta kaataa ajon.
@@ -490,6 +505,20 @@ Tietosuojaseloste ja Ylläpito ovat kiinteät.
 - `readOnly`, ei Studion rakenteessa, haussa (`__experimental_omnisearch_visibility: false`) eikä Luo-valikossa (`sanity/pohjat.ts`), toiminnot `[]` (`sanity.config.ts`).
 - Ei kuulu varmuuskopioon (`kuuluuKopioon`) eikä palautukseen (`EI_PALAUTETA`), ei julkaisemattomien listaan, ja webhook (`/api/revalidate`) ohittaa sen.
 
+### 16. `ohjaus` (docs/24 askel 8, Y18)
+**Tarkoitus:** isän tekemä lyhytosoite (esim. /jasenmaksu) tai poistetun sivun osoitteen
+ohjaus. Ratkaistaan vain 404-haarassa (`sanity/lib/ohjaus.ts`), 307. Studio: Sivuston
+asetukset → Ohjaukset ja lyhytosoitteet (myös Muuttuneet osoitteet, eli dokumentit, joilla on
+`aiemmatPolut`).
+
+| Kenttä | Tyyppi | Pakollinen | Kuvaus |
+|---|---|---|---|
+| lahde | string ("Osoite sivustolla", oletus "/") | kyllä | Polku, esim. `/jasenmaksu`. `tarkistaOhjauksenLahde` (`lib/ohjaukset.ts`): pienet kirjaimet a–z, numerot ja yhdysmerkit, enintään 6 osaa ja 120 merkkiä, ei `?`/`#`, ei etusivu, ei `studio`/`api`/`_next`/`blogspot`, ei koodiin sidottu sivu. Studio (`sanity/lib/ohjauksen-lahde.ts`): virhe, jos toisella ohjauksella on sama osoite, osoitteessa on sivu (HEAD 200) tai kiinteä ohjaus; varoitus, jos osoite on jonkin dokumentin aiempi osoite (ohjaus korvaa sen) |
+| minne | `linkki` ("Minne ohjataan") | kyllä (`vaadiLinkki`) | Sivuston sivu (vahva viittaus), muu osoite tai tiedosto. Virhe, jos kohde on ohjaus itse; varoitus, jos kohde on toisen ohjauksen osoite |
+| muistiinpano | text ≤ 300 | ei | "Muistiinpano (ei näy sivuilla)". Julkisessa datasetissä luettavissa: kuvaus kieltää henkilötiedot (K4) |
+
+Ei singleton. Esikatselu: osoite ja "→ kohde · muistiinpano".
+
 ## Singletonien hallinta Studiossa
 
 Singleton-dokumentit (`yhteystiedot`, `navigaatio`, `asetukset`, `etusivu`) eivät esiinny Luo-valikossa: `sanity/pohjat.ts` suodattaa niiden pohjat (samoin `varmuuskopio`n ja `sivustonTila`n), ja `sanity.config.ts` (`newDocumentOptions`) suodattaa ne globaalista valikosta. Kopiointi, poisto ja julkaisun peruminen on estetty (`document.actions`).
@@ -564,7 +593,7 @@ yhä `title asc`), `arvokisa.alkuPvm/loppuPvm/hopea/pronssi`, `pelaaja.tilastot`
 | slug | slug (nimestä) | kyllä | Suodattimen osoite `/uutiset?kategoria=<slug>`. Siirretyt kategoriat säilyttivät vanhat arvot (`otteluraportti`, `tapahtumaraportti` …), id `uutisKategoria-<vanha arvo>` |
 | kuvaus | text ≤ 200 | ei | Kategoriasivun meta description |
 | jarjestys | number | ei | Suodattimen järjestys, tyhjät viimeisenä aakkosjärjestyksessä |
-| aiemmatPolut | string[] | ei | Vanhat polut ohjataan 308:lla nykyiseen (esim. `jasentieto` → `tapahtumaraportti`) |
+| aiemmatPolut | string[] | ei | Vanhat polut ohjataan 308:lla nykyiseen (esim. `jasentieto` → `tapahtumaraportti`). Askeleesta 8 alkaen `readOnly` ("Aiemmat osoitteet", `aiemmatPolutField`): webhook lisää vanhan, kun osoite muuttuu. Data ennallaan |
 
 Siirto: `npm run patch:uutiskategoriat` (scripts/lib/uutiskategoriat.ts). Webhook tyhjentää `uutisKategoria`-muutoksessa myös `uutinen`-tagin.
 

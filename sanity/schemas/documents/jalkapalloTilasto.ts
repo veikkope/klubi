@@ -5,12 +5,13 @@ import { MESTARUUSMAAT } from "../../../lib/ulkomaiset-mestarit";
 import { TaulukkoKontekstiInput } from "../../components/taulukkoeditori/konteksti";
 import { seoFields } from "../objects/seoFields";
 import {
+  aiemmatPolutField,
   legacyUrlField,
   muutLegacyUrlitField,
   needsReviewField,
+  polkuMuuttunut,
   tarkistettavaaField,
   tiivistelmaField,
-  polkuMuuttunut,
 } from "../objects/contentMeta";
 import { HAKUKONEET_RYHMA, OSOITE_OTSIKKO } from "../objects/sanasto";
 import { rivitKentta, sarakkeetKentta } from "../objects/taulukkoKentat";
@@ -38,7 +39,7 @@ export const jalkapalloTilasto = defineType({
     defineField({
       name: "slug",
       title: OSOITE_OTSIKKO,
-      description: "Taulukon tunniste osoitteessa. (Aiemmin kentän nimi oli Polku.)",
+      description: "Taulukon tunniste osoitteessa. Jos taulukolla on oma sivu ja muutat julkaistun taulukon osoitetta, vanha osoite ohjautuu uuteen automaattisesti. (Aiemmin kentän nimi oli Polku.)",
       type: "slug",
       options: { source: "title", maxLength: 80 },
       validation: (rule) => [rule.required(), polkuMuuttunut(rule)],
@@ -202,6 +203,7 @@ export const jalkapalloTilasto = defineType({
     ...seoFields,
     legacyUrlField("seo"),
     muutLegacyUrlitField("seo"),
+    aiemmatPolutField("seo"),
   ],
   preview: {
     select: { title: "title", category: "category", needsReview: "needsReview" },

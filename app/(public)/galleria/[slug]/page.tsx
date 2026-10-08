@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 
 import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
@@ -19,6 +18,7 @@ import { breadcrumbSchema, collectionPageSchema } from "@/lib/schema-org";
 import { buildMetadata, resolveDescription } from "@/lib/seo";
 import { rootCrumb } from "@/lib/nav-sections";
 import { formatDate } from "@/lib/format";
+import { ohjaaTaiEiLoydy } from "@/sanity/lib/ohjaus";
 
 export const revalidate = 3600;
 
@@ -85,7 +85,7 @@ export default async function AlbumPage({
 }) {
   const { slug } = await params;
   const album = await getAlbum(slug);
-  if (!album) notFound();
+  if (!album) return ohjaaTaiEiLoydy(`/galleria/${slug}`);
 
   const path = `/galleria/${album.slug}`;
   const description = resolveDescription(

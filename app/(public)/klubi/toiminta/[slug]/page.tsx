@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import { stegaClean } from "next-sanity";
 
 import { EmptyState } from "../../_components/empty-state";
@@ -28,6 +27,7 @@ import {
   type KlubiToimintaCard,
   type KlubiToimintaVuosi,
 } from "@/sanity/lib/queries/klubi";
+import { ohjaaTaiEiLoydy } from "@/sanity/lib/ohjaus";
 
 export const revalidate = 3600;
 
@@ -109,7 +109,7 @@ export default async function ToimintaDetailPage({
 }) {
   const { slug } = await params;
   const toiminta = await getToiminta(slug);
-  if (!toiminta) notFound();
+  if (!toiminta) return ohjaaTaiEiLoydy(`/klubi/toiminta/${slug}`);
 
   const siblings = await sanityFetch<Pick<KlubiToimintaCard, "_id" | "title" | "slug" | "tiivistelma">[]>({
     query: klubiToimintaSiblingsQuery,

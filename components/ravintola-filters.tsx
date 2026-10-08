@@ -203,6 +203,18 @@ export function sovitaAlue(f: RavintolaFilterValues, facets: RavintolatFacetData
   return alueenKaupungit(facets, f).some((c) => c.slug === f.kaupunki) ? f : { ...f, kaupunki: null };
 }
 
+/**
+ * Kaupungin vanha tunniste nykyiseksi (docs/24 askel 8): kun kaupungin
+ * osoite muuttuu, webhook tallentaa vanhan kenttään `aiemmatPolut`, ja vanha
+ * `?kaupunki=`-linkki (myös vanhan sivuston .htm-ohjaukset) ohjautuu uuteen.
+ * Nykyinen ja tuntematon tunniste jäävät ennalleen.
+ */
+export function korjaaKaupunki(f: RavintolaFilterValues, facets: RavintolatFacetData): RavintolaFilterValues {
+  if (!f.kaupunki || facets.cities.some((c) => c.slug === f.kaupunki)) return f;
+  const uusi = facets.cities.find((c) => c.aiemmatTunnisteet?.includes(f.kaupunki!));
+  return uusi ? { ...f, kaupunki: uusi.slug } : f;
+}
+
 /** Rakentaa hakemiston osoitteen. Tyhjät ja oletusarvot jätetään pois URL:sta. */
 export function buildRavintolaHref(
   current: RavintolaFilterValues,

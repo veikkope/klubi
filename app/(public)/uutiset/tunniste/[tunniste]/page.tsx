@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound, permanentRedirect } from "next/navigation";
+import { permanentRedirect } from "next/navigation";
 
 import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
@@ -22,6 +22,7 @@ import {
   type Paged,
   type UutinenListItem,
 } from "@/sanity/lib/queries/uutiset";
+import { ohjaaTaiEiLoydy } from "@/sanity/lib/ohjaus";
 
 import { Pagination } from "../../_components/pagination";
 import { buildPath, pageCount, pageRange, parsePage, type SearchParamValue } from "../../_lib/paging";
@@ -56,7 +57,7 @@ function kuvaus(tunniste: Tunniste) {
 async function resolve(parametri: string, page: number): Promise<Tunniste> {
   const slug = kanoninenSlug(parametri);
   const tunniste = slug ? await haeTunniste(slug) : null;
-  if (!tunniste) notFound();
+  if (!tunniste) return ohjaaTaiEiLoydy(`/uutiset/tunniste/${parametri}`);
   if (parametri !== slug) permanentRedirect(pathFor(slug, page));
   return tunniste;
 }
@@ -107,7 +108,7 @@ export default async function TunnistePage({
     haeTunnisteet(),
   ]);
   const pages = pageCount(result.total, PER_PAGE);
-  if (page > pages) notFound();
+  if (page > pages) return ohjaaTaiEiLoydy(`/uutiset/tunniste/${parametri}`);
 
   const liittyvat = liittyvatTunnisteet(listat, tunniste.slug, 12);
   const path = pathFor(tunniste.slug, page);

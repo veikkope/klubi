@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 
 import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbSchema } from "@/lib/schema-org";
@@ -11,6 +10,7 @@ import {
   tilastotByCategoryQuery,
   type TilastoDoc,
 } from "@/sanity/lib/queries/arkisto";
+import { ohjaaTaiEiLoydy } from "@/sanity/lib/ohjaus";
 
 import { ArkistoPage } from "../../_tilastot/arkisto-page";
 import { arkistoTrail, datasetSchemas } from "../../_tilastot/helpers";
@@ -62,7 +62,7 @@ export default async function EurocupPage({
   const { slug } = await params;
   const competition = findEurocup(slug);
 
-  if (!competition) notFound();
+  if (!competition) return ohjaaTaiEiLoydy(`/jalkapalloarkisto/eurocupit/${slug}`);
 
   const path = `${basePath}/${competition.slug}`;
   const tilastot = await sanityFetch<TilastoDoc[]>({

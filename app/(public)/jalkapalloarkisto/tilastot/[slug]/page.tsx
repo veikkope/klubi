@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 
 import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbSchema, datasetSchema } from "@/lib/schema-org";
@@ -13,6 +12,7 @@ import {
   tilastoSlugsByCategoryQuery,
   type TilastoDoc,
 } from "@/sanity/lib/queries/arkisto";
+import { ohjaaTaiEiLoydy } from "@/sanity/lib/ohjaus";
 
 import { ArkistoPage } from "../../_tilastot/arkisto-page";
 import {
@@ -86,7 +86,7 @@ export default async function MuuTilastoPage({
 }) {
   const { slug } = await params;
   const tilasto = await getTilasto(slug);
-  if (!tilasto) notFound();
+  if (!tilasto) return ohjaaTaiEiLoydy(`/jalkapalloarkisto/tilastot/${slug}`);
 
   const path = muuTilastoPath(slug);
   const trail = arkistoTrail(

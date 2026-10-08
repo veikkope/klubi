@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { UusiValilehti } from "@/components/ui/uusi-valilehti";
 import Link from "next/link";
 import { stegaClean } from "next-sanity";
-import { notFound } from "next/navigation";
 
 import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
@@ -36,6 +35,7 @@ import {
   type UutinenListItem,
   type UutinenNaapuri,
 } from "@/sanity/lib/queries/uutiset";
+import { ohjaaTaiEiLoydy } from "@/sanity/lib/ohjaus";
 
 export const revalidate = 3600;
 
@@ -100,7 +100,7 @@ export default async function UutinenPage({
 }) {
   const { slug } = await params;
   const news = await getUutinen(slug);
-  if (!news) notFound();
+  if (!news) return ohjaaTaiEiLoydy(`/uutiset/${slug}`);
 
   const related = await sanityFetch<UutinenListItem[]>({
     query: relatedUutisetQuery,

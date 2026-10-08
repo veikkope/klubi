@@ -62,11 +62,30 @@ export function etsiDokumentti(ndjson: string, id: string): VarmuuskopionDokumen
  * Luonnos palautettavaksi: sama sisältö `drafts.`-tunnisteella. Ylätason
  * järjestelmäkentät (`_rev`, aikaleimat, luonnoksen `_system.base` ym.) Sanity
  * asettaa itse, joten niistä säilyvät vain `_id` ja `_type`. Sisäkkäiset
- * `_key`-, `_ref`- ja `_type`-kentät ovat sisältöä ja säilyvät.
+ * `_key`-, `_ref`- ja `_type`-kentät ovat sisältöä ja säilyvät. `nykyinen`:
+ * dokumentin nykyinen julkaistu versio, jonka aiemmat osoitteet säilytetään.
  */
-export function luonnosVarmuuskopiosta(doc: VarmuuskopionDokumentti): VarmuuskopionDokumentti {
+export function luonnosVarmuuskopiosta(
+  doc: VarmuuskopionDokumentti,
+  nykyinen?: Readonly<Record<string, unknown>> | null,
+): VarmuuskopionDokumentti {
   const sisalto = Object.fromEntries(Object.entries(doc).filter(([kentta]) => !kentta.startsWith("_")));
-  return { ...sisalto, _id: `drafts.${julkaistuId(doc._id)}`, _type: doc._type };
+  // Aiemmat osoitteet (docs/24 askel 8) yhdistetään nykyiseen: vanhemmasta
+  // kopiosta puuttuvat osoitteet eivät saa pudota, muuten ne antaisivat 404:n.
+  const aiemmat = [
+    ...new Set(
+      [doc.aiemmatPolut, nykyinen?.aiemmatPolut]
+        .flatMap((lista) => (Array.isArray(lista) ? lista : []))
+        .filter((p): p is string => typeof p === "string" && p !== ""),
+    ),
+  ];
+  delete sisalto.aiemmatPolut;
+  return {
+    ...sisalto,
+    ...(aiemmat.length > 0 ? { aiemmatPolut: aiemmat } : {}),
+    _id: `drafts.${julkaistuId(doc._id)}`,
+    _type: doc._type,
+  };
 }
 
 /** Ihmisluettava nimi listoihin: ensimmäinen täytetty tavallinen nimikenttä. */

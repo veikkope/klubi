@@ -109,6 +109,8 @@ export type RavintolaCityFacet = {
   maakunta: string | null;
   /** Toiminnassa olevat ravintolat (oletusnäkymä ei näytä lopettaneita). */
   count: number;
+  /** Aiemmat tunnisteet: vanha `?kaupunki=`-linkki ohjautuu nykyiseen (`korjaaKaupunki`). */
+  aiemmatTunnisteet?: string[];
 };
 
 export type RavintolaCountryFacet = {
@@ -144,6 +146,8 @@ export type RavintolatFacetsRaw = {
     slug: string | null;
     country: string | null;
     maakunta: string | null;
+    /** Kaupungin aiemmat tunnisteet (docs/24 askel 8): vanhat ?kaupunki=-linkit. */
+    aiemmatPolut?: string[] | null;
     count: number;
   }[];
   total: number;
@@ -322,6 +326,7 @@ export const ravintolatFacetsQuery = defineQuery(`{
       "slug": slug.current,
       country,
       maakunta,
+      aiemmatPolut,
       "count": count(*[_type == "ravintola" && references(^._id) && closed != true && ${JULKINEN_RAVINTOLA}])
     },
   "total": count(*[_type == "ravintola" && defined(slug.current) && closed != true && ${JULKINEN_RAVINTOLA}]),
@@ -367,6 +372,7 @@ export function buildRavintolatFacets(dirty: RavintolatFacetsRaw): RavintolatFac
         country: p.country ?? null,
         maakunta: p.country === SUOMI && isMaakunta(p.maakunta) ? p.maakunta : null,
         count: p.count,
+        aiemmatTunnisteet: (p.aiemmatPolut ?? []).filter((t): t is string => typeof t === "string" && t !== ""),
       })),
     countries: [...countries.entries()]
       .map(([slug, { names, count }]) => ({

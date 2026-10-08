@@ -101,7 +101,7 @@ deployssa).
 (production, create/update/delete) → `https://www.lahdensuomalainenklubi.com/api/revalidate` (vaihdettu 4.10.2026; alun perin klubi-blond.vercel.app).
 Salaisuus on kehittäjän `.env.local`-tiedostossa (`SANITY_REVALIDATE_SECRET`), mistä se
 kopioidaan Verceliin. Tarkistus: Studio → julkaise muutos → sanity.io/manage → API →
-Webhooks → *Attempts* näyttää 200.
+Webhooks → *Attempts* näyttää 200. Suodatin ja projektio: §D (docs/24 askel 8).
 
 ### B1. Jäsenhakemukset: ei käytössä
 
@@ -226,6 +226,32 @@ riippuvainen web-muutoksesta C2:n jälkeen.
      tiedostot ovat julkisesti listattavissa (docs/24 K4). Tulos kirjataan tähän.
      Odotettu: vain käytössä olevat liitteet ja varmuuskopiotiedostot
      (`varmuuskopio-<pvm>.ndjson.gz`, ks. Varmuuskopiot alla).
+  4. Yhden osoitteen muutos tallentaa `aiemmatPolut`-kentän (webhook kirjoittaa
+     robottitokenilla): muuta testisivun osoite, odota ja tarkista vanha osoite → 308.
+     Tai `npm run e2e:ohjaukset` (varmuuskopio ensin, webhook-jono tyhjänä).
+- **Webhookin projektio ja suodatin (docs/24 askel 8, P8).** Webhook "Sivuston päivitys
+  (revalidate)" (sanity.io/manage → API → Webhooks → Edit). Käytä näitä myös, jos webhook
+  luodaan joskus uudelleen: muuten välimuisti tyhjenee yhä, mutta vanhat osoitteet eivät
+  tallennu, ja osoitteen muutos rikkoo vanhat linkit (Vercelin lokiin varoitus
+  "webhookin projektiosta puuttuu operaatio").
+  - Dataset `production`, Trigger on Create, Update ja Delete, **Drafts ei** (luonnokset
+    eivät käynnistä webhookia), API-versio `v2021-03-25`, HTTP POST, salaisuus
+    `SANITY_REVALIDATE_SECRET`, URL `https://www.lahdensuomalainenklubi.com/api/revalidate`.
+  - **Filter:**
+    ```groq
+    defined(_type) && !(_type match "sanity.*") && !(_type in ["sivustonTila", "varmuuskopio"])
+    ```
+  - **Projection:**
+    ```groq
+    { _id, _type, "slug": slug.current, "operaatio": delta::operation(),
+      "ennen": before(){ _updatedAt, "slug": slug.current, aiemmatPolut, category, huuhkajatOsio, mestaruusmaa } }
+    ```
+  - Paluu tarvittaessa: Filter `defined(_type) && !(_type match "sanity.*")` ja Projection
+    `{_type, "slug": slug.current}` (käsittelijä hyväksyy molemmat).
+  - Tarkistus muutoksen jälkeen: julkaise mikä tahansa muutos ja katso Webhooks →
+    *Attempts*: vastaus 200. Vastaus 500 ja Vercelin lokissa "aiempaa osoitetta ei
+    tallennettu": webhook yrittää itse uudelleen; jos sama toistuu, tarkista
+    `SANITY_API_WRITE_TOKEN` (Editor).
 - **Varmuuskopiot** (Sanityn Free-tasolla versiohistoria säilyy vain 3 päivää, ja
   Sanityn oma Backups-palvelu on vain Enterprise-tasolla):
   - **Automaattinen viikkokopio:** Vercel Cron (`vercel.json`, maanantaisin 01 UTC)

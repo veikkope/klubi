@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { Calendar } from "lucide-react";
 
@@ -39,6 +38,7 @@ import {
 } from "@/sanity/lib/queries/ravintolat";
 import { paivaksi, voimassaOlevat, type KlubilaisenArvio, type VoimassaOlevaArvio } from "@/lib/ravintola-arvosana";
 import type { AlbumImage } from "@/lib/types";
+import { ohjaaTaiEiLoydy } from "@/sanity/lib/ohjaus";
 
 export const revalidate = 3600;
 
@@ -124,7 +124,7 @@ export async function generateMetadata({
 export default async function RavintolaPage({ params }: PageProps) {
   const { slug } = await params;
   const r = await getRavintola(slug);
-  if (!r) notFound();
+  if (!r) return ohjaaTaiEiLoydy(`/ravintolat/${slug}`);
 
   const trail = [
     rootCrumb,

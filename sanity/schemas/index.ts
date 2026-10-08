@@ -36,6 +36,7 @@ import { lehtileike } from "./documents/lehtileike";
 import { kommentti } from "./documents/kommentti";
 import { varmuuskopio } from "./documents/varmuuskopio";
 import { sivustonTila } from "./documents/sivustonTila";
+import { ohjaus } from "./documents/ohjaus";
 
 import { yhteystiedot } from "./singletons/yhteystiedot";
 import { navigaatio } from "./singletons/navigaatio";
@@ -85,6 +86,7 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   kommentti,
   varmuuskopio,
   sivustonTila,
+  ohjaus,
   yhteystiedot,
   navigaatio,
   asetukset,

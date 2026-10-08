@@ -2,12 +2,13 @@ import { DocumentIcon } from "@sanity/icons";
 import { defineField, defineType, type SanityDocumentLike } from "sanity";
 import { seoFields } from "../objects/seoFields";
 import {
+  aiemmatPolutField,
   legacyUrlField,
   muutLegacyUrlitField,
   needsReviewField,
+  polkuMuuttunut,
   tarkistettavaaField,
   tiivistelmaField,
-  polkuMuuttunut,
 } from "../objects/contentMeta";
 import { HAKUKONEET_RYHMA, OSOITE_OTSIKKO } from "../objects/sanasto";
 import { onLukittuSivu } from "../../../lib/path";
@@ -78,7 +79,8 @@ export const sivu = defineType({
         "Vain pieniä kirjaimia, numeroita ja yhdysmerkkejä. Alasivulle kauttaviiva: " +
         "klubi/historia → /klubi/historia. Osioiden sivujen (esim. /uutiset), Klubin " +
         "pääsivujen ja tietosuojaselosteen osoitteet on lukittu, koska sivusto hakee ne " +
-        "osoitteen perusteella.",
+        "osoitteen perusteella. Jos muutat julkaistun sivun osoitetta, vanha osoite ohjautuu " +
+        "uuteen automaattisesti.",
       type: "slug",
       readOnly: ({ document }) =>
         onLukittuSivu(document?._id, (document?.slug as { current?: string } | undefined)?.current),
@@ -184,6 +186,7 @@ export const sivu = defineType({
     ...seoFields,
     legacyUrlField("seo"),
     muutLegacyUrlitField("seo"),
+    aiemmatPolutField("seo"),
   ],
   preview: {
     select: { title: "title", subtitle: "slug.current", media: "hero" },

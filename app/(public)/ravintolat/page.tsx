@@ -16,6 +16,7 @@ import {
   parseRavintolaFilters,
   ravintolaSort,
   siistiRavintolaHref,
+  korjaaKaupunki,
   sovitaAlue,
   type RavintolaFilterValues,
   type RavintolaSearchParams,
@@ -114,7 +115,8 @@ export default async function RavintolatPage({ searchParams }: PageProps) {
       fallback: emptyFacets,
     }),
   );
-  const filters = sovitaAlue(parseRavintolaFilters(sp), facets);
+  // Kaupungin vanha tunniste ohjautuu uuteen (siistiRavintolaHref alla).
+  const filters = sovitaAlue(korjaaKaupunki(parseRavintolaFilters(sp), facets), facets);
 
   // Lomakkeen lähetys (`?alue=…&kaupunki=&…`) ja vanhat `?lista=`-linkit
   // siistiin osoitteeseen, jotta jaettu linkki on lyhyt ja yksiselitteinen.

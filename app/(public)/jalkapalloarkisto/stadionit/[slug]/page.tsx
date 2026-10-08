@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
 
 import { PortableText } from "@/components/portable-text";
 import { FramedImage } from "@/components/framed-image";
@@ -23,6 +22,7 @@ import {
   type StadionCard,
   type StadionFull,
 } from "@/sanity/lib/queries/arkisto-laajennus";
+import { ohjaaTaiEiLoydy } from "@/sanity/lib/ohjaus";
 
 export const revalidate = 3600;
 
@@ -89,7 +89,7 @@ export default async function StadionPage({
 }) {
   const { slug } = await params;
   const stadion = await getStadion(slug);
-  if (!stadion) notFound();
+  if (!stadion) return ohjaaTaiEiLoydy(`/jalkapalloarkisto/stadionit/${slug}`);
 
   const related = withSlug(
     await sanityFetch<StadionCard[]>({

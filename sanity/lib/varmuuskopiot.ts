@@ -56,13 +56,15 @@ export function paivaSuomeksi(paiva: string): string {
  * Sanity hyväksyy luonnoksen (docs/24 askel 4, lib/palautus.ts). Puuttuvat
  * tiedostot ja kuvat palautetaan erikseen, jotta ilmoitus voi kertoa niistä
  * (docs/24 askel 7): poistettu tiedosto ei palaudu varmuuskopiosta.
+ * `nykyinen`: julkaistu versio, jonka aiemmat osoitteet säilyvät (docs/24 askel 8).
  */
 export async function palautettavaLuonnos(
   client: SanityClient,
   doc: VarmuuskopionDokumentti,
   nimet?: Readonly<Record<string, string>>,
+  nykyinen?: Readonly<Record<string, unknown>> | null,
 ): Promise<{ luonnos: VarmuuskopionDokumentti; puuttuvat: PuuttuvaTiedosto[] }> {
-  const luonnos = luonnosVarmuuskopiosta(doc);
+  const luonnos = luonnosVarmuuskopiosta(doc, nykyinen);
   const refit = viitatutTunnisteet(luonnos);
   if (refit.length === 0) return { luonnos, puuttuvat: [] };
   // raw: myös luonnokset ja kuvatiedostot näkyvät API-versiosta riippumatta.

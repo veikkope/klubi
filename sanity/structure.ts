@@ -1,5 +1,6 @@
 import {
   ArchiveIcon,
+  ArrowRightIcon,
   BellIcon,
   ClockIcon,
   CommentIcon,
@@ -11,6 +12,7 @@ import {
   EnvelopeIcon,
   HomeIcon,
   LemonIcon,
+  LinkIcon,
   MenuIcon,
   TagIcon,
   UsersIcon,
@@ -26,6 +28,7 @@ import {
   type StudionRyhma,
 } from "../lib/osiosivut";
 import { PALLOVEIKKAUS_SLUG } from "../lib/path";
+import { OHJATTAVAT_TYYPIT, TUNNISTE_TYYPIT } from "../lib/ohjaukset";
 import { JULKINEN_RAVINTOLA } from "../lib/ravintola-arvosana";
 import { PalautaPoistettu } from "./components/varmuuskopio/palauta-poistettu";
 import { ODOTTAVAT_ARVOSTELUT, TARKISTETTAVAT_TYYPIT, TEHTAVAT } from "./lib/tehtavat";
@@ -35,7 +38,8 @@ import { ODOTTAVAT_ARVOSTELUT, TARKISTETTAVAT_TYYPIT, TEHTAVAT } from "./lib/teh
  *
  * - Jokaisella kohdalla on kiinteä tunnus (`.id()`), joten Studion osoitteet
  *   eivät muutu, kun otsikoita muutetaan.
- * - Etusivu, Navigaatio ja Varmuuskopiot ovat "Sivuston asetukset" -osiossa;
+ * - Etusivu, Navigaatio, Ohjaukset ja lyhytosoitteet sekä Varmuuskopiot ovat
+ *   "Sivuston asetukset" -osiossa;
  *   Yhteystiedot (singleton) on Klubi-ryhmässä. Singletoneista ei voi luoda kopioita.
  * - Singleton `asetukset` ei ole valikossa: mikään sen kentistä ei
  *   vaikuta sivustoon. Logo on tyylioppaan brändikuva (public/brand, sininen ja
@@ -260,6 +264,43 @@ const osioidenSivut = (S: StructureBuilder) =>
         ),
     );
 
+/**
+ * Ohjaukset ja lyhytosoitteet (docs/24 askel 8): isän tekemät ohjaukset
+ * osoitteen mukaan, ja webhookin tallentamat muuttuneet osoitteet uusin ensin.
+ */
+const ohjaukset = (S: StructureBuilder) =>
+  S.listItem()
+    .id("ohjaukset")
+    .title("Ohjaukset ja lyhytosoitteet")
+    .icon(LinkIcon)
+    .child(
+      S.list()
+        .title("Ohjaukset ja lyhytosoitteet")
+        .items([
+          S.listItem()
+            .id("lyhytosoitteet")
+            .title("Lyhytosoitteet ja ohjaukset")
+            .schemaType("ohjaus")
+            .child(
+              S.documentTypeList("ohjaus")
+                .title("Lyhytosoitteet ja ohjaukset")
+                .defaultOrdering([{ field: "lahde", direction: "asc" }]),
+            ),
+          S.listItem()
+            .id("muuttuneet")
+            .title("Muuttuneet osoitteet (automaattiset)")
+            .icon(ArrowRightIcon)
+            .child(
+              S.documentList()
+                .title("Muuttuneet osoitteet")
+                .filter(`_type in $tyypit && count(aiemmatPolut) > 0`)
+                .params({ tyypit: [...OHJATTAVAT_TYYPIT, ...TUNNISTE_TYYPIT] })
+                .defaultOrdering([{ field: "_updatedAt", direction: "desc" }])
+                .initialValueTemplates([]),
+            ),
+        ]),
+    );
+
 export const structure: StructureResolver = (S) =>
   S.list()
     .title("Sisältö")
@@ -284,6 +325,7 @@ export const structure: StructureResolver = (S) =>
                 .title("Navigaatio")
                 .icon(MenuIcon)
                 .child(S.document().schemaType("navigaatio").documentId("navigaatio")),
+              ohjaukset(S),
               S.listItem()
                 .id("varmuuskopiot")
                 .title("Varmuuskopiot")

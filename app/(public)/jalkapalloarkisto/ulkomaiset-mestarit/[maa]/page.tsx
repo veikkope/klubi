@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
 
 import { SectionNav } from "@/components/layout/section-nav";
 import { JsonLd } from "@/components/seo/json-ld";
@@ -17,6 +16,7 @@ import {
   tilastotByCategoryQuery,
   type TilastoDoc,
 } from "@/sanity/lib/queries/arkisto";
+import { ohjaaTaiEiLoydy } from "@/sanity/lib/ohjaus";
 
 import { ArkistoPage } from "../../_tilastot/arkisto-page";
 import { arkistoTrail, datasetSchemas } from "../../_tilastot/helpers";
@@ -63,7 +63,7 @@ export default async function MestaruusmaaPage({
 }) {
   const { maa: value } = await params;
   const maa = findMestaruusmaa(value);
-  if (!maa) notFound();
+  if (!maa) return ohjaaTaiEiLoydy(`/jalkapalloarkisto/ulkomaiset-mestarit/${value}`);
 
   // Kaikki maat haetaan: maavalikko näyttää vain maat, joilla on taulukoita.
   const kaikki = await sanityFetch<TilastoDoc[]>({
@@ -77,7 +77,7 @@ export default async function MestaruusmaaPage({
   const tilastot = maat.find((group) => group.value === maa.value)?.tilastot ?? [];
 
   // Tyhjää maata ei julkaista: hub ei linkitä siihen.
-  if (tilastot.length === 0) notFound();
+  if (tilastot.length === 0) return ohjaaTaiEiLoydy(`/jalkapalloarkisto/ulkomaiset-mestarit/${value}`);
 
   const path = mestaruusmaaPath(maa.value);
   const trail = arkistoTrail(

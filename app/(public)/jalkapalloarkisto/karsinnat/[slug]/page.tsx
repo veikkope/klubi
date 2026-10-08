@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 
 import { JsonLd } from "@/components/seo/json-ld";
 import { formatDate } from "@/lib/format";
@@ -13,6 +12,7 @@ import {
   tilastoSlugsByCategoryQuery,
   type KarsintaDoc,
 } from "@/sanity/lib/queries/arkisto";
+import { ohjaaTaiEiLoydy } from "@/sanity/lib/ohjaus";
 
 import { ArkistoPage } from "../../_tilastot/arkisto-page";
 import {
@@ -83,7 +83,7 @@ export default async function KarsintaPage({
   const { slug } = await params;
   const tilasto = await getTilasto(slug);
 
-  if (!tilasto) notFound();
+  if (!tilasto) return ohjaaTaiEiLoydy(`/jalkapalloarkisto/karsinnat/${slug}`);
 
   const path = karsintaPath(slug);
   const trail = arkistoTrail(

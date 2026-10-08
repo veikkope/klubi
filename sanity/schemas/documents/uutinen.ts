@@ -2,12 +2,13 @@ import { DocumentTextIcon } from "@sanity/icons";
 import { defineField, defineType } from "sanity";
 import { seoFields } from "../objects/seoFields";
 import {
+  aiemmatPolutField,
   legacyUrlField,
   muutLegacyUrlitField,
   needsReviewField,
+  polkuMuuttunut,
   tarkistettavaaField,
   tiivistelmaField,
-  polkuMuuttunut,
 } from "../objects/contentMeta";
 import { HAKUKONEET_RYHMA, OSOITE_OTSIKKO } from "../objects/sanasto";
 import { KategoriatInput } from "../../components/kategoriat/KategoriatInput";
@@ -39,7 +40,7 @@ export const uutinen = defineType({
     defineField({
       name: "slug",
       title: OSOITE_OTSIKKO,
-      description: "Muodostuu otsikosta: paina Luo. Uutisen osoite on /uutiset/tämä-osa. (Aiemmin kentän nimi oli Polku.)",
+      description: "Muodostuu otsikosta: paina Luo. Uutisen osoite on /uutiset/tämä-osa. Jos muutat julkaistun uutisen osoitetta, vanha osoite ohjautuu uuteen automaattisesti. (Aiemmin kentän nimi oli Polku.)",
       type: "slug",
       options: { source: "title", maxLength: 80 },
       validation: (rule) => [
@@ -289,6 +290,7 @@ export const uutinen = defineType({
     ...seoFields,
     legacyUrlField("seo"),
     muutLegacyUrlitField("seo"),
+    aiemmatPolutField("seo"),
     defineField({
       name: "blogspot",
       title: "Alkuperäinen Blogspot-kirjoitus",

@@ -1,4 +1,3 @@
-import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { Container } from "@/components/layout/container";
 import { Breadcrumbs, type Crumb } from "@/components/layout/breadcrumbs";
@@ -17,6 +16,7 @@ import { buildMetadata, resolveDescription } from "@/lib/seo";
 import { OSIOSIVU_SLUGIT } from "@/lib/osiosivut";
 import { ancestorSlugs, joinSlug, toHref } from "@/lib/path";
 import type { SivuWithAncestors } from "@/lib/types";
+import { ohjaaTaiEiLoydy } from "@/sanity/lib/ohjaus";
 
 export const revalidate = 3600;
 
@@ -73,7 +73,7 @@ export default async function SivuPage({
 }) {
   const { slug } = await params;
   const { sivu, ancestors } = await getSivu(slug);
-  if (!sivu) notFound();
+  if (!sivu) return ohjaaTaiEiLoydy(toHref(joinSlug(slug)));
 
   const crumbs: Crumb[] = [
     { label: "Etusivu", href: "/" },

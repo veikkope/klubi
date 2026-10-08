@@ -169,7 +169,8 @@ export const PalautaVarmuuskopiosta: DocumentActionComponent = ({ id, type, draf
 
   async function palauta(doc: VarmuuskopionDokumentti, paiva: string, nimet?: Record<string, string>) {
     try {
-      const { luonnos, puuttuvat } = await palautettavaLuonnos(client, doc, nimet);
+      // Julkaistun version aiemmat osoitteet säilyvät (docs/24 askel 8).
+      const { luonnos, puuttuvat } = await palautettavaLuonnos(client, doc, nimet, published);
       await client.createOrReplace(luonnos);
       // Poistettu tiedosto tai kuva ei palaudu varmuuskopiosta: kerrotaan, ei hiljaa.
       const puute = puuttuvienTiedostojenViesti(puuttuvat);

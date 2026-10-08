@@ -2,12 +2,13 @@ import { LemonIcon } from "@sanity/icons";
 import { defineField, defineType, type SanityDocumentLike } from "sanity";
 import { seoFields } from "../objects/seoFields";
 import {
+  aiemmatPolutField,
   legacyUrlField,
   muutLegacyUrlitField,
   needsReviewField,
+  polkuMuuttunut,
   tarkistettavaaField,
   tiivistelmaField,
-  polkuMuuttunut,
 } from "../objects/contentMeta";
 import { HAKUKONEET_RYHMA, OSOITE_OTSIKKO } from "../objects/sanasto";
 
@@ -52,7 +53,7 @@ export const ravintola = defineType({
     defineField({
       name: "slug",
       title: OSOITE_OTSIKKO,
-      description: "Muodostuu nimestä: paina Luo. Ravintolan osoite on /ravintolat/tämä-osa. (Aiemmin kentän nimi oli Polku.)",
+      description: "Muodostuu nimestä: paina Luo. Ravintolan osoite on /ravintolat/tämä-osa. Jos muutat julkaistun ravintolan osoitetta, vanha osoite ohjautuu uuteen automaattisesti. (Aiemmin kentän nimi oli Polku.)",
       type: "slug",
       options: { source: "name", maxLength: 80 },
       validation: (rule) => [rule.required(), polkuMuuttunut(rule)],
@@ -308,6 +309,7 @@ export const ravintola = defineType({
     ...seoFields,
     legacyUrlField("seo"),
     muutLegacyUrlitField("seo"),
+    aiemmatPolutField("seo"),
   ],
   orderings: [
     {

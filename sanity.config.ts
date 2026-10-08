@@ -13,6 +13,7 @@ import { HyvaksyJaLuoRavintola, ilmanJulkaisuaEhdotukselle } from "./sanity/acti
 import { PiilotaKommentti, PoistaKommentti } from "./sanity/actions/kommentin-moderointi";
 import { PalautaVarmuuskopiosta } from "./sanity/actions/palauta-varmuuskopiosta";
 import { lukitulleSivulle } from "./sanity/actions/lukittu-sivu";
+import { kopioIlmanVanhojaOsoitteita } from "./sanity/actions/kopio-ilman-osoitteita";
 import { PIILOTETUT_POHJAT, pohjat } from "./sanity/pohjat";
 import { aloitus } from "./sanity/plugins/aloitus";
 
@@ -66,9 +67,11 @@ export default defineConfig({
       if (context.schemaType === "sivu") {
         return [
           ...input.map((toiminto) =>
-            toiminto.action === "delete" || toiminto.action === "unpublish" || toiminto.action === "duplicate"
-              ? lukitulleSivulle(toiminto)
-              : toiminto,
+            toiminto.action === "duplicate"
+              ? lukitulleSivulle(kopioIlmanVanhojaOsoitteita(toiminto))
+              : toiminto.action === "delete" || toiminto.action === "unpublish"
+                ? lukitulleSivulle(toiminto)
+                : toiminto,
           ),
           PalautaVarmuuskopiosta,
         ];
@@ -76,7 +79,11 @@ export default defineConfig({
       // Vanhemman kuin 3 päivän virheen korjaus ilman kehittäjää (ilmaistason
       // historia on 3 päivää, docs/23 Y32). Toiminto piilottaa itsensä tyypeiltä,
       // joita ei palauteta (lib/palautus.ts).
-      return [...input, PalautaVarmuuskopiosta];
+      // Kopio ei peri vanhoja osoitteita (docs/24 askel 8).
+      return [
+        ...input.map((toiminto) => (toiminto.action === "duplicate" ? kopioIlmanVanhojaOsoitteita(toiminto) : toiminto)),
+        PalautaVarmuuskopiosta,
+      ];
     },
     newDocumentOptions: (prev, { creationContext }) => {
       // Parametria vaativat pohjat (osion sivu) avataan vain Studion rakenteesta.

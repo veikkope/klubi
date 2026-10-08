@@ -142,6 +142,9 @@ toinen.
 - **Sivuston asetukset**
   - **Etusivu:** etusivun yläosa (pääjuttu, pikalinkit) ja lohkot
   - **Navigaatio:** yläpalkin linkit
+  - **Ohjaukset ja lyhytosoitteet:** lyhyet osoitteet esitteisiin (esim. /jasenmaksu) ja
+    **Muuttuneet osoitteet**, joihin sivusto on itse tehnyt ohjauksen (ks. *Osoitteen
+    muuttaminen* ja *Lyhytosoite esitteeseen*)
   - **Varmuuskopiot:** automaattiset viikkokopiot ja poistettujen palautus (ks. alla)
 - **Tarkistettavat:** migraation merkitsemät dokumentit tyypeittäin (ks. alla)
 - **Uutiset:** tiedotteet ja blogikirjoitukset, myös blogin kaikki 530 kirjoitusta vuodesta 2007
@@ -386,8 +389,9 @@ Kategoriat näkyvät uutisten yhteydessä ja uutislistan suodattimessa (/uutiset
 4. **Julkaise**. Kategoria ilmestyy uutisten valintaruutuihin heti, ja suodattimeen
    kun ensimmäinen uutinen on merkitty siihen.
 
-**Nimen voi vaihtaa** milloin tahansa: uusi nimi näkyy kaikissa uutisissa. **Älä muuta
-julkaistun kategorian osoitetta**, koska vanhat linkit lakkaisivat toimimasta.
+**Nimen voi vaihtaa** milloin tahansa: uusi nimi näkyy kaikissa uutisissa. Myös
+**osoitteen** voi vaihtaa: vanhat linkit (/uutiset?kategoria=vanha) ohjautuvat uuteen
+automaattisesti, kun julkaiset.
 **Kategorian poisto** onnistuu vasta, kun mikään uutinen ei käytä sitä; Studio kertoo,
 mitkä uutiset siihen viittaavat. Poista rasti niistä ensin.
 
@@ -560,6 +564,60 @@ kategorialla *Klubin omat tilastot*.
 
 Jos sivu on kirjoitettu muulla kielellä (esim. englanninkielinen esittely), valitse
 **Sisällön kieli**. Ruudunlukija ääntää tekstin silloin oikein.
+
+### Osoitteen muuttaminen
+
+Voit korjata julkaistun sivun, uutisen, tapahtuman, ravintolan, albumin, toimintamuodon,
+arvokisan, pelaajan, stadionin, uutiskategorian tai kaupungin osoitteen: muuta **Osoite
+sivustolla** ja paina **Julkaise**. Studio kertoo sinisellä tiedolla, että vanha osoite
+ohjautuu uuteen. Sivusto tekee ohjauksen itse muutamassa sekunnissa, ja vanhat linkit
+(Google, Facebook, esitteet, vanhan sivuston osoitteet) toimivat edelleen.
+
+- Vanhat osoitteet näkyvät dokumentin kohdassa **Aiemmat osoitteet** (sivulla, uutisessa,
+  tapahtumassa, ravintolassa ja arkiston dokumenteissa välilehdellä *Hakukoneet ja jako*;
+  galleria-albumissa, uutiskategoriassa ja kaupungissa lomakkeen lopussa) ja koottuna kohdassa **Sivuston asetukset → Ohjaukset ja
+  lyhytosoitteet → Muuttuneet osoitteet (automaattiset)**. Kenttä täyttyy itsestään, etkä
+  voi muuttaa sitä.
+- Jos palautat osoitteen aiempaan, se poistuu Aiemmista osoitteista itsestään.
+- **Kopioi** (⋯-valikko) ei kopioi Aiempia osoitteita: vanhat osoitteet ohjautuvat yhä
+  alkuperäiseen.
+- **Alasivut:** sivun alasivujen osoitteet (esim. klubi/historia/1990-luku) eivät muutu
+  mukana. Studio kertoo, montako alasivua sivulla on: muuta niiden osoitteet erikseen.
+- **Taulukko**, joka näkyy osana toista sivua (esim. mestarit), näkyy samalla sivulla kuin
+  ennenkin. Vain suora linkki taulukkoon vie jatkossa sivun alkuun.
+- **Lukittujen sivujen** osoitetta ei voi muuttaa: osioiden sivut (esim. Uutiset,
+  Ravintola-arviot, jalkapalloarkiston osiot), Klubin pääsivut (Esittely, Toiminta,
+  Hallitus, Palloveikkaus, Yhteystiedot), tietosuojaseloste ja Litmanen.
+
+### Lyhytosoite esitteeseen (esim. /jasenmaksu)
+
+Lyhyt osoite on helppo painaa esitteeseen tai kirjeeseen, ja sen kohteen voi vaihtaa
+myöhemmin: vanha esite vie silloin uuteen kohteeseen.
+
+1. **Sivuston asetukset → Ohjaukset ja lyhytosoitteet → Lyhytosoitteet ja ohjaukset** → **+**.
+2. **Osoite sivustolla**: esim. `/jasenmaksu` (pienet kirjaimet, ä → a, ö → o, välit
+   yhdysmerkeiksi).
+3. **Minne ohjataan**: valitse sivuston sivu listasta, kirjoita toisen sivuston osoite
+   (https://…) tai valitse tiedosto (esim. PDF).
+4. **Muistiinpano**: mihin osoitetta käytetään, esim. "Jäsenmaksukirje 2027". Muistiinpano
+   ei näy sivuilla, mutta se on luettavissa sivuston tietokannasta: älä kirjoita siihen
+   henkilötietoja.
+5. **Julkaise**. Kokeile osoitetta selaimessa.
+
+- **Kohteen vaihto:** avaa ohjaus, vaihda **Minne ohjataan** ja paina **Julkaise**.
+- **Ohjauksen poisto:** avaa ohjaus → **⋯** → **Poista**. Osoite antaa sen jälkeen
+  "Sivua ei löytynyt".
+- **Punainen virhe "Osoitteessa … on jo sivu"** tarkoittaa, että osoite on jo käytössä:
+  valitse toinen osoite. Ohjaus toimii vain osoitteissa, joissa ei ole sivua.
+- **"… on jo kiinteä ohjaus (vanhan sivuston osoite)"**: vanhan sivuston osoite ohjautuu
+  jo muualle, eikä sitä voi muuttaa. Valitse toinen osoite.
+- **Keltainen varoitus "Tämä osoite ohjautuu nyt automaattisesti sivulle …"**: osoite on
+  jonkin sivun aiempi osoite. Ohjauksesi korvaa automaattisen ohjauksen.
+
+**Poistettu tai yhdistetty sivu:** jos sisältö on siirtynyt toiselle sivulle, 1) poista
+vanha sivu (⋯ → **Poista** tai **Poista julkaisu**) ja 2) tee ohjaus vanhan sivun osoitteesta uuteen sivuun
+(ohjeet yllä). Ohjaus onnistuu heti poiston jälkeen, kun osoitteessa ei enää ole sivua.
+Vanhan sivuston osoitteet, jotka veivät poistettuun sivuun, ohjautuvat silloin perille.
 
 ### Kuvan vaihtaminen
 
@@ -987,22 +1045,22 @@ Jos joku pyytää poistamaan tietonsa (kommentti, veikkaus tai arvostelu kuvinee
 | Jotain meni pieleen (alle 3 päivää sitten) | Kellokuvake → versiohistoria → palauta edellinen versio |
 | Jotain meni pieleen (yli 3 päivää sitten) | Dokumentin **⋯** → **Palauta varmuuskopiosta** → valitse viikko → tarkista → **Julkaise** |
 | Poistin vahingossa | **Sivuston asetukset → Varmuuskopiot** → uusin kopio → välilehti **Palauta poistettu** |
+| Vaihdoin sivun osoitteen | Sinun ei tarvitse tehdä mitään: vanha osoite ohjautuu uuteen (ks. *Osoitteen muuttaminen*) |
+| Poistin sivun, jonka sisältö siirtyi toiselle sivulle | Tee ohjaus poistetun sivun osoitteesta uuteen sivuun (ks. *Lyhytosoite esitteeseen*, kohta Poistettu tai yhdistetty sivu) |
+| Lyhytosoite ei toimi | Osoitteessa on sivu (sivu voittaa aina ohjauksen), tai ohjaus on julkaisematta. Avaa ohjaus ja lue punainen tai keltainen teksti |
 
 ## Mitä EI saa tehdä
 
 - **Älä poista** Sivuston asetusten eikä Klubin Osoite, sähköposti ja some -dokumentteja. Niitä ei voi poistaa eikä niiden julkaisua
   perua, mutta jos jokin menee pieleen, soita kehittäjälle.
-- **Älä muuta julkaistun sivun Osoitetta sivustolla**, koska se rikkoo linkit. Studio varoittaa
-  keltaisella, jos osoite poikkeaa julkaistusta. Jos muutos on pakko tehdä, kerro
-  kehittäjälle, joka tekee ohjauksen. Osioiden sivujen (esim. Uutiset, Ravintola-arviot,
-  jalkapalloarkiston osiot), Klubin pääsivujen (Esittely, Toiminta, Hallitus,
-  Palloveikkaus, Yhteystiedot), tietosuojaselosteen ja Jari Litmasen osoitteet on lukittu
-  kokonaan, koska sivusto hakee ne osoitteen perusteella. Osioiden sivuja, Klubin
-  pääsivuja ja tietosuojaselostetta ei voi myöskään poistaa, piilottaa eikä kopioida, mutta
-  niiden sisältöä saa muokata vapaasti.
-  **Sivuston sivu** -valinnalla tehdyt linkit seuraavat osoitteen muutosta itsestään.
-  Muu osoite -linkit ja Googlen vanhat linkit eivät seuraa.
+- **Lukitut sivut:** osioiden sivujen (esim. Uutiset, Ravintola-arviot, jalkapalloarkiston
+  osiot), Klubin pääsivujen (Esittely, Toiminta, Hallitus, Palloveikkaus, Yhteystiedot),
+  tietosuojaselosteen ja Jari Litmasen osoitteet on lukittu, koska sivusto hakee ne
+  osoitteen perusteella. Osioiden sivuja, Klubin pääsivuja ja tietosuojaselostetta ei voi
+  myöskään poistaa, piilottaa eikä kopioida, mutta niiden sisältöä saa muokata vapaasti.
+  Muiden sivujen osoitteen voi muuttaa (ks. *Osoitteen muuttaminen*).
 - **Älä muuta** kenttiä **Vanha osoite** tai **Alkuperäinen Blogspot-kirjoitus**. Vanhat linkit ohjautuvat niiden varassa.
+  **Aiemmat osoitteet** täyttyy automaattisesti, etkä voi muuttaa sitä.
 
 ## Varmuuskopiot
 

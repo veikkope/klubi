@@ -1,6 +1,8 @@
 import { TagIcon } from "@sanity/icons";
 import { defineField, defineType } from "sanity";
 
+import { AIEMMAT_TUNNISTEET_KUVAUS, aiemmatPolutField, polkuMuuttunut } from "../objects/contentMeta";
+
 /**
  * Uutiskategoria (docs/05, docs/09). Sihteeri lisää ja nimeää kategoriat
  * itse; uutinen viittaa kategoriaan (`uutinen.kategoriat`), joten nimen
@@ -9,7 +11,8 @@ import { defineField, defineType } from "sanity";
  *
  * Polku on uutislistan suodattimen osoite: /uutiset?kategoria=<polku>.
  * Vanhojen kategorioiden polut säilytettiin siirrossa (4.10.2026), joten
- * vanhat linkit toimivat.
+ * vanhat linkit toimivat. Kun polku muuttuu, webhook tallentaa vanhan
+ * kenttään `aiemmatPolut`, ja uutislista ohjaa sen uuteen.
  */
 export const uutisKategoria = defineType({
   name: "uutisKategoria",
@@ -42,10 +45,13 @@ export const uutisKategoria = defineType({
       title: "Osoite suodattimessa",
       description:
         "Muodostuu nimestä: paina Luo. Osoite on /uutiset?kategoria=tämä-osa. " +
-        "Älä muuta julkaistun kategorian osoitetta: vanhat linkit lakkaisivat toimimasta.",
+        "Jos muutat julkaistun kategorian osoitetta, vanhat linkit ohjautuvat uuteen automaattisesti.",
       type: "slug",
       options: { source: "nimi", maxLength: 40 },
-      validation: (rule) => rule.required().error("Paina Luo, niin osoite muodostuu nimestä."),
+      validation: (rule) => [
+        rule.required().error("Paina Luo, niin osoite muodostuu nimestä."),
+        polkuMuuttunut(rule),
+      ],
     }),
     defineField({
       name: "kuvaus",
@@ -62,16 +68,9 @@ export const uutisKategoria = defineType({
       type: "number",
       validation: (rule) => rule.integer().min(0).error("Anna kokonaisluku, esim. 10."),
     }),
-    defineField({
-      name: "aiemmatPolut",
-      title: "Aiemmat polut",
-      description:
-        "Vanhat polut, jotka ohjataan tähän kategoriaan (esim. yhdistetty Jäsentieto → Tapahtumat). " +
-        "Täytetään yleensä kehittäjän toimesta.",
-      type: "array",
-      of: [{ type: "string" }],
-      options: { layout: "tags" },
-    }),
+    // Webhook lisää vanhan osoitteen, kun osoite muuttuu (docs/24 askel 8).
+    // Ennen askelta 8 muokattava kenttä: nimi ja datamuoto ennallaan.
+    aiemmatPolutField(undefined, AIEMMAT_TUNNISTEET_KUVAUS),
   ],
   orderings: [
     {

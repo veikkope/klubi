@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 
 import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
@@ -19,6 +18,7 @@ import {
   type Paged,
   type UutinenListItem,
 } from "@/sanity/lib/queries/uutiset";
+import { ohjaaTaiEiLoydy } from "@/sanity/lib/ohjaus";
 
 import { ArchiveList } from "../../_components/archive-list";
 import { Pagination } from "../../_components/pagination";
@@ -114,7 +114,7 @@ export default async function ArkistoVuosiPage({
 }) {
   const { vuosi } = await params;
   const year = parseArchiveYear(vuosi);
-  if (!year) notFound();
+  if (!year) return ohjaaTaiEiLoydy(`/uutiset/arkisto/${vuosi}`);
 
   const page = parsePage((await searchParams).sivu);
   const { start, end } = pageRange(page, PER_PAGE);

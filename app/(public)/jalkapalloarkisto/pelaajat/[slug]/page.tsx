@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound, permanentRedirect } from "next/navigation";
+import { permanentRedirect } from "next/navigation";
 
 import { rootCrumb } from "@/lib/nav-sections";
 import { LITMANEN_PATH, LITMANEN_SLUG } from "@/lib/path";
@@ -14,6 +14,7 @@ import {
   type PelaajaCard,
   type PelaajaFull,
 } from "@/sanity/lib/queries/arkisto-laajennus";
+import { ohjaaTaiEiLoydy } from "@/sanity/lib/ohjaus";
 
 import { PelaajaProfiili } from "../../_pelaaja/pelaaja-profiili";
 
@@ -88,7 +89,7 @@ export default async function PelaajaPage({
   if (slug === LITMANEN_SLUG) permanentRedirect(LITMANEN_PATH);
 
   const pelaaja = await getPelaaja(slug);
-  if (!pelaaja) notFound();
+  if (!pelaaja) return ohjaaTaiEiLoydy(`/jalkapalloarkisto/pelaajat/${slug}`);
 
   const related = withSlug(
     await sanityFetch<PelaajaCard[]>({

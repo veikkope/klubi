@@ -88,6 +88,20 @@ test("luonnos kopiosta: drafts-tunniste, ei aikaleimoja eikä revisiota", () => 
   assert.equal(luonnosVarmuuskopiosta({ _id: "drafts.x", _type: "sivu" })._id, "drafts.x", "ei tuplaetuliitettä");
 });
 
+test("luonnos kopiosta: aiemmat osoitteet yhdistetään nykyiseen (docs/24 askel 8)", () => {
+  const kopio = { _id: "sivu-1", _type: "sivu", title: "Säännöt", aiemmatPolut: ["/a"] };
+  assert.deepEqual(luonnosVarmuuskopiosta(kopio, { _id: "sivu-1", aiemmatPolut: ["/a", "/b"] }).aiemmatPolut, ["/a", "/b"]);
+  assert.deepEqual(
+    luonnosVarmuuskopiosta({ _id: "sivu-1", _type: "sivu" }, { aiemmatPolut: ["/b"] }).aiemmatPolut,
+    ["/b"],
+    "kopiosta puuttuva kenttä saadaan nykyisestä",
+  );
+  assert.deepEqual(luonnosVarmuuskopiosta(kopio).aiemmatPolut, ["/a"], "ilman nykyistä ennallaan");
+  assert.deepEqual(luonnosVarmuuskopiosta(kopio, null).aiemmatPolut, ["/a"]);
+  assert.equal("aiemmatPolut" in luonnosVarmuuskopiosta({ _id: "x", _type: "sivu" }, { aiemmatPolut: [] }), false, "tyhjää ei lisätä");
+  assert.deepEqual(luonnosVarmuuskopiosta({ _id: "x", _type: "sivu", title: "T" }), { _id: "drafts.x", _type: "sivu", title: "T" });
+});
+
 test("dokumentin nimi listaan", () => {
   assert.equal(dokumentinNimi({ _id: "a", title: "Otsikko" }), "Otsikko");
   assert.equal(dokumentinNimi({ _id: "a", otsikko: "Leike" }), "Leike");

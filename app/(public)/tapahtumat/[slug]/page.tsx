@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import { Calendar, ExternalLink, Mail, MapPin } from "lucide-react";
 import { stegaClean } from "next-sanity";
 
@@ -22,6 +21,7 @@ import {
   tapahtumaSlugsQuery,
   type TapahtumaDetail,
 } from "@/sanity/lib/queries/uutiset";
+import { ohjaaTaiEiLoydy } from "@/sanity/lib/ohjaus";
 
 import { IcsLink } from "../_components/ics-link";
 
@@ -93,7 +93,7 @@ export default async function TapahtumaPage({
 }) {
   const { slug } = await params;
   const event = await getTapahtuma(slug);
-  if (!event) notFound();
+  if (!event) return ohjaaTaiEiLoydy(`/tapahtumat/${slug}`);
 
   const path = `/tapahtumat/${event.slug}`;
   const isPast = new Date(event.endsAt ?? event.startsAt) < new Date();

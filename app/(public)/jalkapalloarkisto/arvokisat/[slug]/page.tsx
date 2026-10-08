@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
 
 import { PortableText } from "@/components/portable-text";
 import { FramedImage } from "@/components/framed-image";
@@ -27,6 +26,7 @@ import {
   type ArvokisaCard,
   type ArvokisaFull,
 } from "@/sanity/lib/queries/arkisto-laajennus";
+import { ohjaaTaiEiLoydy } from "@/sanity/lib/ohjaus";
 
 import { StatSections } from "../../_tilastot/stat-sections";
 
@@ -105,7 +105,7 @@ export default async function ArvokisaPage({
 }) {
   const { slug } = await params;
   const kisa = await getArvokisa(slug);
-  if (!kisa) notFound();
+  if (!kisa) return ohjaaTaiEiLoydy(`/jalkapalloarkisto/arvokisat/${slug}`);
 
   const related = withSlug(
     await sanityFetch<ArvokisaCard[]>({

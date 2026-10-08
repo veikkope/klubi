@@ -82,6 +82,8 @@ public/                Staattiset tiedostot (favicon, robots, kuvat joita Sanity
 | Testaa päävalikon linkit ja siitä johdetun alatunnisteen (Sivusto-sarake, alavalikot sarakkeina, tyhjät osiot) | `npm run test:navigaatio` |
 | Testaa linkkien migraation säännöt (viittaus vain yksiselitteiseen julkaistuun dokumenttiin, muut Muu osoite, kävijän osoite ei muutu, idempotentti) | `npm run test:linkit-migraatio` |
 | Sanityn taso ja oikeudet (tilaus, datasetin näkyvyys, tokenien ja käyttäjien roolit, sivusto; vain luku). Aja Growth-kokeilun päätyttyä 26.10.2026 ja kun lomakkeet lakkaavat toimimasta | `npm run tarkista:sanity-taso` |
+| Testaa ajonaikaiset ohjaukset (lyhytosoitteet, aiemmat osoitteet, webhookin yhdistäminen, reittien ohjaaTaiEiLoydy) | `npm run test:ohjaukset` |
+| Päästä päähän -testi: ohjaukset ja aiemmat osoitteet (luo ja poistaa testisivun ja kaksi ohjausta; netto 0). `-- --paikallinen`: development + localhost (palvelin development-datasetillä, `SANITY_REVALIDATE_SECRET` ja `SANITY_API_WRITE_TOKEN` asetettuina), webhook simuloidaan. Ilman valitsinta: production ja aito webhook, varmuuskopio ensin, webhook-jono tyhjänä (docs/24 P8) | `npm run e2e:ohjaukset` |
 | Testaa uutishaun hakusanat | `npm run test:haku` |
 | Testaa lukuaika ja ingressisääntö (uutiset, ravintola-arviot) | `npm run test:artikkeli` |
 | Testaa uutisten tunnisteet | `npm run test:tunnisteet` |
@@ -111,6 +113,7 @@ public/                Staattiset tiedostot (favicon, robots, kuvat joita Sanity
 4. **Saavutettavuus on pakollinen.** Kaikilla kuvilla `alt`-teksti, kontrastit AA-tasolla, näppäimistönavigointi toimii.
 5. **Älä lisää featurea ilman skeemaa.** Jos uusi sivutyyppi tarvitaan, lisää ensin Sanity-skeema, sitten reitti.
 6. **301-redirectit ovat kriittisiä.** Jokainen vanha `.htm`-URL pitää ohjautua johonkin järkevään. Ylläpidetään `lib/redirects.ts`:ssa, generoidaan Sanitysta + manuaalisesta CSV:stä.
+7. **Uusi dynaaminen reitti:** kun sisältöä ei löydy, kutsu `return ohjaaTaiEiLoydy(polku)` (`sanity/lib/ohjaus.ts`), älä `notFound()`. Näin isän lyhytosoitteet ja muuttuneiden osoitteiden ohjaukset toimivat. Testi (`npm run test:ohjaukset`) valvoo tätä.
 
 ## Sub-agenttien käyttö
 

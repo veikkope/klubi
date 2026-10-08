@@ -2,13 +2,14 @@ import { UserIcon } from "@sanity/icons";
 import { defineField, defineType } from "sanity";
 import { seoFields } from "../objects/seoFields";
 import {
+  aiemmatPolutField,
+  koodiinSidottuSlug,
   legacyUrlField,
   muutLegacyUrlitField,
   needsReviewField,
+  polkuMuuttunut,
   tarkistettavaaField,
   tiivistelmaField,
-  polkuMuuttunut,
-  koodiinSidottuSlug,
 } from "../objects/contentMeta";
 import { HAKUKONEET_RYHMA, OSOITE_OTSIKKO } from "../objects/sanasto";
 import { LITMANEN_SLUG } from "../../../lib/path";
@@ -42,7 +43,7 @@ export const pelaaja = defineType({
       title: OSOITE_OTSIKKO,
       type: "slug",
       description:
-        "Muodostuu nimestä: paina Luo. Pelaajan osoite on /jalkapalloarkisto/pelaajat/tämä-osa. Litmasen osoite on lukittu, koska Litmanen-osio hakee hänet sen perusteella. (Aiemmin kentän nimi oli Polku.)",
+        "Muodostuu nimestä: paina Luo. Pelaajan osoite on /jalkapalloarkisto/pelaajat/tämä-osa. Litmasen osoite on lukittu, koska Litmanen-osio hakee hänet sen perusteella. Jos muutat julkaistun pelaajan osoitetta, vanha osoite ohjautuu uuteen automaattisesti. (Aiemmin kentän nimi oli Polku.)",
       options: { source: "name", maxLength: 80 },
       readOnly: ({ document }) => koodiinSidottuSlug(document, [LITMANEN_SLUG]),
       validation: (rule) => [rule.required(), polkuMuuttunut(rule)],
@@ -231,6 +232,7 @@ export const pelaaja = defineType({
     ...seoFields,
     legacyUrlField("seo"),
     muutLegacyUrlitField("seo"),
+    aiemmatPolutField("seo"),
   ],
   orderings: [{ title: "Nimi A–Ö", name: "nameAsc", by: [{ field: "name", direction: "asc" }] }],
   preview: {

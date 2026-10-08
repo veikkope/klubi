@@ -6,6 +6,7 @@ import {
   type ValidationBuilder,
 } from "sanity";
 
+import { polunMuutosViesti } from "../../../lib/ohjaukset";
 import { apiVersion } from "../../env";
 
 /**
@@ -121,23 +122,74 @@ export function koodiinSidottuSlug(
 }
 
 /**
- * Varoitus, kun julkaistun dokumentin polkua (slug) muutetaan: vanhat linkit
- * (Google, jaetut linkit, vanhan sivuston ohjaukset) lakkaisivat toimimasta.
- * Varoitus ei estä julkaisua, koska polun korjaus voi olla tarkoituksellinen;
- * silloin kehittäjä lisää ohjauksen (CLAUDE.md: 301-ohjaukset).
+ * Aiemmat osoitteet (docs/24 askel 8): webhook (app/api/revalidate) lisää
+ * vanhan osoitteen itse, kun julkaistun dokumentin osoite muuttuu, ja
+ * 404-haara ohjaa sen nykyiseen osoitteeseen (308). Ohjattavilla tyypeillä
+ * täysi polku (/uutiset/vanha), uutiskategorialla ja kaupungilla pelkkä
+ * tunniste (suodattimen ?kategoria= tai ?kaupunki=).
+ */
+export const AIEMMAT_KUVAUS =
+  "Osoitteet, joissa tämä on aiemmin ollut. Ne ohjautuvat tänne automaattisesti. " +
+  "Sivusto lisää osoitteen itse, kun muutat osoitetta ja julkaiset.";
+
+export const AIEMMAT_TUNNISTEET_KUVAUS =
+  "Aiemmat osoitteet suodattimessa. Vanhat linkit ohjautuvat tähän automaattisesti. " +
+  "Sivusto lisää osoitteen itse, kun muutat osoitetta ja julkaiset.";
+
+export const aiemmatPolutField = (group?: string, kuvaus: string = AIEMMAT_KUVAUS) =>
+  defineField({
+    name: "aiemmatPolut",
+    title: "Aiemmat osoitteet",
+    description: kuvaus,
+    type: "array",
+    of: [{ type: "string" }],
+    options: { layout: "tags" },
+    readOnly: true,
+    hidden: ({ value }) => !Array.isArray(value) || value.length === 0,
+    ...(group ? { group } : {}),
+  });
+
+/** Sivun alasivujen määrä 60 sekunnin muistilla: sääntö ajetaan jokaisella näppäilyllä. */
+const ALASIVUT_VOIMASSA_MS = 60_000;
+const alasivuMuisti = new Map<string, { aika: number; maara: Promise<number> }>();
+
+function alasivujenMaara(hae: () => Promise<number>, julkaistu: string): Promise<number> {
+  const vanha = alasivuMuisti.get(julkaistu);
+  if (vanha && Date.now() - vanha.aika < ALASIVUT_VOIMASSA_MS) return vanha.maara;
+  const maara = hae().catch(() => 0);
+  alasivuMuisti.set(julkaistu, { aika: Date.now(), maara });
+  return maara;
+}
+
+/**
+ * Sininen tieto, kun julkaistun dokumentin osoitetta (slug) muutetaan: vanha
+ * osoite ohjautuu julkaisun jälkeen uuteen automaattisesti (docs/24 askel 8).
+ * Sivulla kerrotaan lisäksi alasivujen määrä, koska alasivujen osoitteet eivät
+ * muutu mukana. Tekstit: `polunMuutosViesti` (lib/ohjaukset.ts).
  */
 export const polkuMuuttunut = (rule: SlugRule) =>
   rule
     .custom(async (slug, context) => {
       const id = context.document?._id;
       if (!slug?.current || !id) return true;
-      const julkaistu = await context
-        .getClient({ apiVersion })
-        .fetch<string | null>(`*[_id == $id][0].slug.current`, { id: id.replace(/^drafts\./, "") });
+      const client = context.getClient({ apiVersion });
+      const julkaistu = await client.fetch<string | null>(`*[_id == $id][0].slug.current`, {
+        id: id.replace(/^drafts\./, ""),
+      });
       if (!julkaistu || julkaistu === slug.current) return true;
-      return (
-        `Julkaistu osoite on "${julkaistu}". Jos muutat sen, vanhat linkit tähän sivuun lakkaavat ` +
-        "toimimasta. Palauta vanha osoite, tai pyydä kehittäjää lisäämään ohjaus ennen julkaisua."
-      );
+      const tyyppi = context.document?._type ?? "";
+      const alasivuja =
+        tyyppi === "sivu"
+          ? await alasivujenMaara(
+              () =>
+                client.fetch<number>(
+                  `count(*[_type == "sivu" && !(_id in path("drafts.**")) && string::startsWith(slug.current, $etuliite)])`,
+                  { etuliite: `${julkaistu}/` },
+                ),
+              julkaistu,
+            )
+          : 0;
+      const category = (context.document as { category?: string } | undefined)?.category;
+      return polunMuutosViesti(tyyppi, category, julkaistu, alasivuja).viesti;
     })
-    .warning();
+    .info();
