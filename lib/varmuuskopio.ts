@@ -19,7 +19,8 @@ type Dokumentti = { _id?: string; _type?: string; originalFilename?: string };
 
 /**
  * Otetaanko dokumentti kopioon: vain julkaistut, ei itse varmuuskopioita eikä
- * niiden tiedostoja (kopio ei kasva jokaisella kerralla edellisten verran).
+ * niiden tiedostoja (kopio ei kasva jokaisella kerralla edellisten verran) eikä
+ * sivuston tilaa (`sivustonTila`, järjestelmäloki).
  * Ei myöskään Sanityn järjestelmädokumentteja (`_.groups.*`: käyttöoikeusryhmät
  * jäsenineen, `_.retention.*`): ne eivät ole julkisia eikä niitä palauteta.
  */
@@ -28,6 +29,8 @@ export function kuuluuKopioon(doc: Dokumentti): boolean {
   if (!id || id.startsWith("drafts.") || id.startsWith("versions.") || id.startsWith("_.")) return false;
   if (doc._type?.startsWith("system.")) return false;
   if (doc._type === VARMUUSKOPIO_TYYPPI) return false;
+  // Ajastettujen tehtävien tila (docs/24 askel 7): järjestelmäloki, ei sisältöä.
+  if (doc._type === "sivustonTila") return false;
   if (doc._type === "sanity.fileAsset" && doc.originalFilename?.startsWith(TIEDOSTON_ETULIITE)) return false;
   return true;
 }

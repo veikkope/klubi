@@ -16,6 +16,7 @@ import {
   UsersIcon,
   WarningOutlineIcon,
 } from "@sanity/icons";
+import type { ComponentType } from "react";
 import type { DefaultDocumentNodeResolver, StructureBuilder, StructureResolver } from "sanity/structure";
 import {
   OSIOSIVUT,
@@ -27,6 +28,7 @@ import {
 import { PALLOVEIKKAUS_SLUG } from "../lib/path";
 import { JULKINEN_RAVINTOLA } from "../lib/ravintola-arvosana";
 import { PalautaPoistettu } from "./components/varmuuskopio/palauta-poistettu";
+import { ODOTTAVAT_ARVOSTELUT, TARKISTETTAVAT_TYYPIT, TEHTAVAT } from "./lib/tehtavat";
 
 /**
  * Sanity Studion vasemman valikon järjestys (docs/09, docs/24 §2.6).
@@ -49,27 +51,19 @@ import { PalautaPoistettu } from "./components/varmuuskopio/palauta-poistettu";
  *   Sivut-lista näyttää vain omat sivut.
  */
 
-/** Tyypit, joissa on migraation "Vaatii tarkistuksen" -lippu. */
-const TARKISTETTAVAT: { tyyppi: string; otsikko: string }[] = [
-  { tyyppi: "uutinen", otsikko: "Uutiset" },
-  { tyyppi: "ravintola", otsikko: "Ravintolat" },
-  { tyyppi: "jalkapalloTilasto", otsikko: "Tilastot" },
-  { tyyppi: "stadion", otsikko: "Stadionit" },
-  { tyyppi: "klubiToiminta", otsikko: "Klubin toiminta" },
-  { tyyppi: "pelaaja", otsikko: "Pelaajat" },
-  { tyyppi: "lehtileike", otsikko: "Lehtileikkeet" },
-  { tyyppi: "arvokisa", otsikko: "Arvokisat" },
-  { tyyppi: "sivu", otsikko: "Sivut" },
-  { tyyppi: "tapahtuma", otsikko: "Tapahtumat" },
-  { tyyppi: "galleriaAlbumi", otsikko: "Galleria-albumit" },
-];
-
-/** Lomakkeen luonnoksena tallentamat arvostelut: Studio hakee listat luonnosnäkymässä (ks. Ravintolat). */
-const ODOTTAVAT_ARVOSTELUT = `_type == "ravintolaKayttajaArvostelu" && _originalId in path("drafts.**")`;
+/** Tehtävän kuvake Studion valikossa (rekisteri: sanity/lib/tehtavat.ts). */
+const TEHTAVAN_KUVAKE: Record<string, ComponentType | undefined> = {
+  kommentit: CommentIcon,
+  julkaisemattomat: EditIcon,
+  ajastetut: ClockIcon,
+  tarkistettavat: WarningOutlineIcon,
+};
 
 /**
  * "Tehtävät sinulle" (docs/23 Y11, Y35): kaikki, mikä odottaa sihteerin
- * toimia, yhdessä paikassa. Tyhjä lista = ei tehtävää.
+ * toimia, yhdessä paikassa. Tyhjä lista = ei tehtävää. Rekisteri ja ehdot
+ * ovat tiedostossa sanity/lib/tehtavat.ts, josta myös Aloitus-näkymä laskee
+ * laskurit. Jokaisella kohdalla on kiinteä tunnus: /studio/structure/tehtavat;<id>.
  */
 const tehtavat = (S: StructureBuilder) =>
   S.listItem()
@@ -79,62 +73,20 @@ const tehtavat = (S: StructureBuilder) =>
     .child(
       S.list()
         .title("Tehtävät sinulle")
-        .items([
-          S.listItem()
-            .title("Arvostelut odottavat hyväksyntää")
-            .schemaType("ravintolaKayttajaArvostelu")
-            .child(
-              S.documentList()
-                .title("Odottavat hyväksyntää")
-                .schemaType("ravintolaKayttajaArvostelu")
-                .filter(ODOTTAVAT_ARVOSTELUT)
-                .defaultOrdering([{ field: "submittedAt", direction: "desc" }]),
-            ),
-          S.listItem()
-            .title("Uudet kommentit (7 päivää)")
-            .icon(CommentIcon)
-            .child(
-              S.documentList()
-                .title("Uudet kommentit (7 päivää)")
-                .schemaType("kommentti")
-                .filter(`_type == "kommentti" && dateTime(lahetetty) > dateTime(now()) - 60*60*24*7`)
-                .defaultOrdering([{ field: "lahetetty", direction: "desc" }]),
-            ),
-          // Luonnos, jota ei ole julkaistu: sivusto näyttää yhä vanhaa. Arvostelut
-          // ovat omalla listallaan, ja järjestelmädokumentit jätetään pois.
-          S.listItem()
-            .title("Julkaisemattomat muutokset")
-            .icon(EditIcon)
-            .child(
-              S.documentList()
-                .title("Julkaisemattomat muutokset")
-                .filter(
-                  `_originalId in path("drafts.**") && !(_type match "sanity.*") && !(_type in $pois)`,
-                )
-                .params({ pois: ["ravintolaKayttajaArvostelu", "varmuuskopio"] })
-                .defaultOrdering([{ field: "_updatedAt", direction: "desc" }]),
-            ),
-          S.listItem()
-            .title("Ajastetut uutiset")
-            .icon(ClockIcon)
-            .child(
-              S.documentList()
-                .title("Ajastetut uutiset (julkaisuaika tulevaisuudessa)")
-                .schemaType("uutinen")
-                .filter(`_type == "uutinen" && dateTime(publishedAt) > dateTime(now())`)
-                .defaultOrdering([{ field: "publishedAt", direction: "asc" }]),
-            ),
-          S.listItem()
-            .title("Vaatii tarkistuksen (kaikki)")
-            .icon(WarningOutlineIcon)
-            .child(
-              S.documentList()
-                .title("Vaatii tarkistuksen")
-                .filter(`needsReview == true && _type in $tyypit`)
-                .params({ tyypit: TARKISTETTAVAT.map(({ tyyppi }) => tyyppi) })
-                .defaultOrdering([{ field: "_updatedAt", direction: "desc" }]),
-            ),
-        ]),
+        .items(
+          TEHTAVAT.map((t) => {
+            let lista = S.documentList()
+              .title(t.listanOtsikko ?? t.otsikko)
+              .filter(t.suodatin)
+              .defaultOrdering(t.jarjestys);
+            if (t.tyyppi) lista = lista.schemaType(t.tyyppi);
+            if (t.params) lista = lista.params(t.params);
+            let kohta = S.listItem().id(t.id).title(t.otsikko).child(lista);
+            if (t.tyyppi) kohta = kohta.schemaType(t.tyyppi);
+            const kuvake = TEHTAVAN_KUVAKE[t.id];
+            return kuvake ? kohta.icon(kuvake) : kohta;
+          }),
+        ),
     );
 
 const lista = (S: StructureBuilder, tyyppi: string, otsikko: string, id?: string) => {
@@ -354,7 +306,7 @@ export const structure: StructureResolver = (S) =>
           S.list()
             .title("Vaatii tarkistuksen")
             .items(
-              TARKISTETTAVAT.map(({ tyyppi, otsikko }) =>
+              TARKISTETTAVAT_TYYPIT.map(({ tyyppi, otsikko }) =>
                 S.listItem()
                   .title(otsikko)
                   .schemaType(tyyppi)

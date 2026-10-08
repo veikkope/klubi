@@ -20,6 +20,8 @@ import {
   osoiteKaytossa,
   puuttuukoLinkinKohde,
   tarkistaOsoite,
+  onSivustonTiedostoOsoite,
+  SIVUSTON_TIEDOSTO_VIRHE,
   valittuTyyppi,
   onLinkkiTaytetty,
   ratkaiseLinkit,
@@ -357,6 +359,22 @@ test("kaksoisluku: keskeneräinen uusi linkki ei kadota vanhaa osoitetta, mutta 
   assert.equal(puuttuukoLinkinKohde("Lue lisää", undefined, null), true);
   assert.equal(puuttuukoLinkinKohde("Lue lisää", { tyyppi: "osoite", href: "https://x.fi" }, null), false);
   assert.equal(puuttuukoLinkinKohde("", { tyyppi: "sivu" }, null), false, "ei tekstiä");
+});
+
+test("sivuston oma tiedosto osoitteena on virhe (siivous ei näe käyttöä, docs/24 askel 7)", () => {
+  const pdf = "https://cdn.sanity.io/files/abc123/production/0f1e2d3c.pdf";
+  const kuva = "https://cdn.sanity.io/images/abc123/production/0f1e-100x100.jpg";
+  assert.equal(tarkistaOsoite(pdf, { tyyppi: "osoite" }, true), SIVUSTON_TIEDOSTO_VIRHE);
+  assert.equal(tarkistaOsoite(kuva, { tyyppi: "osoite" }, false), SIVUSTON_TIEDOSTO_VIRHE);
+  assert.equal(tarkistaOsoite(`${pdf}?dl=kutsu.pdf`, {}, true, "abc123"), SIVUSTON_TIEDOSTO_VIRHE, "vanha linkki, tämä projekti");
+  assert.equal(tarkistaOsoite("//cdn.sanity.io/files/abc123/production/x.pdf", { tyyppi: "osoite" }, true), SIVUSTON_TIEDOSTO_VIRHE);
+  assert.equal(tarkistaOsoite(pdf, { tyyppi: "osoite" }, true, "muu999"), true, "toisen projektin tiedosto ei ole sivuston oma");
+  assert.equal(tarkistaOsoite(pdf, { tyyppi: "tiedosto" }, true), true, "osoite ei ole käytössä");
+  assert.equal(onSivustonTiedostoOsoite("https://www.palloliitto.fi/files/x.pdf"), false);
+  assert.equal(onSivustonTiedostoOsoite("https://cdn.sanity.io/"), false);
+  assert.equal(onSivustonTiedostoOsoite(undefined), false);
+  // Kävijän sivu ei muutu: tarkistus on vain Studiossa.
+  assert.equal(tarkistaLinkki(pdf), true);
 });
 
 console.log(`\n${ok} testiä läpi.`);

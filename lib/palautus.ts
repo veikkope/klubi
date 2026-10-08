@@ -20,12 +20,12 @@ export type VarmuuskopionDokumentti = {
 };
 
 /**
- * Tyypit, joita ei palauteta: varmuuskopiot itse, kommentit ja kävijöiden
+ * Tyypit, joita ei palauteta: varmuuskopiot itse, sivuston tila (järjestelmäloki), kommentit ja kävijöiden
  * arvostelut (moderointi poistaa ne tarkoituksella) sekä Sanityn tiedostot ja
  * järjestelmädokumentit. Kuvat säilyvät Sanityssa, joten palautettu sisältö
  * viittaa niihin suoraan.
  */
-const EI_PALAUTETA = new Set(["varmuuskopio", "kommentti", "ravintolaKayttajaArvostelu"]);
+const EI_PALAUTETA = new Set(["varmuuskopio", "sivustonTila", "kommentti", "ravintolaKayttajaArvostelu"]);
 
 export function voiPalauttaa(tyyppi: string | undefined): boolean {
   if (!tyyppi) return false;
@@ -140,4 +140,51 @@ export function heikennaPuuttuvatViittaukset<T>(doc: T, olemassa: ReadonlySet<st
     return kopio;
   };
   return kay(doc) as T;
+}
+
+export type PuuttuvaTiedosto = { id: string; kuva: boolean; nimi: string | null };
+
+const onTiedostoViite = (ref: string) => /^(file|image)-/.test(ref);
+
+/**
+ * Dokumentin viittaamien tiedostojen ja kuvien alkuperäiset nimet
+ * varmuuskopiosta (kopiossa ovat tiedostojen tiedot, ei sisältöä). Haetaan
+ * kopiota luettaessa, jotta koko kopiota ei tarvitse pitää muistissa.
+ */
+export function tiedostojenNimet(doc: unknown, ndjson: string): Record<string, string> {
+  const nimet: Record<string, string> = {};
+  for (const ref of viitatutTunnisteet(doc).filter(onTiedostoViite)) {
+    const nimi = etsiDokumentti(ndjson, ref)?.originalFilename;
+    if (typeof nimi === "string" && nimi.trim()) nimet[ref] = nimi.trim();
+  }
+  return nimet;
+}
+
+/**
+ * Palautettavan dokumentin viittaamat tiedostot ja kuvat, joita ei enää ole
+ * (esim. yöllinen huolto poisti liitteen, jota mikään ei ollut käyttänyt
+ * 7 päivään, lib/tiedostosiivous.ts). Viittaus heikennetään, jotta luonnos
+ * tallentuu, ja puute kerrotaan palautuksen ilmoituksessa: tiedosto ei
+ * palaudu varmuuskopiosta.
+ */
+export function puuttuvatTiedostot(
+  doc: unknown,
+  olemassa: ReadonlySet<string>,
+  nimet: Readonly<Record<string, string>> = {},
+): PuuttuvaTiedosto[] {
+  return viitatutTunnisteet(doc)
+    .filter((ref) => onTiedostoViite(ref) && !olemassa.has(ref))
+    .map((ref) => ({ id: ref, kuva: ref.startsWith("image-"), nimi: nimet[ref] ?? null }));
+}
+
+/** Ilmoituksen teksti puuttuvista tiedostoista, tai null, jos mitään ei puutu. */
+export function puuttuvienTiedostojenViesti(puuttuvat: readonly PuuttuvaTiedosto[]): string | null {
+  if (puuttuvat.length === 0) return null;
+  return puuttuvat
+    .map((p) => {
+      const paate = /-([a-z0-9]+)$/i.exec(p.id)?.[1]?.toUpperCase();
+      const nimi = p.nimi ? `"${p.nimi}"` : paate ? `(${paate})` : "";
+      return `${p.kuva ? "Kuva" : "Liitetiedosto"}${nimi ? ` ${nimi}` : ""} puuttuu, se on poistettu. Lisää se uudelleen.`;
+    })
+    .join(" ");
 }

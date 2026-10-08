@@ -7,6 +7,8 @@ import { apiVersion } from "../env";
 import {
   dokumentinNimi,
   etsiDokumentti,
+  puuttuvienTiedostojenViesti,
+  tiedostojenNimet,
   voiPalauttaa,
   type VarmuuskopionDokumentti,
 } from "../../lib/palautus";
@@ -22,7 +24,7 @@ import { haeVarmuuskopiot, lataaVarmuuskopio, paivaSuomeksi, palautettavaLuonnos
 
 type Rivi =
   | { paiva: string; tila: "ladataan" | "puuttuu" | "virhe" }
-  | { paiva: string; tila: "loytyi"; doc: VarmuuskopionDokumentti; samaKuin: string | null };
+  | { paiva: string; tila: "loytyi"; doc: VarmuuskopionDokumentti; samaKuin: string | null; nimet: Record<string, string> };
 
 const muokattu = (doc: VarmuuskopionDokumentti) =>
   doc._updatedAt ? `muokattu ${new Date(doc._updatedAt).toLocaleDateString("fi-FI")}` : "";
@@ -38,7 +40,7 @@ function Versiot({
   id: string;
   julkaistuRev: string | undefined;
   onLuonnos: boolean;
-  onPalauta: (doc: VarmuuskopionDokumentti, paiva: string) => Promise<void>;
+  onPalauta: (doc: VarmuuskopionDokumentti, paiva: string, nimet?: Record<string, string>) => Promise<void>;
 }) {
   const [rivit, setRivit] = useState<Rivi[] | null>(null);
   const [virhe, setVirhe] = useState<string | null>(null);
@@ -59,13 +61,14 @@ function Versiot({
         for (const [i, kopio] of kopiot.entries()) {
           try {
             if (!kopio.url) throw new Error("tiedosto puuttuu");
-            const doc = etsiDokumentti(await lataaVarmuuskopio(kopio.url), id);
+            const ndjson = await lataaVarmuuskopio(kopio.url);
+            const doc = etsiDokumentti(ndjson, id);
             if (!doc) {
               tulos[i] = { paiva: kopio.paiva, tila: "puuttuu" };
             } else {
               const samaKuin = (doc._rev && nahdyt.get(doc._rev)) || null;
               if (doc._rev && !samaKuin) nahdyt.set(doc._rev, paivaSuomeksi(kopio.paiva));
-              tulos[i] = { paiva: kopio.paiva, tila: "loytyi", doc, samaKuin };
+              tulos[i] = { paiva: kopio.paiva, tila: "loytyi", doc, samaKuin, nimet: tiedostojenNimet(doc, ndjson) };
             }
           } catch (error) {
             console.error("[Palauta varmuuskopiosta]", kopio.paiva, error);
@@ -142,7 +145,7 @@ function Versiot({
                   onClick={async () => {
                     setPalautetaan(rivi.paiva);
                     try {
-                      await onPalauta(rivi.doc, rivi.paiva);
+                      await onPalauta(rivi.doc, rivi.paiva, rivi.nimet);
                     } finally {
                       setPalautetaan(null);
                     }
@@ -164,14 +167,20 @@ export const PalautaVarmuuskopiosta: DocumentActionComponent = ({ id, type, draf
 
   if (!voiPalauttaa(type) || (!draft && !published)) return null;
 
-  async function palauta(doc: VarmuuskopionDokumentti, paiva: string) {
+  async function palauta(doc: VarmuuskopionDokumentti, paiva: string, nimet?: Record<string, string>) {
     try {
-      await client.createOrReplace(await palautettavaLuonnos(client, doc));
+      const { luonnos, puuttuvat } = await palautettavaLuonnos(client, doc, nimet);
+      await client.createOrReplace(luonnos);
+      // Poistettu tiedosto tai kuva ei palaudu varmuuskopiosta: kerrotaan, ei hiljaa.
+      const puute = puuttuvienTiedostojenViesti(puuttuvat);
       toast.push({
-        status: "success",
+        status: puute ? "warning" : "success",
         title: `Versio ${paivaSuomeksi(paiva)} palautettu luonnokseksi`,
-        description: "Tarkista sisältö ja paina Julkaise. Sivusto ei muutu ennen julkaisua.",
-        duration: 10_000,
+        description: puute
+          ? `${puute} Tarkista sisältö ja paina Julkaise. Sivusto ei muutu ennen julkaisua.`
+          : "Tarkista sisältö ja paina Julkaise. Sivusto ei muutu ennen julkaisua.",
+        duration: puute ? 30_000 : 10_000,
+        closable: true,
       });
       setAuki(false);
       onComplete();

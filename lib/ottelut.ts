@@ -121,16 +121,18 @@ export function parseVeikkausliigaIcs(ics: string): Ottelu[] {
   return result;
 }
 
+/** Veikkausliigan kalenterisyöte ilman välimuistia (myös yöllisen huollon tarkistus). */
+async function haeVeikkausliigaTuore(): Promise<Ottelu[]> {
+  const url = `https://www.veikkausliiga.com/tilastot/spljp${seasonCode()}/kalenterit/?team=&home_away=`;
+  return parseVeikkausliigaIcs(await fetchVeikkausliigaText(url));
+}
+
 // Oma HTTPS-haku (lib/fetch-with-intermediate.ts) ohittaa Nextin fetch-välimuistin,
 // joten tulos välimuistitetaan erikseen tunniksi.
-const fetchVeikkausliigaIcs = unstable_cache(
-  async (): Promise<Ottelu[]> => {
-    const url = `https://www.veikkausliiga.com/tilastot/spljp${seasonCode()}/kalenterit/?team=&home_away=`;
-    return parseVeikkausliigaIcs(await fetchVeikkausliigaText(url));
-  },
-  ["veikkausliiga-ics"],
-  { revalidate: REVALIDATE_SECONDS, tags: ["ottelut"] },
-);
+const fetchVeikkausliigaIcs = unstable_cache(haeVeikkausliigaTuore, ["veikkausliiga-ics"], {
+  revalidate: REVALIDATE_SECONDS,
+  tags: ["ottelut"],
+});
 
 // ── Palloliiton Taso-rajapinta ───────────────────────────────────────────────
 
@@ -171,7 +173,7 @@ function helsinkiToIso(date: string, time: string): string | null {
  * dokumentaatioon (spl.torneopal.fi/taso/rest/help); tarkista ne kun avain on
  * saatu.
  */
-async function fetchTaso(apiKey: string): Promise<Ottelu[]> {
+async function fetchTaso(apiKey: string, { tuore = false }: { tuore?: boolean } = {}): Promise<Ottelu[]> {
   const sarjat = (process.env.TASO_SARJAT ?? `spljp${seasonCode()}:VL`)
     .split(",")
     .map((s) => s.trim().split(":"))
@@ -184,9 +186,13 @@ async function fetchTaso(apiKey: string): Promise<Ottelu[]> {
         competition_id: competition,
         category_id: category,
       });
-      const res = await fetch(`https://spl.torneopal.fi/taso/rest/getMatches?${params}`, {
-        next: { revalidate: REVALIDATE_SECONDS, tags: ["ottelut"] },
-      });
+      const res = await fetch(
+        `https://spl.torneopal.fi/taso/rest/getMatches?${params}`,
+        // Tuore haku (huolto) ohittaa välimuistin, jotta rikkinäinen rajapinta huomataan.
+        tuore
+          ? { cache: "no-store", signal: AbortSignal.timeout(15_000) }
+          : { next: { revalidate: REVALIDATE_SECONDS, tags: ["ottelut"] } },
+      );
       if (!res.ok) throw new Error(`Taso ${competition}/${category}: HTTP ${res.status}`);
       const json = (await res.json()) as { matches?: TasoMatch[]; call?: { error?: string } };
       if (json.call?.error) throw new Error(`Taso: ${json.call.error}`);
@@ -221,6 +227,25 @@ async function fetchExternal(): Promise<Ottelu[]> {
   } catch (error) {
     console.error("[ottelut] ulkoisen otteluohjelman haku epäonnistui:", error);
     return [];
+  }
+}
+
+/**
+ * Yöllisen huollon tarkistus (app/api/huolto, docs/24 askel 7): sama lähde kuin
+ * sivustolla, mutta ilman välimuistia. Virhe palautetaan, ei heitetä: ulkoisen
+ * palvelun vika ei ole huollon vika eikä vaikuta huollon onnistumiseen.
+ */
+export async function tarkistaOtteluhaku(
+  nyt = new Date(),
+): Promise<{ lahde: "Taso" | "Veikkausliiga"; maara: number; tulevia: number; virhe: string | null }> {
+  const apiKey = process.env.TASO_API_KEY;
+  const lahde = apiKey ? "Taso" : "Veikkausliiga";
+  try {
+    const ottelut = apiKey ? await fetchTaso(apiKey, { tuore: true }) : await haeVeikkausliigaTuore();
+    const tulevia = ottelut.filter((o) => new Date(o.aika).getTime() > nyt.getTime()).length;
+    return { lahde, maara: ottelut.length, tulevia, virhe: null };
+  } catch (error) {
+    return { lahde, maara: 0, tulevia: 0, virhe: error instanceof Error ? error.message : String(error) };
   }
 }
 

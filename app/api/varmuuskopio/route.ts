@@ -9,7 +9,9 @@ import {
   TIEDOSTON_ETULIITE,
   VARMUUSKOPIO_TYYPPI,
 } from "@/lib/varmuuskopio";
+import { huoltoajonKirjaus, TILA_ID, type AjonTulos } from "@/lib/sivuston-tila";
 import { apiVersion, dataset, projectId } from "@/sanity/env";
+import { kirjaaAjo } from "@/sanity/lib/kirjaa-ajo";
 
 /**
  * Viikoittainen varmuuskopio Studioon (docs/17 §D). Vercel Cron kutsuu tätä
@@ -20,6 +22,8 @@ import { apiVersion, dataset, projectId } from "@/sanity/env";
  * 3. gzip → tiedostoksi Sanityyn → `varmuuskopio`-dokumentti (Studio: Sivun
  *    asetukset → Varmuuskopiot). Saman päivän uusinta korvaa edellisen.
  * 4. Vanhimmat poistetaan, kun kopioita on yli 12 (≈ kolme kuukautta).
+ * 5. Tulos kirjataan dokumenttiin `sivustonTila.varmuuskopio`, jonka Studion
+ *    Aloitus näyttää (docs/24 askel 7). Epäonnistuminen kirjataan myös.
  *
  * Palautus: sihteeri palauttaa yksittäisen dokumentin Studiossa (lib/palautus.ts,
  * docs/09 Varmuuskopiot). Koko datasetti: lataa tiedosto Studiosta, pura (gunzip) ja
@@ -43,6 +47,9 @@ export async function GET(request: Request): Promise<Response> {
     return Response.json({ virhe: "Ei oikeutta." }, { status: 401 });
   }
 
+  // Client try-lohkon ulkopuolella: epäonnistuminen kirjataan catch-haarassa.
+  const client = createClient({ projectId, dataset, apiVersion, token, useCdn: false, perspective: "raw" });
+
   try {
     // 1–2. Vienti ja suodatus
     const vienti = await fetch(`https://${projectId}.api.sanity.io/v${apiVersion}/data/export/${dataset}`, {
@@ -54,7 +61,6 @@ export async function GET(request: Request): Promise<Response> {
     if (maara === 0) throw new Error("Vienti oli tyhjä: kopiota ei tallennettu.");
 
     // 3. Tallennus
-    const client = createClient({ projectId, dataset, apiVersion, token, useCdn: false, perspective: "raw" });
     const paiva = kopionPaiva(new Date());
     const tiedosto = gzipSync(Buffer.from(`${rivit.join("\n")}\n`, "utf8"));
     const asset = await client.assets.upload("file", tiedosto, {
@@ -70,24 +76,50 @@ export async function GET(request: Request): Promise<Response> {
       dokumentteja: maara,
       tiedosto: { _type: "file", asset: { _type: "reference", _ref: asset._id } },
     });
-    if (aiempi && aiempi !== asset._id) await client.delete(aiempi);
 
-    // 4. Vanhojen siivous (dokumentti ensin, sitten sen tiedosto)
-    const kopiot = await client.fetch<{ _id: string; paiva: string; asset: string | null }[]>(
-      `*[_type == $tyyppi && !(_id in path("drafts.**"))]{ _id, paiva, "asset": tiedosto.asset._ref }`,
-      { tyyppi: VARMUUSKOPIO_TYYPPI },
-    );
+    // Uusi kopio on nyt tallessa. Siitä eteenpäin virhe (saman päivän vanhan
+    // tiedoston poisto, vanhimpien kierto) on huomio eikä virhe: Aloitus ei
+    // näytä punaista, koska palautus on mahdollinen (docs/24 askel 7).
+    const tulokset: AjonTulos[] = [{ nimi: "varmuuskopio", tila: "ok", viesti: `${maara} dokumenttia`, maara }];
     const poistetut: string[] = [];
-    for (const vanha of poistettavat(kopiot)) {
-      await client.delete(vanha._id);
-      if (vanha.asset) await client.delete(vanha.asset);
-      poistetut.push(vanha.paiva);
+    try {
+      if (aiempi && aiempi !== asset._id) await client.delete(aiempi);
+
+      // 4. Vanhojen siivous (dokumentti ensin, sitten sen tiedosto)
+      const kopiot = await client.fetch<{ _id: string; paiva: string; asset: string | null }[]>(
+        `*[_type == $tyyppi && !(_id in path("drafts.**"))]{ _id, paiva, "asset": tiedosto.asset._ref }`,
+        { tyyppi: VARMUUSKOPIO_TYYPPI },
+      );
+      for (const vanha of poistettavat(kopiot)) {
+        await client.delete(vanha._id);
+        if (vanha.asset) await client.delete(vanha.asset);
+        poistetut.push(vanha.paiva);
+      }
+    } catch (error) {
+      const syy = error instanceof Error ? error.message : String(error);
+      console.error(`[varmuuskopio] kopio tallessa, vanhojen kierto epäonnistui: ${syy}`);
+      tulokset.push({ nimi: "kierto", tila: "huomio", viesti: `Vanhojen kopioiden poisto epäonnistui: ${syy}` });
     }
 
-    return Response.json({ ok: true, paiva, dokumentteja: maara, tavua: tiedosto.length, poistetut });
+    await kirjaaAjo(client, TILA_ID.varmuuskopio, "varmuuskopio", huoltoajonKirjaus(tulokset, true, new Date()));
+
+    return Response.json({
+      ok: true,
+      paiva,
+      dokumentteja: maara,
+      tavua: tiedosto.length,
+      poistetut,
+      huomiot: tulokset.filter((t) => t.tila === "huomio").map((t) => t.viesti),
+    });
   } catch (error) {
     const syy = error instanceof Error ? error.message : String(error);
     console.error(`[varmuuskopio] epäonnistui: ${syy}`);
+    await kirjaaAjo(
+      client,
+      TILA_ID.varmuuskopio,
+      "varmuuskopio",
+      huoltoajonKirjaus([{ nimi: "varmuuskopio", tila: "virhe", viesti: syy }], false, new Date()),
+    );
     // 500 näkyy Vercelin Cron-lokissa epäonnistuneena ajona.
     return Response.json({ ok: false, virhe: syy }, { status: 500 });
   }

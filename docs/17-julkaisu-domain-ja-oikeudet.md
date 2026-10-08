@@ -214,6 +214,18 @@ riippuvainen web-muutoksesta C2:n jälkeen.
   Robottitokenin Editor-rooli on sallittu ilmaistasolla. **Siirron jälkeen:**
   `npm run tarkista:sanity-taso` (tilaus, näkyvyys, tokenien ja käyttäjien roolit,
   sivusto), testikommentti sivustolla ja Vercel → Cron Jobs → `/api/varmuuskopio` → Run.
+  Lisäksi (docs/24 P10):
+  1. **Seuraavana aamuna** Studion Aloituksessa *Yöllinen huolto* on vihreä. Punainen
+     tai harmaa = robottitoken on menettänyt kirjoitusoikeuden (docs/23 Y2) tai ajastus
+     ei käy.
+  2. Anonyymi `count(*[_type == "sivustonTila"])` julkisesta datasetistä (ilman
+     tokenia, esim. `https://<projekti>.api.sanity.io/v2024-10-01/data/query/production?query=…`)
+     palauttaa 0: pistetunnus ei näy tunnistautumattomille. Jos tulos ei ole 0,
+     kirjataan tähän; tiedot (ajojen ajat ja tulokset) eivät ole arkaluonteisia.
+  3. Anonyymi `*[_type == "sanity.fileAsset"]{originalFilename}` näyttää, mitkä
+     tiedostot ovat julkisesti listattavissa (docs/24 K4). Tulos kirjataan tähän.
+     Odotettu: vain käytössä olevat liitteet ja varmuuskopiotiedostot
+     (`varmuuskopio-<pvm>.ndjson.gz`, ks. Varmuuskopiot alla).
 - **Varmuuskopiot** (Sanityn Free-tasolla versiohistoria säilyy vain 3 päivää, ja
   Sanityn oma Backups-palvelu on vain Enterprise-tasolla):
   - **Automaattinen viikkokopio:** Vercel Cron (`vercel.json`, maanantaisin 01 UTC)
@@ -225,8 +237,9 @@ riippuvainen web-muutoksesta C2:n jälkeen.
     `CRON_SECRET` (Production), satunnainen arvo esim. `openssl rand -hex 32` →
     redeploy. Ilman sitä reitti vastaa 501 eikä kopioita synny.
     `SANITY_API_WRITE_TOKEN` (Editor) on jo asetettu.
-  - **Seuranta:** Vercel → Cron Jobs näyttää ajot; epäonnistunut ajo = HTTP 500 ja
-    syy lokissa. Studiossa uusimman kopion päiväys kertoo saman.
+  - **Seuranta:** Studion **Aloitus** näyttää varmuuskopion ja yöllisen huollon tilan
+    (§F). Vercel → Cron Jobs näyttää ajot; epäonnistunut ajo = HTTP 500 ja syy
+    lokissa (Hobby: tunnin).
   - **Palautus Studiossa (isä, docs/09 Varmuuskopiot):** dokumentin ⋯ → **Palauta
     varmuuskopiosta** (muuttunut dokumentti) ja varmuuskopion välilehti **Palauta
     poistettu** (poistettu dokumentti). Selain lataa ja purkaa kopion, ja valittu versio
@@ -271,3 +284,40 @@ riippuvainen web-muutoksesta C2:n jälkeen.
 | 18 | Blogin 29.9. kirjoitus productioniin (`sync:blogspot:production`) | kehittäjä | ✅ 30.9. |
 | 19 | Viikoittainen varmuuskopio: `CRON_SECRET` Verceliin + redeploy, ensimmäisen ajon tarkistus | kehittäjä | koodi ✅ 30.9. · asetus ✅ 4.10. (`/api/varmuuskopio` vastaa 401) · ensimmäinen ajo ma 1.00 UTC ☐ |
 | 20 | Yöllinen huolto `/api/huolto` (arvosanat, orvot arvostelukuvat; sama `CRON_SECRET`) | kehittäjä | koodi ✅ 4.10. · ensimmäisen ajon tarkistus Vercel → Cron Jobs ☐ |
+| 21 | Sivuston tila ja tiedostosiivous (docs/24 askel 7, P7): deployn jälkeen huolto ja varmuuskopio käsin (Cron Jobs → Run), productionissa täsmälleen 2 `sivustonTila`-dokumenttia, `npm run siivoa:tiedostot -- --production` -lista tarkistettu ennen ensimmäistä poistoa (viikko deploysta), Usage-sivun kiintiö kirjattu docs/23 Y4:ään ennen 26.10. | kehittäjä | koodi ✅ 8.10. · ☐ |
+| 22 | Free-siirron tarkistukset 26.10. (§D: huolto vihreä seuraavana aamuna, anonyymi `sivustonTila`-määrä 0, julkisesti listattavat tiedostot kirjattu) | kehittäjä | ☐ |
+
+---
+
+## F. Valvonta ja sivuston tila (päätös 8.10.2026)
+
+Ulkoista valvontaa (esim. UptimeRobot) **ei oteta käyttöön**, eikä hälytyksiä lähetetä
+kenellekään. Sivuston kaatuminen huomataan, kun joku käyttää sivustoa tai Studiota.
+
+- **Studion Aloitus** (oletusnäkymä, `sanity/plugins/aloitus.tsx`, docs/09 *Aloitus ja
+  sivuston tila*): varmuuskopio, yöllinen huolto, otteluohjelman haku, julkaisemattomat
+  muutokset ja dokumenttikiintiön arvio liikennevaloina, säännöt `lib/sivuston-tila.ts`
+  (`npm run test:sivuston-tila`). Kaikki luetaan kirjautuneen käyttäjän istunnolla;
+  Management- ja Hooks-rajapintoja ei käytetä (docs/24 R19).
+- **Lähde:** cronit kirjaavat tuloksensa dokumentteihin `sivustonTila.huolto` ja
+  `sivustonTila.varmuuskopio` (`sanity/lib/kirjaa-ajo.ts`). Kirjauksen virhe ei kaada
+  ajoa. Jos kirjoittava token menettää oikeutensa, kirjaus vanhenee ja huollon rivi
+  muuttuu punaiseksi 30 tunnin jälkeen.
+- **Kiintiö on arvio:** sisältödokumentit luonnoksineen production + development,
+  ilman `sanity.*`-tiedostoja. Rivi ei ole koskaan vihreä eikä punainen (alle 80 %
+  harmaa, siitä alkaen keltainen), ennen kuin laskentatapa on vahvistettu
+  sanity.io/manage → Usage -sivulta (docs/23 Y4, docs/24 P7). Kun se on vahvistettu,
+  rajat ok/huomio/virhe (80 % ja 95 %) otetaan käyttöön erillisellä pienellä muutoksella.
+- **Käyttämättömät tiedostot (K4):** yöllinen huolto poistaa liitetiedoston
+  (`sanity.fileAsset`), johon mikään dokumentti (luonnokset mukaan lukien) ei ole
+  viitannut 7 päivään. Havaintopäivä kirjataan `sivustonTila.huolto`-dokumenttiin
+  (`orvotTiedostot`), joten ensimmäinen poisto tapahtuu aikaisintaan viikko deployn
+  jälkeen. **Varmuuskopiotiedostoihin ei kosketa koskaan** (gzip/NDJSON-tiedostot,
+  kuten `varmuuskopio-<pvm>.ndjson.gz`, ja `varmuuskopio`-dokumenttien viittaamat; ne
+  poistuvat vain kopioiden omalla kierrolla). Pelkkä nimen alku `varmuuskopio-` ei
+  suojaa PDF:ää. Käyttöä on viittaus julkaistusta, luonnoksesta tai versiosta (myös
+  heikko); pelkkä `cdn.sanity.io`-osoite linkissä ei ole, joten Studio hylkää sen.
+  Viikkovarmuuskopion vanhojen kierron virhe kirjataan huomioksi (kopio on tallessa). Kuviin siivous ei koske. Käsin: `npm run siivoa:tiedostot`
+  (kuivaharjoitus), `-- --poista`, `-- --production` (varmuuskopio ennen poistoa).
+- Päätöksen voi muuttaa myöhemmin ilman koodimuutoksia: ilmainen valvontapalvelu
+  etusivulle ja `/studio`:lle.

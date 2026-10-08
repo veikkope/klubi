@@ -202,11 +202,32 @@ export function osoiteKaytossa(l: { tyyppi?: string | null } | null | undefined)
   return tyyppi === null || tyyppi === "osoite";
 }
 
-/** Osoite-kentän virhe: tyhjä pakollinen linkki tai virheellinen osoite. */
+export const SIVUSTON_TIEDOSTO_VIRHE = "Tämä on sivuston oma tiedosto. Valitse linkin tyypiksi Tiedosto, niin se ei katoa.";
+
+/**
+ * Onko osoite Sanityn tiedosto- tai kuva-CDN:ssä (`cdn.sanity.io/files/…` tai
+ * `/images/…`), oletuksena minkä tahansa projektin, `projectId`:llä vain
+ * tämän projektin. Pelkkä osoite ei ole viittaus: yöllinen huolto ei näe
+ * tiedostoa käytetyksi ja poistaa sen (lib/tiedostosiivous.ts), jolloin linkki
+ * vie 404-sivulle.
+ */
+export function onSivustonTiedostoOsoite(href: string | null | undefined, projectId?: string): boolean {
+  if (!href) return false;
+  const m = /^(?:https?:)?\/\/cdn\.sanity\.io\/(?:files|images)\/([^/?#]+)\//i.exec(href.trim());
+  if (!m) return false;
+  return !projectId || m[1].toLowerCase() === projectId.toLowerCase();
+}
+
+/**
+ * Osoite-kentän virhe: tyhjä pakollinen linkki, virheellinen osoite tai
+ * sivuston oma tiedosto osoitteena (pitää valita tyypiksi Tiedosto). Vain
+ * Studion tarkistus: kävijän sivun `linkinOsoite` ei muutu.
+ */
 export function tarkistaOsoite(
   href: string | null | undefined,
   l: { tyyppi?: string | null } | null | undefined,
   pakollinen: boolean,
+  projectId?: string,
 ): true | string {
   if (!osoiteKaytossa(l)) return true;
   if (!href) {
@@ -215,6 +236,7 @@ export function tarkistaOsoite(
       ? "Kirjoita osoite, esim. https://www.palloliitto.fi."
       : "Valitse yltä, mihin linkki vie, tai kirjoita osoite.";
   }
+  if (onSivustonTiedostoOsoite(href, projectId)) return SIVUSTON_TIEDOSTO_VIRHE;
   return tarkistaLinkki(href);
 }
 

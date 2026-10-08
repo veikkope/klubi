@@ -5,7 +5,8 @@
 > Studio on suomeksi. Suluissa on englanninkielinen nimi, jos jokin kohta näkyy
 > vielä englanniksi.
 >
-> Versio 2.3 (7.10.2026). Blogi on siirtynyt Studioon, ja vanhan version voi palauttaa
+> Versio 2.4 (8.10.2026). Studio avautuu Aloitukseen, joka näyttää sivuston tilan ja
+> odottavat tehtävät. Blogi on siirtynyt Studioon, ja vanhan version voi palauttaa
 > varmuuskopiosta.
 
 > **Uudet jutut kirjoitetaan nyt Studioon, ei enää blogiin.** Blogspot-blogi on
@@ -25,13 +26,48 @@
 1. Avaa Studio yllä olevasta osoitteesta ja tallenna se kirjanmerkkeihin.
 2. Kirjaudu **omalla tunnuksellasi** (Google-tili tai sähköposti), jolla sinut on kutsuttu
    projektiin. Tunnus on henkilökohtainen, joten älä jaa sitä muille.
-3. Vasemmalla näkyy valikko ja oikealla muokattava sisältö. Yläpalkissa ovat
-   **Sisältö** ja **Esikatselu**.
+3. Studio avautuu **Aloitukseen** (ks. alla). Yläpalkissa ovat **Aloitus**,
+   **Sisältö** ja **Esikatselu**. Sisällössä vasemmalla näkyy valikko ja oikealla
+   muokattava sisältö.
 
 Roolisi on **Administrator** (ylläpitäjä), koska Sanity-projekti kuuluu klubille
 (docs/17 §A3). Voit muokata ja julkaista kaiken sisällön ja tarvittaessa kutsua uusia
 käyttäjiä. **Älä muuta projektin asetuksia** (API, CORS, tokenit, webhookit): sivusto
 toimii niiden varassa. Kehittäjä hoitaa ne.
+
+## Aloitus ja sivuston tila
+
+Kun avaat Studion, näet ensin **Aloituksen**. Siinä on kolme osaa: **Sivuston tila**,
+**Odottaa sinua** ja tarvittaessa **Täydennä perustiedot**. Tiedot haetaan, kun avaat
+näkymän. Paina **Päivitä**, jos haluat tuoreet tiedot kesken käytön.
+
+**Sivuston tila** kertoo, ovatko automaattiset työt kunnossa. Ylimpänä on yhteenveto:
+**Kaikki kunnossa** (vihreä), **Huomioitavaa** (keltainen) tai **Vaatii toimia**
+(punainen). Jokaisella rivillä tila lukee myös sanoin. Rivin alla on ohje, kun jotain
+pitää tehdä.
+
+**Sisältösi ei katoa, vaikka rivi olisi punainen.** Kirjoita ja julkaise normaalisti.
+Kerro kehittäjälle rivin otsikko ja teksti.
+
+| Rivi | Mitä se tarkoittaa | Mitä teet, kun se on punainen tai keltainen |
+|---|---|---|
+| **Varmuuskopio** | Viikoittainen varmuuskopio (maanantaiyönä) ja sen päiväys | Punainen: kopio on yli 8 päivää vanha tai epäonnistui. Kerro kehittäjälle. Sisältösi on tallessa, mutta vanhaa versiota ei voi palauttaa ennen uutta kopiota |
+| **Yöllinen huolto** | Joka yö: ravintoloiden arvosanat, vanhojen arvostelukuvien ja käyttämättömien tiedostojen siivous | Punainen: huolto ei ole käynyt yli vuorokauteen tai epäonnistui. Kerro kehittäjälle. Keltainen: huolto joutui korjaamaan arvosanoja tai tiedoston poisto epäonnistui. Kerro kehittäjälle, jos sama toistuu useana päivänä |
+| **Otteluohjelman haku** | Veikkausliigan ottelut haetaan automaattisesti | Punainen: haku epäonnistui. Ottelut-sivulla ja etusivulla näkyvät silloin vain Studioon lisätyt ottelut: lisää tärkeät ottelut käsin (Ottelut → +) ja kerro kehittäjälle. Keltainen: haku onnistui, mutta otteluita ei löytynyt kauden aikana. Talvitauolla tämä on normaalia |
+| **Julkaisemattomat muutokset** | Dokumentit, joissa on muutos, jota et ole julkaissut | Keltainen: avaa lista rivin linkistä, tarkista ja paina **Julkaise**, tai hylkää muutos (⋯ → **Hylkää muutokset**) |
+| **Dokumenttikiintiö (arvio)** | Arvio siitä, kuinka paljon Sanityn ilmaisen tason 10 000 dokumentin rajasta on käytössä | Luku on **arvio**: se ei ole koskaan vihreä eikä punainen, ennen kuin laskentatapa on vahvistettu. Keltainen (yli 80 %): kerro kehittäjälle, joka vapauttaa tilaa |
+
+Harmaa rivi (**Ei vielä tietoa**) tarkoittaa, ettei työ ole vielä ajanut kertaakaan,
+esim. ensimmäisenä päivänä. Se ei vaadi toimia.
+
+**Odottaa sinua** näyttää samat listat kuin valikon **Tehtävät sinulle**: arvostelut,
+uudet kommentit, julkaisemattomat muutokset, ajastetut uutiset ja tarkistettavat.
+Kortissa on odottavien määrä. Paina korttia, niin lista aukeaa. **Ei odottavia**
+tarkoittaa, ettei siinä ole tehtävää.
+
+**Täydennä perustiedot** näkyy vain, jos jotain puuttuu: klubin sähköposti, osoite
+tai puhelin, hallituksen jäsenet tai etusivun Klubista-lohkon kuva. Paina kohtaa,
+niin oikea lomake aukeaa.
 
 ## Perusasiat
 
@@ -64,8 +100,14 @@ vuosilinkki ja tekstin linkit) valitset ensin **Mihin linkki vie?**:
   **Tiedosto on julkinen:** se löytyy sivuston tietokannasta, vaikka et
   linkittäisi sitä, ja myös tiedoston alkuperäinen nimi näkyy. Älä liitä
   jäsenluetteloita, pöytäkirjoja, joissa on henkilötietoja, tai muuta
-  luottamuksellista. Jos lisäsit vahingossa väärän tiedoston, ks. *Tekstin
-  lisäosat → Liite → Väärä tiedosto*. Sivulla linkin
+  luottamuksellista. Kun mikään linkki tai liite ei ole käyttänyt tiedostoa
+  7 päivään, yöllinen huolto poistaa sen tietokannasta. Jos lisäsit vahingossa
+  väärän tiedoston, ks. *Tekstin lisäosat → Liite → Väärä tiedosto*.
+  **Älä kopioi tiedoston osoitetta** (`https://cdn.sanity.io/files/…`) Muu osoite
+  -kenttään: Studio ilmoittaa siitä punaisella ("Tämä on sivuston oma tiedosto…").
+  Valitse **Tiedosto** ja sama tiedosto, niin se ei katoa. Sähköpostiin tai someen
+  kopioitu tiedostolinkki lakkaa toimimasta, kun liite poistetaan sivustolta ja
+  viikko kuluu. Sivulla linkin
   perässä näkyy tiedoston tyyppi ja koko, esim. "(PDF, 240 kt)".
 
 Listan alla näkyy, mihin linkki vie, esim. "→ /klubi/toiminta/matkailu".
@@ -88,8 +130,8 @@ toinen.
 
 ## Studion valikko
 
-- **Tehtävät sinulle:** aloita tästä. Kaikki, mikä odottaa sinua, yhdessä paikassa.
-  Tyhjä lista tarkoittaa, ettei siinä ole tehtävää.
+- **Tehtävät sinulle:** kaikki, mikä odottaa sinua, yhdessä paikassa (samat listat
+  kuin Aloituksen *Odottaa sinua*). Tyhjä lista tarkoittaa, ettei siinä ole tehtävää.
   - **Arvostelut odottavat hyväksyntää:** kävijöiden ravintola-arvostelut
   - **Uudet kommentit (7 päivää):** lue ja piilota tarvittaessa
   - **Julkaisemattomat muutokset:** muokkaukset, joita et ole vielä julkaissut.
@@ -238,7 +280,10 @@ linkeissä). Toiselle sivustolle vievä painike avautuu uuteen välilehteen.
    henkilötietoja, tai muuta luottamuksellista.
 4. **Väärä tiedosto:** poista Liite-lohko (tai vaihda tiedosto) ja **Julkaise**. Yöllinen
    huolto poistaa tiedoston tietokannasta itsestään, kun mikään ei ole käyttänyt sitä
-   7 päivään. Jos tiedosto pitää saada pois heti (esim. siinä on henkilötietoja):
+   7 päivään (luonnoskin lasketaan käytöksi). Tiedosto palautuu versiohistoriasta
+   tai varmuuskopiosta vain, jos palautat liitteen **viikon sisällä**. Myöhemmin
+   palautettu sivu tulee ilman tiedostoa, ja palautuksen ilmoitus kertoo, mikä
+   tiedosto puuttuu: lisää se silloin uudelleen. Jos tiedosto pitää saada pois heti (esim. siinä on henkilötietoja):
    julkaisun jälkeen lisää mihin tahansa tekstiin uusi Liite-lohko, paina kentässä
    **Tiedosto** **Valitse**, etsi tiedosto listasta, avaa rivin valikko ja valitse
    **Poista**. Sulje lista. Apuna käytetty Liite-lohko jäi luonnokseksi: poista se
@@ -914,8 +959,9 @@ Näitä ei ollut vanhalla sivulla. Tarkista, että ne on täytetty:
   kun painat niiden painiketta. Silloin Google tai Vimeo voi tallentaa evästeitä
   laitteellesi." (Sivut → Tietosuojaseloste)
 - [ ] Tietosuojaselosteeseen kappale julkisista tiedostoista: "Sivustolle ladatut
-  tiedostot ja kuvat ovat julkisia. Ne poistetaan, kun niitä ei enää käytetä."
-  (Sivut → Tietosuojaseloste)
+  tiedostot ja kuvat ovat julkisia. Liitetiedosto (PDF, Word, Excel) poistetaan
+  automaattisesti, kun mikään sivu ei ole käyttänyt sitä 7 päivään." (Sivut →
+  Tietosuojaseloste)
 
 ## Tietosuojapyynnöt
 
@@ -930,6 +976,7 @@ Jos joku pyytää poistamaan tietonsa (kommentti, veikkaus tai arvostelu kuvinee
 
 | Tilanne | Mitä tehdä |
 |---|---|
+| Aloituksessa on punainen rivi | Lue rivin ohje. Sisältösi on tallessa, ja voit jatkaa työtä normaalisti. Kerro kehittäjälle rivin otsikko ja teksti |
 | Julkaisu ei onnistu | Punaiset kentät ovat pakollisia. Vieritä alas, täytä ja yritä uudelleen |
 | Muutos ei näy sivulla | Tarkista, että painoit **Julkaise**. Sivu päivittyy yleensä sekunneissa, viimeistään minuutissa |
 | Linkki ei toimi | Valitse sivuston omalle sivulle **Sivuston sivu** (ks. *Linkit*). Muu osoite alkaa `https://`, `mailto:` tai `tel:`. Keltainen varoitus "Sivustolla ei ole sivua…" kertoo kirjoitusvirheestä tai julkaisemattomasta sivusta |
@@ -964,6 +1011,7 @@ sisällöstä (tekstit ja tiedot). Kopiot näkyvät kohdassa **Sivuston asetukse
 Varmuuskopiot**, ja 12 uusinta säilyy (noin kolme kuukautta).
 
 - Sinun ei tarvitse tehdä mitään. Kopioita ei voi muokata eikä poistaa käsin.
+  Aloituksen **Varmuuskopio**-rivi kertoo, onko viikon kopio tehty.
 - Halutessasi voit ladata kopion talteen klubin omaan pilveen: avaa kopio →
   tiedostokentän **⋯** → **Lataa**. Esimerkiksi kerran kuussa riittää.
 - Kuvat eivät ole kopiossa: ne säilyvät Sanityssa, ja kehittäjä ottaa kuvista
@@ -982,6 +1030,9 @@ siihen):
    että sisältö on oikea, ja paina **Julkaise**.
 5. Jos valitsit väärän viikon, palauta toinen viikko tai hylkää luonnos (⋯ → **Hylkää
    muutokset**), jolloin kaikki jää ennalleen.
+6. Jos ilmoitus kertoo, että liitetiedosto tai kuva puuttuu, se on ehditty poistaa
+   (käyttämätön tiedosto poistuu viikon jälkeen). Lisää tiedosto uudelleen ennen
+   julkaisua.
 
 ### Poistetun dokumentin palautus
 

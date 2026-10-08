@@ -14,6 +14,7 @@ import { PiilotaKommentti, PoistaKommentti } from "./sanity/actions/kommentin-mo
 import { PalautaVarmuuskopiosta } from "./sanity/actions/palauta-varmuuskopiosta";
 import { lukitulleSivulle } from "./sanity/actions/lukittu-sivu";
 import { PIILOTETUT_POHJAT, pohjat } from "./sanity/pohjat";
+import { aloitus } from "./sanity/plugins/aloitus";
 
 export default defineConfig({
   name: "klubi",
@@ -23,7 +24,7 @@ export default defineConfig({
   dataset,
   schema: {
     types: schemaTypes,
-    // Singletoneja ja varmuuskopioita ei luoda käsin; osion sivun pohja (sanity/pohjat.ts).
+    // Singletoneja, varmuuskopioita ja sivuston tilaa ei luoda käsin; osion sivun pohja (sanity/pohjat.ts).
     templates: pohjat,
   },
   document: {
@@ -50,6 +51,8 @@ export default defineConfig({
       }
       // Varmuuskopio on vain luettava: ladataan, ei muokata, julkaista eikä poisteta käsin.
       if (context.schemaType === "varmuuskopio") return [];
+      // Sivuston tila on ajastusten kirjoittama loki (docs/24 askel 7): ei toimintoja.
+      if (context.schemaType === "sivustonTila") return [];
       if (singletonTypes.has(context.schemaType)) {
         // Julkaisun peruminen veisi etusivulta, valikosta ym. sisällön ja
         // korvaisi sen koodin oletuksilla, joten se on poissa kuten poisto.
@@ -85,9 +88,11 @@ export default defineConfig({
     },
   },
   plugins: [
-    // Sisältö on ensimmäinen näkymä: sihteeri aloittaa selkeästä valikosta.
-    // Esikatselu on sen rinnalla, ja jokaisessa dokumentissa on linkki sivulle,
-    // jolla se näkyy (sanity/presentation.ts).
+    // Aloitus on ensimmäinen näkymä: sivuston tila, odottavat tehtävät ja
+    // puuttuvat perustiedot (docs/24 askel 7). Sisältö on sen rinnalla, ja
+    // esikatselussa jokaisella dokumentilla on linkki sivulle, jolla se näkyy
+    // (sanity/presentation.ts).
+    aloitus(),
     structureTool({ title: "Sisältö", structure, defaultDocumentNode }),
     presentationTool({
       title: "Esikatselu",

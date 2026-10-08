@@ -13,6 +13,9 @@ import {
   luonnosVarmuuskopiosta,
   osuuHakuun,
   poistetutDokumentit,
+  puuttuvatTiedostot,
+  puuttuvienTiedostojenViesti,
+  tiedostojenNimet,
   viitatutTunnisteet,
   voiPalauttaa,
 } from "../lib/palautus";
@@ -40,6 +43,7 @@ test("palautettavat tyypit", () => {
   assert.equal(voiPalauttaa("uutinen"), true);
   assert.equal(voiPalauttaa("etusivu"), true, "singleton");
   assert.equal(voiPalauttaa("varmuuskopio"), false);
+  assert.equal(voiPalauttaa("sivustonTila"), false, "järjestelmäloki (docs/24 askel 7)");
   assert.equal(voiPalauttaa("kommentti"), false, "moderointi poistaa tarkoituksella");
   assert.equal(voiPalauttaa("ravintolaKayttajaArvostelu"), false);
   assert.equal(voiPalauttaa("sanity.imageAsset"), false);
@@ -147,6 +151,36 @@ test("puuttuvat viittaukset heikoiksi, olemassa olevat ennallaan (myös sisäkk�
   assert.deepEqual(tulos.kuva.asset, ref("image-abc-10x10-jpg"));
   assert.equal(tulos.body[0].children[0].text, "linkki", "muu sisältö säilyy");
   assert.equal("_weak" in doc.items[0].children[0].kohde, false, "alkuperäistä ei muuteta");
+});
+
+test("puuttuvat tiedostot ja kuvat kerrotaan palautuksessa (docs/24 askel 7)", () => {
+  const doc = {
+    _id: "sivu-1",
+    _type: "sivu",
+    body: [
+      { _type: "liite", _key: "a", tiedosto: { _type: "file", asset: { _type: "reference", _ref: "file-abc-pdf" } } },
+      { _type: "liite", _key: "b", tiedosto: { _type: "file", asset: { _type: "reference", _ref: "file-olemassa-pdf" } } },
+      { _type: "imageWithAlt", _key: "c", asset: { _type: "reference", _ref: "image-def-10x10-jpg" } },
+      { _type: "painike", _key: "d", linkki: { kohde: { _type: "reference", _ref: "uutinen-poistettu" } } },
+    ],
+  };
+  const kopio = [
+    JSON.stringify({ _id: "file-abc-pdf", _type: "sanity.fileAsset", originalFilename: "kutsu.pdf" }),
+    JSON.stringify(doc),
+  ].join(String.fromCharCode(10));
+  const nimet = tiedostojenNimet(doc, kopio);
+  assert.deepEqual(nimet, { "file-abc-pdf": "kutsu.pdf" });
+  const puuttuvat = puuttuvatTiedostot(doc, new Set(["file-olemassa-pdf"]), nimet);
+  assert.deepEqual(puuttuvat, [
+    { id: "file-abc-pdf", kuva: false, nimi: "kutsu.pdf" },
+    { id: "image-def-10x10-jpg", kuva: true, nimi: null },
+  ], "dokumenttiviittaus ei ole tiedosto");
+  assert.equal(
+    puuttuvienTiedostojenViesti(puuttuvat),
+    'Liitetiedosto "kutsu.pdf" puuttuu, se on poistettu. Lisää se uudelleen. Kuva (JPG) puuttuu, se on poistettu. Lisää se uudelleen.',
+  );
+  assert.equal(puuttuvienTiedostojenViesti([]), null);
+  assert.deepEqual(puuttuvatTiedostot(doc, new Set(["file-abc-pdf", "file-olemassa-pdf", "image-def-10x10-jpg"])), []);
 });
 
 console.log(`\n${ok} testiä ok`);

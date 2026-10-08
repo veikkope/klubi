@@ -62,6 +62,10 @@ public/                Staattiset tiedostot (favicon, robots, kuvat joita Sanity
 | Brändikuvien verkkoversiot ja kotinäytön sovelluskuvakkeet (vain kun logo muuttuu) | `npm run brandikuvat` → `public/brand/web/`, `public/sovellus/` |
 | Saavutettavuustesti (axe, WCAG 2.1 AA) | `npm run test:saavutettavuus` (sivusto käynnissä; `BASE_URL=…` muu osoite) |
 | Orpojen arvostelukuvien siivous (listaa; `-- --poista` poistaa) | `npm run siivoa:arvostelukuvat` (tarvittaessa; lisää `-- --production`) |
+| Käyttämättömien tiedostojen siivous (listaa, kuivaharjoitus oletuksena; `-- --nyt=VVVV-KK-PP` laskee toiselle päivälle; `-- --poista` poistaa; `-- --production` varmuuskopion kanssa). Yöhuolto tekee saman: poistaa tiedoston, jota mikään ei ole käyttänyt 7 päivään, ei koskaan varmuuskopioita (docs/24 askel 7) | `npm run siivoa:tiedostot` |
+| Testaa tiedostosiivouksen säännöt (7 päivän armoaika, varmuuskopiot aina suojattu; GROQ groq-js:llä) | `npm run test:tiedostosiivous` |
+| Testaa sivuston tilan säännöt (Aloituksen liikennevalot: varmuuskopio, huolto, otteluhaku, kiintiön arvio, perustiedot) | `npm run test:sivuston-tila` |
+| Testaa Aloituksen tehtävärekisterin ja kyselyn (Tehtävät sinulle -listat ja laskurit) | `npm run test:aloitus` |
 | Hae Blogspot-blogi paikallisesti | `npm run blogspot:fetch` → `data/blogspot/` (gitignoressa) |
 | Blogi → `development` | `npm run migrate:blogspot` (ensimmäinen kerta) · `npm run sync:blogspot` (vain uudet, säilyttää Studion muokkaukset) |
 | Blogin uudet kirjoitukset → `production` | `npm run sync:blogspot:production` (kuivaharjoitus) · `-- --vie` (varmuuskopio + `--missing` + tarkistus) |

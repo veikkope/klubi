@@ -473,14 +473,32 @@ Tietosuojaseloste ja Ylläpito ovat kiinteät.
 | seuraavaOttelu | object | ei | **Piilotettu** — korvattu otteluohjelmalla. Säilyy, jotta vanha data on validia. |
 | blocks | array (multi-type: otteluohjelma, uutiset, tapahtumat, esittely, ravintolatSpotlight, jalkapalloarkisto, galleria, cta) | ei | Etusivun lohkot järjestyksessä. Tyylioppaan järjestys: otteluohjelma, uutiset, ravintolatSpotlight, esittely. `uutiset`, `esittely` ja `ravintolatSpotlight` saavat `eyebrow`-kentän. `ravintolatSpotlight` näyttää tuoreimmin arvioidut (`visits[0]`, varalla `visitedAt`). `otteluohjelma`: ottelutHeading, ottelutCount, vainMaajoukkue (boolean, oletus true), seurat (string[], tags, oletus ["FC Lahti"]), laskuri (boolean, **piilotettu** — laskuri on yläosassa, etusivu ohittaa arvon), tapahtumatHeading, tapahtumatCount. `cta` on vanha — tyyliopas kieltää liittymiskehotteet. `esittely` ja `jalkapalloarkisto` saavat kentän `ctaLinkki` (`linkki`; "Linkin kohde" ja "Napin kohde", docs/24 askel 4). Esittelyssä varoitus, jos linkin teksti on mutta kohde puuttuu; arkiston tyhjä kohde = /jalkapalloarkisto. Vanha `ctaHref` on `deprecated`, `readOnly` ja piilotettu, ja sivu käyttää sitä, kunnes `ctaLinkki`n tyyppi on valittu (kaksoisluku). Jokaisen seitsemän lohkotyypin ensimmäinen kenttä on `piilota` (boolean, "Piilota lohko sivulta", oletus false; puuttuva = näkyvä): `etusivuQuery` hakee `blocks[piilota != true]`, ja esikatselun alaotsikon eteen tulee "Piilotettu · ". `ottelujenSeuratQuery` **ei** suodata piilotusta, joten seuralista ohjaa /ottelut-sivua myös piilotetusta lohkosta (docs/24 askel 1). |
 
+### 15. `sivustonTila` (järjestelmäloki, docs/24 askel 7)
+**Tarkoitus:** Yöllisen huollon (`/api/huolto`) ja viikkovarmuuskopion (`/api/varmuuskopio`) kirjaama tulos, jonka Studion Aloitus-näkymä näyttää liikennevaloina (`lib/sivuston-tila.ts`). Koneen kirjoittama loki kuten `varmuuskopio`, ei editorin singleton (docs/24 R18).
+
+| Kenttä | Tyyppi | Kuvaus |
+|---|---|---|
+| tehtava | string (`huolto` \| `varmuuskopio`) | Kumpi ajo |
+| aika | datetime | Viimeisin ajo |
+| onnistui | boolean | Onnistuiko viimeisin ajo |
+| viimeisinOnnistunut | datetime | Viimeisin onnistunut ajo (ei muutu epäonnistuessa) |
+| tulokset | array of `tilaTulos` { nimi, tila: `ok` \| `huomio` \| `virhe`, viesti, maara } | Huollossa `arvosanat`, `kuvat`, `tiedostot` ja `otteluhaku` (ulkoinen palvelu: ei vaikuta onnistumiseen); varmuuskopiossa `varmuuskopio` |
+| orvotTiedostot | array of `orpoTiedosto` { asset: string, havaittu: datetime }, piilotettu | Huollon muistiinpano käyttämättömistä tiedostoista (`lib/tiedostosiivous.ts`): tiedosto poistetaan, kun se on ollut käyttämättä 7 päivää. Tunnus on merkkijono, ei viittaus |
+
+- Kaksi kiinteän tunnuksen dokumenttia: `sivustonTila.huolto` ja `sivustonTila.varmuuskopio` (`TILA_ID`). Pistetunnus ei näy julkisesta datasetistä tunnistautumattomille (tarkistus 26.10., docs/24 P10).
+- Kirjoitus: `sanity/lib/kirjaa-ajo.ts` (`createIfNotExists` + `set`, `visibility: "async"`); kirjauksen virhe ei kaada ajoa.
+- `readOnly`, ei Studion rakenteessa, haussa (`__experimental_omnisearch_visibility: false`) eikä Luo-valikossa (`sanity/pohjat.ts`), toiminnot `[]` (`sanity.config.ts`).
+- Ei kuulu varmuuskopioon (`kuuluuKopioon`) eikä palautukseen (`EI_PALAUTETA`), ei julkaisemattomien listaan, ja webhook (`/api/revalidate`) ohittaa sen.
+
 ## Singletonien hallinta Studiossa
 
-Singleton-dokumentit (`yhteystiedot`, `navigaatio`, `asetukset`, `etusivu`) eivät esiinny Luo-valikossa: `sanity/pohjat.ts` suodattaa niiden pohjat (samoin `varmuuskopio`n), ja `sanity.config.ts` (`newDocumentOptions`) suodattaa ne globaalista valikosta. Kopiointi, poisto ja julkaisun peruminen on estetty (`document.actions`).
+Singleton-dokumentit (`yhteystiedot`, `navigaatio`, `asetukset`, `etusivu`) eivät esiinny Luo-valikossa: `sanity/pohjat.ts` suodattaa niiden pohjat (samoin `varmuuskopio`n ja `sivustonTila`n), ja `sanity.config.ts` (`newDocumentOptions`) suodattaa ne globaalista valikosta. Kopiointi, poisto ja julkaisun peruminen on estetty (`document.actions`).
 
 Studion rakenne on `sanity/structure.ts` (kiinteät `.id()`-tunnukset, docs/24 §2.6):
 - **Sivuston asetukset** (`asetukset`): Etusivu (`etusivu`), Navigaatio (`navigaatio`), Varmuuskopiot.
 - **Klubi** (`klubi`): Yhteystiedot-singleton on kohdassa Klubi → Yhteystiedot → Osoite, sähköposti ja some, Yhteystiedot-sivun otsikon ja johdannon rinnalla.
 - `asetukset`-singleton ei ole valikossa (mikään sen kentistä ei vaikuta sivustoon).
+- **Tehtävät sinulle** (`tehtavat`) rakennetaan rekisteristä `sanity/lib/tehtavat.ts` (`TEHTAVAT`: arvostelut, kommentit, julkaisemattomat, ajastetut, tarkistettavat), josta Aloitus-työkalu (`sanity/plugins/aloitus.tsx`, Studion oletusnäkymä) laskee samat laskurit. Polut: `/studio/structure/tehtavat;<id>`.
 
 ## Validointisäännöt
 

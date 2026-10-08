@@ -59,6 +59,18 @@ test("NDJSON-suodatus", () => {
   );
 });
 
+test("sivuston tila ei kuulu kopioon (docs/24 askel 7)", () => {
+  assert.equal(kuuluuKopioon({ _id: "sivustonTila.huolto", _type: "sivustonTila" }), false);
+  assert.equal(kuuluuKopioon({ _id: "sivustonTila.varmuuskopio", _type: "sivustonTila" }), false);
+  const { maara } = suodataVienti(
+    [
+      JSON.stringify({ _id: "uutinen-1", _type: "uutinen" }),
+      JSON.stringify({ _id: "sivustonTila.huolto", _type: "sivustonTila", aika: "2026-10-08T02:00:00Z" }),
+    ].join(String.fromCharCode(10)),
+  );
+  assert.equal(maara, 1);
+});
+
 test("päiväys Helsingin aikaa", () => {
   // Maanantai 01.00 UTC (ajastus) = 04.00 Helsingissä kesäaikaan.
   assert.equal(kopionPaiva(new Date("2026-10-05T01:00:00Z")), "2026-10-05");

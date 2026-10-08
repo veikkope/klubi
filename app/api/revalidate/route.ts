@@ -64,6 +64,14 @@ interface WebhookPayload {
   slug?: string;
 }
 
+/**
+ * Järjestelmädokumentit, jotka eivät näy sivustolla: ajastusten kirjaama tila
+ * ja varmuuskopiot (docs/24 askel 7, §2.5). Ei turhaa välimuistin tyhjennystä.
+ * Askeleesta 8 alkaen webhookin suodatin jättää ne pois jo Sanityssa
+ * (docs/24 P8); tämä ohitus jää varmistukseksi.
+ */
+const OHITETTAVAT = new Set(["sivustonTila", "varmuuskopio"]);
+
 /** Tyypit, joiden muutos voi muuttaa ravintolan arvosanaa. */
 const ARVOSANAAN_VAIKUTTAVAT = new Set(["ravintolaKayttajaArvostelu", "klubiArvio"]);
 
@@ -104,6 +112,9 @@ export async function POST(request: NextRequest): Promise<Response> {
     }
     if (!body?._type) {
       return Response.json({ message: "Payloadista puuttuu _type." }, { status: 400 });
+    }
+    if (OHITETTAVAT.has(body._type)) {
+      return Response.json({ revalidated: false, syy: "järjestelmädokumentti" });
     }
 
     // Tyypin tagi kattaa listaukset; slug-tagi yksittäisen dokumentin sivun.

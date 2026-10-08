@@ -3,7 +3,9 @@ import type { SanityClient } from "sanity";
 import {
   heikennaPuuttuvatViittaukset,
   luonnosVarmuuskopiosta,
+  puuttuvatTiedostot,
   viitatutTunnisteet,
+  type PuuttuvaTiedosto,
   type VarmuuskopionDokumentti,
 } from "../../lib/palautus";
 
@@ -51,16 +53,24 @@ export function paivaSuomeksi(paiva: string): string {
 /**
  * Luonnos palautettavaksi (Palauta varmuuskopiosta, Palauta poistettu).
  * Viittaukset dokumentteihin, joita ei enää ole, muutetaan heikoiksi, jotta
- * Sanity hyväksyy luonnoksen (docs/24 askel 4, lib/palautus.ts).
+ * Sanity hyväksyy luonnoksen (docs/24 askel 4, lib/palautus.ts). Puuttuvat
+ * tiedostot ja kuvat palautetaan erikseen, jotta ilmoitus voi kertoa niistä
+ * (docs/24 askel 7): poistettu tiedosto ei palaudu varmuuskopiosta.
  */
 export async function palautettavaLuonnos(
   client: SanityClient,
   doc: VarmuuskopionDokumentti,
-): Promise<VarmuuskopionDokumentti> {
+  nimet?: Readonly<Record<string, string>>,
+): Promise<{ luonnos: VarmuuskopionDokumentti; puuttuvat: PuuttuvaTiedosto[] }> {
   const luonnos = luonnosVarmuuskopiosta(doc);
   const refit = viitatutTunnisteet(luonnos);
-  if (refit.length === 0) return luonnos;
+  if (refit.length === 0) return { luonnos, puuttuvat: [] };
   // raw: myös luonnokset ja kuvatiedostot näkyvät API-versiosta riippumatta.
-  const olemassa = await client.withConfig({ perspective: "raw" }).fetch<string[]>(`*[_id in $refit]._id`, { refit });
-  return heikennaPuuttuvatViittaukset(luonnos, new Set(olemassa));
+  const olemassa = new Set(
+    await client.withConfig({ perspective: "raw" }).fetch<string[]>(`*[_id in $refit]._id`, { refit }),
+  );
+  return {
+    luonnos: heikennaPuuttuvatViittaukset(luonnos, olemassa),
+    puuttuvat: puuttuvatTiedostot(luonnos, olemassa, nimet),
+  };
 }

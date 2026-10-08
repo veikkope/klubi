@@ -10,6 +10,7 @@ import {
   tarkistaOsoite,
   valittuTyyppi,
 } from "../../../lib/linkki";
+import { projectId } from "../../env";
 import { kohteenTila, sivullaOnValinta, tarkistaLinkinKohde } from "../../lib/linkin-kohde";
 import { liitetiedostoKentta } from "./liite";
 
@@ -105,7 +106,10 @@ export function linkkiKentat({ pakollinen }: { pakollinen: boolean }) {
       hidden: ({ parent, value }) =>
         !osoiteKaytossa(parent as LinkinArvo) || (!pakollinen && !valittuTyyppi(parent as LinkinArvo) && !value),
       validation: (rule) => [
-        rule.custom<string>((href, konteksti) => tarkistaOsoite(href, konteksti.parent as LinkinArvo, pakollinen)),
+        // Sivuston oma tiedosto osoitteena on virhe: siivous ei näe sitä käytetyksi (docs/24 askel 7).
+        rule.custom<string>((href, konteksti) =>
+          tarkistaOsoite(href, konteksti.parent as LinkinArvo, pakollinen, projectId),
+        ),
         // Valinnainen linkki: Muu osoite valittu, mutta osoite puuttuu.
         rule
           .custom<string>((href, konteksti) =>

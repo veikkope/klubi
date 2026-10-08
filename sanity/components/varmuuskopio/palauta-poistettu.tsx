@@ -10,6 +10,8 @@ import {
   julkaistuId,
   osuuHakuun,
   poistetutDokumentit,
+  puuttuvienTiedostojenViesti,
+  tiedostojenNimet,
   type PoistettuDokumentti,
 } from "../../../lib/palautus";
 import { lataaVarmuuskopio, paivaSuomeksi, palautettavaLuonnos } from "../../lib/varmuuskopiot";
@@ -75,13 +77,23 @@ export function PalautaPoistettu({ document }: Props) {
     if (!doc) return;
     setKesken(kohde.id);
     try {
-      await client.createOrReplace(await palautettavaLuonnos(client, doc));
+      const { luonnos, puuttuvat } = await palautettavaLuonnos(
+        client,
+        doc,
+        tiedostojenNimet(doc, aineisto.ndjson),
+      );
+      await client.createOrReplace(luonnos);
       setPalautetut((vanhat) => new Set(vanhat).add(kohde.id));
+      // Poistettu tiedosto tai kuva ei palaudu varmuuskopiosta: kerrotaan, ei hiljaa.
+      const puute = puuttuvienTiedostojenViesti(puuttuvat);
       toast.push({
-        status: "success",
+        status: puute ? "warning" : "success",
         title: `${kohde.nimi} palautettu luonnokseksi`,
-        description: "Avaa dokumentti, tarkista se ja paina Julkaise.",
-        duration: 10_000,
+        description: puute
+          ? `${puute} Avaa dokumentti, tarkista se ja paina Julkaise.`
+          : "Avaa dokumentti, tarkista se ja paina Julkaise.",
+        duration: puute ? 30_000 : 10_000,
+        closable: true,
       });
     } catch (error) {
       console.error("[Palauta poistettu]", error);

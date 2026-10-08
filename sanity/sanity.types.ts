@@ -412,6 +412,32 @@ export type Geopoint = {
   alt?: number;
 };
 
+export type SivustonTila = {
+  _id: string;
+  _type: "sivustonTila";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  tehtava?: "huolto" | "varmuuskopio";
+  aika?: string;
+  onnistui?: boolean;
+  viimeisinOnnistunut?: string;
+  tulokset?: Array<{
+    nimi?: string;
+    tila?: "ok" | "huomio" | "virhe";
+    viesti?: string;
+    maara?: number;
+    _type: "tilaTulos";
+    _key: string;
+  }>;
+  orvotTiedostot?: Array<{
+    asset?: string;
+    havaittu?: string;
+    _type: "orpoTiedosto";
+    _key: string;
+  }>;
+};
+
 export type Varmuuskopio = {
   _id: string;
   _type: "varmuuskopio";
@@ -1354,6 +1380,7 @@ export type AllSanitySchemaTypes =
   | Navigaatio
   | Yhteystiedot
   | Geopoint
+  | SivustonTila
   | Varmuuskopio
   | Kommentti
   | Lehtileike
