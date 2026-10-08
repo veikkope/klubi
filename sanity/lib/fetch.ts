@@ -63,6 +63,12 @@ async function isDraftEnabled(): Promise<boolean> {
   }
 }
 
+const PYYNTORAJAN_YRITYKSET = 3;
+
+function onPyyntoraja(error: unknown): boolean {
+  return (error as { statusCode?: number } | null)?.statusCode === 429;
+}
+
 export async function sanityFetch<T>({
   query,
   params,
@@ -99,11 +105,22 @@ export async function sanityFetch<T>({
   //  - Ensimmäinen pyyntö sivulle, jota ei ole välimuistissa: virhesivu
   //    (app/(public)/error.tsx, "Yritä uudelleen"), ei väärää "ei löytynyt".
   // Ohimenevät verkkovirheet client yrittää itse uudelleen (5 kertaa).
+  // Pyyntörajan ylitystä (429) se ei yritä: build hakee yli tuhat sivua
+  // rinnakkain, ja raja ylittyi 8.10.2026 kahdesti, kun samalta koneelta
+  // ajettiin samaan aikaan muuta Sanity-liikennettä. Siksi odotetaan ja yritetään
+  // uudelleen (1 s, 2 s, 4 s) ennen kuin virhe kaataa buildin.
   try {
-    const result = await activeClient.fetch<T | null>(query, params ?? {}, {
-      next: isDraft ? { revalidate: 0 } : { tags, revalidate: 60 },
-    });
-    return result ?? fallback;
+    for (let yritys = 0; ; yritys++) {
+      try {
+        const result = await activeClient.fetch<T | null>(query, params ?? {}, {
+          next: isDraft ? { revalidate: 0 } : { tags, revalidate: 60 },
+        });
+        return result ?? fallback;
+      } catch (error) {
+        if (yritys >= PYYNTORAJAN_YRITYKSET || !onPyyntoraja(error)) throw error;
+        await new Promise((valmis) => setTimeout(valmis, 1000 * 2 ** yritys));
+      }
+    }
   } catch (error) {
     const syy = error instanceof Error ? error.message : String(error);
     console.error(`[sanityFetch] kysely epäonnistui (${tags?.join(", ") || "ei tageja"}): ${syy}`);
