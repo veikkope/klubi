@@ -3,6 +3,7 @@ import type { NextRequest } from "next/server";
 import { createClient } from "next-sanity";
 import { parseBody } from "next-sanity/webhook";
 
+import { LINKIN_KOHDETYYPIT } from "@/lib/linkki";
 import { paivitaArvosanat } from "@/lib/ravintola-arvosana";
 import { apiVersion, dataset, projectId } from "@/sanity/env";
 
@@ -26,7 +27,7 @@ import { apiVersion, dataset, projectId } from "@/sanity/env";
 const secret = process.env.SANITY_REVALIDATE_SECRET;
 
 /** Tyyppi → muut tagit, joiden sivuilla tyypin sisältö näkyy. */
-const RIIPPUVAT: Record<string, string[]> = {
+const SISALLON_RIIPPUVAT: Record<string, string[]> = {
   ravintolaKayttajaArvostelu: ["ravintola"],
   klubiArvio: ["ravintola"],
   klubilainen: ["ravintola"],
@@ -36,6 +37,27 @@ const RIIPPUVAT: Record<string, string[]> = {
   // Taulukko näkyy myös sivuilla, joiden Taulukot-kenttä viittaa siihen.
   jalkapalloTilasto: ["sivu"],
 };
+
+/**
+ * Linkin kohteen osoite näkyy etusivun pikalinkeissä ja napeissa sekä klubin
+ * toiminnan vuosilinkeissä (tagi `linkit`, docs/24 §2.5). Valikko ja
+ * alatunniste eivät käytä tagia: ne ovat jokaisella sivulla, ja kohteen
+ * osoitteen muutos näkyy niissä minuutin viiveellä, kuten tekstin linkeissä.
+ */
+const LINKIT: Record<string, string[]> = Object.fromEntries(LINKIN_KOHDETYYPIT.map((t) => [t, ["linkit"]]));
+
+/** Yhdistää taulukot; päällekkäisten avainten tagit yhdistetään. */
+function yhdista(...taulut: Record<string, string[]>[]): Record<string, string[]> {
+  const tulos: Record<string, string[]> = {};
+  for (const taulu of taulut) {
+    for (const [tyyppi, tagit] of Object.entries(taulu)) {
+      tulos[tyyppi] = [...new Set([...(tulos[tyyppi] ?? []), ...tagit])];
+    }
+  }
+  return tulos;
+}
+
+const RIIPPUVAT = yhdista(SISALLON_RIIPPUVAT, LINKIT);
 
 interface WebhookPayload {
   _type?: string;

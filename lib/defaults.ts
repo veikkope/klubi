@@ -11,6 +11,9 @@ import type { NavigationData, ContactData, EtusivuData } from "@/lib/types";
 // Tyyliopas (Sivut v3): Jalkapallo · Ottelut · Ravintola-arviot · Uutiset ·
 // Klubista. Tapahtumat on etusivulla ja alatunnisteessa, ei päävalikossa. Ei "Liity jäseneksi" -korostusta. Jalkapalloarkisto on
 // Jalkapallo-valikon alla (docs/02).
+// Alatunnisteen linkkisarakkeet johdetaan tästä samasta valikosta, kun Sanity
+// puuttuu (lib/navigaatio.ts). Vanha muoto { label, href } on kelvollinen
+// linkkiobjekti (Muu osoite), joten tätä ei tarvitse muuttaa (docs/24 askel 4).
 export const defaultNavigation: NavigationData = {
   items: [
     {

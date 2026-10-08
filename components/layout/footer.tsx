@@ -3,57 +3,49 @@ import { UUSI_VALILEHTI } from "@/components/ui/uusi-valilehti";
 import Link from "next/link";
 import { stegaClean } from "next-sanity";
 import { Container } from "./container";
+import { cn } from "@/lib/cn";
 import { SocialIcon, socialLabels } from "@/components/ui/social-icon";
 import { sanityFetch } from "@/sanity/lib/fetch";
+import { haeNavigaatio } from "@/sanity/lib/navigaatio";
 import { contactQuery } from "@/sanity/lib/queries";
 import { defaultContact } from "@/lib/defaults";
-import { piilotaTyhjat } from "@/lib/osiot";
-import { haeTyhjatOsiot } from "@/sanity/lib/tyhjat-osiot";
+import { alatunnisteenSarakkeet } from "@/lib/navigaatio";
 import type { ContactData } from "@/lib/types";
 import { TIETOSUOJA_PATH } from "@/lib/path";
 
 /**
  * Alatunniste (tyyliopas Sivut v3): yönsininen, valkoinen pystylogo (merkki
- * 56 px + teksti 24 px), linkkisarakkeet Jalkapallo / Klubi / Yhteystiedot
- * ja tekijänoikeusrivi.
+ * 56 px + teksti 24 px), linkkisarakkeet, Yhteystiedot ja tekijänoikeusrivi.
  *
- * Galleria ja uutisarkisto eivät ole päänavigaatiossa (docs/02), joten niille
- * on linkki täällä — muuten ne olisivat orpoja sivuja.
+ * Linkkisarakkeet johdetaan päävalikosta (docs/23 Y23, docs/24 askel 4):
+ * alavalikolliset kohdat omina sarakkeinaan, muut sarakkeessa Sivusto
+ * (lib/navigaatio.ts). Tyhjät osiot ovat jo piilossa (haeNavigaatio).
+ *
+ * Sarakkeet ovat yhden nimetyn navin sisällä, jolla on oma sisempi ruudukko.
+ * Navia ei "litistetä" ulomman ruudukon soluiksi CSS:n display-arvolla:
+ * WebKit on pudottanut sellaisen elementin roolin saavutettavuuspuusta,
+ * jolloin navi katoaisi ruudunlukijan maamerkeistä (docs/24 askel 4).
  */
-const linkColumns: { title: string; links: { label: string; href: string }[] }[] = [
-  {
-    title: "Jalkapallo",
-    links: [
-      { label: "Ottelut", href: "/ottelut" },
-      { label: "Uutiset", href: "/uutiset" },
-      { label: "Jalkapalloarkisto", href: "/jalkapalloarkisto" },
-      { label: "Uutisarkisto", href: "/uutiset/arkisto" },
-    ],
-  },
-  {
-    title: "Klubi",
-    links: [
-      { label: "Ravintola-arviot", href: "/ravintolat" },
-      { label: "Tapahtumat", href: "/tapahtumat" },
-      { label: "Klubista", href: "/klubi" },
-      { label: "Kuvagalleria", href: "/galleria" },
-    ],
-  },
-];
 
 const linkClass = "text-on-chrome-muted no-underline hover:text-on-chrome hover:underline";
+const otsikkoClass = "mb-1 font-sans text-[15px] font-semibold text-on-chrome";
 
 export async function Footer() {
-  const [contact, tyhjat] = await Promise.all([
+  const [contact, items] = await Promise.all([
     sanityFetch<ContactData>({
       query: contactQuery,
       tags: ["yhteystiedot"],
       fallback: defaultContact,
     }),
-    haeTyhjatOsiot(),
+    haeNavigaatio(),
   ]);
-  // Tyhjät osiot (esim. Kuvagalleria ilman albumeita) piiloon, lib/osiot.ts.
-  const sarakkeet = linkColumns.map((col) => ({ ...col, links: piilotaTyhjat(col.links, tyhjat) }));
+  const sarakkeet = alatunnisteenSarakkeet(items);
+  // Ruudukon leveys: logo 1,6 osaa, jokainen linkkisarake ja Yhteystiedot 1 osa
+  // kukin (sama jako kuin ennen, kun sarakkeita oli kaksi).
+  const ruudukko = {
+    "--alatunniste-sarakkeet": Math.max(sarakkeet.length, 1),
+    "--alatunniste-nav": `${Math.max(sarakkeet.length, 1)}fr`,
+  } as React.CSSProperties;
 
   const year = new Date().getFullYear();
   const socials = contact.socials ?? [];
@@ -62,11 +54,18 @@ export async function Footer() {
     <footer className="mt-auto bg-chrome text-[15px] text-on-chrome-muted">
       <Container
         size="wide"
-        className="grid gap-10 pb-8 pt-9 sm:grid-cols-2 sm:pt-[72px] lg:grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,1fr))] lg:gap-12"
+        className={cn(
+          "grid gap-10 pb-8 pt-9 sm:grid-cols-2 sm:pt-[72px] lg:gap-12",
+          // Ilman linkkisarakkeita (tyhjä valikko) Yhteystiedot logon viereen.
+          sarakkeet.length > 0
+            ? "lg:grid-cols-[minmax(0,1.6fr)_minmax(0,var(--alatunniste-nav))_minmax(0,1fr)]"
+            : "lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]",
+        )}
+        style={ruudukko}
       >
         <Link
           href="/"
-          className="flex items-center gap-2.5 self-start sm:flex-col sm:items-start sm:gap-3.5"
+          className="flex items-center gap-2.5 self-start sm:col-span-2 sm:flex-col sm:items-start sm:gap-3.5 lg:col-span-1"
         >
           <Image
             src="/brand/web/mark-white.png"
@@ -84,23 +83,30 @@ export async function Footer() {
           />
         </Link>
 
-        {sarakkeet.map((col) => (
-          <nav key={col.title} aria-label={col.title} className="flex flex-col gap-2.5">
-            <h2 className="mb-1 font-sans text-[15px] font-semibold text-on-chrome">{col.title}</h2>
-            <ul className="flex flex-col gap-2.5">
-              {col.links.map((l) => (
-                <li key={l.href}>
-                  <Link href={l.href} className={linkClass}>
-                    {l.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+        {sarakkeet.length > 0 && (
+          <nav
+            aria-label="Alatunnisteen valikko"
+            className="grid gap-10 sm:col-span-2 sm:grid-cols-2 lg:col-span-1 lg:grid-cols-[repeat(var(--alatunniste-sarakkeet),minmax(0,1fr))] lg:gap-12"
+          >
+            {sarakkeet.map((sarake, i) => (
+              <div key={`${i}|${sarake.otsikko}`} className="flex flex-col gap-2.5">
+                <h2 className={otsikkoClass}>{sarake.otsikko}</h2>
+                <ul className="flex flex-col gap-2.5">
+                  {sarake.linkit.map((l) => (
+                    <li key={`${l.href}|${l.label}`}>
+                      <Link href={l.href} className={linkClass}>
+                        {l.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
           </nav>
-        ))}
+        )}
 
         <div className="flex flex-col gap-2.5">
-          <h2 className="mb-1 font-sans text-[15px] font-semibold text-on-chrome">Yhteystiedot</h2>
+          <h2 className={otsikkoClass}>Yhteystiedot</h2>
           <address className="flex flex-col gap-2.5 not-italic">
             {contact.email && (
               <a href={`mailto:${contact.email}`} className={linkClass}>

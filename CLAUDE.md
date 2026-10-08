@@ -54,7 +54,7 @@ public/                Staattiset tiedostot (favicon, robots, kuvat joita Sanity
 | Testaa paluuosoitteen rajaus (avoin uudelleenohjaus) | `npm run test:paluuosoite` |
 | Testaa arvostelukuvien säännöt | `npm run test:arvostelukuvat` |
 | Testaa taulukkoeditorin säännöt | `npm run test:taulukko` |
-| Testaa Studion linkkikenttien tarkistus (www.-alku, puuttuva kauttaviiva) | `npm run test:linkki` |
+| Testaa linkit (www.-alku, puuttuva kauttaviiva, linkkiobjekti: Sivuston sivu / Muu osoite / Tiedosto, liitetiedostot, kohteen tila) | `npm run test:linkki` |
 | Testaa joukkueiden nimivertailu (otteluohjelma) | `npm run test:joukkueet` |
 | Testaa Kansojen liigan taulukon ja kauden karsintasivun paritus | `npm run test:kaudet` |
 | Testaa kuvaloader (Sanityn CDN) | `npm run test:kuvat` |
@@ -74,6 +74,7 @@ public/                Staattiset tiedostot (favicon, robots, kuvat joita Sanity
 | Testaa sivun polkusäännöt (varatut polut, lukitut sivut, jokainen app-reitti varattu) | `npm run test:sivupolku` |
 | Testaa tekstin lohkot ja uutiskortin (kuvasarja, korttikuvan varakäytös, jakokuva, tekstin alku kortissa; GROQ groq-js:llä) | `npm run test:lohkot` |
 | Testaa osioiden sivut (rekisteri, lukitus, reittien kattavuus, oletustekstit, siemen ei muuta näkymää eikä meta-kuvauksia) | `npm run test:osiosivut` |
+| Testaa päävalikon linkit ja siitä johdetun alatunnisteen (Sivusto-sarake, alavalikot sarakkeina, tyhjät osiot) | `npm run test:navigaatio` |
 | Sanityn taso ja oikeudet (tilaus, datasetin näkyvyys, tokenien ja käyttäjien roolit, sivusto; vain luku). Aja Growth-kokeilun päätyttyä 26.10.2026 ja kun lomakkeet lakkaavat toimimasta | `npm run tarkista:sanity-taso` |
 | Testaa uutishaun hakusanat | `npm run test:haku` |
 | Testaa lukuaika ja ingressisääntö (uutiset, ravintola-arviot) | `npm run test:artikkeli` |

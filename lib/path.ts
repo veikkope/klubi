@@ -63,7 +63,7 @@ export interface DocumentRoute {
 }
 
 /** Tyypit, joilla on oma sivu per dokumentti. */
-const TYPE_BASE: Record<string, string> = {
+export const TYPE_BASE: Record<string, string> = {
   uutinen: "/uutiset",
   tapahtuma: "/tapahtumat",
   ravintola: "/ravintolat",
@@ -228,6 +228,27 @@ export function documentHref(doc: RoutableDoc): string | null {
   const route = documentRoute(doc);
   if (!route) return null;
   return route.anchor ? `${route.path}#${route.anchor}` : route.path;
+}
+
+/**
+ * Polun mahdolliset dokumentit, `documentRoute`-funktion käänteinen (docs/24
+ * askel 4): "/uutiset/x" → [{ uutinen, x }, { sivu, "uutiset/x" }]. Studio
+ * kertoo näin, että Muu osoite -linkille on parempi valinta (Sivuston sivu).
+ * Kysely- tai ankkuriosaa sisältävä, ulkoinen, "//"-alkuinen tai "/" → [].
+ */
+export function polunKohteet(polku: string): { tyyppi: string; slug: string }[] {
+  if (!polku.startsWith("/") || polku.startsWith("//") || /[?#\s]/.test(polku)) return [];
+  const puhdas = polku.replace(/\/+$/, "");
+  if (!puhdas) return [];
+  const tulos: { tyyppi: string; slug: string }[] = [];
+  if (puhdas === LITMANEN_PATH) tulos.push({ tyyppi: "pelaaja", slug: LITMANEN_SLUG });
+  for (const [tyyppi, base] of Object.entries(TYPE_BASE)) {
+    if (!puhdas.startsWith(`${base}/`)) continue;
+    const slug = puhdas.slice(base.length + 1);
+    if (slug && !slug.includes("/")) tulos.push({ tyyppi, slug });
+  }
+  tulos.push({ tyyppi: "sivu", slug: puhdas.slice(1) });
+  return tulos;
 }
 
 /**

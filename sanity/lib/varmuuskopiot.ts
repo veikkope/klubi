@@ -1,5 +1,12 @@
 import type { SanityClient } from "sanity";
 
+import {
+  heikennaPuuttuvatViittaukset,
+  luonnosVarmuuskopiosta,
+  viitatutTunnisteet,
+  type VarmuuskopionDokumentti,
+} from "../../lib/palautus";
+
 /**
  * Studion apurit varmuuskopioiden lukemiseen selaimessa (lib/palautus.ts).
  * Kopio on gzip-pakattu NDJSON-tiedosto Sanityn CDN:ssä (app/api/varmuuskopio).
@@ -39,4 +46,21 @@ export function lataaVarmuuskopio(url: string): Promise<string> {
 /** "5.10.2026" */
 export function paivaSuomeksi(paiva: string): string {
   return new Date(`${paiva}T12:00:00`).toLocaleDateString("fi-FI");
+}
+
+/**
+ * Luonnos palautettavaksi (Palauta varmuuskopiosta, Palauta poistettu).
+ * Viittaukset dokumentteihin, joita ei enää ole, muutetaan heikoiksi, jotta
+ * Sanity hyväksyy luonnoksen (docs/24 askel 4, lib/palautus.ts).
+ */
+export async function palautettavaLuonnos(
+  client: SanityClient,
+  doc: VarmuuskopionDokumentti,
+): Promise<VarmuuskopionDokumentti> {
+  const luonnos = luonnosVarmuuskopiosta(doc);
+  const refit = viitatutTunnisteet(luonnos);
+  if (refit.length === 0) return luonnos;
+  // raw: myös luonnokset ja kuvatiedostot näkyvät API-versiosta riippumatta.
+  const olemassa = await client.withConfig({ perspective: "raw" }).fetch<string[]>(`*[_id in $refit]._id`, { refit });
+  return heikennaPuuttuvatViittaukset(luonnos, new Set(olemassa));
 }

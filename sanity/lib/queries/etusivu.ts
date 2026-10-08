@@ -17,6 +17,7 @@ import { defineQuery } from "next-sanity";
 import { NAKYVA_UUTINEN } from "@/sanity/lib/queries/julkaisu";
 import { kuva, runko } from "@/sanity/lib/queries/kuvat";
 import { uutisKortti } from "@/sanity/lib/queries/uutiskortti";
+import { linkkiProjektio } from "@/sanity/lib/queries/linkki";
 import { JULKINEN_RAVINTOLA } from "@/lib/ravintola-arvosana";
 import { TUOREIN_ARVIO } from "@/sanity/lib/queries/ravintolat";
 
@@ -53,7 +54,8 @@ export const etusivuQuery = defineQuery(`
       ),
       *[${NAKYVA_UUTINEN}] | order(publishedAt desc)[0]{${nostoKortti}}
     ),
-    heroCtas[]{ label, href, primary },
+    // Linkit: osoite lasketaan sivulla (ratkaiseLinkit, linkinOsoite).
+    heroCtas[]{ label, primary, ${linkkiProjektio} },
     seuraavaOttelu{ ottelu, kilpailu, aika },
     // Piilotettu lohko (piilota == true) säilyy Studiossa mutta ei renderöidy (docs/24 askel 1).
     blocks[piilota != true]{
@@ -72,7 +74,9 @@ export const etusivuQuery = defineQuery(`
       body[]{${runko}},
       image{${kuva}},
       ctaLabel,
+      // Vanha merkkijono luetaan, kunnes linkit on muunnettu (docs/24 askel 5).
       ctaHref,
+      ctaLinkki{ ${linkkiProjektio} },
       "city": city->{ "_ref": _id, name }
     }
   }

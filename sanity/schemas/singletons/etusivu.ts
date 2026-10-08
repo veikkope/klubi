@@ -1,6 +1,8 @@
 import { HomeIcon } from "@sanity/icons";
 import { defineArrayMember, defineField, defineType } from "sanity";
-import { legacyUrlField, linkkiValidointi, valinnainenLinkkiValidointi } from "../objects/contentMeta";
+import { puuttuukoLinkinKohde } from "../../../lib/linkki";
+import { legacyUrlField } from "../objects/contentMeta";
+import { linkinEsikatselu, linkkiKentat } from "../objects/linkki";
 import { HAKUKONEET_RYHMA } from "../objects/sanasto";
 
 /**
@@ -22,6 +24,21 @@ function lohkonAlaotsikko(piilota: unknown, alaotsikko?: string): string | undef
   if (piilota !== true) return alaotsikko;
   return alaotsikko ? `Piilotettu · ${alaotsikko}` : "Piilotettu";
 }
+
+/**
+ * Lohkon vanha linkkikenttä (merkkijono). Korvattu linkkiobjektilla
+ * `ctaLinkki` (docs/24 askel 4). Sivusto lukee sitä, kunnes linkit on
+ * muunnettu (askel 5); sen jälkeen arvo poistetaan erikseen.
+ */
+const vanhaCtaHref = defineField({
+  name: "ctaHref",
+  title: "Vanha linkin osoite",
+  type: "string",
+  deprecated: { reason: 'Korvattu kentällä "Linkin kohde".' },
+  readOnly: true,
+  hidden: true,
+  initialValue: undefined,
+});
 
 export const etusivu = defineType({
   name: "etusivu",
@@ -82,19 +99,18 @@ export const etusivu = defineType({
     defineField({
       name: "heroCtas",
       title: "Pikalinkit",
-      description:
-        'Näkyvät yläosassa tuoreimpien juttujen alla, esim. "Palloveikkaus" → /klubi/palloveikkaus. Enintään neljä.',
+      description: 'Näkyvät yläosassa tuoreimpien juttujen alla, esim. "Palloveikkaus". Enintään neljä.',
       type: "array",
       of: [
         {
           type: "object",
           fields: [
             { name: "label", title: "Teksti", type: "string", validation: (rule) => rule.required() },
-            { name: "href", title: "Linkki", type: "string", validation: linkkiValidointi },
+            ...linkkiKentat({ pakollinen: true }),
             // Vanhan heron korostusvalinta: uusi yläosa ei käytä sitä.
             { name: "primary", title: "Korostettu", type: "boolean", hidden: true },
           ],
-          preview: { select: { title: "label", subtitle: "href" } },
+          preview: linkinEsikatselu("label"),
         },
       ],
       validation: (rule) => rule.max(4),
@@ -262,13 +278,23 @@ export const etusivu = defineType({
             { name: "body", title: "Teksti", type: "portableText" },
             { name: "image", title: "Kuva", type: "imageWithAlt" },
             { name: "ctaLabel", title: "Linkin teksti", type: "string", description: 'Esim. "Lue lisää klubista".' },
-            {
-              name: "ctaHref",
-              title: "Linkin osoite",
-              type: "string",
-              description: "Sivuston oma sivu alkaa /, esim. /klubi. Ulkoinen osoite alkaa https://.",
-              validation: valinnainenLinkkiValidointi,
-            },
+            defineField({
+              name: "ctaLinkki",
+              title: "Linkin kohde",
+              type: "linkki",
+              validation: (rule) =>
+                rule
+                  .custom((arvo, konteksti) => {
+                    const lohko = konteksti.parent as { ctaLabel?: string; ctaHref?: string } | undefined;
+                    // Vanha osoite (ctaHref) riittää sivustolle, kunnes linkit muunnetaan
+                    // (docs/24 askel 5), mutta keskeneräisestä valinnasta varoitetaan aina.
+                    return puuttuukoLinkinKohde(lohko?.ctaLabel, arvo as Parameters<typeof puuttuukoLinkinKohde>[1], lohko?.ctaHref)
+                      ? "Lisää linkin kohde tai poista linkin teksti."
+                      : true;
+                  })
+                  .warning(),
+            }),
+            vanhaCtaHref,
           ],
           preview: {
             select: { title: "heading", piilota: "piilota" },
@@ -317,14 +343,13 @@ export const etusivu = defineType({
               type: "string",
               initialValue: "Selaa arkistoa",
             },
-            {
-              name: "ctaHref",
-              title: "Napin linkki",
-              type: "string",
-              description: "Sivuston oma sivu alkaa /, esim. /jalkapalloarkisto.",
-              initialValue: "/jalkapalloarkisto",
-              validation: valinnainenLinkkiValidointi,
-            },
+            defineField({
+              name: "ctaLinkki",
+              title: "Napin kohde",
+              type: "linkki",
+              description: "Jätä tyhjäksi, niin nappi vie jalkapalloarkiston etusivulle.",
+            }),
+            vanhaCtaHref,
           ],
           preview: {
             select: { title: "heading", piilota: "piilota" },

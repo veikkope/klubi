@@ -21,14 +21,20 @@ import { kuva, runko, ruutukuva } from "@/sanity/lib/queries/kuvat";
 import { tilastoProjection } from "@/sanity/lib/queries/arkisto";
 import { NAKYVA_UUTINEN } from "@/sanity/lib/queries/julkaisu";
 import { uutisKortti } from "@/sanity/lib/queries/uutiskortti";
+import { linkkiProjektio } from "@/sanity/lib/queries/linkki";
 
+/**
+ * Päävalikko (docs/24 askel 4): kohdat ovat linkkiobjekteja, ja osoite
+ * lasketaan koodissa (`ratkaiseNavigaatio`, lib/navigaatio.ts). Haku ja
+ * tyhjien osioiden piilotus: `haeNavigaatio` (sanity/lib/navigaatio.ts).
+ */
 export const navigationQuery = /* groq */ `
   *[_type == "navigaatio"][0]{
     items[]{
       label,
-      href,
       highlight,
-      children[]{ label, href }
+      ${linkkiProjektio},
+      children[]{ label, ${linkkiProjektio} }
     }
   }
 `;

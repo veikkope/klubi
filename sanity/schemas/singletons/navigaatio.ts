@@ -1,6 +1,6 @@
 import { MenuIcon } from "@sanity/icons";
 import { defineArrayMember, defineField, defineType } from "sanity";
-import { linkkiValidointi } from "../objects/contentMeta";
+import { linkinEsikatselunKentat, linkinEsikatselunTekstit, linkinEsikatselu, linkkiKentat } from "../objects/linkki";
 
 /**
  * Päänavigaation singleton. Esitäytetty valmiilla 6 päälinkillä + CTA:lla
@@ -8,6 +8,10 @@ import { linkkiValidointi } from "../objects/contentMeta";
  *
  * Rakenne perustuu vanhan sivuston 10+1 linkin auditointiin
  * (ks. docs/02-information-architecture.md).
+ *
+ * Kohdat ovat linkkiobjekteja (docs/24 askel 4): Sivuston sivu seuraa sivun
+ * osoitteen muutosta. Vanha muoto { label, href } on kelvollinen Muu osoite.
+ * Alatunnisteen linkkisarakkeet johdetaan tästä valikosta (lib/navigaatio.ts).
  */
 export const navigaatio = defineType({
   name: "navigaatio",
@@ -18,14 +22,15 @@ export const navigaatio = defineType({
     defineField({
       name: "items",
       title: "Päänavigaation linkit",
-      description: "Järjestä raahaamalla. Maksimi 7 päälinkkiä.",
+      description:
+        "Järjestä raahaamalla. Enintään 7 päälinkkiä. Sama valikko näkyy sivun alareunassa (alatunniste): kohdat, joilla on alavalikko, omina sarakkeinaan ja muut sarakkeessa Sivusto. Tyhjät osiot (esim. Tapahtumat ilman tapahtumia) piiloutuvat itsestään.",
       type: "array",
       of: [
         defineArrayMember({
           type: "object",
           fields: [
             { name: "label", title: "Otsikko", type: "string", validation: (rule) => rule.required() },
-            { name: "href", title: "Linkki (esim. /tapahtumat)", type: "string", validation: linkkiValidointi },
+            ...linkkiKentat({ pakollinen: true }),
             // Tyyliopas: valikossa ei ole CTA-korostusta. Vanhentunut kenttä: näkyy vain
             // (lukittuna, varoituksen kera) niissä linkeissä, joissa sillä on jo arvo.
             defineField({
@@ -40,25 +45,26 @@ export const navigaatio = defineType({
             {
               name: "children",
               title: "Alavalikko",
+              description: "Näkyy valikossa avautuvana listana ja alatunnisteessa omana sarakkeenaan.",
               type: "array",
               of: [
                 {
                   type: "object",
                   fields: [
                     { name: "label", title: "Otsikko", type: "string", validation: (rule) => rule.required() },
-                    { name: "href", title: "Linkki (esim. /klubi/hallitus)", type: "string", validation: linkkiValidointi },
+                    ...linkkiKentat({ pakollinen: true }),
                   ],
-                  preview: { select: { title: "label", subtitle: "href" } },
+                  preview: linkinEsikatselu("label"),
                 },
               ],
             },
           ],
           preview: {
-            select: { title: "label", subtitle: "href", highlight: "highlight" },
-            prepare: ({ title, subtitle, highlight }) => ({
-              title: highlight ? `★ ${title}` : title,
-              subtitle,
-            }),
+            select: { ...linkinEsikatselunKentat("label"), highlight: "highlight" },
+            prepare: ({ highlight, ...arvot }) => {
+              const { title, subtitle } = linkinEsikatselunTekstit(arvot);
+              return { title: highlight ? `★ ${title}` : title, subtitle };
+            },
           },
         }),
       ],

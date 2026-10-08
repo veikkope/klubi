@@ -16,6 +16,8 @@
 import { defineQuery } from "next-sanity";
 import { kuva, runko } from "@/sanity/lib/queries/kuvat";
 import { tilastoProjection } from "@/sanity/lib/queries/arkisto";
+import { linkkiProjektio } from "@/sanity/lib/queries/linkki";
+import type { LinkkiData } from "@/lib/linkki";
 
 import type { PortableTextBlock } from "@portabletext/react";
 import type { SanityImage } from "@/lib/types";
@@ -105,8 +107,8 @@ export type KlubiToimintaVuosi = {
   osallistujat: string[] | null;
   paikka: string | null;
   kuvaus: string | null;
-  /** Linkki lisätietoon, esim. matkakuvaus blogissa tai video. */
-  linkki: { url: string | null; teksti: string | null } | null;
+  /** Linkki lisätietoon, esim. matkakuvaus uutisissa tai video. `url`: vanha muoto. */
+  linkki: (LinkkiData & { url?: string | null; teksti?: string | null }) | null;
   kuvat: SanityImage[] | null;
 };
 
@@ -160,7 +162,8 @@ export const klubiToimintaBySlugQuery = defineQuery(`
       osallistujat,
       paikka,
       kuvaus,
-      linkki{ url, teksti },
+      // Vanha url luetaan, kunnes linkit on muunnettu (docs/24 askel 5).
+      linkki{ teksti, url, ${linkkiProjektio} },
       kuvat[]{${kuva}}
     },
     tilastot[]->{ ${tilastoProjection} }

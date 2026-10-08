@@ -6,11 +6,14 @@ import {
   type PortableTextBlock,
 } from "@portabletext/react";
 import Link from "next/link";
+import { stegaClean } from "next-sanity";
 import { SanityImage } from "./sanity-image";
 import { Kokoonpano, type KokoonpanoData } from "./kokoonpano";
 import { YoutubeVideo, type YoutubeVideoData } from "./youtube-video";
 import { Kuvasarja, type KuvasarjaData } from "./kuvasarja";
 import { UusiValilehti } from "@/components/ui/uusi-valilehti";
+import { liitteenTiedot } from "@/lib/liite";
+import { linkinOsoite, linkinTyyppi, type LinkkiData } from "@/lib/linkki";
 import type { RikasLohko } from "@/lib/sisaltolohkot";
 import type { SanityImage as SanityImageData } from "@/lib/types";
 
@@ -114,9 +117,15 @@ const components: PortableTextComponents = {
     strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
     em: ({ children }) => <em className="italic">{children}</em>,
     underline: ({ children }) => <span className="underline">{children}</span>,
+    // Linkkiobjekti (docs/24 askel 4): Sivuston sivu, Muu osoite tai Tiedosto.
+    // Ilman toimivaa kohdetta (julkaisematon tai ajastettu sivu, virheellinen
+    // osoite) näytetään pelkkä teksti, ei rikkinäistä linkkiä.
     link: ({ value, children }) => {
-      const href: string = value?.href ?? "#";
-      const newTab = Boolean(value?.newTab);
+      const href = stegaClean(linkinOsoite(value as LinkkiData | undefined));
+      if (!href) return <>{children}</>;
+      const newTab = linkinTyyppi(value) !== "sivu" && Boolean(value?.newTab);
+      // Tiedoston tyyppi ja koko linkin tekstiin, esim. "Säännöt (PDF, 240 kt)".
+      const tiedosto = linkinTyyppi(value) === "tiedosto" ? liitteenTiedot(value?.tiedosto) : "";
       if (newTab || /^https?:/.test(href)) {
         return (
           <a
@@ -126,6 +135,7 @@ const components: PortableTextComponents = {
             className="text-accent underline decoration-1 underline-offset-4 hover:decoration-2"
           >
             {children}
+            {tiedosto && <span className="text-sm text-muted"> ({tiedosto})</span>}
             {newTab && <UusiValilehti />}
           </a>
         );

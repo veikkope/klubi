@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { stegaClean } from "next-sanity";
 
 import { EmptyState } from "../../_components/empty-state";
 import { Container } from "@/components/layout/container";
@@ -12,6 +13,7 @@ import { JsonLd } from "@/components/seo/json-ld";
 import { Badge } from "@/components/ui/badge";
 import { Nuoli } from "@/components/ui/nuoli";
 import { formatDate } from "@/lib/format";
+import { linkinOsoiteTaiVanha } from "@/lib/linkki";
 import { klubiNav, rootCrumb } from "@/lib/nav-sections";
 import { breadcrumbSchema, webPageSchema, type Crumb } from "@/lib/schema-org";
 import { buildMetadata, resolveDescription } from "@/lib/seo";
@@ -24,6 +26,7 @@ import {
   klubiToimintaSlugsQuery,
   type KlubiToiminta,
   type KlubiToimintaCard,
+  type KlubiToimintaVuosi,
 } from "@/sanity/lib/queries/klubi";
 
 export const revalidate = 3600;
@@ -41,13 +44,41 @@ export async function generateStaticParams(): Promise<Params[]> {
   return slugs.map((slug) => ({ slug }));
 }
 
+/** `linkit`: vuoden linkin kohteen osoite päivittyy, kun kohde muuttuu (app/api/revalidate). */
 function getToiminta(slug: string) {
   return sanityFetch<KlubiToiminta | null>({
     query: klubiToimintaBySlugQuery,
     params: { slug },
-    tags: ["klubiToiminta", `klubiToiminta:${slug}`],
+    tags: ["klubiToiminta", `klubiToiminta:${slug}`, "linkit"],
     fallback: null,
   });
+}
+
+const vuodenLinkinLuokka = "font-medium text-accent underline underline-offset-4 hover:no-underline";
+
+/**
+ * Vuoden linkki (esim. matkakuvaus uutisissa). Linkkiobjekti (docs/24 askel 4);
+ * jos se ei ratkea, vanha `url` (kaksoisluku, kunnes linkit on muunnettu, askel 5). Sivuston oma
+ * osoite kulkee Linkin kautta, ulkoinen tavallisena linkkinä.
+ */
+function VuodenLinkki({ linkki }: { linkki: KlubiToimintaVuosi["linkki"] }) {
+  if (!linkki) return null;
+  const href = stegaClean(linkinOsoiteTaiVanha(linkki, linkki.url));
+  if (!href) return null;
+  const teksti = linkki.teksti || linkki.kohde?.nimi || href;
+  return (
+    <p className="mt-2 text-sm">
+      {href.startsWith("/") ? (
+        <Link href={href} className={vuodenLinkinLuokka}>
+          {teksti}
+        </Link>
+      ) : (
+        <a href={href} className={vuodenLinkinLuokka}>
+          {teksti}
+        </a>
+      )}
+    </p>
+  );
 }
 
 export async function generateMetadata({
@@ -225,16 +256,7 @@ export default async function ToimintaDetailPage({
                           {vuosi.kuvaus}
                         </p>
                       )}
-                      {vuosi.linkki?.url && (
-                        <p className="mt-2 text-sm">
-                          <a
-                            href={vuosi.linkki.url}
-                            className="font-medium text-accent underline underline-offset-4 hover:no-underline"
-                          >
-                            {vuosi.linkki.teksti || vuosi.linkki.url}
-                          </a>
-                        </p>
-                      )}
+                      <VuodenLinkki linkki={vuosi.linkki} />
                       {vuosi.osallistujat && vuosi.osallistujat.length > 0 && (
                         <p className="mt-2 max-w-3xl text-sm text-muted">
                           <span className="font-medium text-foreground">

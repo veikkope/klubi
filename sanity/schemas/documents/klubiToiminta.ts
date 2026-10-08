@@ -1,8 +1,8 @@
 import { ConfettiIcon } from "@sanity/icons";
 import { defineField, defineType } from "sanity";
 
-import { tarkistaLinkki } from "../../../lib/linkki";
-import { linkinKohdeVaroitus } from "../../lib/linkin-kohde";
+import { puuttuukoLinkinKohde } from "../../../lib/linkki";
+import { linkkiKentat } from "../objects/linkki";
 import { seoFields } from "../objects/seoFields";
 import {
   legacyUrlField,
@@ -22,6 +22,8 @@ import { HAKUKONEET_RYHMA, OSOITE_OTSIKKO } from "../objects/sanasto";
  * toistui vuodesta toiseen. Mallinnetaan yhtenä toimintamuotona, jolla on
  * vuosittaisia merkintöjä — niin isä lisää uuden vuoden ilman uutta sivua.
  */
+type LinkinArvo = Parameters<typeof puuttuukoLinkinKohde>[1];
+
 export const klubiToiminta = defineType({
   name: "klubiToiminta",
   title: "Klubin toiminta",
@@ -117,33 +119,37 @@ export const klubiToiminta = defineType({
               name: "linkki",
               title: "Linkki",
               description:
-                'Linkki lisätietoon, esim. matkakuvaus blogissa tai video. Kirjoita linkin teksti, esim. "Matkakuvaus".',
+                'Linkki lisätietoon, esim. matkakuvaus uutisissa tai video. Kirjoita linkin teksti, esim. "Matkakuvaus".',
               type: "object",
               options: { collapsible: true, collapsed: true },
               fields: [
-                {
-                  name: "url",
-                  title: "Osoite",
-                  description:
-                    "Ulkoinen osoite (https://…) tai sivuston oma osoite, esim. /uutiset/2019-03-10-milano.",
-                  type: "url",
-                  validation: (rule) => [
-                    rule
-                      // allowRelative: Blogspot-migraatio kääntää blogin matkakuvauslinkit
-                      // tuotujen uutisten poluiksi (docs/14).
-                      .uri({ scheme: ["http", "https"], allowRelative: true })
-                      .error("Tarkista linkki: https://… tai /osoite."),
-                    // uri() hyväksyisi myös "www.…"-muodon suhteellisena polkuna (→ 404).
-                    rule.custom<string>((url) => tarkistaLinkki(url, ["http", "https"])),
-                    linkinKohdeVaroitus(rule),
-                  ],
-                },
-                {
+                defineField({
                   name: "teksti",
                   title: "Linkin teksti",
                   description: 'Esim. "Matkakuvaus" tai "Video".',
                   type: "string",
-                },
+                  validation: (rule) =>
+                    rule
+                      .custom((teksti, konteksti) => {
+                        const linkki = konteksti.parent as (LinkinArvo & { url?: string }) | undefined;
+                        // Vanha osoite (url) riittää sivustolle, kunnes linkit muunnetaan
+                        // (docs/24 askel 5), mutta keskeneräisestä valinnasta varoitetaan aina.
+                        return puuttuukoLinkinKohde(teksti, linkki, linkki?.url)
+                          ? "Linkin teksti on kirjoitettu, mutta kohde puuttuu."
+                          : true;
+                      })
+                      .warning(),
+                }),
+                // Ei oletusvalintaa: vuoden linkki on vapaaehtoinen.
+                ...linkkiKentat({ pakollinen: false }),
+                defineField({
+                  name: "url",
+                  title: "Vanha osoite",
+                  type: "string",
+                  deprecated: { reason: "Korvattu kentillä Mihin linkki vie ja Sivu/Osoite." },
+                  readOnly: true,
+                  hidden: true,
+                }),
               ],
             },
             {

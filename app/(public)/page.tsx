@@ -15,7 +15,8 @@ import { defaultEtusivu } from "@/lib/defaults";
 import { buildMetadata, resolveDescription } from "@/lib/seo";
 import { webPageSchema } from "@/lib/schema-org";
 import { siteDescription, siteName } from "@/lib/site";
-import type { EtusivuBlock, EtusivuData } from "@/lib/types";
+import { linkinOsoiteTaiVanha, ratkaiseLinkit } from "@/lib/linkki";
+import type { EtusivuBlock, EtusivuData, EtusivuRaakaData } from "@/lib/types";
 
 export const revalidate = 3600;
 
@@ -36,12 +37,33 @@ const scaffoldBlocks: EtusivuBlock[] = [
   ...defaultEtusivu.blocks,
 ];
 
+/**
+ * Linkkiobjektit kävijän osoitteiksi (docs/24 askel 4). Jos uusi kohde ei
+ * ratkea (valinta kesken tai tekemättä), käytetään napin vanhaa merkkijonoa
+ * `ctaHref` (kaksoisluku: linkit muunnetaan askeleessa 5).
+ */
+function ratkaiseLohko(block: EtusivuBlock): EtusivuBlock {
+  if (block._type !== "esittely" && block._type !== "jalkapalloarkisto") return block;
+  return { ...block, ctaHref: linkinOsoiteTaiVanha(block.ctaLinkki, block.ctaHref) ?? undefined };
+}
+
+/**
+ * `linkit`-tagi: pikalinkin tai napin kohteen osoite (esim. sivun polku)
+ * päivittyy, kun kohde muuttuu (app/api/revalidate).
+ */
 async function getEtusivu(): Promise<EtusivuData> {
-  return sanityFetch<EtusivuData>({
+  const data = await sanityFetch<EtusivuRaakaData>({
     query: etusivuQuery,
-    tags: ["etusivu"],
+    tags: ["etusivu", "linkit"],
     fallback: defaultEtusivu,
   });
+  // Ilman Sanityä palautetaan sama viite: sivu tunnistaa siitä rungon (alla).
+  if (data === defaultEtusivu) return defaultEtusivu;
+  return {
+    ...data,
+    heroCtas: ratkaiseLinkit(data.heroCtas),
+    blocks: (data.blocks ?? []).map(ratkaiseLohko),
+  };
 }
 
 export async function generateMetadata(): Promise<Metadata> {

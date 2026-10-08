@@ -9,7 +9,7 @@
 | 1 | **Jalkapallo** ▾ | `/jalkapalloarkisto` | Dropdown: jalkapalloarkisto ja sen osiot |
 | 2 | **Ottelut** | `/ottelut` | Otteluohjelma (automaattinen, docs/13) |
 | 3 | **Ravintola-arviot** | `/ravintolat` | Hakemisto + yksittäiset arviot |
-| 4 | **Uutiset** | `/uutiset` | Jutut (1.10.2026 Tapahtumat-linkin tilalle; tapahtumat etusivulla ja footerissa) |
+| 4 | **Uutiset** | `/uutiset` | Jutut (1.10.2026 Tapahtumat-linkin tilalle; tapahtumat etusivulla) |
 | 5 | **Klubista** ▾ | `/klubi` | Dropdown |
 
 Logo viittaa etusivulle `/`. Aktiivinen kohta: sininen teksti + 2 px sininen alleviivaus. Valikko on Sanityssa (singleton `navigaatio`); oletukset `lib/defaults.ts`.
@@ -75,7 +75,7 @@ Jos alakohde osoittaa pääkohteen sivulle, erillistä "yleisesittely"-linkkiä 
     └── /galleria/[slug]
 ```
 
-> Galleria ja uutisarkisto eivät ole päänavigaatiossa — niihin on linkki footerissa. Jäsenhakemuksia ei oteta vastaan sivuston kautta (päätös 28.9.2026): `/klubi/liity` on poistettu ja ohjautuu `/klubi`-sivulle.
+> Galleria ja uutisarkisto eivät ole päänavigaatiossa. Alatunniste johdetaan päävalikosta (docs/24 askel 4, 8.10.2026), joten niihin pääsee etusivun lohkoista ja Uutiset-sivulta; Galleria ja Tapahtumat lisätään valikkoon, kun niissä on sisältöä (docs/09). Jäsenhakemuksia ei oteta vastaan sivuston kautta (päätös 28.9.2026): `/klubi/liity` on poistettu ja ohjautuu `/klubi`-sivulle.
 
 ## Linkkimuutokset — vanha → uusi (jokaisesta lähtee 301)
 

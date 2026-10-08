@@ -1,37 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
-import { stegaClean } from "next-sanity";
 import { Container } from "./container";
 import { HeaderClient } from "./header-client";
-import { sanityFetch } from "@/sanity/lib/fetch";
-import { navigationQuery } from "@/sanity/lib/queries";
-import { defaultNavigation } from "@/lib/defaults";
-import { piilotaTyhjat } from "@/lib/osiot";
-import { haeTyhjatOsiot } from "@/sanity/lib/tyhjat-osiot";
-import type { NavigationData } from "@/lib/types";
+import { haeNavigaatio } from "@/sanity/lib/navigaatio";
 
 export async function Header() {
-  const [nav, tyhjat] = await Promise.all([
-    sanityFetch<NavigationData>({
-      query: navigationQuery,
-      tags: ["navigaatio"],
-      fallback: defaultNavigation,
-    }),
-    haeTyhjatOsiot(),
-  ]);
-
-  // Luonnosnäkymässä hrefeissä voi olla stega-merkkejä, jotka rikkoisivat
-  // linkit ja aktiivisen kohteen vertailun (pathname === href). Puhdistetaan
-  // vain hrefit, jotta otsikoiden klikkaa-ja-muokkaa toimii yhä.
-  // Tyhjät osiot (esim. Tapahtumat ilman tapahtumia) piiloon, lib/osiot.ts.
-  const items = piilotaTyhjat(
-    nav.items.map((item) => ({
-      ...item,
-      href: stegaClean(item.href),
-      children: item.children?.map((c) => ({ ...c, href: stegaClean(c.href) })),
-    })),
-    tyhjat,
-  );
+  // Valikko ratkaistuna, stega-merkit pois osoitteista ja tyhjät osiot
+  // (esim. Tapahtumat ilman tapahtumia) piilossa: sanity/lib/navigaatio.ts.
+  const items = await haeNavigaatio();
 
   // Tyyliopas (Sivut v3): valkoinen ylätunniste, alareunassa ohut viiva.
   // Logo: merkki 50 px + tekstilogo 25 px, väli 14 px (mobiilissa 38 + 17).

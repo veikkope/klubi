@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { ChevronDown, Menu, X } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { onYleissivuAlavalikossa } from "@/lib/yleissivu";
 import type { NavigationItem } from "@/lib/types";
 
 /**
@@ -155,7 +156,7 @@ function HeaderClientInner({
                       avautuu,
                     )}
                   >
-                    {!hasOverviewChild(item) && (
+                    {!onYleissivuAlavalikossa(item) && (
                       <>
                         <Link
                           href={item.href}
@@ -302,7 +303,7 @@ function MobileItem({
       </button>
       {open && (
         <div className={cn("ml-2 mt-1 flex flex-col gap-0.5 border-l border-border pl-3", avautuu)}>
-          {!hasOverviewChild(item) && (
+          {!onYleissivuAlavalikossa(item) && (
             <Link
               href={item.href}
               onNavigate={onNavigate}
@@ -326,12 +327,4 @@ function MobileItem({
       )}
     </div>
   );
-}
-
-/**
- * Jos jokin alakohde osoittaa jo pääkohteen sivulle (esim. Klubista → Esittely
- * /klubi), erillistä "yleisesittely"-linkkiä ei lisätä — se toistaisi saman.
- */
-function hasOverviewChild(item: NavigationItem): boolean {
-  return Boolean(item.children?.some((c) => c.href === item.href));
 }

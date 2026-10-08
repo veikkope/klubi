@@ -8,12 +8,11 @@ import { apiVersion } from "../../env";
 import {
   etsiDokumentti,
   julkaistuId,
-  luonnosVarmuuskopiosta,
   osuuHakuun,
   poistetutDokumentit,
   type PoistettuDokumentti,
 } from "../../../lib/palautus";
-import { lataaVarmuuskopio, paivaSuomeksi } from "../../lib/varmuuskopiot";
+import { lataaVarmuuskopio, paivaSuomeksi, palautettavaLuonnos } from "../../lib/varmuuskopiot";
 
 /**
  * Varmuuskopion "Palauta poistettu" -välilehti (sanity/structure.ts, docs/23 Y32).
@@ -76,7 +75,7 @@ export function PalautaPoistettu({ document }: Props) {
     if (!doc) return;
     setKesken(kohde.id);
     try {
-      await client.createOrReplace(luonnosVarmuuskopiosta(doc));
+      await client.createOrReplace(await palautettavaLuonnos(client, doc));
       setPalautetut((vanhat) => new Set(vanhat).add(kohde.id));
       toast.push({
         status: "success",

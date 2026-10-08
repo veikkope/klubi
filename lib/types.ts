@@ -5,6 +5,7 @@
 
 import type { PortableTextBlock } from "@portabletext/react";
 import type { TilastoDoc } from "@/sanity/lib/queries/arkisto";
+import type { LinkkiData } from "@/lib/linkki";
 
 export type SanityImage = {
   _key?: string;
@@ -46,7 +47,11 @@ export type ContactData = {
   location?: { lat: number; lng: number } | null;
 };
 
-export type HeroCta = { label: string; href: string; primary?: boolean };
+/** Yläosan pikalinkki kävijälle (osoite ratkaistu, `ratkaiseLinkit`). */
+export type HeroCta = { label: string; href: string; primary?: boolean | null };
+
+/** Pikalinkki sellaisena kuin kysely sen antaa (linkkiobjekti, docs/24 askel 4). */
+export type RaakaHeroCta = LinkkiData & { label: string; primary?: boolean | null };
 
 export type EtusivuBlock =
   | {
@@ -81,7 +86,9 @@ export type EtusivuBlock =
       body?: PortableTextBlock[] | null;
       image?: SanityImage;
       ctaLabel?: string;
+      /** Kävijän osoite: `ctaLinkki` ratkaistuna, tai vanha merkkijono (kaksoisluku). */
       ctaHref?: string;
+      ctaLinkki?: LinkkiData | null;
     }
   | {
       _type: "ravintolatSpotlight";
@@ -97,7 +104,9 @@ export type EtusivuBlock =
       heading?: string;
       body?: string;
       ctaLabel?: string;
+      /** Kävijän osoite: `ctaLinkki` ratkaistuna, tai vanha merkkijono (kaksoisluku). */
       ctaHref?: string;
+      ctaLinkki?: LinkkiData | null;
     }
   | {
       _type: "galleria";
@@ -119,12 +128,15 @@ export type EtusivuData = {
   heroNosto?: UutinenCard | null;
   /** Seuraava Huuhkajien ottelu ja laskuri yläosassa. Oletuksena päällä. */
   heroLaskuri?: boolean | null;
-  /** Yläosan pikalinkit. */
+  /** Yläosan pikalinkit kävijälle (ratkaistu). */
   heroCtas?: HeroCta[];
   /** Vanhan etusivun "Seuraavaksi"-nosto. Ei enää näytetä (otteluohjelma korvaa). */
   seuraavaOttelu?: { ottelu?: string | null; kilpailu?: string | null; aika?: string | null } | null;
   blocks: EtusivuBlock[];
 };
+
+/** Etusivu sellaisena kuin kysely sen antaa: pikalinkit ratkaisematta. */
+export type EtusivuRaakaData = Omit<EtusivuData, "heroCtas"> & { heroCtas?: RaakaHeroCta[] | null };
 
 export type SivuData = {
   _id: string;

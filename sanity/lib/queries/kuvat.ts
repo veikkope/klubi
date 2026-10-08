@@ -18,6 +18,7 @@
  */
 
 import { KUVAN_MIN_LEVEYS_SISALTO } from "@/lib/sisaltolohkot";
+import { kohdeProjektio, tiedostoProjektio } from "@/sanity/lib/queries/linkki";
 
 /** Sumea esikatselu data-URL:na. Rajattuihin projektioihin: `{ alt, asset, ${lqip} }`. */
 export const lqip = `"lqip": asset->metadata.lqip`;
@@ -33,10 +34,21 @@ export const kuva = `..., ${lqip}`;
  * hallitseva väri (ruudun tausta). `kuvat`-avain korvaa `...`-levityksen
  * kuvat-taulukon (GROQ: myöhempi avain voittaa), ja keskeneräiset kuvat ilman
  * assetia jäävät pois.
+ *
+ * Tekstin linkit (docs/24 askel 4): Sivuston sivu -linkin kohde ja tiedoston
+ * tiedot puretaan, jotta `linkinOsoite` (components/portable-text.tsx) voi
+ * laskea osoitteen. Jokainen tekstikenttä kulkee tämän fragmentin kautta.
  */
 export const runko = `...,
   _type == "imageWithAlt" => { ${lqip} },
-  _type == "kuvasarja" => { "kuvat": kuvat[defined(asset)]{ ${kuva}, ${vari} } }`;
+  _type == "kuvasarja" => { "kuvat": kuvat[defined(asset)]{ ${kuva}, ${vari} } },
+  _type == "block" => { "markDefs": markDefs[]{
+    ...,
+    _type == "link" => {
+      "kohde": kohde->${kohdeProjektio},
+      "tiedosto": tiedosto.asset->${tiedostoProjektio}
+    }
+  } }`;
 
 /** Kuva on tarpeeksi iso kortti- ja jakokuvaksi (≥ 600 px, lib/sisaltolohkot.ts). */
 const isoKuva = `asset->metadata.dimensions.width >= ${KUVAN_MIN_LEVEYS_SISALTO}`;

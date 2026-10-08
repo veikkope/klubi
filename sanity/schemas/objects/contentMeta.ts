@@ -1,15 +1,12 @@
 import {
   defineField,
-  type Rule,
   type SanityDocumentLike,
   type SlugRule,
   type TextRule,
   type ValidationBuilder,
 } from "sanity";
 
-import { tarkistaLinkki } from "../../../lib/linkki";
 import { apiVersion } from "../../env";
-import { linkinKohdeVaroitus } from "../../lib/linkin-kohde";
 
 /**
  * Kentät jotka toistuvat kaikissa sisältötyypeissä.
@@ -144,21 +141,3 @@ export const polkuMuuttunut = (rule: SlugRule) =>
       );
     })
     .warning();
-
-/**
- * Valikon ja pikalinkkien `href`-kenttä (string, koska sivuston oma polku ei
- * kelpaa url-tyypille). Hyväksyy sivuston polun (`/uutiset`), täyden
- * osoitteen (`https://…`), sähköpostin (`mailto:`) ja puhelinnumeron (`tel:`).
- * Tyypillinen virhe on unohtunut kauttaviiva tai "www."-alku, jolloin linkki
- * osoittaisi nykyisen sivun alle ja päätyisi 404:ään (lib/linkki.ts).
- */
-export const linkkiValidointi = (rule: Rule) => [
-  rule.required().custom<string>((href) => tarkistaLinkki(href)),
-  linkinKohdeVaroitus(rule),
-];
-
-/** Sama kuin `linkkiValidointi`, mutta kentän saa jättää tyhjäksi. */
-export const valinnainenLinkkiValidointi = (rule: Rule) => [
-  rule.custom<string>((href) => tarkistaLinkki(href)),
-  linkinKohdeVaroitus(rule),
-];

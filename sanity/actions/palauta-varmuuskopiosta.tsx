@@ -7,11 +7,10 @@ import { apiVersion } from "../env";
 import {
   dokumentinNimi,
   etsiDokumentti,
-  luonnosVarmuuskopiosta,
   voiPalauttaa,
   type VarmuuskopionDokumentti,
 } from "../../lib/palautus";
-import { haeVarmuuskopiot, lataaVarmuuskopio, paivaSuomeksi } from "../lib/varmuuskopiot";
+import { haeVarmuuskopiot, lataaVarmuuskopio, paivaSuomeksi, palautettavaLuonnos } from "../lib/varmuuskopiot";
 
 /**
  * "Palauta varmuuskopiosta" jokaisen sisältödokumentin valikkoon (docs/23 Y32).
@@ -167,7 +166,7 @@ export const PalautaVarmuuskopiosta: DocumentActionComponent = ({ id, type, draf
 
   async function palauta(doc: VarmuuskopionDokumentti, paiva: string) {
     try {
-      await client.createOrReplace(luonnosVarmuuskopiosta(doc));
+      await client.createOrReplace(await palautettavaLuonnos(client, doc));
       toast.push({
         status: "success",
         title: `Versio ${paivaSuomeksi(paiva)} palautettu luonnokseksi`,

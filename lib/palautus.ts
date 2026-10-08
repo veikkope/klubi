@@ -101,3 +101,43 @@ export function osuuHakuun(nimi: string, haku: string): boolean {
   const kohde = normalisoi(nimi);
   return sanat.every((sana) => kohde.includes(sana));
 }
+
+/** Kaikki dokumentin viittausten kohteet (`_ref`), myös sisäkkäiset ja tekstin linkit. */
+export function viitatutTunnisteet(doc: unknown): string[] {
+  const tulos = new Set<string>();
+  const kay = (arvo: unknown) => {
+    if (Array.isArray(arvo)) {
+      arvo.forEach(kay);
+    } else if (arvo && typeof arvo === "object") {
+      const ref = (arvo as { _ref?: unknown })._ref;
+      if (typeof ref === "string" && ref) tulos.add(ref);
+      Object.values(arvo).forEach(kay);
+    }
+  };
+  kay(doc);
+  return [...tulos];
+}
+
+/**
+ * Viittaukset dokumentteihin, joita ei enää ole, heikoiksi (`_weak: true`)
+ * (docs/24 askel 4). Sanity hylkää vahvan viittauksen puuttuvaan dokumenttiin,
+ * joten luonnos ei muuten tallentuisi, jos varmuuskopion valikko tai teksti
+ * linkittää sen jälkeen poistettuun sivuun. Studio näyttää heikon viittauksen
+ * kohdalla oman ilmoituksensa, ja linkin tarkistus pyytää valitsemaan toisen
+ * sivun. `olemassa`: olemassa olevien dokumenttien tunnisteet.
+ *
+ * Heikennys on pysyvä: viittaus ei muutu takaisin vahvaksi julkaistaessa
+ * (ei `_strengthenOnPublish`), vaan vasta kun kohde valitaan uudelleen.
+ * Hyväksytty: tilanne on harvinainen, ja Studio näyttää sen.
+ */
+export function heikennaPuuttuvatViittaukset<T>(doc: T, olemassa: ReadonlySet<string>): T {
+  const kay = (arvo: unknown): unknown => {
+    if (Array.isArray(arvo)) return arvo.map(kay);
+    if (!arvo || typeof arvo !== "object") return arvo;
+    const kopio = Object.fromEntries(Object.entries(arvo).map(([kentta, sisalto]) => [kentta, kay(sisalto)]));
+    const ref = (arvo as { _ref?: unknown })._ref;
+    if (typeof ref === "string" && ref && !olemassa.has(ref)) kopio._weak = true;
+    return kopio;
+  };
+  return kay(doc) as T;
+}

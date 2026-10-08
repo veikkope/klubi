@@ -8,10 +8,12 @@ import assert from "node:assert/strict";
 import {
   dokumentinNimi,
   etsiDokumentti,
+  heikennaPuuttuvatViittaukset,
   julkaistuId,
   luonnosVarmuuskopiosta,
   osuuHakuun,
   poistetutDokumentit,
+  viitatutTunnisteet,
   voiPalauttaa,
 } from "../lib/palautus";
 
@@ -106,6 +108,45 @@ test("haku nimestä", () => {
   assert.equal(osuuHakuun("Vuosikokous 2026", "2026 vuosi"), true, "sanat missä järjestyksessä tahansa");
   assert.equal(osuuHakuun("Ärrä Öljynen", "öljy"), true, "ääkköset");
   assert.equal(osuuHakuun("Kevätretki", "syysretki"), false);
+});
+
+test("puuttuvat viittaukset heikoiksi, olemassa olevat ennallaan (myös sisäkkäiset ja tekstin linkit)", () => {
+  const ref = (id: string) => ({ _type: "reference", _ref: id });
+  const doc = {
+    _id: "drafts.navigaatio",
+    _type: "navigaatio",
+    items: [
+      {
+        _key: "a",
+        label: "Klubi",
+        tyyppi: "sivu",
+        kohde: ref("sivu-klubi"),
+        children: [{ _key: "b", kohde: ref("sivu-poistettu") }],
+      },
+    ],
+    body: [
+      {
+        _type: "block",
+        _key: "c",
+        markDefs: [{ _type: "link", _key: "m", tyyppi: "sivu", kohde: ref("uutinen-poistettu") }],
+        children: [{ _type: "span", _key: "s", text: "linkki", marks: ["m"] }],
+      },
+    ],
+    kuva: { _type: "image", asset: ref("image-abc-10x10-jpg") },
+  };
+  assert.deepEqual(viitatutTunnisteet(doc).sort(), [
+    "image-abc-10x10-jpg",
+    "sivu-klubi",
+    "sivu-poistettu",
+    "uutinen-poistettu",
+  ]);
+  const tulos = heikennaPuuttuvatViittaukset(doc, new Set(["sivu-klubi", "image-abc-10x10-jpg"]));
+  assert.deepEqual(tulos.items[0].kohde, ref("sivu-klubi"), "olemassa oleva ennallaan");
+  assert.deepEqual(tulos.items[0].children[0].kohde, { ...ref("sivu-poistettu"), _weak: true }, "sisäkkäinen");
+  assert.deepEqual(tulos.body[0].markDefs[0].kohde, { ...ref("uutinen-poistettu"), _weak: true }, "tekstin linkki");
+  assert.deepEqual(tulos.kuva.asset, ref("image-abc-10x10-jpg"));
+  assert.equal(tulos.body[0].children[0].text, "linkki", "muu sisältö säilyy");
+  assert.equal("_weak" in doc.items[0].children[0].kohde, false, "alkuperäistä ei muuteta");
 });
 
 console.log(`\n${ok} testiä ok`);

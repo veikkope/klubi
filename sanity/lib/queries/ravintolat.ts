@@ -1,5 +1,5 @@
 import { defineQuery, stegaClean } from "next-sanity";
-import { kuva, vari } from "@/sanity/lib/queries/kuvat";
+import { kuva, runko, vari } from "@/sanity/lib/queries/kuvat";
 
 import { MAAKUNNAT, SUOMI, isMaakunta } from "@/lib/maakunnat";
 import { isCountryLevelPlace } from "@/lib/places";
@@ -413,7 +413,7 @@ export const ravintolaBySlugQuery = defineQuery(`
       && restaurant._ref == ^._id && defined(arvioija)]{ "p": coalesce(kayntipaiva, submittedAt) }.p,
     visitContext,
     automaattinenArvosana,
-    review,
+    review[]{${runko}},
     ottelupaivana,
     images[]{${kuva}},
     seoTitle,

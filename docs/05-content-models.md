@@ -89,6 +89,53 @@ merkityksellinen kuvaus.
 Samaa sääntöä käyttävät GROQ-funktio `korttikuva()` (uutiskortin kuva), jakokuva
 (`lib/seo.ts`) ja uutisen kansikuvan varoitus Studiossa.
 
+### `linkki` (docs/24 askel 4)
+
+Linkkiobjekti (`sanity/schemas/objects/linkki.ts`, säännöt `lib/linkki.ts`).
+Jokainen linkki valitaan kolmesta vaihtoehdosta. Kenttäjoukko
+`linkkiKentat({ pakollinen })`:
+
+| Kenttä | Tyyppi | Näkyy | Kuvaus |
+|---|---|---|---|
+| tyyppi | string, radio vaakasuunnassa: `sivu` = Sivuston sivu, `osoite` = Muu osoite, `tiedosto` = Tiedosto | aina | "Mihin linkki vie?". Oletus `sivu` vain pakollisissa linkeissä |
+| kohde | reference → `LINKIN_KOHDETYYPIT` (sivu, uutinen, tapahtuma, ravintola, klubiToiminta, arvokisa, galleriaAlbumi, stadion, pelaaja), `disableNew`, suodatin `defined(slug.current)`, vahva viittaus | tyyppi on sivu tai kentällä on arvo | Linkki seuraa kohteen osoitteen muutosta |
+| href | string | tyyppi on osoite | `https://`, `mailto:`, `tel:` tai `/polku` (`tarkistaLinkki`) |
+| tiedosto | file (`liitetiedostoKentta`, `sanity/schemas/objects/liite.ts`) | tyyppi on tiedosto | PDF, Word (.docx), Excel (.xlsx), `storeOriginalFilename`. Kuvaus kertoo, että tiedosto on julkinen (docs/24 Liite A, K4) |
+
+- **Vanha data:** objekti ilman `tyyppi`ä mutta `href`illä on Muu osoite
+  (`linkinTyyppi`). Valikon, pikalinkkien ja tekstin vanhat linkit ovat siksi
+  kelvollisia ilman migraatiota; askel 5 (`patch:linkit`) muuntaa sisäiset polut
+  viittauksiksi ja jättää vanhat arvot paikalleen.
+- **Kävijän osoite** lasketaan koodissa (`linkinOsoite`, reitit `lib/path.ts`):
+  sivu → `documentHref(kohde)`, ei näytetä, jos kohde puuttuu (julkaisematon) tai
+  on piilossa (ajastettu uutinen, ravintola, joka odottaa toista arvioijaa);
+  osoite → `href`, jos `tarkistaLinkki` hyväksyy; tiedosto → PDF sellaisenaan,
+  muut `?dl=<alkuperäinen nimi>`. Ilman osoitetta tekstin linkki näkyy pelkkänä
+  tekstinä ja listan kohta jää pois.
+- **GROQ:** `linkkiProjektio` ja `kohdeProjektio` (`sanity/lib/queries/linkki.ts`).
+  `runko` (`kuvat.ts`) purkaa tekstin linkkien kohteet ja tiedostot, joten jokainen
+  tekstikenttä haetaan `runko`-fragmentin kautta (myös ravintola-arvion `review`).
+- **Studion tarkistukset:** kohde puuttuu (virhe pakollisessa), kohdetta ei enää
+  ole (virhe), kohde julkaisematon tai ajastettu uutinen (varoitus), käyttämätön
+  sivuvalinta (varoitus: estäisi sivun poiston), Muu osoite sivuston sivulle,
+  jolle on dokumentti (varoitus "parempi valinta", `polunKohteet`), sivustolla ei
+  ole sivua (HEAD-varoitus). Säännöt palauttavat true, kun kenttä ei ole käytössä.
+  Haut ovat 60 s muistissa (`sanity/lib/linkin-kohde.ts`).
+- **Käyttö:** levitettynä valikon kohtiin ja alalinkkeihin, etusivun pikalinkkeihin,
+  klubin toiminnan vuosilinkkiin (`pakollinen: false`) ja tekstin linkkiin
+  (`tekstinLinkki`, annotaatio `link` + `newTab`, joka näkyy vain osoitteelle ja
+  tiedostolle). Nimettynä tyyppinä `linkki` etusivun lohkoissa (`ctaLinkki`);
+  pakollisuus isäntäkentän säännöllä `vaadiLinkki`.
+- **Esikatselu:** `linkinEsikatselu(otsikkoKentta)`, alaotsikko `linkinKuvaus`
+  ("→ /klubi", "→ https://…", "Tiedosto: saannot.pdf").
+- **Välimuisti:** tagi `linkit` (etusivu ja klubin toiminnan sivu) tyhjenee, kun
+  minkä tahansa `LINKIN_KOHDETYYPIT`-tyypin dokumentti muuttuu. Valikko ja
+  alatunniste eivät käytä sitä (ne ovat jokaisella sivulla); kohteen osoitteen
+  muutos näkyy niissä ja tekstin linkeissä 60 sekunnin viiveellä.
+- **Palautus varmuuskopiosta:** `heikennaPuuttuvatViittaukset` (`lib/palautus.ts`)
+  merkitsee viittaukset poistettuihin dokumentteihin heikoiksi, jotta luonnos
+  tallentuu.
+
 ## Sisältötyypit
 
 ### 1. `sivu` (julkinen vapaamuotoinen sivu)
@@ -306,7 +353,17 @@ Vain julkaistut arvostelut näkyvät. Uuden ravintolan arvostelun julkaisu vaati
 
 | Kenttä | Tyyppi | Pakollinen | Kuvaus |
 |---|---|---|---|
-| items | array of { label, href, children? } | kyllä | Linkit (mahd. alavalikot). `highlight` on piilotettu — tyylioppaassa ei ole CTA-korostusta. |
+| items | array of { label, …`linkkiKentat({ pakollinen: true })`, highlight, children? } | kyllä | Päälinkit, enintään 7 (varoitus). `highlight` on piilotettu — tyylioppaassa ei ole CTA-korostusta. |
+| items[].children | array of { label, …`linkkiKentat({ pakollinen: true })` } | ei | Alavalikko. Näkyy valikossa avautuvana listana ja alatunnisteessa omana sarakkeenaan. |
+
+**Alatunniste** johdetaan valikosta (`lib/navigaatio.ts`, docs/23 Y23):
+`ratkaiseNavigaatio` laskee osoitteet (alalinkki ilman kohdetta pois, pääkohta
+ilman omaa linkkiä saa ensimmäisen alalinkin osoitteen), `haeNavigaatio`
+(`sanity/lib/navigaatio.ts`, React `cache`) piilottaa tyhjät osiot, ja
+`alatunnisteenSarakkeet` tekee alavalikottomista kohdista sarakkeen "Sivusto" ja
+jokaisesta alavalikollisesta kohdasta oman sarakkeen (ensimmäisenä
+"Yleisesittely", jos alavalikossa ei ole kohdan omaa sivua). Yhteystiedot,
+Tietosuojaseloste ja Ylläpito ovat kiinteät.
 
 ### 13. `asetukset` (singleton)
 **Tarkoitus:** Sivuston yleisasetukset.
@@ -331,11 +388,11 @@ Vain julkaistut arvostelut näkyvät. Uuden ravintolan arvostelun julkaisu vaati
 | heroNostoAsti | datetime | ei | Nosto voimassa asti; sen jälkeen taas uusin juttu. Näkyy vain kun heroNosto on valittu |
 | heroLaskuri | boolean | ei | Seuraava Huuhkajien ottelu + laskuri yläosan Seuraavaksi-kortissa (oletus päällä) |
 | heroImage | imageWithAlt | ei | Yläosan taustakuva (harmaasävy + 85 % yönsininen) ja jakokuva (Open Graph). Ilman kuvaa logo vesileimana |
-| heroCtas | array of { label, href } (max 4) | ei | Pikalinkit Seuraavaksi-kortissa. `primary` piilotettu (vanha) |
+| heroCtas | array of { label, …`linkkiKentat({ pakollinen: true })` } (max 4) | ei | Pikalinkit Seuraavaksi-kortissa. `primary` piilotettu (vanha). Osoite ratkaistaan sivulla (`ratkaiseLinkit`) |
 | heroDescription | text | kyllä | SEO-ryhmässä: etusivun meta-kuvaus, ei näy sivulla |
 | heroTitle | string | ei | **Piilotettu** — vanhan kuvaheron otsikko. Säilyy, jotta vanha data on validia. |
 | seuraavaOttelu | object | ei | **Piilotettu** — korvattu otteluohjelmalla. Säilyy, jotta vanha data on validia. |
-| blocks | array (multi-type: otteluohjelma, uutiset, tapahtumat, esittely, ravintolatSpotlight, jalkapalloarkisto, galleria, cta) | ei | Etusivun lohkot järjestyksessä. Tyylioppaan järjestys: otteluohjelma, uutiset, ravintolatSpotlight, esittely. `uutiset`, `esittely` ja `ravintolatSpotlight` saavat `eyebrow`-kentän. `ravintolatSpotlight` näyttää tuoreimmin arvioidut (`visits[0]`, varalla `visitedAt`). `otteluohjelma`: ottelutHeading, ottelutCount, vainMaajoukkue (boolean, oletus true), seurat (string[], tags, oletus ["FC Lahti"]), laskuri (boolean, **piilotettu** — laskuri on yläosassa, etusivu ohittaa arvon), tapahtumatHeading, tapahtumatCount. `cta` on vanha — tyyliopas kieltää liittymiskehotteet. Jokaisen seitsemän lohkotyypin ensimmäinen kenttä on `piilota` (boolean, "Piilota lohko sivulta", oletus false; puuttuva = näkyvä): `etusivuQuery` hakee `blocks[piilota != true]`, ja esikatselun alaotsikon eteen tulee "Piilotettu · ". `ottelujenSeuratQuery` **ei** suodata piilotusta, joten seuralista ohjaa /ottelut-sivua myös piilotetusta lohkosta (docs/24 askel 1). |
+| blocks | array (multi-type: otteluohjelma, uutiset, tapahtumat, esittely, ravintolatSpotlight, jalkapalloarkisto, galleria, cta) | ei | Etusivun lohkot järjestyksessä. Tyylioppaan järjestys: otteluohjelma, uutiset, ravintolatSpotlight, esittely. `uutiset`, `esittely` ja `ravintolatSpotlight` saavat `eyebrow`-kentän. `ravintolatSpotlight` näyttää tuoreimmin arvioidut (`visits[0]`, varalla `visitedAt`). `otteluohjelma`: ottelutHeading, ottelutCount, vainMaajoukkue (boolean, oletus true), seurat (string[], tags, oletus ["FC Lahti"]), laskuri (boolean, **piilotettu** — laskuri on yläosassa, etusivu ohittaa arvon), tapahtumatHeading, tapahtumatCount. `cta` on vanha — tyyliopas kieltää liittymiskehotteet. `esittely` ja `jalkapalloarkisto` saavat kentän `ctaLinkki` (`linkki`; "Linkin kohde" ja "Napin kohde", docs/24 askel 4). Esittelyssä varoitus, jos linkin teksti on mutta kohde puuttuu; arkiston tyhjä kohde = /jalkapalloarkisto. Vanha `ctaHref` on `deprecated`, `readOnly` ja piilotettu, ja sivu käyttää sitä, kunnes `ctaLinkki`n tyyppi on valittu (kaksoisluku). Jokaisen seitsemän lohkotyypin ensimmäinen kenttä on `piilota` (boolean, "Piilota lohko sivulta", oletus false; puuttuva = näkyvä): `etusivuQuery` hakee `blocks[piilota != true]`, ja esikatselun alaotsikon eteen tulee "Piilotettu · ". `ottelujenSeuratQuery` **ei** suodata piilotusta, joten seuralista ohjaa /ottelut-sivua myös piilotetusta lohkosta (docs/24 askel 1). |
 
 ## Singletonien hallinta Studiossa
 
@@ -381,7 +438,7 @@ uudelleen. Skeemat ovat jäädytettyjä vaiheen 1 ajan.
 | `arvokisa` | `alkuPvm`, `loppuPvm` (date), `hopea`, `pronssi` (string); kisatyyppi `u21-em` | Kisasivut alkavat "11.06.-11.07.2010"; mitalistitaulukko Mestari/Hopea/Pronssi; Pikkuhuuhkajat = U21-EM 2009. |
 | `pelaaja` | `tilastot` (ref → jalkapalloTilasto[]) | litmanen.htm:n loukkaantumistaulukko. |
 | `stadion` | `address` (string) | Stadionsivuilla katuosoite ("Tamme puiestee 1, Tartu"). |
-| `klubiToiminta` | `vuodet[].otsikko`, `vuodet[].jarjestysnumero`, `vuodet[].osallistujat` (string[]); `tilastot` (ref[]) | Vuosikokous "(11) … (6): Ilpo, Olli…", mölkky kahdesti vuodessa, mölkyn ja jouluruokailun taulukot. |
+| `klubiToiminta` | `vuodet[].otsikko`, `vuodet[].jarjestysnumero`, `vuodet[].osallistujat` (string[]); `tilastot` (ref[]); `vuodet[].linkki` { teksti, …`linkkiKentat({ pakollinen: false })`, `url` (vanha, piilotettu) } (docs/24 askel 4) | Vuosikokous "(11) … (6): Ilpo, Olli…", mölkky kahdesti vuodessa, mölkyn ja jouluruokailun taulukot. Vuoden linkki ilman oletusvalintaa; sivu lukee vanhaa `url`ia, kunnes tyyppi on valittu. Varoitus, jos teksti on mutta kohde puuttuu. |
 | `sivu` | `tilastot` (ref → jalkapalloTilasto[]) | Palloveikkaussivujen 38 taulukkoa. |
 | `etusivu` | `seuraavaOttelu { ottelu, kilpailu, aika }` | Vanhan etusivun "Seuraavaksi" -laskuri. |
 | `yhteystiedot` | `address`, `postalCode`, `email`: `required` → **varoitus** | Migraatio luo singletonin ilman näitä (docs/12 M6), eikä se saa rikkoa "0 tyhjää pakollista kenttää" -maalia. |

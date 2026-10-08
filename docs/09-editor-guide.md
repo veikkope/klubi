@@ -48,6 +48,44 @@ toimii niiden varassa. Kehittäjä hoitaa ne.
   dokumentin **⋯** → **Palauta varmuuskopiosta** (ks. Varmuuskopiot).
 - **Pakolliset kentät** näkyvät punaisella. Julkaisu onnistuu vasta, kun ne on täytetty.
 
+### Linkit
+
+Jokaisessa linkissä (valikko, etusivun pikalinkit ja napit, klubin toiminnan
+vuosilinkki ja tekstin linkit) valitset ensin **Mihin linkki vie?**:
+
+- **Sivuston sivu:** kirjoita kenttään **Sivu** sivun, uutisen, ravintolan tai muun
+  sisällön nimen alkua ja valitse listasta. Linkki pysyy kunnossa, vaikka sivun
+  osoite muuttuisi. Valitse tämä aina, kun linkki vie klubin omalle sivulle.
+- **Muu osoite:** toinen sivusto (`https://…`), sähköposti (`mailto:nimi@esimerkki.fi`)
+  tai puhelin (`tel:+358…`). Sivuston oman osoitteen (`/…`) kirjoitat tähän vain,
+  jos sivua ei löydy listasta, esim. `/uutiset/arkisto/2016` tai sivun kohta
+  `#ankkuri`.
+- **Tiedosto:** PDF, Word (.docx) tai Excel (.xlsx). Raahaa tiedosto kenttään.
+  **Tiedosto on julkinen:** se löytyy sivuston tietokannasta, vaikka et
+  linkittäisi sitä, ja myös tiedoston alkuperäinen nimi näkyy. Älä liitä
+  jäsenluetteloita, pöytäkirjoja, joissa on henkilötietoja, tai muuta
+  luottamuksellista. Jos lisäsit vahingossa väärän tiedoston, poista se linkistä
+  ja kerro kehittäjälle, joka poistaa sen myös tietokannasta. Sivulla linkin
+  perässä näkyy tiedoston tyyppi ja koko, esim. "(PDF, 240 kt)".
+
+Listan alla näkyy, mihin linkki vie, esim. "→ /klubi/toiminta/matkailu".
+
+**Keltaiset varoitukset** eivät estä julkaisua:
+
+- *"… ei ole vielä julkaistu"*: valittu sivu on luonnos. Linkki näkyy sivustolla
+  vasta, kun julkaiset sen.
+- *"Uutinen tulee näkyviin …"*: valittu uutinen on ajastettu. Linkki tulee näkyviin
+  samaan aikaan uutisen kanssa.
+- *"Tälle sivulle on parempi valinta"*: Muu osoite vie sivulle, jonka voi valita
+  listasta. Vaihda kohdaksi **Sivuston sivu** ja valitse varoituksessa mainittu
+  sivu.
+- *"Tätä valintaa ei käytetä…"*: vaihdoit linkin muualle, mutta vanha sivuvalinta
+  on yhä tallessa. Tyhjennä se (kentän kolme pistettä → **Tyhjennä**), muuten
+  sitä sivua ei voi poistaa.
+
+Punainen *"Valittua sivua ei enää ole"* tarkoittaa, että sivu on poistettu: valitse
+toinen.
+
 ## Studion valikko
 
 - **Tehtävät sinulle:** aloita tästä. Kaikki, mikä odottaa sinua, yhdessä paikassa.
@@ -115,6 +153,9 @@ Tämä korvaa blogiin kirjoittamisen. Studio toimii myös puhelimen selaimessa.
    video alkaa, kun lukija painaa sitä. Jos haluat videon alkavan tietystä kohdasta,
    rastita YouTuben Jaa-ikkunassa *Aloita kohdasta* ennen kopiointia.
    Pelkän linkin voi edelleen tehdä tekstiin tavallisena linkkinä.
+   **Linkki tekstiin:** maalaa sana tai lause → työkalupalkin ketjukuvake → valitse
+   **Mihin linkki vie?** (ks. *Linkit* yllä). Esim. toiseen uutiseen: Sivuston sivu
+   → kirjoita uutisen otsikon alkua → valitse.
    Video toimii samoin kaikissa tekstikentissä, joissa on **+**: sivut, tapahtumat,
    ravintolat ja jalkapalloarkisto (tilastojen esittelyt ja lisätiedot, arvokisat,
    pelaajat, stadionit, lehtileikkeet). Kuvasarja sen sijaan toimii vain uutisissa,
@@ -325,8 +366,10 @@ poistaa seuroja (kirjoita nimi kuten Veikkausliigan sivuilla ja paina Enter).
 4. **Julkaise**. Tapahtuma näkyy etusivulla ja /tapahtumat-sivulla, kunnes se on ohi.
 
 Niin kauan kuin yhtään tapahtumaa ei ole, Tapahtumat-osio on piilossa valikosta,
-alatunnisteesta ja hakukoneilta. Se tulee näkyviin itsestään ensimmäisen tapahtuman
-julkaisun jälkeen. Sama koskee Kuvagalleriaa ja albumeita.
+alatunnisteesta ja hakukoneilta. Hakukoneille ja etusivun lohkoon se tulee näkyviin
+itsestään ensimmäisen tapahtuman julkaisun jälkeen. Valikossa ja alatunnisteessa se
+näkyy, kun lisäät sen valikkoon (ks. *Valikon muokkaaminen*). Sama koskee Galleriaa
+ja albumeita.
 
 **Jakokuva:** kun tapahtuman linkki jaetaan WhatsAppissa tai Facebookissa, esikatselun
 kuvana on tapahtuman **kansikuva**. Ilman kansikuvaa käytetään kuvausta: ensin siinä
@@ -426,9 +469,9 @@ ja seuraava klubin tapahtuma. Kun julkaiset uutisen, se nousee yläosaan.
      palaa siitä eteenpäin uusimpaan juttuun itsestään.
    - **Taustakuva:** näkyy mustavalkoisena tummansinisen sävyn alla. Vaihda
      kuva vaikka kauden mukaan; tekstit erottuvat aina. Sama kuva näkyy somejaoissa.
-   - **Pikalinkit:** enintään neljä linkkiä Seuraavaksi-korttiin, esim.
-     "Palloveikkaus" → `/klubi/palloveikkaus`. Sivuston oma osoite alkaa `/`,
-     ulkoinen linkki `https://`. Studio huomauttaa, jos muoto on väärä.
+   - **Pikalinkit:** enintään neljä linkkiä Seuraavaksi-korttiin. Kirjoita
+     **Teksti** (esim. "Palloveikkaus") ja valitse **Mihin linkki vie?** → Sivuston
+     sivu → "Palloveikkaus" (ks. *Linkit*).
    - **Näytä seuraava Huuhkajien ottelu ja laskuri:** pois päältä, jos et halua sitä.
 3. Hakukoneiden kuvaus on **Hakukoneet ja jako** -välilehdellä. Se ei näy sivulla.
 4. **Lohkot:** vedä kahvasta (⋮⋮) muuttaaksesi järjestystä ja lisää uusi **+**-painikkeella.
@@ -438,6 +481,11 @@ ja seuraava klubin tapahtuma. Kun julkaiset uutisen, se nousee yläosaan.
    - **Roskakori poistaa** lohkon asetuksineen. Sen saa takaisin vain versiohistoriasta.
    - Otteluohjelman **Näytä myös näiden seurojen ottelut** -lista ohjaa myös
      /ottelut-sivua, vaikka lohko olisi piilotettu.
+   - **Esittelyteksti:** linkin teksti (esim. "Lue lisää klubista") ja **Linkin
+     kohde** (Mihin linkki vie?). Jos kirjoitat tekstin mutta et valitse kohdetta,
+     Studio varoittaa keltaisella, eikä linkkiä näytetä.
+   - **Jalkapalloarkisto-nosto:** **Napin kohde** on valinnainen. Tyhjänä nappi vie
+     jalkapalloarkiston etusivulle.
 5. **Julkaise**.
 
 ### Yhteystiedot
@@ -448,16 +496,31 @@ yhteystietosivulla.
 ### Valikon muokkaaminen
 
 1. **Sivuston asetukset → Navigaatio**.
-2. Muokkaa linkkiä: klikkaa sitä ja muuta **Otsikko** tai **Linkki**.
-3. Uusi linkki: **+** listan alla. Linkki alkaa `/` (oma sivu) tai `https://` (muu sivusto).
-   Oman sivun linkki on sivun **Osoite sivustolla** kauttaviivalla alussa: sivu, jonka osoite on
-   `klubi/historia`, saa linkin `/klubi/historia`. Studio varoittaa keltaisella, jos
-   osoitteessa ei ole sivua (kirjoitusvirhe tai sivua ei ole vielä julkaistu).
+2. Muokkaa linkkiä: klikkaa sitä ja muuta **Otsikko** tai linkin kohde.
+3. Uusi linkki: **+** listan alla → kirjoita **Otsikko** → **Mihin linkki vie?** on
+   valmiiksi **Sivuston sivu** → kirjoita kenttään **Sivu** sivun nimen alkua ja valitse
+   listasta (ks. *Linkit*). Listan alla näkyy osoite, esim. "→ /klubi/historia".
 4. Järjestys: vedä kahvasta (⋮⋮).
-5. Alavalikko: avaa linkki → **Alavalikko** → **+**.
+5. Alavalikko: avaa linkki → **Alavalikko** → **+** → Otsikko ja kohde samalla tavalla.
+   Jos alavalikossa ei ole pääkohdan omaa sivua, valikko lisää alkuun linkin
+   "yleisesittely".
 6. **Julkaise**.
 
-Päälinkkejä enintään 7.
+Päälinkkejä enintään 7. Vanhat linkit näkyvät kohdassa **Muu osoite** (esim.
+`/ottelut`), kunnes kehittäjä vaihtaa ne sivuvalinnoiksi; siihen asti niiden
+kohdalla voi näkyä keltainen *"Tälle sivulle on parempi valinta"*. Ne toimivat
+sivustolla normaalisti.
+
+**Alatunniste** (sivun alareuna) seuraa valikkoa: kohdat, joilla on alavalikko, näkyvät
+omina sarakkeinaan (otsikkona kohdan nimi), ja muut kohdat sarakkeessa **Sivusto**.
+Yhteystiedot tulevat Yhteystiedoista (Klubi → Yhteystiedot). Tietosuojaseloste- ja
+Ylläpito-linkit ovat aina mukana. Erillistä alatunnisteen listaa ei ole.
+
+Tyhjät osiot piiloutuvat valikosta ja alatunnisteesta itsestään (esim. Tapahtumat,
+kun yhtään tapahtumaa ei ole julkaistu). **Kun julkaiset ensimmäisen albumin tai
+tapahtuman, lisää Galleria tai Tapahtumat valikkoon** (Sivuston sivu → "Galleria" tai
+"Tapahtumat"), muuten osioon pääsee vain etusivun lohkon kautta. Uutisarkistoon
+pääsee Uutiset-sivulta.
 
 ### Hallituksen jäsenet
 
@@ -478,7 +541,13 @@ Hallitus-sivun otsikko ja johdanto** → **Tiivistelmä sivun alussa** → **Jul
 2. Välilehti **Vuosittain** → **+**.
 3. Täytä **Vuosi**. Muut kentät ovat vapaaehtoisia. **Monesko kerta** on tavallinen
    luku (esim. 37), ja sivulla se näkyy muodossa (37.).
-4. **Julkaise**. Uusin vuosi näkyy sivulla ensimmäisenä.
+4. **Linkki** (vapaaehtoinen, esim. matkakuvaus): avaa kohta **Linkki** → **Linkin
+   teksti** (esim. "Matkakuvaus") → **Mihin linkki vie?** → Sivuston sivu → kirjoita
+   uutisen otsikon alkua ja valitse. Videolle valitse Muu osoite ja liitä osoite.
+5. **Julkaise**. Uusin vuosi näkyy sivulla ensimmäisenä.
+
+Vanhojen vuosien linkit toimivat sivustolla, vaikka kohta **Mihin linkki vie?** on
+niissä vielä tyhjä: kehittäjä siirtää ne uuteen muotoon.
 
 Toimintamuotojen järjestys Toiminta-sivulla määräytyy kentästä **Järjestys listassa**
 (pienempi luku ylempänä). Studion Toimintamuodot-lista on samassa järjestyksessä.
@@ -763,7 +832,9 @@ Jos joku pyytää poistamaan tietonsa (kommentti, veikkaus tai arvostelu kuvinee
 |---|---|
 | Julkaisu ei onnistu | Punaiset kentät ovat pakollisia. Vieritä alas, täytä ja yritä uudelleen |
 | Muutos ei näy sivulla | Tarkista, että painoit **Julkaise**. Sivu päivittyy yleensä sekunneissa, viimeistään minuutissa |
-| Linkki ei toimi | Ulkoinen linkki alkaa `https://`, sivuston oma osoite `/` (esim. `/uutiset`). Keltainen varoitus "Sivustolla ei ole sivua…" kertoo kirjoitusvirheestä tai julkaisemattomasta sivusta |
+| Linkki ei toimi | Valitse sivuston omalle sivulle **Sivuston sivu** (ks. *Linkit*). Muu osoite alkaa `https://`, `mailto:` tai `tel:`. Keltainen varoitus "Sivustolla ei ole sivua…" kertoo kirjoitusvirheestä tai julkaisemattomasta sivusta |
+| Linkki katosi valikosta tai tekstistä | Valittua sivua ei ole julkaistu, uutinen on ajastettu tai ravintola odottaa toista arvioijaa. Tekstissä sana näkyy silloin ilman linkkiä, ja valikosta kohta jää pois. Linkki palaa itsestään, kun sivu julkaistaan (ajastettu uutinen noin minuutin kuluessa julkaisuajasta) |
+| En voi poistaa sivua tai uutista, tai sen julkaisua ei voi perua | Johonkin (esim. valikkoon tai Matkailu-sivulle) on tehty linkki tähän sivuun. Ikkuna sanoo "Et ehkä voi poistaa …, koska seuraavat asiakirjat viittaavat siihen", tai tulee ilmoitus "… Tämä yleensä tarkoittaa, että muut dokumentit viittaavat siihen.". Avaa listassa näkyvä dokumentti napsauttamalla, vaihda tai poista linkki ja paina **Julkaise**. Poista sen jälkeen. Älä paina **Poista joka tapauksessa**, koska se ei onnistu |
 | Jotain meni pieleen (alle 3 päivää sitten) | Kellokuvake → versiohistoria → palauta edellinen versio |
 | Jotain meni pieleen (yli 3 päivää sitten) | Dokumentin **⋯** → **Palauta varmuuskopiosta** → valitse viikko → tarkista → **Julkaise** |
 | Poistin vahingossa | **Sivuston asetukset → Varmuuskopiot** → uusin kopio → välilehti **Palauta poistettu** |
@@ -780,6 +851,8 @@ Jos joku pyytää poistamaan tietonsa (kommentti, veikkaus tai arvostelu kuvinee
   kokonaan, koska sivusto hakee ne osoitteen perusteella. Osioiden sivuja, Klubin
   pääsivuja ja tietosuojaselostetta ei voi myöskään poistaa, piilottaa eikä kopioida, mutta
   niiden sisältöä saa muokata vapaasti.
+  **Sivuston sivu** -valinnalla tehdyt linkit seuraavat osoitteen muutosta itsestään.
+  Muu osoite -linkit ja Googlen vanhat linkit eivät seuraa.
 - **Älä muuta** kenttiä **Vanha osoite** tai **Alkuperäinen Blogspot-kirjoitus**. Vanhat linkit ohjautuvat niiden varassa.
 
 ## Varmuuskopiot

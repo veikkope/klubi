@@ -1,8 +1,35 @@
-import { defineArrayMember, defineType } from "sanity";
+import { LinkIcon } from "@sanity/icons";
+import { defineArrayMember, defineField, defineType } from "sanity";
 
-import { tarkistaLinkki } from "../../../lib/linkki";
+import { linkinTyyppi } from "../../../lib/linkki";
 import { PERUSLOHKOT } from "../../../lib/sisaltolohkot";
-import { linkinKohdeVaroitus } from "../../lib/linkin-kohde";
+import { linkkiKentat } from "./linkki";
+
+/**
+ * Tekstin linkki (docs/24 askel 4): sama "Mihin linkki vie?" -valinta kuin
+ * valikossa ja etusivulla. Annotaation nimi `link` ja vanha `href` säilyvät,
+ * joten vanhat linkit ovat sellaisenaan kelvollisia (Muu osoite).
+ */
+export const tekstinLinkki = {
+  name: "link",
+  type: "object",
+  title: "Linkki",
+  icon: LinkIcon,
+  fields: [
+    ...linkkiKentat({ pakollinen: true }),
+    defineField({
+      name: "newTab",
+      type: "boolean",
+      title: "Avaa uuteen välilehteen",
+      initialValue: false,
+      // Vain muulle osoitteelle ja tiedostolle: sivuston oma sivu avautuu aina samaan välilehteen.
+      hidden: ({ parent }) => {
+        const tyyppi = linkinTyyppi(parent as { tyyppi?: string; href?: string });
+        return tyyppi !== "osoite" && tyyppi !== "tiedosto";
+      },
+    }),
+  ],
+};
 
 /**
  * Tekstikappaleet: tyylit, listat, korostukset ja linkki. Yhteinen jäsen
@@ -27,42 +54,7 @@ export const tekstiLohko = defineArrayMember({
       { title: "Kursiivi", value: "em" },
       { title: "Alleviivattu", value: "underline" },
     ],
-    annotations: [
-      {
-        name: "link",
-        type: "object",
-        title: "Linkki",
-        fields: [
-          {
-            name: "href",
-            type: "url",
-            title: "URL",
-            description:
-              "Ulkoinen osoite (https://…) tai sivuston oma polku (/jalkapalloarkisto/…).",
-            // allowRelative: migraatio muuntaa vanhat .htm-linkit sisäisiksi
-            // poluiksi (docs/12 §2.1.3), jotka eivät ole absoluuttisia URL:eja.
-            // Pelkkä uri() hyväksyisi myös "www.palloliitto.fi" suhteellisena
-            // polkuna (→ 404), joten alku tarkistetaan erikseen (lib/linkki.ts).
-            validation: (rule) => [
-              rule
-                .uri({
-                  scheme: ["http", "https", "mailto", "tel"],
-                  allowRelative: true,
-                })
-                .error("Tarkista linkki: https://…, mailto:, tel: tai /polku."),
-              rule.custom<string>((href) => tarkistaLinkki(href)),
-              linkinKohdeVaroitus(rule),
-            ],
-          },
-          {
-            name: "newTab",
-            type: "boolean",
-            title: "Avaa uuteen välilehteen",
-            initialValue: false,
-          },
-        ],
-      },
-    ],
+    annotations: [tekstinLinkki],
   },
 });
 
