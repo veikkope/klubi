@@ -6,6 +6,11 @@ const nextConfig: NextConfig = {
   // Ei paljasteta palvelinteknologiaa (X-Powered-By: Next.js).
   poweredByHeader: false,
   experimental: {
+    // Buildin työläiset: oletus on koneen ytimet − 1 (kehittäjän koneella 19), ja
+    // jokainen hakee Sanitystä rinnakkain. Sanityn pyyntöraja (429) kaatoi
+    // paikallisen buildin 8.10.2026 toistuvasti, vaikka haku yrittää uudelleen.
+    // Vercelin build-koneella ytimiä on vähemmän, joten raja ei hidasta sitä.
+    cpus: 4,
     serverActions: {
       // Arvostelulomakkeen kuvat (docs/18): 3 × enintään 1,3 Mt (lib/arvostelukuvat.ts)
       // + teksti. Oletus 1 Mt ei riitä; Vercelin kova raja on 4,5 Mt.
