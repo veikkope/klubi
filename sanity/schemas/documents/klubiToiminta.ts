@@ -47,7 +47,7 @@ export const klubiToiminta = defineType({
     defineField({
       name: "slug",
       title: OSOITE_OTSIKKO,
-      description: "Muodostuu otsikosta: paina Luo. Toimintamuodon osoite on /klubi/toiminta/tämä-osa. Jos muutat julkaistun toimintamuodon osoitetta, vanha osoite ohjautuu uuteen automaattisesti. (Aiemmin kentän nimi oli Polku.)",
+      description: "Muodostuu otsikosta: paina Luo. Toimintamuodon osoite on /klubi/toiminta/tämä-osa. Jos muutat julkaistun toimintamuodon osoitetta, vanha osoite ohjautuu uuteen automaattisesti.",
       type: "slug",
       options: { source: "title", maxLength: 80 },
       validation: (rule) => [rule.required(), polkuMuuttunut(rule)],

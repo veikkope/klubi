@@ -32,7 +32,7 @@ export const tapahtuma = defineType({
     defineField({
       name: "slug",
       title: OSOITE_OTSIKKO,
-      description: "Muodostuu otsikosta: paina Luo. Tapahtuman osoite on /tapahtumat/tämä-osa. Jos muutat julkaistun tapahtuman osoitetta, vanha osoite ohjautuu uuteen automaattisesti. (Aiemmin kentän nimi oli Polku.)",
+      description: "Muodostuu otsikosta: paina Luo. Tapahtuman osoite on /tapahtumat/tämä-osa. Jos muutat julkaistun tapahtuman osoitetta, vanha osoite ohjautuu uuteen automaattisesti.",
       type: "slug",
       options: { source: "title", maxLength: 80 },
       validation: (rule) => [rule.required(), polkuMuuttunut(rule)],

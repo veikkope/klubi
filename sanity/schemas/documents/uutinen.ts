@@ -42,7 +42,7 @@ export const uutinen = defineType({
     defineField({
       name: "slug",
       title: OSOITE_OTSIKKO,
-      description: "Muodostuu otsikosta: paina Luo. Uutisen osoite on /uutiset/tämä-osa. Jos muutat julkaistun uutisen osoitetta, vanha osoite ohjautuu uuteen automaattisesti. (Aiemmin kentän nimi oli Polku.)",
+      description: "Muodostuu otsikosta: paina Luo. Uutisen osoite on /uutiset/tämä-osa. Jos muutat julkaistun uutisen osoitetta, vanha osoite ohjautuu uuteen automaattisesti.",
       type: "slug",
       options: { source: "title", maxLength: 80 },
       validation: (rule) => [

@@ -175,7 +175,7 @@ export const sivu = defineType({
       title: "Taulukot",
       description:
         "Sivulla näytettävät taulukot (esim. palloveikkauksen tulokset). Taulukot " +
-        "ylläpidetään Jalkapallotilasto-dokumentteina kategorialla \"Klubin omat tilastot\".",
+        "tehdään kohdassa Jalkapalloarkisto → Tilastot (kategoria \"Klubin omat tilastot\").",
       type: "array",
       of: [{ type: "reference", to: [{ type: "jalkapalloTilasto" }] }],
       hidden: ({ document, value }) => piilotaKentta(slugOf(document), "tilastot", value),

@@ -60,8 +60,8 @@ export function onTarkistettava(doc?: Versio): boolean {
 
 export function tarkistettavanSelite(doc?: Versio): string {
   return typeof doc?.tarkistettavaa === "string" && doc.tarkistettavaa.trim()
-    ? "Lue kohta Mitä tarkistaa. Kun asia on kunnossa, ota rasti pois kohdasta Vaatii tarkistuksen ja julkaise."
-    : "Tarkista tiedot. Kun asia on kunnossa, ota rasti pois kohdasta Vaatii tarkistuksen ja julkaise.";
+    ? "Lue kohta Mitä tarkistaa. Kun asia on kunnossa, käännä kytkin Vaatii tarkistuksen pois päältä ja julkaise."
+    : "Tarkista tiedot. Kun asia on kunnossa, käännä kytkin Vaatii tarkistuksen pois päältä ja julkaise.";
 }
 
 export type RavintolanArvosana = {

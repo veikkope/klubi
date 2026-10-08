@@ -96,7 +96,7 @@ export const SIJAINTITYYPIT: ReadonlySet<string> = new Set<string>([
 ]);
 
 export const EI_SIVULLA_VIESTI =
-  "Taulukko ei näy vielä millään sivulla. Lisää se sivun, klubin toiminnan tai pelaajan Taulukot-kenttään ja julkaise.";
+  "Taulukko ei näy vielä millään sivulla. Lisää se sivun Taulukot-kenttään tai klubin toiminnan, pelaajan tai arvokisan Tilastotaulukot-kenttään ja julkaise.";
 export const EI_OSOITETTA_VIESTI =
   "Taulukko ei näy vielä millään sivulla. Täytä Osoite sivustolla -kenttä (Luo-painike) ja julkaise.";
 export const ENTINEN_JASEN_VIESTI = "Entinen jäsen: ei näy hallitussivulla.";

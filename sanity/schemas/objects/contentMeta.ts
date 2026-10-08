@@ -50,7 +50,7 @@ export const legacyUrlField = (group?: string) =>
     name: "legacyUrl",
     title: "Vanha osoite",
     description:
-      "Vanhan sivuston polku, esim. /ruokailulahti.htm. Täytetään migraatiossa " +
+      "Vanhan sivuston polku, esim. /ruokailulahti.htm. Täytetään siirrossa vanhalta sivustolta " +
       "automaattisesti. Älä muuta käsin — tämän varassa vanhat linkit ohjautuvat.",
     type: "string",
     readOnly: true,
@@ -68,7 +68,7 @@ export const muutLegacyUrlitField = (group?: string) =>
     title: "Muut vanhat osoitteet",
     description:
       "Vanhan sivuston muut polut, joiden sisältö on yhdistetty tähän. Täytetään " +
-      "migraatiossa automaattisesti. Älä muuta käsin — vanhat linkit ohjautuvat näiden varassa.",
+      "siirrossa automaattisesti. Kenttä on lukittu: vanhat linkit ohjautuvat näiden varassa.",
     type: "array",
     of: [{ type: "string" }],
     readOnly: true,
@@ -83,7 +83,7 @@ export const tarkistettavaaField = (group?: string) =>
   defineField({
     name: "tarkistettavaa",
     title: "Mitä tarkistaa",
-    description: "Migraation huomio. Kun asia on kunnossa, ota rasti pois kohdasta Vaatii tarkistuksen.",
+    description: "Siirrossa vanhalta sivustolta kirjattu huomio. Kun asia on kunnossa, käännä kytkin Vaatii tarkistuksen pois päältä.",
     type: "text",
     rows: 3,
     readOnly: true,
@@ -97,7 +97,7 @@ export const needsReviewField = (group?: string) =>
     name: "needsReview",
     title: "Vaatii tarkistuksen",
     description:
-      "Migraatio ei saanut kaikkea tietoa varmasti oikein. Tarkista sisältö, ota rasti pois " +
+      "Siirto vanhalta sivustolta ei saanut kaikkea tietoa varmasti oikein. Tarkista sisältö, käännä kytkin pois päältä " +
       "ja paina lopuksi Julkaise: ennen julkaisua sivusto ja Tarkistettavat-lista näyttävät " +
       "yhä vanhaa.",
     type: "boolean",

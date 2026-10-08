@@ -112,7 +112,7 @@ export const TEHTAVAT: Tehtava[] = [
     id: "tarkistettavat",
     otsikko: "Vaatii tarkistuksen (kaikki)",
     listanOtsikko: "Vaatii tarkistuksen",
-    kuvaus: "Migraation merkitsemät kohdat",
+    kuvaus: "Vanhalta sivustolta siirretyt kohdat, jotka kannattaa tarkistaa",
     suodatin: `needsReview == true && _type in $tyypit`,
     laskuri: nakyvat(`needsReview == true && _type in $tyypit`),
     params: { tyypit: TARKISTETTAVAT_TYYPIT.map(({ tyyppi }) => tyyppi) },

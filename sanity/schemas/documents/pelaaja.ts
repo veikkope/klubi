@@ -43,7 +43,7 @@ export const pelaaja = defineType({
       title: OSOITE_OTSIKKO,
       type: "slug",
       description:
-        "Muodostuu nimestä: paina Luo. Pelaajan osoite on /jalkapalloarkisto/pelaajat/tämä-osa. Litmasen osoite on lukittu, koska Litmanen-osio hakee hänet sen perusteella. Jos muutat julkaistun pelaajan osoitetta, vanha osoite ohjautuu uuteen automaattisesti. (Aiemmin kentän nimi oli Polku.)",
+        "Muodostuu nimestä: paina Luo. Pelaajan osoite on /jalkapalloarkisto/pelaajat/tämä-osa. Litmasen osoite on lukittu, koska Litmanen-osio hakee hänet sen perusteella. Jos muutat julkaistun pelaajan osoitetta, vanha osoite ohjautuu uuteen automaattisesti.",
       options: { source: "name", maxLength: 80 },
       readOnly: ({ document }) => koodiinSidottuSlug(document, [LITMANEN_SLUG]),
       validation: (rule) => [rule.required(), polkuMuuttunut(rule)],

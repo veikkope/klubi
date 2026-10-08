@@ -86,7 +86,7 @@ test("varmuuskopio: yli 8 päivää tai ei kopiota on virhe ohjeineen", () => {
   assert.equal(r.teksti, "Viikkovarmuuskopiota ei ole tehty 9 päivään.");
   assert.match(r.ohje ?? "", /Vercel → Cron Jobs → \/api\/varmuuskopio/);
   assert.match(r.ohje ?? "", /Sisältösi on tallessa/);
-  assert.doesNotMatch(r.ohje ?? "", /tukihenkilö/, "repo on julkinen: kehittäjä, ei nimiä");
+  assert.match(r.ohje ?? "", /Kerro tukihenkilölle/, "repo on julkinen: tukihenkilö, ei nimiä (docs/24 §6, docs/25)");
   assert.equal(varmuuskopionTila(null, null, NYT).tila, "virhe");
 });
 
@@ -142,7 +142,7 @@ test("huolto: yli 30 tuntia vanha on virhe (myös kirjoitustokenin oikeuksien me
   assert.equal(r.tila, "virhe");
   assert.equal(r.teksti, "Yöllinen huolto ei ole käynyt 1 vuorokauteen.");
   assert.equal(huollonTila(huolto(perus, { aika: tunteja(50) }), NYT).teksti, "Yöllinen huolto ei ole käynyt 2 vuorokauteen.");
-  assert.match(r.ohje ?? "", /Kerro kehittäjälle/);
+  assert.match(r.ohje ?? "", /Kerro tukihenkilölle/);
 });
 
 test("huolto: korjatut arvosanat → huomio", () => {
@@ -189,7 +189,7 @@ test("otteluhaku: ok, virhe ohjeineen, kauden aikana 0 → huomio, talvella 0 �
   assert.equal(v.teksti, "Otteluohjelman haku epäonnistui: Aikakatkaisu.");
   assert.equal(
     v.ohje,
-    "Ottelut-sivulla ja etusivulla näkyvät vain Studioon lisätyt ottelut. Lisää tärkeät ottelut käsin (Ottelut → +) ja kerro kehittäjälle.",
+    "Ottelut-sivulla ja etusivulla näkyvät vain Studioon lisätyt ottelut. Lisää tärkeät ottelut käsin (Ottelut → +) ja kerro tukihenkilölle.",
   );
 
   const tyhja = perus.map((t) => (t.nimi === "otteluhaku" ? { ...t, maara: 0, viesti: "Veikkausliiga: 0 ottelua, joista 0 tulevaa" } : t));

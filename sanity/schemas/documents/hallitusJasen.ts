@@ -24,7 +24,7 @@ export const hallitusJasen = defineType({
       name: "nykyinen",
       title: "Nykyinen jäsen",
       description:
-        "Kun jäsen jää hallituksesta, ota rasti pois. Älä poista jäsentä: hän siirtyy listaan " +
+        "Kun jäsen jää hallituksesta, käännä kytkin pois päältä. Älä poista jäsentä: hän siirtyy listaan " +
         "Entiset jäsenet, eikä näy enää hallitussivulla.",
       type: "boolean",
       initialValue: true,

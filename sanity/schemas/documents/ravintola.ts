@@ -53,7 +53,7 @@ export const ravintola = defineType({
     defineField({
       name: "slug",
       title: OSOITE_OTSIKKO,
-      description: "Muodostuu nimestä: paina Luo. Ravintolan osoite on /ravintolat/tämä-osa. Jos muutat julkaistun ravintolan osoitetta, vanha osoite ohjautuu uuteen automaattisesti. (Aiemmin kentän nimi oli Polku.)",
+      description: "Muodostuu nimestä: paina Luo. Ravintolan osoite on /ravintolat/tämä-osa. Jos muutat julkaistun ravintolan osoitetta, vanha osoite ohjautuu uuteen automaattisesti.",
       type: "slug",
       options: { source: "name", maxLength: 80 },
       validation: (rule) => [rule.required(), polkuMuuttunut(rule)],

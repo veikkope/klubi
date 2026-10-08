@@ -40,7 +40,7 @@ export const jalkapalloTilasto = defineType({
     defineField({
       name: "slug",
       title: OSOITE_OTSIKKO,
-      description: "Taulukon tunniste osoitteessa. Jos taulukolla on oma sivu ja muutat julkaistun taulukon osoitetta, vanha osoite ohjautuu uuteen automaattisesti. (Aiemmin kentän nimi oli Polku.)",
+      description: "Taulukon tunniste osoitteessa. Jos taulukolla on oma sivu ja muutat julkaistun taulukon osoitetta, vanha osoite ohjautuu uuteen automaattisesti.",
       type: "slug",
       options: { source: "title", maxLength: 80 },
       validation: (rule) => [rule.required(), polkuMuuttunut(rule)],
@@ -54,7 +54,7 @@ export const jalkapalloTilasto = defineType({
         "Ratkaisee, millä sivulla taulukko näkyy. Tarkka sivu näkyy lomakkeen yläreunassa " +
         "(Käytetty yhdellä sivulla: avaa nuolesta). " +
         "Klubin omat tilastot ja pelaajatilastot näkyvät vasta, kun ne on lisätty sivun, klubin toiminnan " +
-        "tai pelaajan Taulukot-kenttään.",
+        "tai pelaajan kenttään Taulukot (sivu) tai Tilastotaulukot (klubin toiminta, pelaaja).",
       type: "string",
       options: {
         // Kategoriat ja Studion ryhmät: lib/tilasto-kategoriat.ts (docs/24 askel 11).

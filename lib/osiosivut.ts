@@ -241,7 +241,7 @@ export const OSIOSIVUT: readonly OsioSivu[] = [
     },
     ohje:
       "Ottelut tulevat sivulle automaattisesti. Seurat valitaan kohdassa Sivuston asetukset → " +
-      "Etusivu → Otteluohjelma-lohko.",
+      "Etusivu → välilehti Lohkot → Otteluohjelma ja tapahtumat.",
   },
 
   /* ── Ravintolat ────────────────────────────────────────────────────────── */

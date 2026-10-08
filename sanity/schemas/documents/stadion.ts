@@ -32,7 +32,7 @@ export const stadion = defineType({
     defineField({
       name: "slug",
       title: OSOITE_OTSIKKO,
-      description: "Muodostuu nimestä: paina Luo. Stadionin osoite on /jalkapalloarkisto/stadionit/tämä-osa. Jos muutat julkaistun stadionin osoitetta, vanha osoite ohjautuu uuteen automaattisesti. (Aiemmin kentän nimi oli Polku.)",
+      description: "Muodostuu nimestä: paina Luo. Stadionin osoite on /jalkapalloarkisto/stadionit/tämä-osa. Jos muutat julkaistun stadionin osoitetta, vanha osoite ohjautuu uuteen automaattisesti.",
       type: "slug",
       options: { source: "name", maxLength: 80 },
       validation: (rule) => [rule.required(), polkuMuuttunut(rule)],

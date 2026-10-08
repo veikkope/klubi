@@ -16,7 +16,7 @@ const piilotaLohko = defineField({
   type: "boolean",
   initialValue: false,
   description:
-    "Lohko säilyy tässä listassa asetuksineen, mutta ei näy etusivulla. Ota rasti pois, niin lohko palaa.",
+    "Lohko säilyy tässä listassa asetuksineen, mutta ei näy etusivulla. Käännä kytkin pois päältä, niin lohko palaa.",
 });
 
 /** Esikatselun alaotsikko: piilotetun lohkon eteen "Piilotettu · ". */
@@ -99,7 +99,7 @@ export const etusivu = defineType({
     defineField({
       name: "heroCtas",
       title: "Pikalinkit",
-      description: 'Näkyvät yläosassa tuoreimpien juttujen alla, esim. "Palloveikkaus". Enintään neljä.',
+      description: 'Näkyvät yläosan oikean reunan Seuraavaksi-kortissa, esim. "Palloveikkaus". Enintään neljä.',
       type: "array",
       of: [
         {
@@ -186,7 +186,7 @@ export const etusivu = defineType({
       title: "Etusivun lohkot (järjestyksessä)",
       description:
         "Järjestä lohkot vetämällä kahvasta (⋮⋮). Jos haluat lohkon pois sivulta väliaikaisesti, " +
-        "avaa se ja rastita Piilota lohko sivulta. Roskakori poistaa lohkon asetuksineen.",
+        "avaa se ja käännä kytkin Piilota lohko sivulta päälle. Lohkon ⋯-valikon Poista poistaa lohkon asetuksineen.",
       type: "array",
       of: [
         defineArrayMember({

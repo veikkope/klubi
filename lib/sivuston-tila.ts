@@ -37,7 +37,7 @@ export const VARMUUSKOPIO_ENINTAAN_PAIVAA = 8;
 /** Huolto käy joka yö; 30 tuntia sallii yhden myöhästymisen muttei väliin jäänyttä yötä. */
 export const HUOLTO_ENINTAAN_TUNTIA = 30;
 
-const ohjeKehittajalle = "Kerro kehittäjälle.";
+const ohjeTukihenkilolle = "Kerro tukihenkilölle.";
 
 // ── Apurit ───────────────────────────────────────────────────────────────────
 
@@ -106,7 +106,7 @@ function tulos(ajo: AjoDokumentti, nimi: string): AjonTulos | undefined {
 // ── Rivit ────────────────────────────────────────────────────────────────────
 
 const VARMUUSKOPIO_OHJE =
-  "Ajastus ei ole käynyt tai se epäonnistui. Kerro kehittäjälle: Vercel → Cron Jobs → /api/varmuuskopio. " +
+  "Ajastus ei ole käynyt tai se epäonnistui. Kerro tukihenkilölle: Vercel → Cron Jobs → /api/varmuuskopio. " +
   "Sisältösi on tallessa, mutta palautus vanhaan versioon ei ole mahdollinen ilman tuoretta kopiota.";
 
 export function varmuuskopionTila(
@@ -146,7 +146,7 @@ export function varmuuskopionTila(
       ...rivi,
       tila: "huomio",
       teksti: `${teksti} ${huomiot.map((t) => `${ilmanPistetta(t.viesti)}.`).join(" ")}`,
-      ohje: "Kopio on tallessa, ja palautus toimii. Jos tämä toistuu, kerro kehittäjälle.",
+      ohje: "Kopio on tallessa, ja palautus toimii. Jos tämä toistuu, kerro tukihenkilölle.",
     };
   }
   return { ...rivi, tila: "ok", teksti };
@@ -167,7 +167,7 @@ export function huollonTila(ajo: AjoDokumentti, nyt: Date): TilaRivi {
       teksti: `Yöllinen huolto ei ole käynyt ${vrk} vuorokauteen.`,
       ohje:
         "Ravintoloiden arvosanat, arvostelukuvien siivous ja käyttämättömien tiedostojen siivous odottavat. " +
-        ohjeKehittajalle,
+        ohjeTukihenkilolle,
     };
   }
   // Otteluhaku on ulkoinen palvelu: sillä on oma rivinsä, eikä se ole huollon vika.
@@ -178,7 +178,7 @@ export function huollonTila(ajo: AjoDokumentti, nyt: Date): TilaRivi {
       ...rivi,
       tila: "virhe",
       teksti: `Huolto epäonnistui ${ajankohta(aika, nyt)}${viestit.length ? `: ${viestit.map(ilmanPistetta).join(". ")}` : ""}.`,
-      ohje: ohjeKehittajalle,
+      ohje: ohjeTukihenkilolle,
     };
   }
   const arvosanat = tulos(ajo, "arvosanat")?.maara ?? 0;
@@ -191,7 +191,7 @@ export function huollonTila(ajo: AjoDokumentti, nyt: Date): TilaRivi {
       teksti:
         `Huolto joutui korjaamaan ${arvosanat} ravintolan arvosanan ${ajankohta(aika, nyt)}. ` +
         "Sanityn päivitysviesti sivustolle on voinut epäonnistua.",
-      ohje: "Jos tämä toistuu useana yönä, kerro kehittäjälle.",
+      ohje: "Jos tämä toistuu useana yönä, kerro tukihenkilölle.",
     };
   }
   const huomiot = omat.filter((t) => t.tila === "huomio");
@@ -200,7 +200,7 @@ export function huollonTila(ajo: AjoDokumentti, nyt: Date): TilaRivi {
       ...rivi,
       tila: "huomio",
       teksti: `Huolto ${ajankohta(aika, nyt)}: ${huomiot.map((t) => ilmanPistetta(t.viesti)).join(". ")}.`,
-      ohje: "Huolto yrittää uudelleen ensi yönä. Jos tämä toistuu, kerro kehittäjälle.",
+      ohje: "Huolto yrittää uudelleen ensi yönä. Jos tämä toistuu, kerro tukihenkilölle.",
     };
   }
   return {
@@ -214,7 +214,7 @@ export function huollonTila(ajo: AjoDokumentti, nyt: Date): TilaRivi {
 
 const OTTELUHAKU_OHJE =
   "Ottelut-sivulla ja etusivulla näkyvät vain Studioon lisätyt ottelut. " +
-  "Lisää tärkeät ottelut käsin (Ottelut → +) ja kerro kehittäjälle.";
+  "Lisää tärkeät ottelut käsin (Ottelut → +) ja kerro tukihenkilölle.";
 
 export function otteluhaunTila(ajo: AjoDokumentti, nyt: Date): TilaRivi {
   const rivi = { id: "otteluhaku", otsikko: "Otteluohjelman haku" };
@@ -269,7 +269,7 @@ export function kiintionTila(
     tila: "huomio",
     teksti,
     ohje:
-      "Kun raja täyttyy, uusia uutisia ei voi tallentaa. Kerro kehittäjälle: kehitysdatasetin " +
+      "Kun raja täyttyy, uusia uutisia ei voi tallentaa. Kerro tukihenkilölle: kehitysdatasetin " +
       "voi tyhjentää (docs/23 Y4).",
   };
 }

@@ -68,7 +68,7 @@ export const navigaatio = defineType({
           },
         }),
       ],
-      validation: (rule) => rule.max(7).warning("Maksimi 7 päälinkkiä mobiilin luettavuuden takia."),
+      validation: (rule) => rule.max(7).warning("Enintään 7 päälinkkiä, jotta valikko mahtuu puhelimen näytölle."),
       initialValue: [
         {
           label: "Klubi",
