@@ -63,7 +63,7 @@ async function isDraftEnabled(): Promise<boolean> {
   }
 }
 
-const PYYNTORAJAN_YRITYKSET = 3;
+const PYYNTORAJAN_YRITYKSET = 5;
 
 function onPyyntoraja(error: unknown): boolean {
   return (error as { statusCode?: number } | null)?.statusCode === 429;
@@ -108,7 +108,8 @@ export async function sanityFetch<T>({
   // Pyyntörajan ylitystä (429) se ei yritä: build hakee yli tuhat sivua
   // rinnakkain, ja raja ylittyi 8.10.2026 kahdesti, kun samalta koneelta
   // ajettiin samaan aikaan muuta Sanity-liikennettä. Siksi odotetaan ja yritetään
-  // uudelleen (1 s, 2 s, 4 s) ennen kuin virhe kaataa buildin.
+  // uudelleen (1, 2, 4, 8 ja 16 s) ennen kuin virhe kaataa buildin. Kolme
+  // yritystä ei riittänyt, kun välimuisti oli juuri tyhjentynyt datan muutosten jälkeen.
   try {
     for (let yritys = 0; ; yritys++) {
       try {
