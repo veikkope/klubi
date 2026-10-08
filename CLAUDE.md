@@ -75,6 +75,7 @@ public/                Staattiset tiedostot (favicon, robots, kuvat joita Sanity
 | Testaa tekstin lohkot ja uutiskortin (kuvasarja, korttikuvan varakäytös, jakokuva, tekstin alku kortissa; GROQ groq-js:llä) | `npm run test:lohkot` |
 | Testaa osioiden sivut (rekisteri, lukitus, reittien kattavuus, oletustekstit, siemen ei muuta näkymää eikä meta-kuvauksia) | `npm run test:osiosivut` |
 | Testaa päävalikon linkit ja siitä johdetun alatunnisteen (Sivusto-sarake, alavalikot sarakkeina, tyhjät osiot) | `npm run test:navigaatio` |
+| Testaa linkkien migraation säännöt (viittaus vain yksiselitteiseen julkaistuun dokumenttiin, muut Muu osoite, kävijän osoite ei muutu, idempotentti) | `npm run test:linkit-migraatio` |
 | Sanityn taso ja oikeudet (tilaus, datasetin näkyvyys, tokenien ja käyttäjien roolit, sivusto; vain luku). Aja Growth-kokeilun päätyttyä 26.10.2026 ja kun lomakkeet lakkaavat toimimasta | `npm run tarkista:sanity-taso` |
 | Testaa uutishaun hakusanat | `npm run test:haku` |
 | Testaa lukuaika ja ingressisääntö (uutiset, ravintola-arviot) | `npm run test:artikkeli` |
@@ -86,6 +87,7 @@ public/                Staattiset tiedostot (favicon, robots, kuvat joita Sanity
 | Päästä päähän -testi productionissa: kahden klubilaisen sääntö webhookin kautta (luo ja poistaa testiravintolan; varmuuskopio ensin, webhook-jono tyhjänä) | `npm run e2e:arvioijasaanto` |
 | Blogin tunnisteet muokattavaan kenttään (kuivaharjoitus; `-- --vie` kirjoittaa, `-- --production` productioniin varmuuskopion kanssa) | `npm run patch:tunnisteet` (docs/14 §3.1) |
 | Uutiskategoriat koodista Sanityyn: kategoriadokumentit ja uutisten viittaukset (kuivaharjoitus; `-- --vie`, `-- --production --vie` varmuuskopion kanssa; `--poista-vanhat` poistaa vanhan `categories`-kentän deployn jälkeen; ajettu 4.10.2026) | `npm run patch:uutiskategoriat` |
+| Vanhat merkkijonolinkit linkkiobjekteiksi: oma polku → Sivuston sivu, muut → Muu osoite (valikko, etusivu, klubin toiminta, tekstin linkit; kuivaharjoitus → `data/linkit-migraatio.tsv`; `-- --vie` kirjoittaa, `-- --production --vie` varmuuskopion kanssa; idempotentti; `--poista-vanhat` poistaa vanhat href/url/ctaHref noin 2 viikkoa myöhemmin, docs/24 P5 ja P11) | `npm run patch:linkit` |
 | Osioiden sivut Sanityyn: 30 koodireitin lukitut `sivu`-dokumentit koodin oletusteksteillä (`createIfNotExists`; kuivaharjoitus; `-- --vie` kirjoittaa, `-- --production --vie` varmuuskopion kanssa; idempotentti, productioniin vasta deployn jälkeen, docs/24 P3) | `npm run luo:osiosivut` |
 | Palloveikkaussivun jako veikkausten omiksi alasivuiksi (kuivaharjoitus; `-- --vie` kirjoittaa, `-- --production` varmuuskopion kanssa; kertaluonteinen) | `npm run patch:palloveikkaus` |
 | Litmanen-osio: päävalikon Pelaajat → Litmanen ja `litmanen.htm` loukkaantumissivulle (kuivaharjoitus; `-- --vie` kirjoittaa, `-- --production` varmuuskopion kanssa; kertaluonteinen) | `npm run patch:litmanen` |

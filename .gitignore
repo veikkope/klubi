@@ -60,6 +60,8 @@ next-env.d.ts
 /sanity/extract.json
 /data/images/
 /data/migration-*.ndjson
+# Linkkien migraation kuivaharjoituksen taulukko (npm run patch:linkit)
+/data/linkit-migraatio.tsv
 
 # Blogspot-blogin paikallinen kopio (regeneroitavissa: npm run blogspot:fetch).
 # Sisältää kommentoijien nimiä → ei versionhallintaan.

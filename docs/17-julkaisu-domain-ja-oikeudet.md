@@ -240,7 +240,7 @@ riippuvainen web-muutoksesta C2:n jälkeen.
     --dataset production --missing` (puuttuvat dokumentit). Varmuuskopio ensin
     (`npm run backup`).
   - **Täysi kopio kuvineen:** `npm run backup` ennen jokaista isompaa muutosta.
-    Tiedosto: `varmuuskopiot/production-<pvm>.tar.gz` (gitignoressa, ~1 Gt).
+    Tiedosto: `varmuuskopiot/production-<pvm>-<hhmm>.tar.gz` (gitignoressa, ~1 Gt).
 - **Sisällön jäädytys:** sovi isän kanssa päivä, jonka jälkeen vanhaa sivustoa ja blogia
   ei enää päivitetä. Sen jälkeen: `npm run crawl` ja migraatio vain muuttuneille sivuille
   (esim. Nonni-ravintola 25.9.2026) ja `npm run sync:blogspot`.

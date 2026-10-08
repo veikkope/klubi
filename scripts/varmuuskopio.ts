@@ -2,7 +2,7 @@
  * Päivätty varmuuskopio production-datasetista kuvineen (docs/17).
  *
  * Ajo:  npm run backup
- * Tulos: varmuuskopiot/production-<vvvv-kk-pp>.tar.gz (gitignoressa)
+ * Tulos: varmuuskopiot/production-<vvvv-kk-pp-hhmm>.tar.gz (UTC, gitignoressa)
  *
  * Aja ennen jokaista suurempaa muutosta (migraatio, domainin siirto) ja
  * kuukausittain. Palautus: npx sanity dataset import <tiedosto> production --replace
@@ -13,8 +13,10 @@ import { mkdirSync } from "node:fs";
 
 import { sanityWriteToken } from "./lib/sanity-token";
 
-const pvm = new Date().toISOString().slice(0, 10);
-const kohde = `varmuuskopiot/production-${pvm}.tar.gz`;
+// Kellonaika (UTC) nimessä: saman päivän toinen ajo (esim. P3 ja P5 samana päivänä,
+// docs/24) ei korvaa aiempaa palautuspistettä.
+const aika = new Date().toISOString().slice(0, 16).replace("T", "-").replace(":", "");
+const kohde = `varmuuskopiot/production-${aika}.tar.gz`;
 mkdirSync("varmuuskopiot", { recursive: true });
 const token = sanityWriteToken();
 const tulos = spawnSync("npx", ["sanity", "dataset", "export", "production", kohde, "--overwrite"], {
