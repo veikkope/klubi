@@ -34,7 +34,7 @@
     "verify:migration": "tsx scripts/verify-migration.ts",
     "verify:blogspot": "tsx scripts/verify-blogspot.ts",
     "verify:sijainnit": "tsx scripts/verify-sijainnit.ts",
-    "test": "npm run test:kommentit --silent && npm run test:arvostelukuvat --silent && npm run test:taulukko --silent && npm run test:joukkueet --silent && npm run test:kuvat --silent && npm run test:litmanen --silent && npm run test:varmuuskopio --silent && npm run test:haku --silent && npm run test:artikkeli --silent && npm run test:tunnisteet --silent && npm run test:arvosana --silent && npm run test:arvostelu --silent && npm run test:paluuosoite --silent && npm run test:youtube --silent && npm run test:upotus --silent && npm run test:linkki --silent && npm run test:kaudet --silent && npm run test:palautus --silent && npm run test:osiot --silent && npm run test:sivupolku --silent && npm run test:lohkot --silent && npm run test:osiosivut --silent && npm run test:navigaatio --silent && npm run test:linkit-migraatio --silent && npm run test:sivuston-tila --silent && npm run test:aloitus --silent && npm run test:tiedostosiivous --silent && npm run test:ohjaukset --silent && npm run test:pohjat --silent && npm run test:tilamerkit --silent && npm run test:ohjausgeneraattori --silent && npm run test:sijainnit --silent",
+    "test": "npm run test:kommentit --silent && npm run test:arvostelukuvat --silent && npm run test:taulukko --silent && npm run test:joukkueet --silent && npm run test:kuvat --silent && npm run test:litmanen --silent && npm run test:varmuuskopio --silent && npm run test:haku --silent && npm run test:artikkeli --silent && npm run test:tunnisteet --silent && npm run test:arvosana --silent && npm run test:arvostelu --silent && npm run test:paluuosoite --silent && npm run test:youtube --silent && npm run test:upotus --silent && npm run test:linkki --silent && npm run test:kaudet --silent && npm run test:palautus --silent && npm run test:osiot --silent && npm run test:sivupolku --silent && npm run test:lohkot --silent && npm run test:osiosivut --silent && npm run test:navigaatio --silent && npm run test:linkit-migraatio --silent && npm run test:sivuston-tila --silent && npm run test:aloitus --silent && npm run test:tiedostosiivous --silent && npm run test:ohjaukset --silent && npm run test:pohjat --silent && npm run test:tilamerkit --silent && npm run test:ohjausgeneraattori --silent && npm run test:sijainnit --silent && npm run test:ohje --silent",
     "test:kommentit": "tsx scripts/test-kommentit.ts",
     "test:arvostelukuvat": "tsx scripts/test-arvostelukuvat.ts",
     "test:taulukko": "tsx scripts/test-taulukko.ts",
@@ -69,6 +69,11 @@
     "test:tilamerkit": "tsx scripts/test-tilamerkit.ts",
     "test:ohjausgeneraattori": "tsx scripts/test-ohjausgeneraattori.ts",
     "test:sijainnit": "tsx scripts/test-sijainnit.ts",
+    "test:ohje": "tsx scripts/test-ohje.ts",
+    "ohje": "tsx scripts/ohje-koosta.ts",
+    "ohje:pdf": "tsx scripts/ohje-pdf.ts",
+    "savutesti:studio": "tsx scripts/savutesti-studio.ts",
+    "ohjekuvat": "tsx scripts/ohjekuvat.ts",
     "laske:arvosanat": "tsx scripts/laske-arvosanat.ts",
     "tuo:klubiarviot": "tsx scripts/tuo-klubiarviot.ts",
     "e2e:arvioijasaanto": "tsx scripts/e2e-arvioijasaanto.ts",
@@ -108,10 +113,12 @@
     "tailwind-merge": "^3.7.0"
   },
   "devDependencies": {
+    "@mdit/plugin-alert": "^0.23.2",
     "@sanity/client": "^7.27.0",
     "@sanity/webhook": "^4.0.4",
     "@tailwindcss/postcss": "^4",
     "@types/jsdom": "^30.0.0",
+    "@types/markdown-it": "^14.2.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
@@ -122,8 +129,11 @@
     "eslint-config-next": "^16.3.7",
     "groq-js": "^1.30.3",
     "jsdom": "^29.1.1",
+    "markdown-it": "^14.3.2",
+    "playwright": "1.62.0",
     "tailwindcss": "^4",
     "tsx": "^4.23.15",
-    "typescript": "^5"
+    "typescript": "^5",
+    "yaml": "^2.9.1"
   }
 }

@@ -53,6 +53,12 @@ const nextConfig: NextConfig = {
         ],
       },
       {
+        // Ylläpito-ohjeen kuvat, tuloste ja PDF (docs/25) ovat sihteerin
+        // työkaluja Studiossa, eivät sivuston sisältöä: ei hakukoneisiin.
+        source: "/studio-ohje/:path*",
+        headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
+      },
+      {
         // Vercelin osoitteet (klubi-blond.vercel.app ja esikatselut) eivät saa
         // päätyä hakukoneisiin: sama sisältö olisi kahdessa osoitteessa, ja
         // väliaikainen osoite voisi kilpailla oikean domainin kanssa

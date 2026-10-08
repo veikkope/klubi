@@ -61,6 +61,11 @@ public/                Staattiset tiedostot (favicon, robots, kuvat joita Sanity
 | Testaa Litmanen-osion säännöt (lehtileikkeiden ote, loukkaantumisyhteenveto) | `npm run test:litmanen` |
 | Brändikuvien verkkoversiot ja kotinäytön sovelluskuvakkeet (vain kun logo muuttuu) | `npm run brandikuvat` → `public/brand/web/`, `public/sovellus/` |
 | Saavutettavuustesti (axe, WCAG 2.1 AA) | `npm run test:saavutettavuus` (sivusto käynnissä; `BASE_URL=…` muu osoite) |
+| Studion savutesti selaimessa (Playwright): avaa jokaisen dokumenttityypin, rakenteen listan, pohjan ja listan kohteen ja etsii kaatumiset; ei kirjoita dataan. Ei kuulu `npm test`iin eikä CI:hin | `npm run savutesti:studio` (`npm run dev` käynnissä, kirjautuminen `npx sanity login`; `VAIN=sana,sana` rajaa, `RINNAKKAIN=…`, `BASE_URL=…`) |
+| Ylläpito-ohje (sihteerin Studion **Ohjeet** ja PDF; lähde `docs/ohje/`, kirjoitusohje `docs/ohje/README.md`): koosta Studion sisältö ja tulostettava HTML | `npm run ohje` → `sanity/ohje/*.generated.ts`, `public/studio-ohje/*.html` (commitoidaan) |
+| Ylläpito-ohjeen PDF:t (koko opas ja 1 sivun pikaopas; vain kun sisältö muuttui) | `npm run ohje:pdf` → `public/studio-ohje/*.pdf` |
+| Ohjeen kuvakaappaukset Studiosta (development-datasetti, numeroidut merkinnät, henkilötiedot estetty; `-- --vain=id`, `-- --tarkista` vanhenemisvaroitus ilman kirjoitusta) | `npm run ohjekuvat` (`npm run dev` development-datasetillä) |
+| Testaa ylläpito-ohje (lihavoidut Studion nimet koodia vasten, `studio:`-linkit, korttilinkit, kuvat, rakenne, generoitu sisältö ajan tasalla) | `npm run test:ohje` |
 | Orpojen arvostelukuvien siivous (listaa; `-- --poista` poistaa) | `npm run siivoa:arvostelukuvat` (tarvittaessa; lisää `-- --production`) |
 | Käyttämättömien tiedostojen siivous (listaa, kuivaharjoitus oletuksena; `-- --nyt=VVVV-KK-PP` laskee toiselle päivälle; `-- --poista` poistaa; `-- --production` varmuuskopion kanssa). Yöhuolto tekee saman: poistaa tiedoston, jota mikään ei ole käyttänyt 7 päivään, ei koskaan varmuuskopioita (docs/24 askel 7) | `npm run siivoa:tiedostot` |
 | Testaa tiedostosiivouksen säännöt (7 päivän armoaika, varmuuskopiot aina suojattu; GROQ groq-js:llä) | `npm run test:tiedostosiivous` |
@@ -119,6 +124,7 @@ public/                Staattiset tiedostot (favicon, robots, kuvat joita Sanity
 5. **Älä lisää featurea ilman skeemaa.** Jos uusi sivutyyppi tarvitaan, lisää ensin Sanity-skeema, sitten reitti.
 6. **301-redirectit ovat kriittisiä.** Jokainen vanha `.htm`-URL pitää ohjautua johonkin järkevään. Ylläpidetään `lib/redirects.ts`:ssa, generoidaan Sanitysta + manuaalisesta CSV:stä.
 7. **Uusi dynaaminen reitti:** kun sisältöä ei löydy, kutsu `return ohjaaTaiEiLoydy(polku)` (`sanity/lib/ohjaus.ts`), älä `notFound()`. Näin isän lyhytosoitteet ja muuttuneiden osoitteiden ohjaukset toimivat. Testi (`npm run test:ohjaukset`) valvoo tätä.
+8. **Studio- tai skeemamuutoksen jälkeen aja `npm run savutesti:studio` ennen pushia.** Type-check, yksikkötestit, `sanity schema validate` ja build eivät havaitse Studion ajonaikaisia kaatumisia (8.10.2026 kaksi pääsi tuotantoon); savutesti avaa Studion selaimessa.
 
 ## Sub-agenttien käyttö
 
@@ -164,7 +170,7 @@ Täydellinen työnkulku: `docs/10-agent-workflow.md`.
 | Migraatiosuunnitelma | `docs/06-migration-plan.md` |
 | SEO & redirectit | `docs/07-seo-redirects.md` |
 | Rakennussuunnitelma | `docs/08-build-plan.md` |
-| Editorin opas (isälle) | `docs/09-editor-guide.md` |
+| Ylläpito-ohje (isälle): lähde `docs/ohje/`, Studiossa Ohjeet; `docs/09` on viittaus | `docs/ohje/README.md` |
 | Agenttityönkulku | `docs/10-agent-workflow.md` |
 | Maalimäärittely ja rinnakkaistoteutus | `docs/11-maali-ja-rinnakkaistoteutus.md` |
 | Sisältömigraatio (maali, tila) | `docs/12-sisaltomigraatio.md` |
@@ -180,6 +186,7 @@ Täydellinen työnkulku: `docs/10-agent-workflow.md`.
 | Julkaisuvalmiusauditointi 5.10.2026 | `docs/22-julkaisuvalmius.md` |
 | Ylläpidettävyys ilman kehittäjää, päätökset 7.10.2026 | `docs/23-yllapidettavyys.md` |
 | Vaihe 2: kehys Studioon, toteutussuunnitelma (askeleet 1–12, tuotantomuutokset) | `docs/24-vaihe2-toteutus.md` (+ `docs/24-liite-arkkitehdit.md`) |
+| Ylläpito-ohjeen uudistus: päätökset, rakenne, analyysi (8.10.2026) | `docs/25-yllapito-ohjeen-uudistus.md` (+ `docs/25-liite-analyysi.md`) |
 | Tyyliopas (lopullinen, HTML) | `docs/design-handoff/` |
 
 <!-- BEGIN:nextjs-agent-rules -->

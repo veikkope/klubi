@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="ohje-versio" content="afbfad4e600e">
+<title>Pikaopas: sivuston päivittäminen</title>
+<style>
+@page { size: A4; margin: 16mm 16mm 18mm; }
+:root { color-scheme: light; }
+* { box-sizing: border-box; }
+html { font-size: 13pt; }
+body { margin: 0 auto; max-width: 180mm; font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; line-height: 1.4; color: #111; background: #fff; }
+h1, h2, h3, h4 { line-height: 1.2; break-after: avoid; page-break-after: avoid; }
+h1 { font-size: 1.7rem; margin: 0 0 .4rem; }
+h2 { font-size: 1.25rem; margin: 1.1rem 0 .4rem; }
+h3 { font-size: 1.08rem; margin: 1rem 0 .3rem; }
+p, li { orphans: 3; widows: 3; }
+ol, ul { padding-left: 1.6rem; }
+li + li { margin-top: .25rem; }
+a { color: #0b4fa8; }
+strong { font-weight: 700; }
+code { font-family: Consolas, monospace; font-size: .92em; background: #f1f3f5; padding: 0 .2em; border-radius: 3px; }
+table { border-collapse: collapse; width: 100%; margin: .6rem 0; font-size: .95rem; break-inside: auto; }
+tr { break-inside: avoid; page-break-inside: avoid; }
+th, td { border: 1px solid #9aa3ad; padding: .3rem .45rem; text-align: left; vertical-align: top; }
+th { background: #eef1f4; }
+img.ohje-kuva { display: block; max-width: 100%; height: auto; margin: .5rem 0; border: 1px solid #c8ced5; break-inside: avoid; page-break-inside: avoid; }
+p:has(> img.ohje-kuva) { break-inside: avoid; page-break-inside: avoid; }
+.markdown-alert { border-left: 5px solid #5b6b7b; background: #f3f5f7; padding: .45rem .8rem; margin: .7rem 0; break-inside: avoid; page-break-inside: avoid; }
+.markdown-alert > :last-child { margin-bottom: 0; }
+.markdown-alert-title { font-weight: 700; margin: 0 0 .2rem; }
+.markdown-alert-tip { border-color: #1f7a45; background: #eef8f1; }
+.markdown-alert-note { border-color: #1d5fbf; background: #eef4fc; }
+.markdown-alert-important { border-color: #6a3fb5; background: #f4f0fb; }
+.markdown-alert-warning, .markdown-alert-caution { border-color: #b45309; background: #fdf5e9; }
+.kansi { break-after: page; page-break-after: always; }
+.kansi .alaotsikko { font-size: 1.1rem; color: #333; }
+.sisallys ol { list-style: none; padding-left: 0; }
+.sisallys > ol > li { margin-top: .6rem; font-weight: 700; }
+.sisallys li li { font-weight: 400; margin-top: .1rem; padding-left: 1rem; }
+.kortti { break-before: page; page-break-before: always; }
+.kortti-osio { font-size: .85rem; text-transform: uppercase; letter-spacing: .05em; color: #555; margin: 0 0 .2rem; }
+.kortti-tiedot { color: #444; margin: 0 0 .6rem; }
+.versio { color: #555; font-size: .85rem; }
+/* Pikaopas yhdelle A4-sivulle: 12 pt (vähintään 12 pt, docs/25), tiiviimmät välit. */
+html:has(body.vain-pikaopas) { font-size: 12pt; }
+.vain-pikaopas { line-height: 1.32; }
+.vain-pikaopas .kortti { break-before: auto; page-break-before: auto; }
+.vain-pikaopas .kortti-osio { display: none; }
+.vain-pikaopas h1 { font-size: 1.45rem; margin-bottom: .2rem; }
+.vain-pikaopas h2 { font-size: 1.1rem; margin: .55rem 0 .25rem; }
+.vain-pikaopas p { margin: .3rem 0; }
+.vain-pikaopas ol, .vain-pikaopas ul { margin: .25rem 0; }
+.vain-pikaopas li + li { margin-top: .1rem; }
+.vain-pikaopas table { margin: .35rem 0; }
+.vain-pikaopas th, .vain-pikaopas td { padding: .2rem .4rem; }
+@media screen { body { padding: 1.5rem; } }
+</style>
+</head>
+<body class="vain-pikaopas">
+
+<section class="kortti" id="kortti-pikaopas">
+<p class="kortti-osio">Pikaopas</p>
+<h1>Pikaopas: päivitä sivusto</h1>
+<p>Studio: <a href="https://www.lahdensuomalainenklubi.com/studio" target="_blank" rel="noopener noreferrer">https://www.lahdensuomalainenklubi.com/studio</a> · Kirjaudu omalla tunnuksellasi.</p>
+<h2 id="pikaopas--kolme-saantoa">Kolme sääntöä</h2>
+<ol>
+<li>Muutos tallentuu itsestään luonnokseksi, jota kävijät eivät näe. Tee kaikki muutokset ja paina lopuksi kerran <strong>Julkaise</strong>.</li>
+<li>Kaiken voi perua: katso alta &quot;perua virheen&quot; ja &quot;Jos hätä tulee&quot;.</li>
+<li>Punainen rivi Aloituksessa ei tarkoita, että sisältö katosi. Jatka työtä normaalisti.</li>
+</ol>
+<h2 id="pikaopas--viisi-yleisinta-tehtavaa">Viisi yleisintä tehtävää</h2>
+<table>
+<thead>
+<tr>
+<th>Haluan…</th>
+<th>Näin teen</th>
+<th>Ohjekortti</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>päivittää tilastotaulukon</td>
+<td><strong>Jalkapalloarkisto → Tilastot</strong> → ryhmä → taulukko → välilehti <strong>Tilastodata</strong> → kirjoita soluihin → lopuksi <strong>Julkaise</strong></td>
+<td><a href="#kortti-tilastotaulukon-paivitys" data-ohje-kortti="tilastotaulukon-paivitys">Päivitä tilastotaulukko</a></td>
+</tr>
+<tr>
+<td>kirjoittaa uutisen</td>
+<td><strong>Uutiset</strong> → plus-painike → <strong>Uutinen</strong> → <strong>Otsikko</strong> → <strong>Osoite sivustolla</strong>: <strong>Luo</strong> → <strong>Sisältö</strong> → <strong>Kategoriat</strong> → <strong>Julkaise</strong></td>
+<td><a href="#kortti-uutisen-kirjoittaminen" data-ohje-kortti="uutisen-kirjoittaminen">Kirjoita uutinen</a></td>
+</tr>
+<tr>
+<td>hyväksyä arvostelun</td>
+<td><strong>Tehtävät sinulle → Arvostelut odottavat hyväksyntää</strong> → avaa arvostelu → lue → <strong>Julkaise</strong>. Hylkäys: toimintovalikosta <strong>Hylkää arvostelu</strong></td>
+<td><a href="#kortti-arvostelun-hyvaksynta" data-ohje-kortti="arvostelun-hyvaksynta">Hyväksy tai hylkää kävijän arvostelu</a></td>
+</tr>
+<tr>
+<td>antaa klubilaisen pisteet ravintolalle</td>
+<td><strong>Ravintolat → Klubilaisten arvosanat → Ravintoloittain</strong> → ravintola → plus-painike → <strong>Klubilainen</strong>, <strong>Ruoka</strong>, <strong>Hinta</strong>, <strong>Viihtyvyys</strong> → <strong>Julkaise</strong></td>
+<td><a href="#kortti-klubilaisen-pisteet" data-ohje-kortti="klubilaisen-pisteet">Lisää klubilaisen pisteet ravintolalle</a></td>
+</tr>
+<tr>
+<td>perua virheen</td>
+<td>Ennen julkaisua: toimintovalikko → <strong>Hylkää muutokset</strong>. Julkaisun jälkeen: lomakkeen yläreunasta <strong>Julkaistu</strong> → alareunan aika → <strong>Historia</strong> → versio → <strong>Palauta</strong> → <strong>Vahvista</strong> → <strong>Luonnos</strong> → <strong>Julkaise</strong></td>
+<td><a href="#kortti-luonnos-julkaisu-ja-peruminen" data-ohje-kortti="luonnos-julkaisu-ja-peruminen">Tallenna, julkaise ja peru muutos</a></td>
+</tr>
+</tbody>
+</table>
+<p>Toimintovalikko on kolmen pisteen painike (⋯) <strong>Julkaise</strong>-painikkeen vieressä oikeassa alakulmassa.</p>
+<h2 id="pikaopas--jos-hata-tulee">Jos hätä tulee</h2>
+<ul>
+<li>Muutos ei näy sivustolla: painoitko <strong>Julkaise</strong>? Odota minuutti ja päivitä sivu.</li>
+<li><strong>Julkaise</strong> on harmaa: jossakin kentässä on virhe. Paina oikean yläkulman punaista huutomerkkiä (<strong>Validointi</strong>), korjaa kenttä ja paina uudelleen.</li>
+<li>Virhe on vanhempi: toimintovalikko → <strong>Palauta varmuuskopiosta</strong> → viikko → <strong>Palauta</strong> → <strong>Julkaise</strong>.</li>
+<li>Poistin vahingossa: <strong>Sivuston asetukset → Varmuuskopiot</strong> → uusin kopio → <strong>Palauta poistettu</strong>.</li>
+<li>Aloituksessa on punainen rivi: sisältösi on tallessa. Kerro tukihenkilölle rivin otsikko ja teksti.</li>
+<li>Et tiedä, mitä tehdä: jätä luonnos odottamaan ja ota yhteys tukihenkilöön (yhteystiedot annettu erikseen). Mikään ei katoa.</li>
+</ul>
+</section>
+<script>
+(function () {
+  var id = new URLSearchParams(location.search).get("kortti");
+  if (!id) return;
+  var kortti = document.getElementById("kortti-" + id);
+  if (!kortti) return;
+  document.querySelectorAll(".kansi, .sisallys, .kortti").forEach(function (el) { if (el !== kortti) el.remove(); });
+  kortti.style.breakBefore = "auto";
+  document.title = kortti.querySelector("h1") ? kortti.querySelector("h1").textContent : document.title;
+  window.addEventListener("load", function () { setTimeout(function () { window.print(); }, 150); });
+})();
+</script>
+</body>
+</html>

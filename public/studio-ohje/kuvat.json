@@ -1,0 +1,554 @@
+{
+  "ajasta-uutinen-01-julkaisuaika": {
+    "leveys": 1370,
+    "korkeus": 984,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "ajasta-uutinen-02-merkki": {
+    "leveys": 1696,
+    "korkeus": 176,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "aloituksessa-punainen-rivi-01-tila": {
+    "leveys": 2084,
+    "korkeus": 676,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "aloitus-ja-sivuston-tila-01-tila": {
+    "leveys": 2084,
+    "korkeus": 786,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "aloitus-ja-sivuston-tila-02-odottaa": {
+    "leveys": 2084,
+    "korkeus": 674,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "arvostelulomake-klubilaisille-01-klubilaiset": {
+    "leveys": 3200,
+    "korkeus": 1600,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "arvostelun-hyvaksynta-01-jono": {
+    "leveys": 3200,
+    "korkeus": 4094,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "arvostelun-hyvaksynta-02-julkaise": {
+    "leveys": 1696,
+    "korkeus": 402,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "esikatselu-01-kaytetty": {
+    "leveys": 1344,
+    "korkeus": 404,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "esikatselu-02-esikatselu": {
+    "leveys": 2560,
+    "korkeus": 1840,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "esittely-01-lomake": {
+    "leveys": 3200,
+    "korkeus": 4162,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "etsi-haulla-01-ylapalkki": {
+    "leveys": 1734,
+    "korkeus": 720,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "etsi-haulla-02-lista": {
+    "leveys": 962,
+    "korkeus": 336,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "etusivu-ylaosa-01-lomake": {
+    "leveys": 3200,
+    "korkeus": 3840,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "etusivun-lohkot-01-lista": {
+    "leveys": 1354,
+    "korkeus": 1136,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "etusivun-lohkot-02-lohko": {
+    "leveys": 1298,
+    "korkeus": 1804,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "galleria-albumi-01-lomake": {
+    "leveys": 3200,
+    "korkeus": 4126,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "hallitus-01-lista": {
+    "leveys": 3200,
+    "korkeus": 1600,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "hallitus-02-lomake": {
+    "leveys": 1606,
+    "korkeus": 3140,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "huomiolaatikko-painike-liite-01-tyokalupalkki": {
+    "leveys": 1258,
+    "korkeus": 716,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "huomiolaatikko-painike-liite-02-huomio": {
+    "leveys": 1298,
+    "korkeus": 1804,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "huuhkajat-ja-kansojen-liiga-01-perustiedot": {
+    "leveys": 1946,
+    "korkeus": 4520,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "jakokuva-01-kansikuva": {
+    "leveys": 1370,
+    "korkeus": 1302,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "jarkytykset-ja-maailman-parhaat-01-muut": {
+    "leveys": 3200,
+    "korkeus": 1600,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "julkaise-ei-onnistu-01-virhe": {
+    "leveys": 2560,
+    "korkeus": 1816,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "karsinnat-01-lista": {
+    "leveys": 3200,
+    "korkeus": 1600,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "kategoriat-ja-tunnisteet-01-kentat": {
+    "leveys": 1370,
+    "korkeus": 1072,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "klubilaisen-arvosanan-poisto-01-valikko": {
+    "leveys": 3840,
+    "korkeus": 1816,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "klubilaisen-pisteet-01-ravintoloittain": {
+    "leveys": 3840,
+    "korkeus": 1600,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "klubilaisen-pisteet-02-lomake": {
+    "leveys": 1606,
+    "korkeus": 2116,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "kokoonpano-pelikentalle-01-lohko": {
+    "leveys": 1606,
+    "korkeus": 1500,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "kokoonpano-pelikentalle-02-ikkuna": {
+    "leveys": 1606,
+    "korkeus": 1318,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "kommenttien-valvonta-01-lista": {
+    "leveys": 1402,
+    "korkeus": 1500,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "kommenttien-valvonta-02-piilota": {
+    "leveys": 1680,
+    "korkeus": 1716,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "kuva-01-kentta": {
+    "leveys": 1318,
+    "korkeus": 1386,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "kuva-02-rajaus": {
+    "leveys": 1276,
+    "korkeus": 1204,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "linkit-01-tyokalupalkki": {
+    "leveys": 1256,
+    "korkeus": 274,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "linkit-02-valinta": {
+    "leveys": 1322,
+    "korkeus": 670,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "litmanen-01-lehtileike": {
+    "leveys": 3200,
+    "korkeus": 2084,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "litmanen-02-patsas": {
+    "leveys": 1680,
+    "korkeus": 3816,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "luonnos-julkaisu-ja-peruminen-01-alapalkki": {
+    "leveys": 1292,
+    "korkeus": 910,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "luonnos-julkaisu-ja-peruminen-02-hylkaa": {
+    "leveys": 1292,
+    "korkeus": 476,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "luonnos-julkaisu-ja-peruminen-03-historia": {
+    "leveys": 2560,
+    "korkeus": 1816,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "lyhytosoite-01-lista": {
+    "leveys": 3200,
+    "korkeus": 1600,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "lyhytosoite-02-lomake": {
+    "leveys": 1606,
+    "korkeus": 1966,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "osioiden-sivut-01-lomake": {
+    "leveys": 3200,
+    "korkeus": 2528,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "osoitteen-muuttaminen-01-tieto": {
+    "leveys": 2560,
+    "korkeus": 1816,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "ottelun-lisaaminen-01-lomake": {
+    "leveys": 3200,
+    "korkeus": 2828,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "palloveikkauksen-sivut-01-lista": {
+    "leveys": 3200,
+    "korkeus": 1600,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "palloveikkauksen-sivut-02-taulukot": {
+    "leveys": 1606,
+    "korkeus": 3076,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "pelaaja-01-lomake": {
+    "leveys": 3200,
+    "korkeus": 1600,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "poistetun-palautus-01-valilehti": {
+    "leveys": 1726,
+    "korkeus": 1500,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "ravintolan-tiedot-01-valilehdet": {
+    "leveys": 3200,
+    "korkeus": 1600,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "stadion-01-lomake": {
+    "leveys": 3200,
+    "korkeus": 2224,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "studion-osat-ja-kirjautuminen-01-yleiskuva": {
+    "leveys": 2560,
+    "korkeus": 1816,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "tapahtuman-lisaaminen-01-lomake": {
+    "leveys": 3200,
+    "korkeus": 2202,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "tarkistettavat-01-lista": {
+    "leveys": 3200,
+    "korkeus": 1600,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "tarkistettavat-02-lomake": {
+    "leveys": 1322,
+    "korkeus": 1500,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "taulukko-tekstissa-01-ikkuna": {
+    "leveys": 1298,
+    "korkeus": 1804,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "tayta-itse-01-yhteystiedot": {
+    "leveys": 1680,
+    "korkeus": 2900,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "tekstin-muotoilu-01-tyokalupalkki": {
+    "leveys": 1262,
+    "korkeus": 656,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "tietosuojapyynto-01-poista": {
+    "leveys": 2560,
+    "korkeus": 1816,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "tilamerkit-01-alapalkki": {
+    "leveys": 1696,
+    "korkeus": 176,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "tilastotaulukon-paivitys-01-lista": {
+    "leveys": 3200,
+    "korkeus": 1600,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "tilastotaulukon-paivitys-02-editori": {
+    "leveys": 1606,
+    "korkeus": 2900,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "tilastotaulukon-paivitys-03-lisatiedot": {
+    "leveys": 1606,
+    "korkeus": 1532,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "toiminta-uusi-vuosi-01-lista": {
+    "leveys": 3200,
+    "korkeus": 1600,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "toiminta-uusi-vuosi-02-vuosittain": {
+    "leveys": 1606,
+    "korkeus": 3068,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "uusi-arvokisa-01-lomake": {
+    "leveys": 3200,
+    "korkeus": 2522,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "uusi-kaupunki-01-lomake": {
+    "leveys": 3200,
+    "korkeus": 2000,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "uusi-ravintola-arvostelusta-01-ehdotus": {
+    "leveys": 3200,
+    "korkeus": 3156,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "uusi-sivu-01-lista": {
+    "leveys": 1402,
+    "korkeus": 1500,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "uusi-sivu-02-lomake": {
+    "leveys": 1322,
+    "korkeus": 3490,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "uusi-tilastotaulukko-01-ryhmat": {
+    "leveys": 3200,
+    "korkeus": 1600,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "uusi-tilastotaulukko-02-tuonti": {
+    "leveys": 2560,
+    "korkeus": 1600,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "uusi-toimintamuoto-01-lista": {
+    "leveys": 3200,
+    "korkeus": 1600,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "uusi-toimintamuoto-02-lomake": {
+    "leveys": 1606,
+    "korkeus": 2664,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "uutisen-kirjoittaminen-01-lista": {
+    "leveys": 1402,
+    "korkeus": 1500,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "uutisen-kirjoittaminen-02-lomake": {
+    "leveys": 1322,
+    "korkeus": 3990,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "valikko-ja-alatunniste-01-lista": {
+    "leveys": 3200,
+    "korkeus": 2400,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "valikko-ja-alatunniste-02-kohta": {
+    "leveys": 1298,
+    "korkeus": 2462,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "valikon-kartta-01-valikko": {
+    "leveys": 830,
+    "korkeus": 1500,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "valmiit-pohjat-01-valikko": {
+    "leveys": 960,
+    "korkeus": 1500,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "valmiit-pohjat-02-taytettava": {
+    "leveys": 1344,
+    "korkeus": 1788,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "vanhan-version-palautus-01-valikko": {
+    "leveys": 1292,
+    "korkeus": 476,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "vanhan-version-palautus-02-ikkuna": {
+    "leveys": 1338,
+    "korkeus": 1206,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "varmuuskopiot-01-lista": {
+    "leveys": 1402,
+    "korkeus": 1500,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "varmuuskopiot-02-lataa": {
+    "leveys": 1680,
+    "korkeus": 1500,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "veikkaus-ja-kommentit-01-valilehti": {
+    "leveys": 1318,
+    "korkeus": 1672,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "video-kartta-lomake-01-tyokalupalkki": {
+    "leveys": 1258,
+    "korkeus": 716,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "video-kartta-lomake-02-upotus": {
+    "leveys": 1298,
+    "korkeus": 1804,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
+  "yhteystiedot-01-lomake": {
+    "leveys": 3200,
+    "korkeus": 2800,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  }
+}

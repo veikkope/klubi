@@ -1,5 +1,6 @@
 import { Card, Container, Heading, Stack, Text } from "@sanity/ui";
 
+import { OhjeetLinkki } from "../ohjeet/OhjeetLinkki";
 import { Odottaa } from "./Odottaa";
 import { Puuttuvat } from "./Puuttuvat";
 import { SivustonTila } from "./SivustonTila";
@@ -26,6 +27,7 @@ export function Aloitus() {
           <SivustonTila rivit={rivit} ladataan={ladataan} virhe={virhe} lataa={lataa} />
           <Odottaa laskurit={laskurit} />
           <Puuttuvat puuttuvat={puuttuvat} />
+          <OhjeetLinkki />
         </Stack>
       </Container>
     </Card>

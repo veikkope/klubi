@@ -17,6 +17,7 @@ import { kopioiPohjaksi, varoitaVanhoistaOsoitteista } from "./sanity/actions/va
 import { PIILOTETUT_POHJAT, pohjat } from "./sanity/pohjat";
 import { merkitTyypille } from "./sanity/merkit";
 import { aloitus } from "./sanity/plugins/aloitus";
+import { ohjeet } from "./sanity/plugins/ohjeet";
 
 export default defineConfig({
   name: "klubi",
@@ -119,7 +120,9 @@ export default defineConfig({
         },
       },
     }),
-    visionTool({ defaultApiVersion: apiVersion, title: "Kyselyt (kehittäjä)" }),
+    // Ylläpito-ohje: yläpalkin Ohjeet ja dokumentin Ohje-paneeli (docs/25, lähde docs/ohje/).
+    ohjeet(),
+    visionTool({ defaultApiVersion: apiVersion, title: "Kyselyt (tukihenkilö)" }),
     // Studion käyttöliittymä suomeksi (CLAUDE.md: kaikki käyttöliittymäteksti suomeksi).
     fiFILocale(),
   ],

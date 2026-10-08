@@ -4,7 +4,7 @@
  * Näytetään, kun sisältöä (hallitus, säännöt, yhteystiedot) ei ole vielä
  * täytetty Studiossa. Sivu ei saa näyttää rikkinäiseltä eikä teeskennellä
  * sisältöä. Teksti on kirjoitettu kävijälle — ohjeet editorille ovat
- * docs/09-editor-guide.md:n "Täytä itse" -osiossa, eivät julkisella sivulla.
+ * ylläpito-ohjeen kortissa docs/ohje/turvaverkko/tayta-itse.md, eivät julkisella sivulla.
  *
  * `data-empty-state` antaa tarkistusskripteille (verify-redirects) luotettavan
  * tunnisteen tekstin sanamuodosta riippumatta.

@@ -79,3 +79,4 @@ next-env.d.ts
 
 # Claude Coden paikalliset asetukset (luvat, polut)
 .claude/settings.local.json
+/data/ohjekuvat-raportti.txt
