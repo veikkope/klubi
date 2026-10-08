@@ -208,7 +208,7 @@ uutiset, uutiskategoriat, kommentit, ottelut, tapahtumat, galleria
 sivut               Sivut (omat sivut, ilman osiosivuja ja palloveikkauksen alasivuja)
 — erotin —
 klubi               Klubi → esittely | toiminta (toiminta-sivu, toimintamuodot) | hallitus (hallitus-sivu, nykyinen, entiset)
-                           | palloveikkaus (palloveikkaus-sivu, veikkausten-alasivut) | yhteystiedot (yhteystiedot-tiedot, yhteystiedot-sivu)
+                           | palloveikkaus (palloveikkaus-sivu, veikkausten-alasivut) | yhteystiedot (yhteystiedot, yhteystiedot-sivu)
 — erotin —
 ravintolat          … arvosanat (askel 10: arvosanat-ravintoloittain, arvosanat-kaikki)
 jalkapalloarkisto   … tilastot (askel 11: tilastot-<ryhmä>, tilastot-kaikki)

@@ -320,8 +320,10 @@ const klubi = (S: StructureBuilder) =>
               S.list()
                 .title("Yhteystiedot")
                 .items([
+                  // Tunnus = dokumentin tunnus: Studion haku ja linkit (intent) etsivät
+                  // singletonin polusta dokumentin tunnuksella (savutesti 8.10.2026).
                   S.listItem()
-                    .id("yhteystiedot-tiedot")
+                    .id("yhteystiedot")
                     .title("Osoite, sähköposti ja some")
                     .icon(EnvelopeIcon)
                     .child(S.document().schemaType("yhteystiedot").documentId("yhteystiedot")),
