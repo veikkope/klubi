@@ -9,6 +9,7 @@ import {
   tiivistelmaField,
   polkuMuuttunut,
 } from "../objects/contentMeta";
+import { HAKUKONEET_RYHMA, OSOITE_OTSIKKO } from "../objects/sanasto";
 
 /**
  * Yksi arvokisa: MM 2026, EM 2024, Kansojen liiga jne.
@@ -25,7 +26,7 @@ export const arvokisa = defineType({
   groups: [
     { name: "perustiedot", title: "Perustiedot", default: true },
     { name: "tulokset", title: "Tulokset" },
-    { name: "seo", title: "SEO" },
+    HAKUKONEET_RYHMA,
   ],
   fields: [
     defineField({
@@ -38,7 +39,8 @@ export const arvokisa = defineType({
     }),
     defineField({
       name: "slug",
-      title: "Polku (slug)",
+      title: OSOITE_OTSIKKO,
+      description: "Muodostuu otsikosta: paina Luo. Arvokisan osoite on /jalkapalloarkisto/arvokisat/tämä-osa. (Aiemmin kentän nimi oli Polku.)",
       type: "slug",
       options: { source: "title", maxLength: 80 },
       validation: (rule) => [rule.required(), polkuMuuttunut(rule)],

@@ -40,17 +40,17 @@ export const VARATUT_KLUBIN_POLUT: ReadonlySet<string> = new Set([
 ]);
 
 const OSA = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-const VARATTU = "Tämä osoite on sivuston oma osio, joten sivu ei näkyisi siinä. Valitse toinen polku.";
+const VARATTU = "Tämä osoite on sivuston oma osio, joten sivu ei näkyisi siinä. Valitse toinen osoite.";
 
 /** `true`, jos polku kelpaa sivulle, muuten suomenkielinen ohje. */
 export function tarkistaSivunPolku(slug: string | undefined): true | string {
-  if (!slug) return "Polku on pakollinen.";
-  if (slug.length > 96) return "Polku on liian pitkä (enintään 96 merkkiä).";
+  if (!slug) return "Osoite on pakollinen.";
+  if (slug.length > 96) return "Osoite on liian pitkä (enintään 96 merkkiä).";
   const osat = slug.split("/");
-  if (osat.length > 4) return "Liian monta tasoa polussa (enintään 4).";
+  if (osat.length > 4) return "Liian monta tasoa osoitteessa (enintään 4).";
   for (const osa of osat) {
     if (!OSA.test(osa)) {
-      return `Virheellinen polun osa "${osa}". Käytä vain pieniä kirjaimia a-z, numeroita ja yksittäisiä yhdysmerkkejä.`;
+      return `Virheellinen osoitteen osa "${osa}". Käytä vain pieniä kirjaimia a-z, numeroita ja yksittäisiä yhdysmerkkejä.`;
     }
   }
   // Lukitut sivut ovat koodireittien sisältöä (esim. klubi/hallitus).

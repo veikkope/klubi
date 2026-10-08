@@ -9,6 +9,7 @@ import {
   tiivistelmaField,
   polkuMuuttunut,
 } from "../objects/contentMeta";
+import { HAKUKONEET_RYHMA, OSOITE_OTSIKKO } from "../objects/sanasto";
 import { KategoriatInput } from "../../components/kategoriat/KategoriatInput";
 import { TunnisteetInput } from "../../components/tunnisteet/TunnisteetInput";
 import { tarkistaTunnisteet } from "../../../lib/tunnisteet";
@@ -24,7 +25,7 @@ export const uutinen = defineType({
   groups: [
     { name: "sisalto", title: "Sisältö", default: true },
     { name: "kommentit", title: "Kommentit ja veikkaus" },
-    { name: "seo", title: "SEO" },
+    HAKUKONEET_RYHMA,
   ],
   fields: [
     defineField({
@@ -36,7 +37,8 @@ export const uutinen = defineType({
     }),
     defineField({
       name: "slug",
-      title: "Polku (slug)",
+      title: OSOITE_OTSIKKO,
+      description: "Muodostuu otsikosta: paina Luo. Uutisen osoite on /uutiset/tämä-osa. (Aiemmin kentän nimi oli Polku.)",
       type: "slug",
       options: { source: "title", maxLength: 80 },
       validation: (rule) => [
@@ -46,13 +48,19 @@ export const uutinen = defineType({
         // uutisen edelle: tällä polulla uutinen ei koskaan näkyisi.
         rule.custom((value: { current?: string } | undefined) =>
           value?.current && VARATUT_POLUT.has(value.current)
-            ? `Polku “${value.current}” on varattu uutisosion omalle sivulle. Valitse toinen.`
+            ? `Osoite “${value.current}” on varattu uutisosion omalle sivulle. Valitse toinen.`
             : true,
         ),
       ],
       group: "sisalto",
     }),
-    tiivistelmaField("sisalto"),
+    tiivistelmaField("sisalto", {
+      title: "Tiivistelmä jutun alussa (valinnainen)",
+      description:
+        "Näkyy jutun alussa isommalla tekstillä ja hakukoneissa. Jos tämä on täytetty, se näkyy " +
+        "jutun alussa Lyhenteen sijaan. Uudessa jutussa voit jättää tämän tyhjäksi: silloin " +
+        "alussa näkyy Lyhenne.",
+    }),
     defineField({
       name: "publishedAt",
       title: "Julkaisuaika",
@@ -67,10 +75,11 @@ export const uutinen = defineType({
     }),
     defineField({
       name: "excerpt",
-      title: "Lyhenne",
+      title: "Lyhenne (uutislista ja etusivu)",
       description:
-        "Lyhyt teaser uutislistalle. Max 200 merkkiä. Ei pakollinen, jos uutinen " +
-        "on pelkkä otsikko, joka linkittää alkuperäiseen kirjoitukseen.",
+        "1–2 virkettä, jotka näkyvät uutislistassa ja etusivun kortissa. Näkyy myös jutun " +
+        "alussa, jos Tiivistelmä on tyhjä. Enintään 200 merkkiä. Ei pakollinen, jos uutinen " +
+        "on pelkkä linkki alkuperäiseen kirjoitukseen.",
       type: "text",
       rows: 2,
       validation: (rule) =>
@@ -285,7 +294,7 @@ export const uutinen = defineType({
         defineField({ name: "url", title: "Osoite blogissa", type: "url" }),
         defineField({
           name: "polku",
-          title: "Polku blogissa",
+          title: "Osoite vanhassa blogissa",
           description: "Esim. /2019/03/milano.html",
           type: "string",
         }),

@@ -83,9 +83,12 @@ toimii niiden varassa. Kehittäjä hoitaa ne.
 Tämä korvaa blogiin kirjoittamisen. Studio toimii myös puhelimen selaimessa.
 
 1. **Uutiset** → **+** (Luo uusi).
-2. **Otsikko**, sen jälkeen **Polku** → *Luo* (Generate). **Julkaisuaika** on oletuksena nyt.
-3. **Lyhenne** (1–2 virkettä) näkyy uutislistalla ja jutun alussa.
-   **Tiivistelmän** voi jättää tyhjäksi.
+2. **Otsikko**, sen jälkeen **Osoite sivustolla** → *Luo*. **Julkaisuaika** on oletuksena nyt.
+   (Kentän nimi oli aiemmin *Polku*.)
+3. **Lyhenne (uutislista ja etusivu):** 1–2 virkettä, jotka näkyvät uutislistassa ja
+   etusivun kortissa. Uudessa jutussa **Tiivistelmän** voi jättää tyhjäksi: silloin
+   Lyhenne näkyy myös jutun alussa. Jos täytät Tiivistelmän, jutun alussa näkyy
+   Tiivistelmä eikä Lyhenne (ks. taulukko alla).
 4. **Kansikuva** ja **Sisältö**. Sisältöön voi lisätä otsikoita, listoja, linkkejä ja
    **kuvia tekstin sekaan**: paina **+** tekstin kohdalla → *Kuva*.
    **YouTube-video** lisätään samalla tavalla: napsauta Sisältö-kentän tekstiin ja paina
@@ -101,6 +104,19 @@ Tämä korvaa blogiin kirjoittamisen. Studio toimii myös puhelimen selaimessa.
    pelaajat, stadionit, lehtileikkeet).
 5. **Kategoriat:** rastita sopivat (esim. Palloveikkaus, Matkakuvaus, Tapahtumat).
 6. **Julkaise**.
+
+**Mikä teksti näkyy missä:**
+
+| Paikka | Teksti |
+|---|---|
+| Jutun alussa isommalla | **Tiivistelmä**, tai jos se on tyhjä, **Lyhenne** |
+| Uutislistassa ja etusivun kortissa | **Lyhenne** |
+| Googlen hakutuloksessa ja somejaossa | **Kuvaus hakutuloksissa** (välilehti *Hakukoneet ja jako*), tai jos se on tyhjä, Tiivistelmä, ja sen puuttuessa Lyhenne |
+
+Sivuilla (**Sivut**) sama periaate: sivun alussa näkyy **Tiivistelmä sivun alussa**.
+Vanha kenttä **Ingressi (vanha kenttä)** näkyy Studiossa vain sivuilla, joilla se on
+jo täytetty, ja sivustolla vain, jos Tiivistelmä on tyhjä. Kirjoita johdanto aina
+Tiivistelmään.
 
 **Ajastus:** jos haluat uutisen näkyviin myöhemmin (esim. vuosikokouskutsu maanantaina
 klo 8), valitse **Julkaisuaika**-kenttään se hetki ja paina **Julkaise** heti. Uutinen
@@ -136,14 +152,14 @@ Kategoriat näkyvät uutisten yhteydessä ja uutislistan suodattimessa (/uutiset
 
 1. **Uutiskategoriat** → **+**. Toinen tapa: uutisen Kategoriat-kohdan linkki
    **Lisää uusi kategoria** (aukeaa uuteen välilehteen).
-2. **Nimi**, esim. *Vierasmatkat*. **Polku** → *Luo*.
+2. **Nimi**, esim. *Vierasmatkat*. **Osoite suodattimessa** → *Luo*.
 3. Valinnainen **Järjestys suodattimessa**: pienin numero ensin. Nykyiset ovat
    10, 20, 30 … 90, joten esim. 45 sijoittuu Tapahtumien ja Jalkapallon väliin.
 4. **Julkaise**. Kategoria ilmestyy uutisten valintaruutuihin heti, ja suodattimeen
    kun ensimmäinen uutinen on merkitty siihen.
 
 **Nimen voi vaihtaa** milloin tahansa: uusi nimi näkyy kaikissa uutisissa. **Älä muuta
-julkaistun kategorian polkua**, koska vanhat linkit lakkaisivat toimimasta.
+julkaistun kategorian osoitetta**, koska vanhat linkit lakkaisivat toimimasta.
 **Kategorian poisto** onnistuu vasta, kun mikään uutinen ei käytä sitä; Studio kertoo,
 mitkä uutiset siihen viittaavat. Poista rasti niistä ensin.
 
@@ -187,7 +203,7 @@ Hyvä tietää:
   klikkauksella.
 - Tunnisteita voi olla enintään 30 per uutinen.
 
-> **SEO**-välilehden **Blogin tunnisteet** on vain luettava tallenne vanhan blogin
+> **Hakukoneet ja jako** -välilehden **Blogin tunnisteet** on vain luettava tallenne vanhan blogin
 > tunnisteista. Sivustolla näkyvät tunnisteet muokataan **Sisältö**-välilehden kentässä
 > **Tunnisteet**.
 
@@ -252,7 +268,7 @@ poistaa seuroja (kirjoita nimi kuten Veikkausliigan sivuilla ja paina Enter).
 ### Tapahtuman lisääminen
 
 1. **Tapahtumat** → **+**.
-2. Nimi, polku (*Luo*), alkamis- ja päättymisaika, paikka, kansikuva ja kuvaus.
+2. Nimi, osoite sivustolla (*Luo*), alkamis- ja päättymisaika, paikka, kansikuva ja kuvaus.
 3. Ilmoittautumislinkki tai -sähköposti (valinnainen).
 4. **Julkaise**. Tapahtuma näkyy etusivulla ja /tapahtumat-sivulla, kunnes se on ohi.
 
@@ -271,10 +287,10 @@ aikaa, koska otsikko näkyy esikatselussa kuvan vieressä. Lisätietoa kohdassa
 ### Uusi sivu (esim. säännöt)
 
 1. **Sivut** → **+**.
-2. **Otsikko** ja **Polku**. Polku määrää osoitteen: `klubi/historia` näkyy osoitteessa
-   /klubi/historia. Osa poluista on varattu (esim. uutiset, ravintolat), ja Studio kertoo
+2. **Otsikko** ja **Osoite sivustolla**: `klubi/historia` näkyy osoitteessa
+   /klubi/historia. Osa osoitteista on varattu (esim. uutiset, ravintolat), ja Studio kertoo
    niistä.
-3. Ingressi ja sisältö. **Julkaise**.
+3. **Tiivistelmä sivun alussa** (2–3 virkettä) ja **Pääsisältö**. **Julkaise**.
 
 **Taulukot sivulle:** sivun kohtaan **Taulukot** voi valita taulukoita (esim. tulokset),
 jotka näkyvät sivun lopussa. Taulukot tehdään kohdassa **Jalkapalloarkisto → Tilastot**
@@ -293,9 +309,21 @@ Jos sivu on kirjoitettu muulla kielellä (esim. englanninkielinen esittely), val
 Puhelimen ja kameran kuvat voi ladata sellaisenaan: sivusto pienentää ne kävijälle
 automaattisesti.
 
+### Aiemmin ladatun kuvan käyttö
+
+Samaa kuvaa ei tarvitse ladata uudelleen, jos se on jo Studiossa (esim. logo tai
+katsomokuva toisesta jutusta):
+
+1. Kuvakentässä paina **Valitse**. Jos esiin tulee valikko, valitse **Ladatut kuvat**.
+2. Kuvat ovat uusimmasta vanhimpaan. Selaa, ja paina tarvittaessa **Lataa lisää**.
+   Hakua ei ole, joten vanhan kuvan löytää helpoimmin, kun tietää suunnilleen,
+   milloin se ladattiin.
+3. Valitse kuva ja täytä **Vaihtoehtoinen teksti (alt)** tähän käyttökohtaan sopivaksi.
+4. **Julkaise**.
+
 ### Galleria-albumin lisääminen
 
-1. **Galleria-albumit** → **+**. Anna nimi, polku (*Luo*), päivämäärä ja kansikuva.
+1. **Galleria-albumit** → **+**. Anna nimi, osoite sivustolla (*Luo*), päivämäärä ja kansikuva.
 2. **Kuvat:** raahaa kaikki kuvat kerralla tietokoneen kansiosta kenttään. Järjestä
    raahaamalla.
 3. Kuvaukset (**Mitä kuvassa on**) ovat suositeltavia, mutta eivät pakollisia. Ilman
@@ -317,12 +345,17 @@ ja seuraava klubin tapahtuma. Kun julkaiset uutisen, se nousee yläosaan.
    - **Taustakuva:** näkyy mustavalkoisena tummansinisen sävyn alla. Vaihda
      kuva vaikka kauden mukaan; tekstit erottuvat aina. Sama kuva näkyy somejaoissa.
    - **Pikalinkit:** enintään neljä linkkiä Seuraavaksi-korttiin, esim.
-     "Palloveikkaus" → `/klubi/palloveikkaus`. Sivuston oma polku alkaa `/`,
+     "Palloveikkaus" → `/klubi/palloveikkaus`. Sivuston oma osoite alkaa `/`,
      ulkoinen linkki `https://`. Studio huomauttaa, jos muoto on väärä.
    - **Näytä seuraava Huuhkajien ottelu ja laskuri:** pois päältä, jos et halua sitä.
-3. Hakukoneiden kuvaus on **SEO**-välilehdellä. Se ei näy sivulla.
-4. **Lohkot:** vedä kahvasta muuttaaksesi järjestystä ja lisää uusi **+**-painikkeella.
-   Roskakori **poistaa** lohkon. Voit palauttaa sen versiohistoriasta.
+3. Hakukoneiden kuvaus on **Hakukoneet ja jako** -välilehdellä. Se ei näy sivulla.
+4. **Lohkot:** vedä kahvasta (⋮⋮) muuttaaksesi järjestystä ja lisää uusi **+**-painikkeella.
+   - **Piilota rastilla:** jos haluat lohkon pois etusivulta väliaikaisesti, avaa se ja
+     rastita **Piilota lohko sivulta**. Lohko säilyy listassa asetuksineen, ja sen
+     kohdalla lukee *Piilotettu*. Ota rasti pois, niin lohko palaa.
+   - **Roskakori poistaa** lohkon asetuksineen. Sen saa takaisin vain versiohistoriasta.
+   - Otteluohjelman **Näytä myös näiden seurojen ottelut** -lista ohjaa myös
+     /ottelut-sivua, vaikka lohko olisi piilotettu.
 5. **Julkaise**.
 
 ### Yhteystiedot
@@ -335,7 +368,7 @@ yhteystietosivulla.
 1. **Sivun asetukset → Navigaatio**.
 2. Muokkaa linkkiä: klikkaa sitä ja muuta **Otsikko** tai **Linkki**.
 3. Uusi linkki: **+** listan alla. Linkki alkaa `/` (oma sivu) tai `https://` (muu sivusto).
-   Oman sivun linkki on sivun **Polku** kauttaviivalla alussa: sivu, jonka polku on
+   Oman sivun linkki on sivun **Osoite sivustolla** kauttaviivalla alussa: sivu, jonka osoite on
    `klubi/historia`, saa linkin `/klubi/historia`. Studio varoittaa keltaisella, jos
    osoitteessa ei ole sivua (kirjoitusvirhe tai sivua ei ole vielä julkaistu).
 4. Järjestys: vedä kahvasta (⋮⋮).
@@ -347,7 +380,7 @@ Päälinkkejä enintään 7.
 ### Hallituksen jäsenet
 
 Uusi jäsen: **Hallitus** → **+** → **Nimi**, **Rooli** (esim. Sihteeri) ja
-**Järjestysnumero** (1 näkyy ensin) → **Julkaise**. Kuva, esittely, sähköposti ja
+**Järjestys hallitussivulla** (1 = ensimmäisenä, yleensä puheenjohtaja) → **Julkaise**. Kuva, esittely, sähköposti ja
 puhelin ovat vapaaehtoisia.
 
 Jäsen vaihtuu: avaa vanha jäsen, ota rasti pois kohdasta **Nykyinen jäsen** ja
@@ -358,9 +391,12 @@ eikä näy enää hallitussivulla. Lisää sitten uusi jäsen.
 
 1. **Klubin toiminta** → valitse toiminta (esim. Mölkky).
 2. Välilehti **Vuosittain** → **+**.
-3. Täytä **Vuosi**. Muut kentät ovat vapaaehtoisia. **Järjestysnumero** on tavallinen
-   luku (esim. 37).
+3. Täytä **Vuosi**. Muut kentät ovat vapaaehtoisia. **Monesko kerta** on tavallinen
+   luku (esim. 37), ja sivulla se näkyy muodossa (37.).
 4. **Julkaise**. Uusin vuosi näkyy sivulla ensimmäisenä.
+
+Toimintamuotojen järjestys Toiminta-sivulla määräytyy kentästä **Järjestys listassa**
+(pienempi luku ylempänä). Studion Klubin toiminta -lista on samassa järjestyksessä.
 
 ### Ravintolan arvosana ja klubilaisten pisteet
 
@@ -468,7 +504,7 @@ lomake pitää tauon, ettei jono täyty roskapostista.
 ### Uuden kaupungin lisääminen (ravintolat)
 
 1. **Ravintolat → Kaupungit** → **+**.
-2. **Nimi** suomeksi (esim. "Jyväskylä", "Tukholma"), sen jälkeen **Osoitetunniste** → *Luo*.
+2. **Nimi** suomeksi (esim. "Jyväskylä", "Tukholma"), sen jälkeen **Osoite suodattimessa** → *Luo*.
 3. **Maa** kirjoitetaan aina samalla tavalla kuin muissa: "Suomi", "Saksa", "Alankomaat"
    (ei "Hollanti"), "Iso-Britannia" (ei "Englanti"), "Tšekki".
 4. **Maakunta** (vain Suomi): valitse listasta. Kylästä valitaan sen kunnan maakunta
@@ -527,7 +563,7 @@ Arvokisaveikkaus, Veikkausliigan palloveikkaus**. Säännöt kirjoitetaan sivun
 pääsisältöön, ja veikkauksen taulukot lisätään sivun kohtaan **Taulukot** (uusi kausi:
 tee taulukko ja lisää se listan alkuun). Palloveikkaus-sivu (`/klubi/palloveikkaus`)
 listaa veikkaukset automaattisesti. Uusi veikkaus tehdään luomalla uusi sivu, jonka
-polku alkaa `klubi/palloveikkaus/`, esimerkiksi `klubi/palloveikkaus/mestarisarja`.
+osoite sivustolla alkaa `klubi/palloveikkaus/`, esimerkiksi `klubi/palloveikkaus/mestarisarja`.
 
 ### Taulukon muokkaaminen (tilastot, palloveikkaus, mölkky)
 
@@ -565,7 +601,7 @@ Englannin pääsarjassa).
 1. **Jalkapalloarkisto → Tilastot** → **+**.
 2. **Kategoria:** *Huuhkajat (maajoukkueen tilastot)*.
 3. **Osio Huuhkajat-sivulla:** valitse aihe. Ilman valintaa taulukkoa ei voi julkaista.
-4. **Järjestysnumero:** pienempi luku näkyy osion sivulla ylempänä.
+4. **Järjestys sivulla:** pienempi luku näkyy osion sivulla ylempänä.
 5. Täytä taulukko välilehdellä **Tilastodata** (ks. edellä), esim. **Tuo Excelistä**.
 6. **Julkaise**. Uusi osio ilmestyy Huuhkajat-sivulle vasta, kun siinä on taulukko.
 
@@ -638,7 +674,7 @@ Jos joku pyytää poistamaan tietonsa (kommentti, veikkaus tai arvostelu kuvinee
 |---|---|
 | Julkaisu ei onnistu | Punaiset kentät ovat pakollisia. Vieritä alas, täytä ja yritä uudelleen |
 | Muutos ei näy sivulla | Tarkista, että painoit **Julkaise**. Sivu päivittyy yleensä sekunneissa, viimeistään minuutissa |
-| Linkki ei toimi | Ulkoinen linkki alkaa `https://`, sivuston oma polku `/` (esim. `/uutiset`). Keltainen varoitus "Sivustolla ei ole sivua…" kertoo kirjoitusvirheestä tai julkaisemattomasta sivusta |
+| Linkki ei toimi | Ulkoinen linkki alkaa `https://`, sivuston oma osoite `/` (esim. `/uutiset`). Keltainen varoitus "Sivustolla ei ole sivua…" kertoo kirjoitusvirheestä tai julkaisemattomasta sivusta |
 | Jotain meni pieleen (alle 3 päivää sitten) | Kellokuvake → versiohistoria → palauta edellinen versio |
 | Jotain meni pieleen (yli 3 päivää sitten) | Dokumentin **⋯** → **Palauta varmuuskopiosta** → valitse viikko → tarkista → **Julkaise** |
 | Poistin vahingossa | **Sivun asetukset → Varmuuskopiot** → uusin kopio → välilehti **Palauta poistettu** |
@@ -647,11 +683,11 @@ Jos joku pyytää poistamaan tietonsa (kommentti, veikkaus tai arvostelu kuvinee
 
 - **Älä poista** Sivun asetuksien dokumentteja. Niitä ei voi poistaa eikä niiden julkaisua
   perua, mutta jos jokin menee pieleen, soita kehittäjälle.
-- **Älä muuta julkaistun sivun Polkua**, koska se rikkoo linkit. Studio varoittaa
-  keltaisella, jos polku poikkeaa julkaistusta. Jos muutos on pakko tehdä, kerro
+- **Älä muuta julkaistun sivun Osoitetta sivustolla**, koska se rikkoo linkit. Studio varoittaa
+  keltaisella, jos osoite poikkeaa julkaistusta. Jos muutos on pakko tehdä, kerro
   kehittäjälle, joka tekee ohjauksen. Klubin pääsivujen (Klubi, Hallitus, Toiminta,
-  Palloveikkaus), tietosuojaselosteen ja Jari Litmasen polut on lukittu kokonaan, koska
-  sivusto hakee ne polun perusteella. Klubin pääsivuja ja tietosuojaselostetta ei voi
+  Palloveikkaus), tietosuojaselosteen ja Jari Litmasen osoitteet on lukittu kokonaan, koska
+  sivusto hakee ne osoitteen perusteella. Klubin pääsivuja ja tietosuojaselostetta ei voi
   myöskään poistaa eikä piilottaa, mutta niiden sisältöä saa muokata vapaasti.
 - **Älä muuta** kenttiä **Vanha osoite** tai **Alkuperäinen Blogspot-kirjoitus**. Vanhat linkit ohjautuvat niiden varassa.
 

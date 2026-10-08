@@ -265,7 +265,18 @@ export const structure: StructureResolver = (S) =>
 
       S.divider(),
 
-      lista(S, "klubiToiminta", "Klubin toiminta"),
+      // Sama järjestys kuin Toiminta-sivulla (queries/klubi.ts, klubiToimintaListQuery).
+      S.listItem()
+        .title("Klubin toiminta")
+        .schemaType("klubiToiminta")
+        .child(
+          S.documentTypeList("klubiToiminta")
+            .title("Klubin toiminta")
+            .defaultOrdering([
+              { field: "jarjestys", direction: "asc" },
+              { field: "title", direction: "asc" },
+            ]),
+        ),
       S.listItem()
         .title("Hallitus")
         .schemaType("hallitusJasen")

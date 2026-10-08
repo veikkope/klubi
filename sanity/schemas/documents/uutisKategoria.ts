@@ -39,13 +39,13 @@ export const uutisKategoria = defineType({
     }),
     defineField({
       name: "slug",
-      title: "Polku",
+      title: "Osoite suodattimessa",
       description:
-        "Muodostuu nimestä (paina Luo). Osoite on /uutiset?kategoria=polku. " +
-        "Älä muuta julkaistun kategorian polkua: vanhat linkit lakkaisivat toimimasta.",
+        "Muodostuu nimestä: paina Luo. Osoite on /uutiset?kategoria=tämä-osa. " +
+        "Älä muuta julkaistun kategorian osoitetta: vanhat linkit lakkaisivat toimimasta.",
       type: "slug",
       options: { source: "nimi", maxLength: 40 },
-      validation: (rule) => rule.required().error("Paina Luo, niin polku muodostuu nimestä."),
+      validation: (rule) => rule.required().error("Paina Luo, niin osoite muodostuu nimestä."),
     }),
     defineField({
       name: "kuvaus",
@@ -87,7 +87,7 @@ export const uutisKategoria = defineType({
     select: { nimi: "nimi", slug: "slug.current" },
     prepare: ({ nimi, slug }) => ({
       title: nimi ?? "Nimetön kategoria",
-      subtitle: slug ? `/uutiset?kategoria=${slug}` : "Polku puuttuu",
+      subtitle: slug ? `/uutiset?kategoria=${slug}` : "Osoite puuttuu",
     }),
   },
 });

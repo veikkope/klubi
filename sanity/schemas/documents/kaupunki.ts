@@ -20,13 +20,12 @@ export const kaupunki = defineType({
     }),
     defineField({
       name: "slug",
-      title: "Osoitetunniste",
+      title: "Osoite suodattimessa",
       type: "slug",
-      description:
-        "Muodostuu nimestä (paina \"Generate\"). Näkyy ravintolahakemiston osoitteessa, esim. ?kaupunki=lahti.",
+      description: "Muodostuu nimestä: paina Luo. Esim. /ravintolat?kaupunki=lahti.",
       options: { source: "name", maxLength: 60 },
       validation: (rule) => [
-        rule.required().error("Muodosta osoitetunniste nimestä."),
+        rule.required().error("Paina Luo, niin osoite muodostuu nimestä."),
         polkuMuuttunut(rule),
       ],
     }),

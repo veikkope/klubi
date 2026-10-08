@@ -7,7 +7,7 @@ Lähteet: docs/23 (§0 päätökset 7.10.2026 ja §4 tiekartta), docs/09, docs/0
 > **Jatketaan tästä (tila 8.10.2026):**
 > 1. **Tehty:** kriitikon vakavat löydökset K1–K4 ja pienet löydökset on korjattu askeliin (Liite A, jokaisessa merkintä). Käyttäjän päätökset on kirjattu lukuun 6.
 > 2. **Tehty 8.10.2026 (P0):** `npm run backup` (`production-2026-10-08.tar.gz`) ja development päivitetty sen kopioksi: `npx sanity dataset import varmuuskopiot/production-2026-10-08.tar.gz development --replace` (3836 dokumenttia). Developmentissa on lisäksi 13 vanhaa orpoa kuvaa tai tiedostoa, joita productionissa ei ole. Muuten tunnukset täsmäävät.
-> 3. **Toteutus askel kerrallaan luvun 3 järjestyksessä, alkaen askeleesta 1:**
+> 3. **Toteutus askel kerrallaan luvun 3 järjestyksessä.** Askel 1 toteutettu ja tarkastettu 8.10.2026.
 >    - Kukin askel tehdään omana committinaan. Toteuttajana on agentti, ja sen jälkeen riippumaton tarkastaja käy askeleen läpi.
 >    - Kehittäjä varmistaa jokaisen askeleen: type-check, lint, test ja puhdas build productionin datalla.
 >    - Ennen jokaista pushia (deploy) ja jokaista productioniin kirjoittamista kysytään käyttäjältä.
@@ -341,7 +341,7 @@ Yhteensä noin 24 työpäivää: noin 5 viikkoa yhdellä toteuttajalla tai noin 
 - Kohdan "Uutisen kirjoittaminen" kohta 3 korjataan (Y10), ja lisätään taulukko "Mikä teksti näkyy missä" (jutun alku, uutislista ja etusivu, hakutulos).
 - "Etusivun muokkaaminen", kohta 4: "piilota rastilla, roskakori poistaa".
 - Klubin toiminta: "Monesko kerta". Hallitus: "Järjestys hallitussivulla". Taulukko: "Järjestys sivulla".
-- Uusi kohta "Aiemmin ladatun kuvan käyttö": kuvakenttä → Valitse → Selaa kuvia → hakukenttä (Y42-linjaus, ei pluginia).
+- Uusi kohta "Aiemmin ladatun kuvan käyttö": kuvakenttä → Valitse → (Ladatut kuvat) → selaa uusimmasta, Lataa lisää. Hakua ei ole fi-localen oletusvalitsimessa (tarkistettu 8.10.) (Y42-linjaus, ei pluginia).
 
 **docs/05:** `etusivu.blocks[].piilota` ja `tiivistelmaField`-ohitukset.
 

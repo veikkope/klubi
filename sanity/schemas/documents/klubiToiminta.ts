@@ -12,6 +12,7 @@ import {
   tiivistelmaField,
   polkuMuuttunut,
 } from "../objects/contentMeta";
+import { HAKUKONEET_RYHMA, OSOITE_OTSIKKO } from "../objects/sanasto";
 
 /**
  * Klubin toistuva toimintamuoto: talkoot, vappu, mölkky, vuosikokous,
@@ -29,7 +30,7 @@ export const klubiToiminta = defineType({
   groups: [
     { name: "perustiedot", title: "Perustiedot", default: true },
     { name: "vuodet", title: "Vuosittain" },
-    { name: "seo", title: "SEO" },
+    HAKUKONEET_RYHMA,
   ],
   fields: [
     defineField({
@@ -42,7 +43,8 @@ export const klubiToiminta = defineType({
     }),
     defineField({
       name: "slug",
-      title: "Polku (slug)",
+      title: OSOITE_OTSIKKO,
+      description: "Muodostuu otsikosta: paina Luo. Toimintamuodon osoite on /klubi/toiminta/tämä-osa. (Aiemmin kentän nimi oli Polku.)",
       type: "slug",
       options: { source: "title", maxLength: 80 },
       validation: (rule) => [rule.required(), polkuMuuttunut(rule)],
@@ -58,8 +60,8 @@ export const klubiToiminta = defineType({
     }),
     defineField({
       name: "jarjestys",
-      title: "Järjestysnumero",
-      description: "Pienempi luku näkyy listauksessa ylempänä.",
+      title: "Järjestys listassa",
+      description: "Pienempi luku näkyy Toiminta-sivulla ja Studion listassa ylempänä.",
       type: "number",
       initialValue: 100,
       group: "perustiedot",
@@ -96,8 +98,8 @@ export const klubiToiminta = defineType({
             },
             {
               name: "jarjestysnumero",
-              title: "Järjestysnumero",
-              description: "Monesko kerta, tavallisena lukuna (esim. 37). Näkyy sivulla muodossa (37.).",
+              title: "Monesko kerta",
+              description: "Tavallisena lukuna, esim. 37. Sivulla näkyy (37.).",
               type: "number",
               validation: (rule) => rule.integer().min(1),
             },
@@ -123,14 +125,14 @@ export const klubiToiminta = defineType({
                   name: "url",
                   title: "Osoite",
                   description:
-                    "Ulkoinen osoite (https://…) tai sivuston oma polku, esim. /uutiset/2019-03-10-milano.",
+                    "Ulkoinen osoite (https://…) tai sivuston oma osoite, esim. /uutiset/2019-03-10-milano.",
                   type: "url",
                   validation: (rule) => [
                     rule
                       // allowRelative: Blogspot-migraatio kääntää blogin matkakuvauslinkit
                       // tuotujen uutisten poluiksi (docs/14).
                       .uri({ scheme: ["http", "https"], allowRelative: true })
-                      .error("Tarkista linkki: https://… tai /polku."),
+                      .error("Tarkista linkki: https://… tai /osoite."),
                     // uri() hyväksyisi myös "www.…"-muodon suhteellisena polkuna (→ 404).
                     rule.custom<string>((url) => tarkistaLinkki(url, ["http", "https"])),
                     linkinKohdeVaroitus(rule),

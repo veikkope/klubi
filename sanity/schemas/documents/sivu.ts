@@ -10,6 +10,7 @@ import {
   polkuMuuttunut,
   koodiinSidottuSlug,
 } from "../objects/contentMeta";
+import { HAKUKONEET_RYHMA, OSOITE_OTSIKKO } from "../objects/sanasto";
 import { KOODIIN_SIDOTUT_SIVUT } from "../../../lib/path";
 import { tarkistaSivunPolku } from "../../../lib/sivupolku";
 
@@ -45,7 +46,7 @@ export const sivu = defineType({
   icon: DocumentIcon,
   groups: [
     { name: "sisalto", title: "Sisältö", default: true },
-    { name: "seo", title: "SEO" },
+    HAKUKONEET_RYHMA,
   ],
   fields: [
     defineField({
@@ -57,11 +58,11 @@ export const sivu = defineType({
     }),
     defineField({
       name: "slug",
-      title: "Polku (slug)",
+      title: OSOITE_OTSIKKO,
       description:
-        'URL-osa. Vain pieniä kirjaimia, numeroita ja yhdysmerkkejä. ' +
-        'Käytä "/" alasivuille — esim. "klubi/historia" → /klubi/historia. ' +
-        "Klubi-osion pääsivujen ja tietosuojaselosteen polut on lukittu, koska sivusto hakee ne polun perusteella.",
+        "Vain pieniä kirjaimia, numeroita ja yhdysmerkkejä. Alasivulle kauttaviiva: " +
+        "klubi/historia → /klubi/historia. Klubi-osion pääsivujen ja tietosuojaselosteen " +
+        "osoitteet on lukittu.",
       type: "slug",
       readOnly: ({ document }) => koodiinSidottuSlug(document, KOODIIN_SIDOTUT_SIVUT),
       options: {
@@ -94,19 +95,26 @@ export const sivu = defineType({
       initialValue: "fi",
       group: "sisalto",
     }),
-    tiivistelmaField("sisalto"),
+    tiivistelmaField("sisalto", {
+      title: "Tiivistelmä sivun alussa",
+      description: "2–3 virkettä, jotka näkyvät sivun alussa isommalla tekstillä ja hakukoneissa.",
+    }),
     defineField({
       name: "hero",
-      title: "Yläbanneri (hero-kuva)",
+      title: "Iso kuva sivun yläosassa",
+      description: "Valinnainen. Näkyy sivun yläosassa (tavallisilla sivuilla otsikon takana, Klubi-osiossa omana kuvanaan) ja somejaoissa.",
       type: "imageWithAlt",
       group: "sisalto",
     }),
     defineField({
       name: "ingress",
-      title: "Ingressi",
-      description: "Lyhyt johdanto. Näkyy hero-alueella.",
+      title: "Ingressi (vanha kenttä)",
+      description:
+        "Näkyy sivun alussa vain, jos Tiivistelmä on tyhjä. Kirjoita johdanto Tiivistelmään.",
       type: "text",
       rows: 3,
+      // Vanha kenttä: näkyy vain sivuilla, joilla se on jo täytetty (docs/24 askel 1, Y10).
+      hidden: ({ value }) => !value,
       validation: (rule) => rule.max(300),
       group: "sisalto",
     }),

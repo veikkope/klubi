@@ -13,6 +13,7 @@ import {
   tiivistelmaField,
   polkuMuuttunut,
 } from "../objects/contentMeta";
+import { HAKUKONEET_RYHMA, OSOITE_OTSIKKO } from "../objects/sanasto";
 
 export const jalkapalloTilasto = defineType({
   name: "jalkapalloTilasto",
@@ -24,7 +25,7 @@ export const jalkapalloTilasto = defineType({
   groups: [
     { name: "perustiedot", title: "Perustiedot", default: true },
     { name: "data", title: "Tilastodata" },
-    { name: "seo", title: "SEO" },
+    HAKUKONEET_RYHMA,
   ],
   fields: [
     defineField({
@@ -36,7 +37,8 @@ export const jalkapalloTilasto = defineType({
     }),
     defineField({
       name: "slug",
-      title: "Polku (slug)",
+      title: OSOITE_OTSIKKO,
+      description: "Taulukon tunniste osoitteessa. (Aiemmin kentän nimi oli Polku.)",
       type: "slug",
       options: { source: "title", maxLength: 80 },
       validation: (rule) => [rule.required(), polkuMuuttunut(rule)],
@@ -236,7 +238,7 @@ export const jalkapalloTilasto = defineType({
     }),
     defineField({
       name: "jarjestys",
-      title: "Järjestysnumero",
+      title: "Järjestys sivulla",
       description:
         "Kun samalla sivulla tai samassa osiossa on useita taulukoita (esim. lohkot A–H), pienempi luku näkyy ylempänä.",
       type: "number",

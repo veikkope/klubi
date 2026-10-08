@@ -1,6 +1,27 @@
 import { HomeIcon } from "@sanity/icons";
 import { defineArrayMember, defineField, defineType } from "sanity";
 import { legacyUrlField, linkkiValidointi, valinnainenLinkkiValidointi } from "../objects/contentMeta";
+import { HAKUKONEET_RYHMA } from "../objects/sanasto";
+
+/**
+ * Lohkon aito piilotus (docs/24 askel 1, Y38): lohko säilyy listassa
+ * asetuksineen, mutta `etusivuQuery` jättää sen pois (`blocks[piilota != true]`).
+ * Puuttuva arvo tarkoittaa näkyvää, joten vanhaa dataa ei tarvitse muuttaa.
+ */
+const piilotaLohko = defineField({
+  name: "piilota",
+  title: "Piilota lohko sivulta",
+  type: "boolean",
+  initialValue: false,
+  description:
+    "Lohko säilyy tässä listassa asetuksineen, mutta ei näy etusivulla. Ota rasti pois, niin lohko palaa.",
+});
+
+/** Esikatselun alaotsikko: piilotetun lohkon eteen "Piilotettu · ". */
+function lohkonAlaotsikko(piilota: unknown, alaotsikko?: string): string | undefined {
+  if (piilota !== true) return alaotsikko;
+  return alaotsikko ? `Piilotettu · ${alaotsikko}` : "Piilotettu";
+}
 
 export const etusivu = defineType({
   name: "etusivu",
@@ -10,7 +31,7 @@ export const etusivu = defineType({
   groups: [
     { name: "hero", title: "Yläosa", default: true },
     { name: "blocks", title: "Lohkot" },
-    { name: "seo", title: "SEO" },
+    HAKUKONEET_RYHMA,
   ],
   fields: [
     defineField({
@@ -147,7 +168,9 @@ export const etusivu = defineType({
     defineField({
       name: "blocks",
       title: "Etusivun lohkot (järjestyksessä)",
-      description: "Lisää, järjestä ja piilota lohkoja vetämällä.",
+      description:
+        "Järjestä lohkot vetämällä kahvasta (⋮⋮). Jos haluat lohkon pois sivulta väliaikaisesti, " +
+        "avaa se ja rastita Piilota lohko sivulta. Roskakori poistaa lohkon asetuksineen.",
       type: "array",
       of: [
         defineArrayMember({
@@ -156,13 +179,17 @@ export const etusivu = defineType({
           type: "object",
           description: "Uusin juttu isona, seuraavat listana vieressä.",
           fields: [
+            piilotaLohko,
             { name: "eyebrow", title: "Yläotsake", type: "string", description: "Pieni versaaliteksti otsikon yläpuolella. Näkyy vain, jos otsikko on täytetty." },
             { name: "heading", title: "Otsikko", type: "string", description: "Jätä tyhjäksi, jos osiolla ei ole näkyvää otsikkoa (jutut ja Kaikki jutut -linkki näkyvät silti)." },
             { name: "count", title: "Näytettävien määrä", type: "number", initialValue: 4, validation: (r) => r.min(1).max(6) },
           ],
           preview: {
-            select: { heading: "heading" },
-            prepare: ({ heading }) => ({ title: "Jutut (uusimmat uutiset)", subtitle: heading || "Ei näkyvää otsikkoa" }),
+            select: { heading: "heading", piilota: "piilota" },
+            prepare: ({ heading, piilota }) => ({
+              title: "Jutut (uusimmat uutiset)",
+              subtitle: lohkonAlaotsikko(piilota, heading || "Ei näkyvää otsikkoa"),
+            }),
           },
         }),
         defineArrayMember({
@@ -172,6 +199,7 @@ export const etusivu = defineType({
           description:
             "Vasemmalla tulevat ottelut (haetaan automaattisesti), oikealla klubin omat tapahtumat. Jos toinen puoli on tyhjä, toinen täyttää koko leveyden.",
           fields: [
+            piilotaLohko,
             { name: "ottelutHeading", title: "Otteluiden otsikko", type: "string", initialValue: "Tulevat ottelut" },
             { name: "ottelutCount", title: "Otteluiden määrä", type: "number", initialValue: 4, validation: (r) => r.min(1).max(10) },
             {
@@ -186,7 +214,7 @@ export const etusivu = defineType({
               name: "seurat",
               title: "Näytä myös näiden seurojen ottelut",
               description:
-                'Kirjoita seuran nimi kuten Veikkausliigan sivuilla, esim. "FC Lahti". Ottelut haetaan automaattisesti. Sama lista rajaa myös /ottelut-sivun. Tyhjä lista = vain Huuhkajat.',
+                'Kirjoita seuran nimi kuten Veikkausliigan sivuilla, esim. "FC Lahti". Ottelut haetaan automaattisesti. Tyhjä lista = vain Huuhkajat. Lista ohjaa myös Ottelut-sivua, vaikka lohko olisi piilotettu.',
               type: "array",
               of: [{ type: "string" }],
               options: { layout: "tags" },
@@ -203,17 +231,24 @@ export const etusivu = defineType({
             { name: "tapahtumatHeading", title: "Tapahtumien otsikko", type: "string", initialValue: "Nähdään" },
             { name: "tapahtumatCount", title: "Tapahtumien määrä", type: "number", initialValue: 3, validation: (r) => r.min(1).max(6) },
           ],
-          preview: { prepare: () => ({ title: "Otteluohjelma ja tapahtumat" }) },
+          preview: {
+            select: { piilota: "piilota" },
+            prepare: ({ piilota }) => ({ title: "Otteluohjelma ja tapahtumat", subtitle: lohkonAlaotsikko(piilota) }),
+          },
         }),
         defineArrayMember({
           name: "tapahtumat",
           title: "Tulevat tapahtumat",
           type: "object",
           fields: [
+            piilotaLohko,
             { name: "heading", title: "Otsikko", type: "string", initialValue: "Tulevat tapahtumat" },
             { name: "count", title: "Näytettävien määrä", type: "number", initialValue: 3, validation: (r) => r.min(1).max(6) },
           ],
-          preview: { prepare: () => ({ title: "Tulevat tapahtumat" }) },
+          preview: {
+            select: { piilota: "piilota" },
+            prepare: ({ piilota }) => ({ title: "Tulevat tapahtumat", subtitle: lohkonAlaotsikko(piilota) }),
+          },
         }),
         defineArrayMember({
           name: "esittely",
@@ -221,6 +256,7 @@ export const etusivu = defineType({
           type: "object",
           description: "Kuva vasemmalla, teksti oikealla.",
           fields: [
+            piilotaLohko,
             { name: "eyebrow", title: "Yläotsake", type: "string", description: "Pieni versaaliteksti otsikon yläpuolella.", initialValue: "Klubista" },
             { name: "heading", title: "Otsikko", type: "string" },
             { name: "body", title: "Teksti", type: "portableText" },
@@ -234,7 +270,10 @@ export const etusivu = defineType({
               validation: valinnainenLinkkiValidointi,
             },
           ],
-          preview: { select: { title: "heading" }, prepare: ({ title }) => ({ title: title || "Esittelyteksti" }) },
+          preview: {
+            select: { title: "heading", piilota: "piilota" },
+            prepare: ({ title, piilota }) => ({ title: title || "Esittelyteksti", subtitle: lohkonAlaotsikko(piilota) }),
+          },
         }),
         defineArrayMember({
           name: "ravintolatSpotlight",
@@ -242,18 +281,23 @@ export const etusivu = defineType({
           type: "object",
           description: "Tuoreimmin arvioidut ravintolat kortteina (viimeisin käynti ensin).",
           fields: [
+            piilotaLohko,
             { name: "eyebrow", title: "Yläotsake", type: "string", description: "Pieni versaaliteksti otsikon yläpuolella.", initialValue: "Ravintola-arviot" },
             { name: "heading", title: "Otsikko", type: "string", initialValue: "Missä pelipäivänä syödään" },
             { name: "city", title: "Kaupunki (suodatin, valinnainen)", type: "reference", to: [{ type: "kaupunki" }] },
             { name: "count", title: "Näytettävien määrä", type: "number", initialValue: 3, validation: (r) => r.min(1).max(9) },
           ],
-          preview: { prepare: () => ({ title: "Ravintola-arviot" }) },
+          preview: {
+            select: { piilota: "piilota" },
+            prepare: ({ piilota }) => ({ title: "Ravintola-arviot", subtitle: lohkonAlaotsikko(piilota) }),
+          },
         }),
         defineArrayMember({
           name: "jalkapalloarkisto",
           title: "Jalkapalloarkisto-nosto",
           type: "object",
           fields: [
+            piilotaLohko,
             {
               name: "heading",
               title: "Otsikko",
@@ -283,8 +327,11 @@ export const etusivu = defineType({
             },
           ],
           preview: {
-            select: { title: "heading" },
-            prepare: ({ title }) => ({ title: title || "Jalkapalloarkisto-nosto" }),
+            select: { title: "heading", piilota: "piilota" },
+            prepare: ({ title, piilota }) => ({
+              title: title || "Jalkapalloarkisto-nosto",
+              subtitle: lohkonAlaotsikko(piilota),
+            }),
           },
         }),
         defineArrayMember({
@@ -292,6 +339,7 @@ export const etusivu = defineType({
           title: "Galleria-nosto",
           type: "object",
           fields: [
+            piilotaLohko,
             {
               name: "heading",
               title: "Otsikko",
@@ -306,7 +354,10 @@ export const etusivu = defineType({
               validation: (r) => r.min(1).max(6),
             },
           ],
-          preview: { prepare: () => ({ title: "Galleria-nosto" }) },
+          preview: {
+            select: { piilota: "piilota" },
+            prepare: ({ piilota }) => ({ title: "Galleria-nosto", subtitle: lohkonAlaotsikko(piilota) }),
+          },
         }),
       ],
       group: "blocks",

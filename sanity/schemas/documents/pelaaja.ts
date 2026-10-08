@@ -10,6 +10,7 @@ import {
   polkuMuuttunut,
   koodiinSidottuSlug,
 } from "../objects/contentMeta";
+import { HAKUKONEET_RYHMA, OSOITE_OTSIKKO } from "../objects/sanasto";
 import { LITMANEN_SLUG } from "../../../lib/path";
 
 /**
@@ -26,7 +27,7 @@ export const pelaaja = defineType({
     { name: "perustiedot", title: "Perustiedot", default: true },
     { name: "ura", title: "Ura" },
     { name: "patsas", title: "Patsas" },
-    { name: "seo", title: "SEO" },
+    HAKUKONEET_RYHMA,
   ],
   fields: [
     defineField({
@@ -38,9 +39,10 @@ export const pelaaja = defineType({
     }),
     defineField({
       name: "slug",
-      title: "Polku (slug)",
+      title: OSOITE_OTSIKKO,
       type: "slug",
-      description: "Litmasen polku on lukittu, koska Litmanen-osio hakee hänet sen perusteella.",
+      description:
+        "Muodostuu nimestä: paina Luo. Pelaajan osoite on /jalkapalloarkisto/pelaajat/tämä-osa. Litmasen osoite on lukittu, koska Litmanen-osio hakee hänet sen perusteella. (Aiemmin kentän nimi oli Polku.)",
       options: { source: "name", maxLength: 80 },
       readOnly: ({ document }) => koodiinSidottuSlug(document, [LITMANEN_SLUG]),
       validation: (rule) => [rule.required(), polkuMuuttunut(rule)],

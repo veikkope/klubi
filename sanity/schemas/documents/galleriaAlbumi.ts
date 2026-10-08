@@ -7,6 +7,7 @@ import {
   tiivistelmaField,
   polkuMuuttunut,
 } from "../objects/contentMeta";
+import { OSOITE_OTSIKKO } from "../objects/sanasto";
 
 export const galleriaAlbumi = defineType({
   name: "galleriaAlbumi",
@@ -22,7 +23,8 @@ export const galleriaAlbumi = defineType({
     }),
     defineField({
       name: "slug",
-      title: "Polku (slug)",
+      title: OSOITE_OTSIKKO,
+      description: "Muodostuu otsikosta: paina Luo. Albumin osoite on /galleria/tämä-osa. (Aiemmin kentän nimi oli Polku.)",
       type: "slug",
       options: { source: "title", maxLength: 80 },
       validation: (rule) => [rule.required(), polkuMuuttunut(rule)],

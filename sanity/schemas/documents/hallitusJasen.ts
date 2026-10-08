@@ -52,8 +52,8 @@ export const hallitusJasen = defineType({
     }),
     defineField({
       name: "order",
-      title: "Järjestysnumero",
-      description: "1 = puheenjohtaja näkyy ensin",
+      title: "Järjestys hallitussivulla",
+      description: "1 = ensimmäisenä (yleensä puheenjohtaja).",
       type: "number",
       validation: (rule) => rule.required().integer().positive(),
       initialValue: 99,
@@ -61,7 +61,7 @@ export const hallitusJasen = defineType({
   ],
   orderings: [
     {
-      title: "Järjestysnumero",
+      title: "Järjestys hallitussivulla",
       name: "orderAsc",
       by: [{ field: "order", direction: "asc" }],
     },

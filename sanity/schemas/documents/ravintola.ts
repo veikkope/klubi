@@ -9,6 +9,7 @@ import {
   tiivistelmaField,
   polkuMuuttunut,
 } from "../objects/contentMeta";
+import { HAKUKONEET_RYHMA, OSOITE_OTSIKKO } from "../objects/sanasto";
 
 /**
  * Arvosanakentät ovat muokattavissa vain vanhan sivuston ravintolalla, jolla
@@ -38,7 +39,7 @@ export const ravintola = defineType({
     { name: "perustiedot", title: "Perustiedot", default: true },
     { name: "arvostelu", title: "Arvostelu" },
     { name: "sijainti", title: "Sijainti" },
-    { name: "seo", title: "SEO" },
+    HAKUKONEET_RYHMA,
   ],
   fields: [
     defineField({
@@ -50,7 +51,8 @@ export const ravintola = defineType({
     }),
     defineField({
       name: "slug",
-      title: "Polku (slug)",
+      title: OSOITE_OTSIKKO,
+      description: "Muodostuu nimestä: paina Luo. Ravintolan osoite on /ravintolat/tämä-osa. (Aiemmin kentän nimi oli Polku.)",
       type: "slug",
       options: { source: "name", maxLength: 80 },
       validation: (rule) => [rule.required(), polkuMuuttunut(rule)],

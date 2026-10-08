@@ -18,6 +18,20 @@ Useimmissa julkaistavissa dokumenteissa on:
 - `seoTitle`, `seoDescription` (string, valinnaisia — käyttävät titlea jos tyhjät)
 - `publishedAt` (datetime, oletus: nyt)
 
+**Sanasto (docs/24 askel 1, Y38):** `sanity/schemas/objects/sanasto.ts`. `slug`-kentän
+otsikko on kaikissa omasivuisissa tyypeissä `OSOITE_OTSIKKO` = "Osoite sivustolla"
+(tyyppikohtainen kuvaus kertoo osoitteen muodon), ja `seo`-ryhmän otsikko on
+`HAKUKONEET_RYHMA` = "Hakukoneet ja jako". Ryhmän tekninen nimi pysyy `seo`, joten
+dataa ei muutettu. Suodattimien slugit (`kaupunki`, `uutisKategoria`) ovat
+"Osoite suodattimessa".
+
+**`tiivistelmaField(group?, { title?, description?, validation? })`**
+(`sanity/schemas/objects/contentMeta.ts`): yhteinen Tiivistelmä-kenttä, jonka
+otsikon, kuvauksen ja validoinnin voi ohittaa tyypeittäin. Oletusvalidointi on
+varoitus yli 300 merkistä. Ohitukset: `uutinen` ("Tiivistelmä jutun alussa
+(valinnainen)", näkyy jutun alussa Lyhenteen sijaan) ja `sivu` ("Tiivistelmä sivun
+alussa").
+
 `portableText`-kenttiin voi lisätä tekstin ja kuvien (`imageWithAlt`) lisäksi
 lohkon `kokoonpano` (Kokoonpano pelikentällä, `components/kokoonpano.tsx`):
 `otsikko` (pakollinen), `rivit[]` hyökkäyksestä maalivahtiin (1–6 riviä, rivillä
@@ -39,9 +53,10 @@ skriptejä ennen toistoa). Ilman JavaScriptiä painike on linkki YouTubeen.
 | Kenttä | Tyyppi | Pakollinen | Kuvaus |
 |---|---|---|---|
 | title | string | kyllä | Sivun otsikko |
-| slug | slug | kyllä | Polku (/[slug]) |
-| hero | image (alt pakollinen) | ei | Yläbanneri |
-| ingress | text | ei | Lyhyt johdanto, näkyy hero-alueella |
+| slug | slug | kyllä | Osoite sivustolla (/[slug]) |
+| tiivistelma | text | ei | Tiivistelmä sivun alussa |
+| hero | image (alt pakollinen) | ei | Iso kuva sivun yläosassa |
+| ingress | text | ei | Vanha kenttä: näkyy sivulla vain, jos `tiivistelma` on tyhjä. Studiossa piilossa, kun tyhjä (`hidden: ({ value }) => !value`) |
 | body | portableText | kyllä | Pääsisältö (otsikot, listat, lainaukset, kuvat) |
 | seoTitle, seoDescription | string | ei | SEO-overrides |
 
@@ -71,7 +86,8 @@ Listanäkymässä järjestys: `startsAt` desc (tulevat ensin).
 | title | string | kyllä | |
 | slug | slug | kyllä | |
 | publishedAt | datetime | kyllä | Julkaisuaika |
-| excerpt | text | kyllä | Lyhenne listoja varten (max 200 merkkiä) |
+| tiivistelma | text | ei | Tiivistelmä jutun alussa; jos tyhjä, jutun alussa näkyy `excerpt` |
+| excerpt | text | kyllä* | Lyhenne (uutislista ja etusivu), max 200 merkkiä. *Ei pakollinen, kun `ulkoinenLinkki` on täytetty |
 | coverImage | image (alt pakollinen) | ei | Kansikuva |
 | body | portableText | kyllä | Sisältö |
 | kategoriat | array of reference → `uutisKategoria` | ei | Sihteeri hallitsee kategoriat Studiossa (4.10.2026 asti merkkijonolista `categories` koodissa). Valintaruudut: `sanity/components/kategoriat/KategoriatInput.tsx`. Ensimmäinen kategoria näkyy etusivun jutuissa sinisenä yläotsakkeena. Kyselyt palauttavat `categories: { _id, value, label }[]` (`sanity/lib/queries/kategoriat.ts`). |
@@ -261,7 +277,7 @@ Vain julkaistut arvostelut näkyvät. Uuden ravintolan arvostelun julkaisu vaati
 | heroDescription | text | kyllä | SEO-ryhmässä: etusivun meta-kuvaus, ei näy sivulla |
 | heroTitle | string | ei | **Piilotettu** — vanhan kuvaheron otsikko. Säilyy, jotta vanha data on validia. |
 | seuraavaOttelu | object | ei | **Piilotettu** — korvattu otteluohjelmalla. Säilyy, jotta vanha data on validia. |
-| blocks | array (multi-type: otteluohjelma, uutiset, tapahtumat, esittely, ravintolatSpotlight, jalkapalloarkisto, galleria, cta) | ei | Etusivun lohkot järjestyksessä. Tyylioppaan järjestys: otteluohjelma, uutiset, ravintolatSpotlight, esittely. `uutiset`, `esittely` ja `ravintolatSpotlight` saavat `eyebrow`-kentän. `ravintolatSpotlight` näyttää tuoreimmin arvioidut (`visits[0]`, varalla `visitedAt`). `otteluohjelma`: ottelutHeading, ottelutCount, vainMaajoukkue (boolean, oletus true), seurat (string[], tags, oletus ["FC Lahti"]), laskuri (boolean, **piilotettu** — laskuri on yläosassa, etusivu ohittaa arvon), tapahtumatHeading, tapahtumatCount. `cta` on vanha — tyyliopas kieltää liittymiskehotteet. |
+| blocks | array (multi-type: otteluohjelma, uutiset, tapahtumat, esittely, ravintolatSpotlight, jalkapalloarkisto, galleria, cta) | ei | Etusivun lohkot järjestyksessä. Tyylioppaan järjestys: otteluohjelma, uutiset, ravintolatSpotlight, esittely. `uutiset`, `esittely` ja `ravintolatSpotlight` saavat `eyebrow`-kentän. `ravintolatSpotlight` näyttää tuoreimmin arvioidut (`visits[0]`, varalla `visitedAt`). `otteluohjelma`: ottelutHeading, ottelutCount, vainMaajoukkue (boolean, oletus true), seurat (string[], tags, oletus ["FC Lahti"]), laskuri (boolean, **piilotettu** — laskuri on yläosassa, etusivu ohittaa arvon), tapahtumatHeading, tapahtumatCount. `cta` on vanha — tyyliopas kieltää liittymiskehotteet. Jokaisen seitsemän lohkotyypin ensimmäinen kenttä on `piilota` (boolean, "Piilota lohko sivulta", oletus false; puuttuva = näkyvä): `etusivuQuery` hakee `blocks[piilota != true]`, ja esikatselun alaotsikon eteen tulee "Piilotettu · ". `ottelujenSeuratQuery` **ei** suodata piilotusta, joten seuralista ohjaa /ottelut-sivua myös piilotetusta lohkosta (docs/24 askel 1). |
 
 ## Singletonien hallinta Studiossa
 

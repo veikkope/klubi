@@ -8,6 +8,7 @@ import {
   tiivistelmaField,
   polkuMuuttunut,
 } from "../objects/contentMeta";
+import { HAKUKONEET_RYHMA, OSOITE_OTSIKKO } from "../objects/sanasto";
 
 export const tapahtuma = defineType({
   name: "tapahtuma",
@@ -17,7 +18,7 @@ export const tapahtuma = defineType({
   groups: [
     { name: "perustiedot", title: "Perustiedot", default: true },
     { name: "ilmoittautuminen", title: "Ilmoittautuminen" },
-    { name: "seo", title: "SEO" },
+    HAKUKONEET_RYHMA,
   ],
   fields: [
     defineField({
@@ -29,7 +30,8 @@ export const tapahtuma = defineType({
     }),
     defineField({
       name: "slug",
-      title: "Polku (slug)",
+      title: OSOITE_OTSIKKO,
+      description: "Muodostuu otsikosta: paina Luo. Tapahtuman osoite on /tapahtumat/tämä-osa. (Aiemmin kentän nimi oli Polku.)",
       type: "slug",
       options: { source: "title", maxLength: 80 },
       validation: (rule) => [rule.required(), polkuMuuttunut(rule)],

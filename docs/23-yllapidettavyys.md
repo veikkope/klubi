@@ -57,6 +57,9 @@ Avoimena on yhä (ei valittavissa lomakkeella): kuka on domainin rekisteröijä 
 - Tekninen tukihenkilö pysyy repossa nimettömänä, koska repo on julkinen GitHubissa. Dokumenteissa ja Studion teksteissä puhutaan vain "tukihenkilöstä" ilman nimeä tai yhteystietoja.
 - Ulkoista valvontaa (UptimeRobot) ei oteta käyttöön, eikä hälytyksiä lähetetä kenellekään. Sivuston tila näkyy Studion Aloituksessa (Y33, docs/24 askel 7).
 
+**Toteutettu vaiheessa 2 (docs/24):**
+- **Askel 1, Y38 ja Y10:** Studion sanasto (`sanity/schemas/objects/sanasto.ts`): "Polku (slug)" → "Osoite sivustolla" ja "SEO" → "Hakukoneet ja jako" kymmenessä tyypissä, hakukonekenttien, ison yläkuvan, suodatinosoitteiden ja järjestyskenttien nimet selkokielisiksi. Uutisen ja sivun johdantokenttien (Tiivistelmä, Lyhenne, Ingressi) ohjeet kertovat, missä kukin näkyy; sivun Ingressi näkyy Studiossa vain, jos se on täytetty. Etusivun lohkon voi piilottaa rastilla poistamatta sitä (`piilota`), ja Klubin toiminta -lista on Studiossa samassa järjestyksessä kuin sivustolla. Dataa ei muutettu.
+
 ---
 
 ## 1. Tiivistelmä

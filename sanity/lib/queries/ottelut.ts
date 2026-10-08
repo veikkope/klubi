@@ -24,6 +24,9 @@ export const tulevatOttelutQuery = defineQuery(`
  * otteluohjelmalohkon "Näytä myös näiden seurojen ottelut" -lista. Sama lista
  * rajaa /ottelut-sivun, joten seurat muokataan yhdestä paikasta.
  * `null`, jos lohkoa tai kenttää ei ole.
+ *
+ * Ei suodata piilotettuja lohkoja (`piilota`): seuralista ohjaa /ottelut-sivua
+ * myös silloin, kun otteluohjelmalohko on piilotettu etusivulta (docs/24 askel 1).
  */
 export const ottelujenSeuratQuery = defineQuery(`
   *[_type == "etusivu"][0].blocks[_type == "otteluohjelma"][0].seurat

@@ -9,6 +9,7 @@ import {
   tiivistelmaField,
   polkuMuuttunut,
 } from "../objects/contentMeta";
+import { HAKUKONEET_RYHMA, OSOITE_OTSIKKO } from "../objects/sanasto";
 
 export const stadion = defineType({
   name: "stadion",
@@ -17,7 +18,7 @@ export const stadion = defineType({
   icon: CubeIcon,
   groups: [
     { name: "perustiedot", title: "Perustiedot", default: true },
-    { name: "seo", title: "SEO" },
+    HAKUKONEET_RYHMA,
   ],
   fields: [
     defineField({
@@ -29,7 +30,8 @@ export const stadion = defineType({
     }),
     defineField({
       name: "slug",
-      title: "Polku (slug)",
+      title: OSOITE_OTSIKKO,
+      description: "Muodostuu nimestä: paina Luo. Stadionin osoite on /jalkapalloarkisto/stadionit/tämä-osa. (Aiemmin kentän nimi oli Polku.)",
       type: "slug",
       options: { source: "name", maxLength: 80 },
       validation: (rule) => [rule.required(), polkuMuuttunut(rule)],

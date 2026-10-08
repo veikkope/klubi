@@ -63,7 +63,8 @@ export const etusivuQuery = defineQuery(`
     ),
     heroCtas[]{ label, href, primary },
     seuraavaOttelu{ ottelu, kilpailu, aika },
-    blocks[]{
+    // Piilotettu lohko (piilota == true) säilyy Studiossa mutta ei renderöidy (docs/24 askel 1).
+    blocks[piilota != true]{
       _type,
       _key,
       eyebrow,

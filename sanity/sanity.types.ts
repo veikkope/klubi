@@ -55,6 +55,7 @@ export type Etusivu = {
   };
   blocks?: Array<
     | {
+        piilota?: boolean;
         eyebrow?: string;
         heading?: string;
         count?: number;
@@ -62,6 +63,7 @@ export type Etusivu = {
         _key: string;
       }
     | {
+        piilota?: boolean;
         ottelutHeading?: string;
         ottelutCount?: number;
         vainMaajoukkue?: boolean;
@@ -73,12 +75,14 @@ export type Etusivu = {
         _key: string;
       }
     | {
+        piilota?: boolean;
         heading?: string;
         count?: number;
         _type: "tapahtumat";
         _key: string;
       }
     | {
+        piilota?: boolean;
         eyebrow?: string;
         heading?: string;
         body?: PortableText;
@@ -89,6 +93,7 @@ export type Etusivu = {
         _key: string;
       }
     | {
+        piilota?: boolean;
         eyebrow?: string;
         heading?: string;
         city?: KaupunkiReference;
@@ -97,6 +102,7 @@ export type Etusivu = {
         _key: string;
       }
     | {
+        piilota?: boolean;
         heading?: string;
         body?: string;
         ctaLabel?: string;
@@ -105,6 +111,7 @@ export type Etusivu = {
         _key: string;
       }
     | {
+        piilota?: boolean;
         heading?: string;
         count?: number;
         _type: "galleria";
@@ -851,6 +858,7 @@ export type HallitusJasen = {
   _rev: string;
   name?: string;
   role?: string;
+  nykyinen?: boolean;
   image?: ImageWithAlt;
   bio?: string;
   email?: string;
@@ -3277,7 +3285,7 @@ export type ArkistoSummaryQueryResult = Array<{
 
 // Source: sanity/lib/queries/etusivu.ts
 // Variable: etusivuQuery
-// Query: *[_type == "etusivu"][0]{    heroEyebrow,    heroTitle,    heroDescription,    heroImage{..., "lqip": asset->metadata.lqip},    heroLaskuri,    "heroNosto": coalesce(      select(        defined(heroNosto->slug.current)          && (!defined(heroNostoAsti) || dateTime(heroNostoAsti) > dateTime(now()))          => heroNosto->{  _id,  title,  "slug": slug.current,  publishedAt,  excerpt,  coverImage{..., "lqip": asset->metadata.lqip},  "categories": (kategoriat[]->{ _id, "value": slug.current, "label": nimi })[defined(value) && defined(label)]}      ),      *[_type == "uutinen" && defined(slug.current)] | order(publishedAt desc)[0]{  _id,  title,  "slug": slug.current,  publishedAt,  excerpt,  coverImage{..., "lqip": asset->metadata.lqip},  "categories": (kategoriat[]->{ _id, "value": slug.current, "label": nimi })[defined(value) && defined(label)]}    ),    heroCtas[]{ label, href, primary },    seuraavaOttelu{ ottelu, kilpailu, aika },    blocks[]{      _type,      _key,      eyebrow,      heading,      count,      ottelutHeading,      ottelutCount,      vainMaajoukkue,      seurat,      laskuri,      tapahtumatHeading,      tapahtumatCount,      body[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},      image{..., "lqip": asset->metadata.lqip},      ctaLabel,      ctaHref,      "city": city->{ "_ref": _id, name }    }  }
+// Query: *[_type == "etusivu"][0]{    heroEyebrow,    heroTitle,    heroDescription,    heroImage{..., "lqip": asset->metadata.lqip},    heroLaskuri,    "heroNosto": coalesce(      select(        defined(heroNosto->slug.current)          && (!defined(heroNostoAsti) || dateTime(heroNostoAsti) > dateTime(now()))          // Ajastettu juttu nousee pääjutuksi vasta julkaisuajastaan.          && (!defined(heroNosto->publishedAt) || dateTime(heroNosto->publishedAt) <= dateTime(now()))          => heroNosto->{  _id,  title,  "slug": slug.current,  publishedAt,  excerpt,  coverImage{..., "lqip": asset->metadata.lqip},  "categories": (kategoriat[]->{ _id, "value": slug.current, "label": nimi })[defined(value) && defined(label)]}      ),      *[_type == "uutinen" && defined(slug.current) && (!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now()))] | order(publishedAt desc)[0]{  _id,  title,  "slug": slug.current,  publishedAt,  excerpt,  coverImage{..., "lqip": asset->metadata.lqip},  "categories": (kategoriat[]->{ _id, "value": slug.current, "label": nimi })[defined(value) && defined(label)]}    ),    heroCtas[]{ label, href, primary },    seuraavaOttelu{ ottelu, kilpailu, aika },    // Piilotettu lohko (piilota == true) säilyy Studiossa mutta ei renderöidy (docs/24 askel 1).    blocks[piilota != true]{      _type,      _key,      eyebrow,      heading,      count,      ottelutHeading,      ottelutCount,      vainMaajoukkue,      seurat,      laskuri,      tapahtumatHeading,      tapahtumatCount,      body[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},      image{..., "lqip": asset->metadata.lqip},      ctaLabel,      ctaHref,      "city": city->{ "_ref": _id, name }    }  }
 export type EtusivuQueryResult = {
   heroEyebrow: string | null;
   heroTitle: string | null;
@@ -3667,7 +3675,7 @@ export type GalleriaAlbumiBySlugQueryResult = {
 
 // Source: sanity/lib/queries/kategoriat.ts
 // Variable: kaytetytKategoriatQuery
-// Query: *[_type == "uutisKategoria" && defined(slug.current)    && count(*[_type == "uutinen" && defined(slug.current) && references(^._id)]) > 0]    | order(coalesce(jarjestys, 9999) asc, lower(nimi) asc){ _id, "value": slug.current, "label": nimi }
+// Query: *[_type == "uutisKategoria" && defined(slug.current)    && count(*[_type == "uutinen" && defined(slug.current) && (!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now())) && references(^._id)]) > 0]    | order(coalesce(jarjestys, 9999) asc, lower(nimi) asc){ _id, "value": slug.current, "label": nimi }
 export type KaytetytKategoriatQueryResult = Array<{
   _id: string;
   value: string | null;
@@ -3686,7 +3694,7 @@ export type KategoriaPolullaQueryResult = {
 
 // Source: sanity/lib/queries/klubi.ts
 // Variable: klubiSivuQuery
-// Query: *[_type == "sivu" && slug.current == $slug][0]{    _id,    _updatedAt,    title,    "slug": slug.current,    tiivistelma,    ingress,    hero{..., "lqip": asset->metadata.lqip},    body[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},    tilastot[]->{      _id,      _updatedAt,      title,      "slug": slug.current,      tiivistelma,      category,      intro[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},      columns[]{ key, label, type },      rows[]{ cells[]{ key, value } },      lisatiedot[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},      kuvat[]{ _key, alt, caption, asset, hotspot, crop, "lqip": asset->metadata.lqip },      paivitetty,      jarjestys,      "sources": coalesce(sources, [])    },    seoTitle,    seoDescription  }
+// Query: *[_type == "sivu" && slug.current == $slug][0]{    _id,    _updatedAt,    title,    "slug": slug.current,    tiivistelma,    ingress,    hero{..., "lqip": asset->metadata.lqip},    body[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},    tilastot[]->{   _id,  _updatedAt,  title,  "slug": slug.current,  tiivistelma,  category,  huuhkajatOsio,  mestaruusmaa,  intro[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},  columns[]{ key, label, type },  rows[]{ cells[]{ key, value } },  lisatiedot[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},  kuvat[]{ _key, alt, caption, asset, hotspot, crop, "lqip": asset->metadata.lqip },  paivitetty,  jarjestys,  "sources": coalesce(sources, []),  "kaudenOttelut": kaudenOttelut->{ title, "slug": slug.current } },    seoTitle,    seoDescription  }
 export type KlubiSivuQueryResult = {
   _id: string;
   _updatedAt: string;
@@ -3791,6 +3799,15 @@ export type KlubiSivuQueryResult = {
       | "valmentajien-palkat"
       | "vuoden-pelaaja"
       | null;
+    huuhkajatOsio:
+      | "avauskokoonpano"
+      | "englanti"
+      | "huuhkaja-arvostelu"
+      | "kansojen-liiga"
+      | "muut"
+      | "pelaajatilastot"
+      | null;
+    mestaruusmaa: "englanti" | "venaja" | null;
     intro: Array<
       | {
           children?: Array<{
@@ -3926,6 +3943,10 @@ export type KlubiSivuQueryResult = {
     paivitetty: string | null;
     jarjestys: number | null;
     sources: Array<string> | Array<never>;
+    kaudenOttelut: {
+      title: string | null;
+      slug: string | null;
+    } | null;
   }> | null;
   seoTitle: string | null;
   seoDescription: string | null;
@@ -3967,7 +3988,7 @@ export type KlubiToimintaListQueryResult = Array<{
 
 // Source: sanity/lib/queries/klubi.ts
 // Variable: klubiToimintaBySlugQuery
-// Query: *[_type == "klubiToiminta" && slug.current == $slug][0]{    _id,    _updatedAt,    title,    "slug": slug.current,    tiivistelma,    kuvaus[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},    kuvat[]{..., "lqip": asset->metadata.lqip},    seoTitle,    seoDescription,    "vuodet": vuodet[] | order(vuosi desc, paivamaara desc){      _key,      vuosi,      paivamaara,      otsikko,      jarjestysnumero,      osallistujat,      paikka,      kuvaus,      linkki{ url, teksti },      kuvat[]{..., "lqip": asset->metadata.lqip}    },    tilastot[]->{      _id,      _updatedAt,      title,      "slug": slug.current,      tiivistelma,      category,      intro[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},      columns[]{ key, label, type },      rows[]{ cells[]{ key, value } },      lisatiedot[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},      kuvat[]{ _key, alt, caption, asset, hotspot, crop, "lqip": asset->metadata.lqip },      paivitetty,      jarjestys,      "sources": coalesce(sources, [])    }  }
+// Query: *[_type == "klubiToiminta" && slug.current == $slug][0]{    _id,    _updatedAt,    title,    "slug": slug.current,    tiivistelma,    kuvaus[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},    kuvat[]{..., "lqip": asset->metadata.lqip},    seoTitle,    seoDescription,    "vuodet": vuodet[] | order(vuosi desc, paivamaara desc){      _key,      vuosi,      paivamaara,      otsikko,      jarjestysnumero,      osallistujat,      paikka,      kuvaus,      linkki{ url, teksti },      kuvat[]{..., "lqip": asset->metadata.lqip}    },    tilastot[]->{   _id,  _updatedAt,  title,  "slug": slug.current,  tiivistelma,  category,  huuhkajatOsio,  mestaruusmaa,  intro[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},  columns[]{ key, label, type },  rows[]{ cells[]{ key, value } },  lisatiedot[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},  kuvat[]{ _key, alt, caption, asset, hotspot, crop, "lqip": asset->metadata.lqip },  paivitetty,  jarjestys,  "sources": coalesce(sources, []),  "kaudenOttelut": kaudenOttelut->{ title, "slug": slug.current } }  }
 export type KlubiToimintaBySlugQueryResult = {
   _id: string;
   _updatedAt: string;
@@ -4099,6 +4120,15 @@ export type KlubiToimintaBySlugQueryResult = {
       | "valmentajien-palkat"
       | "vuoden-pelaaja"
       | null;
+    huuhkajatOsio:
+      | "avauskokoonpano"
+      | "englanti"
+      | "huuhkaja-arvostelu"
+      | "kansojen-liiga"
+      | "muut"
+      | "pelaajatilastot"
+      | null;
+    mestaruusmaa: "englanti" | "venaja" | null;
     intro: Array<
       | {
           children?: Array<{
@@ -4234,6 +4264,10 @@ export type KlubiToimintaBySlugQueryResult = {
     paivitetty: string | null;
     jarjestys: number | null;
     sources: Array<string> | Array<never>;
+    kaudenOttelut: {
+      title: string | null;
+      slug: string | null;
+    } | null;
   }> | null;
 } | null;
 
@@ -4254,7 +4288,7 @@ export type KlubiToimintaSlugsQueryResult = Array<string | null>;
 
 // Source: sanity/lib/queries/klubi.ts
 // Variable: hallitusListQuery
-// Query: *[_type == "hallitusJasen"] | order(order asc, name asc){    _id,    name,    role,    image{..., "lqip": asset->metadata.lqip},    bio,    email,    phone  }
+// Query: *[_type == "hallitusJasen" && nykyinen != false] | order(order asc, name asc){    _id,    name,    role,    image{..., "lqip": asset->metadata.lqip},    bio,    email,    phone  }
 export type HallitusListQueryResult = Array<{
   _id: string;
   name: string | null;
@@ -4388,7 +4422,7 @@ export type LehtileikeYhteenvetoQueryResult = {
 
 // Source: sanity/lib/queries/lehtileikkeet.ts
 // Variable: uutisetTunnisteenMukaanQuery
-// Query: {    "items": *[_type == "uutinen" && defined(slug.current) && count((tunnisteet[])[lower(@) == $tunniste]) > 0      && ($otsikossa == null || title match $otsikossa)]      | order(publishedAt desc)[0...$maara]{      _id,      title,      "slug": slug.current,      publishedAt,      excerpt,      tiivistelma,      coverImage{..., "lqip": asset->metadata.lqip},      categories    },    "total": count(*[_type == "uutinen" && defined(slug.current) && count((tunnisteet[])[lower(@) == $tunniste]) > 0])  }
+// Query: {    "items": *[_type == "uutinen" && defined(slug.current) && (!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now())) && count((tunnisteet[])[lower(@) == $tunniste]) > 0      && ($otsikossa == null || title match $otsikossa)]      | order(publishedAt desc)[0...$maara]{      _id,      title,      "slug": slug.current,      publishedAt,      excerpt,      tiivistelma,      coverImage{..., "lqip": asset->metadata.lqip},      categories    },    "total": count(*[_type == "uutinen" && defined(slug.current) && (!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now())) && count((tunnisteet[])[lower(@) == $tunniste]) > 0])  }
 export type UutisetTunnisteenMukaanQueryResult = {
   items: Array<{
     _id: string;
@@ -4600,7 +4634,7 @@ export type RavintolaSlugsQueryResult = Array<string | null>;
 
 // Source: sanity/lib/queries/sitemap.ts
 // Variable: sitemapByTypeQuery
-// Query: *[_type == $type && defined(slug.current) && ($type != "ravintola" || (  automaattinenArvosana.arvioijia >= 2  || (!defined(automaattinenArvosana) && (defined(ratingOverall) || defined(stars)))))]    | order(_updatedAt desc) {    "slug": slug.current,    "updatedAt": _updatedAt  }
+// Query: *[_type == $type && defined(slug.current) && ($type != "ravintola" || (  automaattinenArvosana.arvioijia >= 2  || (!defined(automaattinenArvosana) && (defined(ratingOverall) || defined(stars)))))    && ($type != "uutinen" || (!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now())))]    | order(_updatedAt desc) {    "slug": slug.current,    "updatedAt": _updatedAt  }
 export type SitemapByTypeQueryResult = Array<{
   slug: string | null;
   updatedAt: string;
@@ -4670,7 +4704,7 @@ export type SitemapTilastotQueryResult = Array<{
 
 // Source: sanity/lib/queries/sitemap.ts
 // Variable: sitemapArchiveYearsQuery
-// Query: *[_type == "uutinen" && defined(publishedAt)]    | order(publishedAt desc) {      "slug": string::split(publishedAt, "-")[0],      "updatedAt": _updatedAt    }
+// Query: *[_type == "uutinen" && defined(publishedAt) && (!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now()))]    | order(publishedAt desc) {      "slug": string::split(publishedAt, "-")[0],      "updatedAt": _updatedAt    }
 export type SitemapArchiveYearsQueryResult = Array<{
   slug: string | null;
   updatedAt: string;
@@ -4678,7 +4712,7 @@ export type SitemapArchiveYearsQueryResult = Array<{
 
 // Source: sanity/lib/queries/uutiset.ts
 // Variable: uutisetPageQuery
-// Query: {    "items": *[_type == "uutinen" && defined(slug.current) && ($category == null || references($category))] | order(publishedAt desc)[$start...$end]{      _id,      title,      "slug": slug.current,      publishedAt,      excerpt,      tiivistelma,      coverImage{..., "lqip": asset->metadata.lqip},      "categories": (kategoriat[]->{ _id, "value": slug.current, "label": nimi })[defined(value) && defined(label)]    },    "total": count(*[_type == "uutinen" && defined(slug.current) && ($category == null || references($category))])  }
+// Query: {    "items": *[_type == "uutinen" && defined(slug.current) && (!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now())) && ($category == null || references($category))] | order(publishedAt desc)[$start...$end]{      _id,      title,      "slug": slug.current,      publishedAt,      excerpt,      tiivistelma,      coverImage{..., "lqip": asset->metadata.lqip},      "categories": (kategoriat[]->{ _id, "value": slug.current, "label": nimi })[defined(value) && defined(label)]    },    "total": count(*[_type == "uutinen" && defined(slug.current) && (!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now())) && ($category == null || references($category))])  }
 export type UutisetPageQueryResult = {
   items: Array<{
     _id: string;
@@ -4708,7 +4742,7 @@ export type UutisetPageQueryResult = {
 
 // Source: sanity/lib/queries/uutiset.ts
 // Variable: uutisetHakuQuery
-// Query: {    "items": *[_type == "uutinen" && defined(slug.current) && ($category == null || references($category)) && ([title, excerpt, pt::text(body)] + coalesce(tunnisteet, [])) match $terms]      | score(          boost(title match $terms, 3),          boost(tunnisteet match $terms, 2),          boost(excerpt match $terms, 2),          pt::text(body) match $terms        )      | order(_score desc, publishedAt desc)[$start...$end]{      _id,      title,      "slug": slug.current,      publishedAt,      excerpt,      tiivistelma,      coverImage{..., "lqip": asset->metadata.lqip},      "categories": (kategoriat[]->{ _id, "value": slug.current, "label": nimi })[defined(value) && defined(label)]    },    "total": count(*[_type == "uutinen" && defined(slug.current) && ($category == null || references($category)) && ([title, excerpt, pt::text(body)] + coalesce(tunnisteet, [])) match $terms])  }
+// Query: {    "items": *[_type == "uutinen" && defined(slug.current) && (!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now())) && ($category == null || references($category)) && ([title, excerpt, pt::text(body)] + coalesce(tunnisteet, [])) match $terms]      | score(          boost(title match $terms, 3),          boost(tunnisteet match $terms, 2),          boost(excerpt match $terms, 2),          pt::text(body) match $terms        )      | order(_score desc, publishedAt desc)[$start...$end]{      _id,      title,      "slug": slug.current,      publishedAt,      excerpt,      tiivistelma,      coverImage{..., "lqip": asset->metadata.lqip},      "categories": (kategoriat[]->{ _id, "value": slug.current, "label": nimi })[defined(value) && defined(label)]    },    "total": count(*[_type == "uutinen" && defined(slug.current) && (!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now())) && ($category == null || references($category)) && ([title, excerpt, pt::text(body)] + coalesce(tunnisteet, [])) match $terms])  }
 export type UutisetHakuQueryResult = {
   items: Array<{
     _id: string;
@@ -4738,12 +4772,12 @@ export type UutisetHakuQueryResult = {
 
 // Source: sanity/lib/queries/uutiset.ts
 // Variable: uutinenSlugsQuery
-// Query: *[_type == "uutinen" && defined(slug.current)].slug.current
+// Query: *[_type == "uutinen" && defined(slug.current) && (!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now()))].slug.current
 export type UutinenSlugsQueryResult = Array<string | null>;
 
 // Source: sanity/lib/queries/uutiset.ts
 // Variable: uutinenDetailQuery
-// Query: *[_type == "uutinen" && defined(slug.current) && slug.current == $slug][0]{      _id,      title,      "slug": slug.current,      publishedAt,      excerpt,      tiivistelma,      coverImage{..., "lqip": asset->metadata.lqip},      "categories": (kategoriat[]->{ _id, "value": slug.current, "label": nimi })[defined(value) && defined(label)],    _updatedAt,    body[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},    lahde{ nimi, url, pvm },    ulkoinenLinkki,    "author": author->{ name, role },    kommentointi{ kaytossa, tyyppi, sulkeutuu, vaihtoehdot, sijoituksia, maalikuningas, ohje },    tunnisteet,    seoTitle,    seoDescription,        "vanhempi": *[_type == "uutinen" && defined(slug.current) && (publishedAt < ^.publishedAt      || (publishedAt == ^.publishedAt && _id < ^._id))]      | order(publishedAt desc, _id desc)[0]{ title, "slug": slug.current, publishedAt },    "uudempi": *[_type == "uutinen" && defined(slug.current) && (publishedAt > ^.publishedAt      || (publishedAt == ^.publishedAt && _id > ^._id))]      | order(publishedAt asc, _id asc)[0]{ title, "slug": slug.current, publishedAt }  }
+// Query: *[_type == "uutinen" && defined(slug.current) && (!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now())) && slug.current == $slug][0]{      _id,      title,      "slug": slug.current,      publishedAt,      excerpt,      tiivistelma,      coverImage{..., "lqip": asset->metadata.lqip},      "categories": (kategoriat[]->{ _id, "value": slug.current, "label": nimi })[defined(value) && defined(label)],    _updatedAt,    body[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},    lahde{ nimi, url, pvm },    ulkoinenLinkki,    "author": author->{ name, role },    kommentointi{ kaytossa, tyyppi, sulkeutuu, vaihtoehdot, sijoituksia, maalikuningas, ohje },    tunnisteet,    seoTitle,    seoDescription,        "vanhempi": *[_type == "uutinen" && defined(slug.current) && (!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now())) && (publishedAt < ^.publishedAt      || (publishedAt == ^.publishedAt && _id < ^._id))]      | order(publishedAt desc, _id desc)[0]{ title, "slug": slug.current, publishedAt },    "uudempi": *[_type == "uutinen" && defined(slug.current) && (!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now())) && (publishedAt > ^.publishedAt      || (publishedAt == ^.publishedAt && _id > ^._id))]      | order(publishedAt asc, _id asc)[0]{ title, "slug": slug.current, publishedAt }  }
 export type UutinenDetailQueryResult = {
   _id: string;
   title: string | null;
@@ -4859,7 +4893,7 @@ export type UutinenDetailQueryResult = {
 
 // Source: sanity/lib/queries/uutiset.ts
 // Variable: relatedUutisetQuery
-// Query: *[_type == "uutinen" && defined(slug.current) && slug.current != $slug    && count((kategoriat[]._ref)[@ in $categories]) > 0]    | order(publishedAt desc)[0...$count]{      _id,      title,      "slug": slug.current,      publishedAt,      excerpt,      tiivistelma,      coverImage{..., "lqip": asset->metadata.lqip},      "categories": (kategoriat[]->{ _id, "value": slug.current, "label": nimi })[defined(value) && defined(label)]  }
+// Query: *[_type == "uutinen" && defined(slug.current) && (!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now())) && slug.current != $slug    && count((kategoriat[]._ref)[@ in $categories]) > 0]    | order(publishedAt desc)[0...$count]{      _id,      title,      "slug": slug.current,      publishedAt,      excerpt,      tiivistelma,      coverImage{..., "lqip": asset->metadata.lqip},      "categories": (kategoriat[]->{ _id, "value": slug.current, "label": nimi })[defined(value) && defined(label)]  }
 export type RelatedUutisetQueryResult = Array<{
   _id: string;
   title: string | null;
@@ -4886,7 +4920,7 @@ export type RelatedUutisetQueryResult = Array<{
 
 // Source: sanity/lib/queries/uutiset.ts
 // Variable: uutisetTunnisteetQuery
-// Query: *[_type == "uutinen" && defined(slug.current) && count(tunnisteet) > 0]{ tunnisteet, "paivitetty": _updatedAt }
+// Query: *[_type == "uutinen" && defined(slug.current) && (!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now())) && count(tunnisteet) > 0]{ tunnisteet, "paivitetty": _updatedAt }
 export type UutisetTunnisteetQueryResult = Array<{
   tunnisteet: Array<string> | null;
   paivitetty: string;
@@ -4894,7 +4928,7 @@ export type UutisetTunnisteetQueryResult = Array<{
 
 // Source: sanity/lib/queries/uutiset.ts
 // Variable: uutisetTunnisteellaQuery
-// Query: {    "items": *[_type == "uutinen" && defined(slug.current) && count((tunnisteet[])[@ in $nimet]) > 0] | order(publishedAt desc)[$start...$end]{      _id,      title,      "slug": slug.current,      publishedAt,      excerpt,      tiivistelma,      coverImage{..., "lqip": asset->metadata.lqip},      "categories": (kategoriat[]->{ _id, "value": slug.current, "label": nimi })[defined(value) && defined(label)]    },    "total": count(*[_type == "uutinen" && defined(slug.current) && count((tunnisteet[])[@ in $nimet]) > 0])  }
+// Query: {    "items": *[_type == "uutinen" && defined(slug.current) && (!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now())) && count((tunnisteet[])[@ in $nimet]) > 0] | order(publishedAt desc)[$start...$end]{      _id,      title,      "slug": slug.current,      publishedAt,      excerpt,      tiivistelma,      coverImage{..., "lqip": asset->metadata.lqip},      "categories": (kategoriat[]->{ _id, "value": slug.current, "label": nimi })[defined(value) && defined(label)]    },    "total": count(*[_type == "uutinen" && defined(slug.current) && (!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now())) && count((tunnisteet[])[@ in $nimet]) > 0])  }
 export type UutisetTunnisteellaQueryResult = {
   items: Array<{
     _id: string;
@@ -4924,14 +4958,14 @@ export type UutisetTunnisteellaQueryResult = {
 
 // Source: sanity/lib/queries/uutiset.ts
 // Variable: uutisetArchiveYearsQuery
-// Query: *[_type == "uutinen" && defined(slug.current) && defined(publishedAt)]{    "year": string::split(publishedAt, "-")[0]  }
+// Query: *[_type == "uutinen" && defined(slug.current) && (!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now())) && defined(publishedAt)]{    "year": string::split(publishedAt, "-")[0]  }
 export type UutisetArchiveYearsQueryResult = Array<{
   year: string | null;
 }>;
 
 // Source: sanity/lib/queries/uutiset.ts
 // Variable: uutisetByYearQuery
-// Query: {    "items": *[_type == "uutinen" && defined(slug.current) && publishedAt >= $from && publishedAt < $to]      | order(publishedAt desc)[$start...$end]{      _id,      title,      "slug": slug.current,      publishedAt,      excerpt,      tiivistelma,      coverImage{..., "lqip": asset->metadata.lqip},      "categories": (kategoriat[]->{ _id, "value": slug.current, "label": nimi })[defined(value) && defined(label)]    },    "total": count(*[_type == "uutinen" && defined(slug.current) && publishedAt >= $from && publishedAt < $to])  }
+// Query: {    "items": *[_type == "uutinen" && defined(slug.current) && (!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now())) && publishedAt >= $from && publishedAt < $to]      | order(publishedAt desc)[$start...$end]{      _id,      title,      "slug": slug.current,      publishedAt,      excerpt,      tiivistelma,      coverImage{..., "lqip": asset->metadata.lqip},      "categories": (kategoriat[]->{ _id, "value": slug.current, "label": nimi })[defined(value) && defined(label)]    },    "total": count(*[_type == "uutinen" && defined(slug.current) && (!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now())) && publishedAt >= $from && publishedAt < $to])  }
 export type UutisetByYearQueryResult = {
   items: Array<{
     _id: string;
@@ -5122,25 +5156,25 @@ declare module "@sanity/client" {
     '{\n  "taulukot": *[_type == "jalkapalloTilasto" && category == "huuhkajat"]\n    | order(coalesce(jarjestys, 1000) asc, title asc){ \n  _id,\n  _updatedAt,\n  title,\n  "slug": slug.current,\n  tiivistelma,\n  huuhkajatOsio\n },\n  "karsinnat": *[\n    _type == "jalkapalloTilasto" && category == "karsinta" && defined(slug.current)\n  ] | order(coalesce(jarjestys, 1000) asc, title asc){ \n  _id,\n  _updatedAt,\n  title,\n  "slug": slug.current,\n  tiivistelma,\n  huuhkajatOsio\n }\n}': HuuhkajatHubQueryResult;
     '\n  *[\n    _type == "jalkapalloTilasto"\n    && category == "huuhkajat"\n    && select(\n      $osio == $oletus => !(huuhkajatOsio in $tunnetut),\n      huuhkajatOsio == $osio\n    )\n  ] | order(coalesce(jarjestys, 1000) asc, title asc){\n    \n  _id,\n  _updatedAt,\n  title,\n  "slug": slug.current,\n  tiivistelma,\n  category,\n  huuhkajatOsio,\n  mestaruusmaa,\n  intro[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n  columns[]{ key, label, type },\n  rows[]{ cells[]{ key, value } },\n  lisatiedot[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n  kuvat[]{ _key, alt, caption, asset, hotspot, crop, "lqip": asset->metadata.lqip },\n  paivitetty,\n  jarjestys,\n  "sources": coalesce(sources, []),\n  "kaudenOttelut": kaudenOttelut->{ title, "slug": slug.current }\n\n  }\n': HuuhkajatOsioQueryResult;
     '\n  *[_type == "jalkapalloTilasto" && defined(category)]{\n    category,\n    "updatedAt": _updatedAt\n  }\n': ArkistoSummaryQueryResult;
-    '\n  *[_type == "etusivu"][0]{\n    heroEyebrow,\n    heroTitle,\n    heroDescription,\n    heroImage{..., "lqip": asset->metadata.lqip},\n    heroLaskuri,\n    "heroNosto": coalesce(\n      select(\n        defined(heroNosto->slug.current)\n          && (!defined(heroNostoAsti) || dateTime(heroNostoAsti) > dateTime(now()))\n          => heroNosto->{\n  _id,\n  title,\n  "slug": slug.current,\n  publishedAt,\n  excerpt,\n  coverImage{..., "lqip": asset->metadata.lqip},\n  "categories": (kategoriat[]->{ _id, "value": slug.current, "label": nimi })[defined(value) && defined(label)]\n}\n      ),\n      *[_type == "uutinen" && defined(slug.current)] | order(publishedAt desc)[0]{\n  _id,\n  title,\n  "slug": slug.current,\n  publishedAt,\n  excerpt,\n  coverImage{..., "lqip": asset->metadata.lqip},\n  "categories": (kategoriat[]->{ _id, "value": slug.current, "label": nimi })[defined(value) && defined(label)]\n}\n    ),\n    heroCtas[]{ label, href, primary },\n    seuraavaOttelu{ ottelu, kilpailu, aika },\n    blocks[]{\n      _type,\n      _key,\n      eyebrow,\n      heading,\n      count,\n      ottelutHeading,\n      ottelutCount,\n      vainMaajoukkue,\n      seurat,\n      laskuri,\n      tapahtumatHeading,\n      tapahtumatCount,\n      body[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n      image{..., "lqip": asset->metadata.lqip},\n      ctaLabel,\n      ctaHref,\n      "city": city->{ "_ref": _id, name }\n    }\n  }\n': EtusivuQueryResult;
+    '\n  *[_type == "etusivu"][0]{\n    heroEyebrow,\n    heroTitle,\n    heroDescription,\n    heroImage{..., "lqip": asset->metadata.lqip},\n    heroLaskuri,\n    "heroNosto": coalesce(\n      select(\n        defined(heroNosto->slug.current)\n          && (!defined(heroNostoAsti) || dateTime(heroNostoAsti) > dateTime(now()))\n          // Ajastettu juttu nousee p\xE4\xE4jutuksi vasta julkaisuajastaan.\n          && (!defined(heroNosto->publishedAt) || dateTime(heroNosto->publishedAt) <= dateTime(now()))\n          => heroNosto->{\n  _id,\n  title,\n  "slug": slug.current,\n  publishedAt,\n  excerpt,\n  coverImage{..., "lqip": asset->metadata.lqip},\n  "categories": (kategoriat[]->{ _id, "value": slug.current, "label": nimi })[defined(value) && defined(label)]\n}\n      ),\n      *[_type == "uutinen" && defined(slug.current) && (!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now()))] | order(publishedAt desc)[0]{\n  _id,\n  title,\n  "slug": slug.current,\n  publishedAt,\n  excerpt,\n  coverImage{..., "lqip": asset->metadata.lqip},\n  "categories": (kategoriat[]->{ _id, "value": slug.current, "label": nimi })[defined(value) && defined(label)]\n}\n    ),\n    heroCtas[]{ label, href, primary },\n    seuraavaOttelu{ ottelu, kilpailu, aika },\n    // Piilotettu lohko (piilota == true) s\xE4ilyy Studiossa mutta ei render\xF6idy (docs/24 askel 1).\n    blocks[piilota != true]{\n      _type,\n      _key,\n      eyebrow,\n      heading,\n      count,\n      ottelutHeading,\n      ottelutCount,\n      vainMaajoukkue,\n      seurat,\n      laskuri,\n      tapahtumatHeading,\n      tapahtumatCount,\n      body[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n      image{..., "lqip": asset->metadata.lqip},\n      ctaLabel,\n      ctaHref,\n      "city": city->{ "_ref": _id, name }\n    }\n  }\n': EtusivuQueryResult;
     '\n  *[_type == "ravintola" && defined(slug.current) && closed != true && (\n  automaattinenArvosana.arvioijia >= 2\n  || (!defined(automaattinenArvosana) && (defined(ratingOverall) || defined(stars)))\n)\n    && ($cityId == null || city._ref == $cityId)\n    && coalesce(ratingOverall, stars, 0) > 0]\n    | order(coalesce(select(\n  automaattinenArvosana.viimeisinArvio > coalesce(coalesce(visits[0], visitedAt), "") => automaattinenArvosana.viimeisinArvio,\n  coalesce(visits[0], visitedAt)\n), "0000-00-00") desc, name asc)[0...$count]{\n    _id,\n    name,\n    "slug": slug.current,\n    "city": city->{ name, "slug": slug.current },\n    stars,\n    ratingOverall,\n    priceLevel,\n    tuomio,\n    stadionHuomio,\n    "image": images[0]{..., "lqip": asset->metadata.lqip}\n  }\n': EtusivuRavintolatQueryResult;
     '\n  {\n    "arvokisat": count(*[_type == "arvokisa" && defined(slug.current)]),\n    "pelaajat": count(*[_type == "pelaaja" && defined(slug.current)]),\n    "stadionit": count(*[_type == "stadion" && defined(slug.current)]),\n    "tilastot": count(*[_type == "jalkapalloTilasto" && defined(slug.current)]),\n    "fifa": *[_type == "jalkapalloTilasto" && category == "fifa-ranking"\n      && defined(slug.current)] | order(_updatedAt desc)[0]{\n      title,\n      "slug": slug.current,\n      _updatedAt,\n      columns[]{ key, label, type },\n      "rows": rows[0...5]{ cells[]{ key, value } }\n    }\n  }\n': EtusivuArkistoQueryResult;
     '\n  *[_type == "galleriaAlbumi" && defined(slug.current)]\n    | order(date desc){\n    _id,\n    title,\n    "slug": slug.current,\n    date,\n    tiivistelma,\n    coverImage{..., "lqip": asset->metadata.lqip},\n    "imageCount": count(images)\n  }\n': GalleriaAlbumitQueryResult;
     '\n  *[_type == "galleriaAlbumi" && defined(slug.current)]\n    | order(date desc)[0...$count]{\n    _id,\n    title,\n    "slug": slug.current,\n    date,\n    tiivistelma,\n    coverImage{..., "lqip": asset->metadata.lqip},\n    "imageCount": count(images)\n  }\n': EtusivuGalleriaQueryResult;
     '\n  *[_type == "galleriaAlbumi" && slug.current == $slug][0]{\n    _id,\n    _updatedAt,\n    title,\n    "slug": slug.current,\n    date,\n    tiivistelma,\n    coverImage{..., "lqip": asset->metadata.lqip},\n    images[]{..., "vari": asset->metadata.palette.dominant.background},\n    "event": event->{ title, "slug": slug.current }\n  }\n': GalleriaAlbumiBySlugQueryResult;
-    '\n  *[_type == "uutisKategoria" && defined(slug.current)\n    && count(*[_type == "uutinen" && defined(slug.current) && references(^._id)]) > 0]\n    | order(coalesce(jarjestys, 9999) asc, lower(nimi) asc){ _id, "value": slug.current, "label": nimi }\n': KaytetytKategoriatQueryResult;
+    '\n  *[_type == "uutisKategoria" && defined(slug.current)\n    && count(*[_type == "uutinen" && defined(slug.current) && (!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now())) && references(^._id)]) > 0]\n    | order(coalesce(jarjestys, 9999) asc, lower(nimi) asc){ _id, "value": slug.current, "label": nimi }\n': KaytetytKategoriatQueryResult;
     '\n  *[_type == "uutisKategoria" && (slug.current == $polku || $polku in aiemmatPolut)]\n    | order(_updatedAt desc)[0]{ _id, "value": slug.current, "label": nimi, kuvaus }\n': KategoriaPolullaQueryResult;
-    '\n  *[_type == "sivu" && slug.current == $slug][0]{\n    _id,\n    _updatedAt,\n    title,\n    "slug": slug.current,\n    tiivistelma,\n    ingress,\n    hero{..., "lqip": asset->metadata.lqip},\n    body[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n    tilastot[]->{\n      _id,\n      _updatedAt,\n      title,\n      "slug": slug.current,\n      tiivistelma,\n      category,\n      intro[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n      columns[]{ key, label, type },\n      rows[]{ cells[]{ key, value } },\n      lisatiedot[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n      kuvat[]{ _key, alt, caption, asset, hotspot, crop, "lqip": asset->metadata.lqip },\n      paivitetty,\n      jarjestys,\n      "sources": coalesce(sources, [])\n    },\n    seoTitle,\n    seoDescription\n  }\n': KlubiSivuQueryResult;
+    '\n  *[_type == "sivu" && slug.current == $slug][0]{\n    _id,\n    _updatedAt,\n    title,\n    "slug": slug.current,\n    tiivistelma,\n    ingress,\n    hero{..., "lqip": asset->metadata.lqip},\n    body[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n    tilastot[]->{ \n  _id,\n  _updatedAt,\n  title,\n  "slug": slug.current,\n  tiivistelma,\n  category,\n  huuhkajatOsio,\n  mestaruusmaa,\n  intro[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n  columns[]{ key, label, type },\n  rows[]{ cells[]{ key, value } },\n  lisatiedot[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n  kuvat[]{ _key, alt, caption, asset, hotspot, crop, "lqip": asset->metadata.lqip },\n  paivitetty,\n  jarjestys,\n  "sources": coalesce(sources, []),\n  "kaudenOttelut": kaudenOttelut->{ title, "slug": slug.current }\n },\n    seoTitle,\n    seoDescription\n  }\n': KlubiSivuQueryResult;
     '\n  *[_type == "sivu" && string::startsWith(slug.current, $prefix)] | order(_createdAt asc, title asc){\n    _id,\n    title,\n    "slug": slug.current,\n    tiivistelma,\n    "taulukoita": count(tilastot)\n  }\n': KlubiAlasivutQueryResult;
     '\n  *[_type == "klubiToiminta" && defined(slug.current)]\n    | order(jarjestys asc, title asc){\n    _id,\n    title,\n    "slug": slug.current,\n    tiivistelma,\n    "kuva": kuvat[0]{..., "lqip": asset->metadata.lqip},\n    "vuosiMaara": count(vuodet),\n    "uusinVuosi": math::max(vuodet[].vuosi)\n  }\n': KlubiToimintaListQueryResult;
-    '\n  *[_type == "klubiToiminta" && slug.current == $slug][0]{\n    _id,\n    _updatedAt,\n    title,\n    "slug": slug.current,\n    tiivistelma,\n    kuvaus[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n    kuvat[]{..., "lqip": asset->metadata.lqip},\n    seoTitle,\n    seoDescription,\n    "vuodet": vuodet[] | order(vuosi desc, paivamaara desc){\n      _key,\n      vuosi,\n      paivamaara,\n      otsikko,\n      jarjestysnumero,\n      osallistujat,\n      paikka,\n      kuvaus,\n      linkki{ url, teksti },\n      kuvat[]{..., "lqip": asset->metadata.lqip}\n    },\n    tilastot[]->{\n      _id,\n      _updatedAt,\n      title,\n      "slug": slug.current,\n      tiivistelma,\n      category,\n      intro[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n      columns[]{ key, label, type },\n      rows[]{ cells[]{ key, value } },\n      lisatiedot[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n      kuvat[]{ _key, alt, caption, asset, hotspot, crop, "lqip": asset->metadata.lqip },\n      paivitetty,\n      jarjestys,\n      "sources": coalesce(sources, [])\n    }\n  }\n': KlubiToimintaBySlugQueryResult;
+    '\n  *[_type == "klubiToiminta" && slug.current == $slug][0]{\n    _id,\n    _updatedAt,\n    title,\n    "slug": slug.current,\n    tiivistelma,\n    kuvaus[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n    kuvat[]{..., "lqip": asset->metadata.lqip},\n    seoTitle,\n    seoDescription,\n    "vuodet": vuodet[] | order(vuosi desc, paivamaara desc){\n      _key,\n      vuosi,\n      paivamaara,\n      otsikko,\n      jarjestysnumero,\n      osallistujat,\n      paikka,\n      kuvaus,\n      linkki{ url, teksti },\n      kuvat[]{..., "lqip": asset->metadata.lqip}\n    },\n    tilastot[]->{ \n  _id,\n  _updatedAt,\n  title,\n  "slug": slug.current,\n  tiivistelma,\n  category,\n  huuhkajatOsio,\n  mestaruusmaa,\n  intro[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n  columns[]{ key, label, type },\n  rows[]{ cells[]{ key, value } },\n  lisatiedot[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n  kuvat[]{ _key, alt, caption, asset, hotspot, crop, "lqip": asset->metadata.lqip },\n  paivitetty,\n  jarjestys,\n  "sources": coalesce(sources, []),\n  "kaudenOttelut": kaudenOttelut->{ title, "slug": slug.current }\n }\n  }\n': KlubiToimintaBySlugQueryResult;
     '\n  *[_type == "klubiToiminta" && defined(slug.current) && slug.current != $slug]\n    | order(jarjestys asc, title asc)[0...4]{\n    _id,\n    title,\n    "slug": slug.current,\n    tiivistelma\n  }\n': KlubiToimintaSiblingsQueryResult;
     '\n  *[_type == "klubiToiminta" && defined(slug.current)][].slug.current\n': KlubiToimintaSlugsQueryResult;
-    '\n  *[_type == "hallitusJasen"] | order(order asc, name asc){\n    _id,\n    name,\n    role,\n    image{..., "lqip": asset->metadata.lqip},\n    bio,\n    email,\n    phone\n  }\n': HallitusListQueryResult;
+    '\n  *[_type == "hallitusJasen" && nykyinen != false] | order(order asc, name asc){\n    _id,\n    name,\n    role,\n    image{..., "lqip": asset->metadata.lqip},\n    bio,\n    email,\n    phone\n  }\n': HallitusListQueryResult;
     '\n  *[_type == "kommentti" && uutinen._ref == $uutinenId && piilotettu != true]\n    | order(lahetetty asc){\n      _id,\n      nimi,\n      teksti,\n      veikkaus{ jarjestys, maalikuningas },\n      lahetetty,\n      lahde\n    }\n': KommentitQueryResult;
     '\n  *[_type == "lehtileike" && pelaaja._ref == $pelaaja && osio == $osio && defined(julkaistu)]\n    | order(julkaistu desc, otsikko asc){\n    _id,\n    otsikko,\n    julkaistu,\n    lahde,\n    linkki,\n    teksti[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }}\n  }\n': LehtileikkeetQueryResult;
     '\n  {\n    "lehtileikkeet": {\n      "maara": count(*[_type == "lehtileike" && pelaaja._ref == $pelaaja && osio == "lehtileikkeet" && defined(julkaistu)]),\n      "ensimmainen": *[_type == "lehtileike" && pelaaja._ref == $pelaaja && osio == "lehtileikkeet" && defined(julkaistu)] | order(julkaistu asc)[0].julkaistu,\n      "viimeisin": *[_type == "lehtileike" && pelaaja._ref == $pelaaja && osio == "lehtileikkeet" && defined(julkaistu)] | order(julkaistu desc)[0].julkaistu\n    },\n    "patsas": {\n      "maara": count(*[_type == "lehtileike" && pelaaja._ref == $pelaaja && osio == "patsas" && defined(julkaistu)]),\n      "ensimmainen": *[_type == "lehtileike" && pelaaja._ref == $pelaaja && osio == "patsas" && defined(julkaistu)] | order(julkaistu asc)[0].julkaistu,\n      "viimeisin": *[_type == "lehtileike" && pelaaja._ref == $pelaaja && osio == "patsas" && defined(julkaistu)] | order(julkaistu desc)[0].julkaistu\n    },\n    "terveys": {\n      "maara": count(*[_type == "lehtileike" && pelaaja._ref == $pelaaja && osio == "terveys" && defined(julkaistu)]),\n      "ensimmainen": *[_type == "lehtileike" && pelaaja._ref == $pelaaja && osio == "terveys" && defined(julkaistu)] | order(julkaistu asc)[0].julkaistu,\n      "viimeisin": *[_type == "lehtileike" && pelaaja._ref == $pelaaja && osio == "terveys" && defined(julkaistu)] | order(julkaistu desc)[0].julkaistu\n    },\n    "uusimmat": *[_type == "lehtileike" && pelaaja._ref == $pelaaja && defined(julkaistu)]\n      | order(julkaistu desc)[0...3]{\n      _id,\n      otsikko,\n      julkaistu,\n      lahde,\n      linkki,\n      osio,\n      "ote": pt::text(teksti[_type == "block"][0])\n    }\n  }\n': LehtileikeYhteenvetoQueryResult;
-    '\n  {\n    "items": *[_type == "uutinen" && defined(slug.current) && count((tunnisteet[])[lower(@) == $tunniste]) > 0\n      && ($otsikossa == null || title match $otsikossa)]\n      | order(publishedAt desc)[0...$maara]{\n      _id,\n      title,\n      "slug": slug.current,\n      publishedAt,\n      excerpt,\n      tiivistelma,\n      coverImage{..., "lqip": asset->metadata.lqip},\n      categories\n    },\n    "total": count(*[_type == "uutinen" && defined(slug.current) && count((tunnisteet[])[lower(@) == $tunniste]) > 0])\n  }\n': UutisetTunnisteenMukaanQueryResult;
+    '\n  {\n    "items": *[_type == "uutinen" && defined(slug.current) && (!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now())) && count((tunnisteet[])[lower(@) == $tunniste]) > 0\n      && ($otsikossa == null || title match $otsikossa)]\n      | order(publishedAt desc)[0...$maara]{\n      _id,\n      title,\n      "slug": slug.current,\n      publishedAt,\n      excerpt,\n      tiivistelma,\n      coverImage{..., "lqip": asset->metadata.lqip},\n      categories\n    },\n    "total": count(*[_type == "uutinen" && defined(slug.current) && (!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now())) && count((tunnisteet[])[lower(@) == $tunniste]) > 0])\n  }\n': UutisetTunnisteenMukaanQueryResult;
     '\n  *[_type == "ottelu" && defined(aika) && dateTime(aika) > dateTime(now()) - 60*60*24]\n    | order(aika asc){\n    _id,\n    aika,\n    koti,\n    vieras,\n    kilpailu,\n    stadion,\n    klubiPaikalla,\n    vierasmatka\n  }\n': TulevatOttelutQueryResult;
     '\n  *[_type == "etusivu"][0].blocks[_type == "otteluohjelma"][0].seurat\n': OttelujenSeuratQueryResult;
     '\n  count(*[\n  _type == "ravintola" && defined(slug.current) && (\n  automaattinenArvosana.arvioijia >= 2\n  || (!defined(automaattinenArvosana) && (defined(ratingOverall) || defined(stars)))\n)\n  && ($citySlug == null || city->slug.current == $citySlug)\n  && ($countryNames == null || city->country in $countryNames)\n  && ($maakuntaSlugs == null\n      || (city->country == "Suomi" && city->maakunta in $maakuntaSlugs))\n  && ($minRating == null || coalesce(ratingOverall, stars, 0) >= $minRating)\n  && ($terms == null || [name, city->name, city->country] match $terms)\n  && ($includeClosed == true || $terms != null || closed != true)\n])\n': RavintolatCountQueryResult;
@@ -5148,18 +5182,18 @@ declare module "@sanity/client" {
     '\n  *[_type == "ravintola" && slug.current == $slug && (\n  automaattinenArvosana.arvioijia >= 2\n  || (!defined(automaattinenArvosana) && (defined(ratingOverall) || defined(stars)))\n)][0]{\n    \n  _id,\n  name,\n  "slug": slug.current,\n  "city": city->{ name, "slug": slug.current, country },\n  stars,\n  ratingOverall,\n  ratingFood,\n  ratingPrice,\n  ratingAtmosphere,\n  priceLevel,\n  closed,\n  tiivistelma,\n  tuomio,\n  stadionHuomio,\n  "tuoreinArvio": select(\n  automaattinenArvosana.viimeisinArvio > coalesce(coalesce(visits[0], visitedAt), "") => automaattinenArvosana.viimeisinArvio,\n  coalesce(visits[0], visitedAt)\n),\n  "image": images[0]{..., "lqip": asset->metadata.lqip}\n,\n    _updatedAt,\n    address,\n    postalCode,\n    phone,\n    website,\n    location,\n    closedNote,\n    pros,\n    cons,\n    visitedAt,\n    visits,\n    // Klubilaisten hyv\xE4ksyttyjen arvostelujen k\xE4yntip\xE4iv\xE4t: klubin k\xE4yntej\xE4\n    // nekin. Vanhoissa arvosteluissa ei ole k\xE4yntip\xE4iv\xE4\xE4 \u2192 l\xE4hetysaika.\n    "arvostelujenKaynnit": *[_type == "ravintolaKayttajaArvostelu" && !(_id in path("drafts.**"))\n      && restaurant._ref == ^._id && defined(arvioija)]{ "p": coalesce(kayntipaiva, submittedAt) }.p,\n    visitContext,\n    automaattinenArvosana,\n    review,\n    ottelupaivana,\n    images[]{..., "lqip": asset->metadata.lqip},\n    seoTitle,\n    seoDescription,\n    "related": *[_type == "ravintola" && defined(slug.current) && (\n  automaattinenArvosana.arvioijia >= 2\n  || (!defined(automaattinenArvosana) && (defined(ratingOverall) || defined(stars)))\n)\n      && _id != ^._id && closed != true && city._ref == ^.city._ref]\n      | order(round(coalesce(ratingOverall, stars, 0), 1) desc,\n  coalesce(automaattinenArvosana.arvioijia, 0) desc,\n  coalesce(select(\n  automaattinenArvosana.viimeisinArvio > coalesce(coalesce(visits[0], visitedAt), "") => automaattinenArvosana.viimeisinArvio,\n  coalesce(visits[0], visitedAt)\n), "0000-00-00") desc, name asc)[0...3]{\n  _id,\n  name,\n  "slug": slug.current,\n  "city": city->{ name, "slug": slug.current, country },\n  stars,\n  ratingOverall,\n  ratingFood,\n  ratingPrice,\n  ratingAtmosphere,\n  priceLevel,\n  closed,\n  tiivistelma,\n  tuomio,\n  stadionHuomio,\n  "tuoreinArvio": select(\n  automaattinenArvosana.viimeisinArvio > coalesce(coalesce(visits[0], visitedAt), "") => automaattinenArvosana.viimeisinArvio,\n  coalesce(visits[0], visitedAt)\n),\n  "image": images[0]{..., "lqip": asset->metadata.lqip}\n}\n  }\n': RavintolaBySlugQueryResult;
     '\n  *[_type == "ravintolaKayttajaArvostelu" && restaurant._ref == $id && !(_id in path("drafts.**"))]\n    | order(submittedAt desc){\n      _id,\n      reviewerName,\n      // Liitetty klubilaiseen: merkki nimen viereen, arvosana lasketaan mukaan.\n      "klubilainen": defined(arvioija),\n      ratingFood,\n      ratingPrice,\n      ratingAtmosphere,\n      "rating": math::avg([ratingFood, ratingPrice, ratingAtmosphere]),\n      comment,\n      "kuvat": kuvat[defined(asset)]{ _key, alt, asset, "vari": asset->metadata.palette.dominant.background },\n      submittedAt\n    }\n': RavintolaArvostelutQueryResult;
     '\n  *[_type == "ravintola" && defined(slug.current) && (\n  automaattinenArvosana.arvioijia >= 2\n  || (!defined(automaattinenArvosana) && (defined(ratingOverall) || defined(stars)))\n)].slug.current\n': RavintolaSlugsQueryResult;
-    '\n  *[_type == $type && defined(slug.current) && ($type != "ravintola" || (\n  automaattinenArvosana.arvioijia >= 2\n  || (!defined(automaattinenArvosana) && (defined(ratingOverall) || defined(stars)))\n))]\n    | order(_updatedAt desc) {\n    "slug": slug.current,\n    "updatedAt": _updatedAt\n  }\n': SitemapByTypeQueryResult;
+    '\n  *[_type == $type && defined(slug.current) && ($type != "ravintola" || (\n  automaattinenArvosana.arvioijia >= 2\n  || (!defined(automaattinenArvosana) && (defined(ratingOverall) || defined(stars)))\n))\n    && ($type != "uutinen" || (!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now())))]\n    | order(_updatedAt desc) {\n    "slug": slug.current,\n    "updatedAt": _updatedAt\n  }\n': SitemapByTypeQueryResult;
     '\n  *[_type == "jalkapalloTilasto" && defined(slug.current)] | order(_updatedAt desc) {\n    _id,\n    _type,\n    "slug": slug.current,\n    category,\n    huuhkajatOsio,\n    mestaruusmaa,\n    "parent": *[\n      _type in ["arvokisa", "pelaaja", "klubiToiminta", "sivu"]\n      && references(^._id)\n      && !(_id in path("drafts.**"))\n    ] | order(_type asc, _id asc)[0]{ _type, "slug": slug.current },\n    "updatedAt": _updatedAt\n  }\n': SitemapTilastotQueryResult;
-    '\n  *[_type == "uutinen" && defined(publishedAt)]\n    | order(publishedAt desc) {\n      "slug": string::split(publishedAt, "-")[0],\n      "updatedAt": _updatedAt\n    }\n': SitemapArchiveYearsQueryResult;
-    '\n  {\n    "items": *[_type == "uutinen" && defined(slug.current) && ($category == null || references($category))] | order(publishedAt desc)[$start...$end]{\n      _id,\n      title,\n      "slug": slug.current,\n      publishedAt,\n      excerpt,\n      tiivistelma,\n      coverImage{..., "lqip": asset->metadata.lqip},\n      "categories": (kategoriat[]->{ _id, "value": slug.current, "label": nimi })[defined(value) && defined(label)]\n    },\n    "total": count(*[_type == "uutinen" && defined(slug.current) && ($category == null || references($category))])\n  }\n': UutisetPageQueryResult;
-    '\n  {\n    "items": *[_type == "uutinen" && defined(slug.current) && ($category == null || references($category)) && ([title, excerpt, pt::text(body)] + coalesce(tunnisteet, [])) match $terms]\n      | score(\n          boost(title match $terms, 3),\n          boost(tunnisteet match $terms, 2),\n          boost(excerpt match $terms, 2),\n          pt::text(body) match $terms\n        )\n      | order(_score desc, publishedAt desc)[$start...$end]{\n      _id,\n      title,\n      "slug": slug.current,\n      publishedAt,\n      excerpt,\n      tiivistelma,\n      coverImage{..., "lqip": asset->metadata.lqip},\n      "categories": (kategoriat[]->{ _id, "value": slug.current, "label": nimi })[defined(value) && defined(label)]\n    },\n    "total": count(*[_type == "uutinen" && defined(slug.current) && ($category == null || references($category)) && ([title, excerpt, pt::text(body)] + coalesce(tunnisteet, [])) match $terms])\n  }\n': UutisetHakuQueryResult;
-    '\n  *[_type == "uutinen" && defined(slug.current)].slug.current\n': UutinenSlugsQueryResult;
-    '\n  *[_type == "uutinen" && defined(slug.current) && slug.current == $slug][0]{\n      _id,\n      title,\n      "slug": slug.current,\n      publishedAt,\n      excerpt,\n      tiivistelma,\n      coverImage{..., "lqip": asset->metadata.lqip},\n      "categories": (kategoriat[]->{ _id, "value": slug.current, "label": nimi })[defined(value) && defined(label)],\n    _updatedAt,\n    body[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n    lahde{ nimi, url, pvm },\n    ulkoinenLinkki,\n    "author": author->{ name, role },\n    kommentointi{ kaytossa, tyyppi, sulkeutuu, vaihtoehdot, sijoituksia, maalikuningas, ohje },\n    tunnisteet,\n    seoTitle,\n    seoDescription,\n    \n    "vanhempi": *[_type == "uutinen" && defined(slug.current) && (publishedAt < ^.publishedAt\n      || (publishedAt == ^.publishedAt && _id < ^._id))]\n      | order(publishedAt desc, _id desc)[0]{ title, "slug": slug.current, publishedAt },\n    "uudempi": *[_type == "uutinen" && defined(slug.current) && (publishedAt > ^.publishedAt\n      || (publishedAt == ^.publishedAt && _id > ^._id))]\n      | order(publishedAt asc, _id asc)[0]{ title, "slug": slug.current, publishedAt }\n  }\n': UutinenDetailQueryResult;
-    '\n  *[_type == "uutinen" && defined(slug.current) && slug.current != $slug\n    && count((kategoriat[]._ref)[@ in $categories]) > 0]\n    | order(publishedAt desc)[0...$count]{\n      _id,\n      title,\n      "slug": slug.current,\n      publishedAt,\n      excerpt,\n      tiivistelma,\n      coverImage{..., "lqip": asset->metadata.lqip},\n      "categories": (kategoriat[]->{ _id, "value": slug.current, "label": nimi })[defined(value) && defined(label)]\n  }\n': RelatedUutisetQueryResult;
-    '\n  *[_type == "uutinen" && defined(slug.current) && count(tunnisteet) > 0]{ tunnisteet, "paivitetty": _updatedAt }\n': UutisetTunnisteetQueryResult;
-    '\n  {\n    "items": *[_type == "uutinen" && defined(slug.current) && count((tunnisteet[])[@ in $nimet]) > 0] | order(publishedAt desc)[$start...$end]{\n      _id,\n      title,\n      "slug": slug.current,\n      publishedAt,\n      excerpt,\n      tiivistelma,\n      coverImage{..., "lqip": asset->metadata.lqip},\n      "categories": (kategoriat[]->{ _id, "value": slug.current, "label": nimi })[defined(value) && defined(label)]\n    },\n    "total": count(*[_type == "uutinen" && defined(slug.current) && count((tunnisteet[])[@ in $nimet]) > 0])\n  }\n': UutisetTunnisteellaQueryResult;
-    '\n  *[_type == "uutinen" && defined(slug.current) && defined(publishedAt)]{\n    "year": string::split(publishedAt, "-")[0]\n  }\n': UutisetArchiveYearsQueryResult;
-    '\n  {\n    "items": *[_type == "uutinen" && defined(slug.current) && publishedAt >= $from && publishedAt < $to]\n      | order(publishedAt desc)[$start...$end]{\n      _id,\n      title,\n      "slug": slug.current,\n      publishedAt,\n      excerpt,\n      tiivistelma,\n      coverImage{..., "lqip": asset->metadata.lqip},\n      "categories": (kategoriat[]->{ _id, "value": slug.current, "label": nimi })[defined(value) && defined(label)]\n    },\n    "total": count(*[_type == "uutinen" && defined(slug.current) && publishedAt >= $from && publishedAt < $to])\n  }\n': UutisetByYearQueryResult;
+    '\n  *[_type == "uutinen" && defined(publishedAt) && (!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now()))]\n    | order(publishedAt desc) {\n      "slug": string::split(publishedAt, "-")[0],\n      "updatedAt": _updatedAt\n    }\n': SitemapArchiveYearsQueryResult;
+    '\n  {\n    "items": *[_type == "uutinen" && defined(slug.current) && (!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now())) && ($category == null || references($category))] | order(publishedAt desc)[$start...$end]{\n      _id,\n      title,\n      "slug": slug.current,\n      publishedAt,\n      excerpt,\n      tiivistelma,\n      coverImage{..., "lqip": asset->metadata.lqip},\n      "categories": (kategoriat[]->{ _id, "value": slug.current, "label": nimi })[defined(value) && defined(label)]\n    },\n    "total": count(*[_type == "uutinen" && defined(slug.current) && (!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now())) && ($category == null || references($category))])\n  }\n': UutisetPageQueryResult;
+    '\n  {\n    "items": *[_type == "uutinen" && defined(slug.current) && (!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now())) && ($category == null || references($category)) && ([title, excerpt, pt::text(body)] + coalesce(tunnisteet, [])) match $terms]\n      | score(\n          boost(title match $terms, 3),\n          boost(tunnisteet match $terms, 2),\n          boost(excerpt match $terms, 2),\n          pt::text(body) match $terms\n        )\n      | order(_score desc, publishedAt desc)[$start...$end]{\n      _id,\n      title,\n      "slug": slug.current,\n      publishedAt,\n      excerpt,\n      tiivistelma,\n      coverImage{..., "lqip": asset->metadata.lqip},\n      "categories": (kategoriat[]->{ _id, "value": slug.current, "label": nimi })[defined(value) && defined(label)]\n    },\n    "total": count(*[_type == "uutinen" && defined(slug.current) && (!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now())) && ($category == null || references($category)) && ([title, excerpt, pt::text(body)] + coalesce(tunnisteet, [])) match $terms])\n  }\n': UutisetHakuQueryResult;
+    '\n  *[_type == "uutinen" && defined(slug.current) && (!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now()))].slug.current\n': UutinenSlugsQueryResult;
+    '\n  *[_type == "uutinen" && defined(slug.current) && (!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now())) && slug.current == $slug][0]{\n      _id,\n      title,\n      "slug": slug.current,\n      publishedAt,\n      excerpt,\n      tiivistelma,\n      coverImage{..., "lqip": asset->metadata.lqip},\n      "categories": (kategoriat[]->{ _id, "value": slug.current, "label": nimi })[defined(value) && defined(label)],\n    _updatedAt,\n    body[]{..., _type == "imageWithAlt" => { "lqip": asset->metadata.lqip }},\n    lahde{ nimi, url, pvm },\n    ulkoinenLinkki,\n    "author": author->{ name, role },\n    kommentointi{ kaytossa, tyyppi, sulkeutuu, vaihtoehdot, sijoituksia, maalikuningas, ohje },\n    tunnisteet,\n    seoTitle,\n    seoDescription,\n    \n    "vanhempi": *[_type == "uutinen" && defined(slug.current) && (!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now())) && (publishedAt < ^.publishedAt\n      || (publishedAt == ^.publishedAt && _id < ^._id))]\n      | order(publishedAt desc, _id desc)[0]{ title, "slug": slug.current, publishedAt },\n    "uudempi": *[_type == "uutinen" && defined(slug.current) && (!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now())) && (publishedAt > ^.publishedAt\n      || (publishedAt == ^.publishedAt && _id > ^._id))]\n      | order(publishedAt asc, _id asc)[0]{ title, "slug": slug.current, publishedAt }\n  }\n': UutinenDetailQueryResult;
+    '\n  *[_type == "uutinen" && defined(slug.current) && (!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now())) && slug.current != $slug\n    && count((kategoriat[]._ref)[@ in $categories]) > 0]\n    | order(publishedAt desc)[0...$count]{\n      _id,\n      title,\n      "slug": slug.current,\n      publishedAt,\n      excerpt,\n      tiivistelma,\n      coverImage{..., "lqip": asset->metadata.lqip},\n      "categories": (kategoriat[]->{ _id, "value": slug.current, "label": nimi })[defined(value) && defined(label)]\n  }\n': RelatedUutisetQueryResult;
+    '\n  *[_type == "uutinen" && defined(slug.current) && (!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now())) && count(tunnisteet) > 0]{ tunnisteet, "paivitetty": _updatedAt }\n': UutisetTunnisteetQueryResult;
+    '\n  {\n    "items": *[_type == "uutinen" && defined(slug.current) && (!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now())) && count((tunnisteet[])[@ in $nimet]) > 0] | order(publishedAt desc)[$start...$end]{\n      _id,\n      title,\n      "slug": slug.current,\n      publishedAt,\n      excerpt,\n      tiivistelma,\n      coverImage{..., "lqip": asset->metadata.lqip},\n      "categories": (kategoriat[]->{ _id, "value": slug.current, "label": nimi })[defined(value) && defined(label)]\n    },\n    "total": count(*[_type == "uutinen" && defined(slug.current) && (!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now())) && count((tunnisteet[])[@ in $nimet]) > 0])\n  }\n': UutisetTunnisteellaQueryResult;
+    '\n  *[_type == "uutinen" && defined(slug.current) && (!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now())) && defined(publishedAt)]{\n    "year": string::split(publishedAt, "-")[0]\n  }\n': UutisetArchiveYearsQueryResult;
+    '\n  {\n    "items": *[_type == "uutinen" && defined(slug.current) && (!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now())) && publishedAt >= $from && publishedAt < $to]\n      | order(publishedAt desc)[$start...$end]{\n      _id,\n      title,\n      "slug": slug.current,\n      publishedAt,\n      excerpt,\n      tiivistelma,\n      coverImage{..., "lqip": asset->metadata.lqip},\n      "categories": (kategoriat[]->{ _id, "value": slug.current, "label": nimi })[defined(value) && defined(label)]\n    },\n    "total": count(*[_type == "uutinen" && defined(slug.current) && (!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now())) && publishedAt >= $from && publishedAt < $to])\n  }\n': UutisetByYearQueryResult;
     '\n  *[_type == "tapahtuma" && defined(slug.current) && startsAt >= now()] | order(startsAt asc){\n      _id,\n      title,\n      "slug": slug.current,\n      startsAt,\n      endsAt,\n      location,\n      tiivistelma,\n      juhla,\n      image{..., "lqip": asset->metadata.lqip}\n  }\n': TulevatTapahtumatQueryResult;
     '\n  *[_type == "tapahtuma" && defined(slug.current) && startsAt < now()] | order(startsAt desc){\n      _id,\n      title,\n      "slug": slug.current,\n      startsAt,\n      endsAt,\n      location,\n      tiivistelma,\n      juhla,\n      image{..., "lqip": asset->metadata.lqip}\n  }\n': MenneetTapahtumatQueryResult;
     '\n  *[_type == "tapahtuma" && defined(slug.current)].slug.current\n': TapahtumaSlugsQueryResult;

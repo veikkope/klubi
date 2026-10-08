@@ -1,4 +1,11 @@
-import { defineField, type Rule, type SanityDocumentLike, type SlugRule } from "sanity";
+import {
+  defineField,
+  type Rule,
+  type SanityDocumentLike,
+  type SlugRule,
+  type TextRule,
+  type ValidationBuilder,
+} from "sanity";
 
 import { tarkistaLinkki } from "../../../lib/linkki";
 import { apiVersion } from "../../env";
@@ -17,17 +24,26 @@ import { linkinKohdeVaroitus } from "../../lib/linkin-kohde";
  * eikä niitä tarvitse ylläpitää käsin 198 sivulle.
  */
 
-export const tiivistelmaField = (group?: string) =>
+/** Tyyppikohtaiset ohitukset tiivistelmäkentälle (docs/24 askel 1, Y10). */
+export type TiivistelmanOhitukset = {
+  title?: string;
+  description?: string;
+  validation?: ValidationBuilder<TextRule, string>;
+};
+
+export const tiivistelmaField = (group?: string, ohitukset: TiivistelmanOhitukset = {}) =>
   defineField({
     name: "tiivistelma",
-    title: "Tiivistelmä",
+    title: ohitukset.title ?? "Tiivistelmä",
     description:
-      "2–3 virkettä, jotka vastaavat sivun kysymykseen itsenäisesti. Näkyy sivun " +
-      "alussa ingressinä ja on se teksti, jonka hakukone todennäköisimmin lainaa.",
+      ohitukset.description ??
+      "Näkyy sivun alussa isommalla tekstillä ja on se teksti, jonka hakukone " +
+        "todennäköisimmin lainaa. 2–3 virkettä.",
     type: "text",
     rows: 3,
-    validation: (rule) =>
-      rule.max(300).warning("Suositus: alle 300 merkkiä — tiivistelmä, ei johdanto."),
+    validation:
+      ohitukset.validation ??
+      ((rule) => rule.max(300).warning("Suositus: alle 300 merkkiä — tiivistelmä, ei johdanto.")),
     ...(group ? { group } : {}),
   });
 
@@ -123,8 +139,8 @@ export const polkuMuuttunut = (rule: SlugRule) =>
         .fetch<string | null>(`*[_id == $id][0].slug.current`, { id: id.replace(/^drafts\./, "") });
       if (!julkaistu || julkaistu === slug.current) return true;
       return (
-        `Julkaistu polku on "${julkaistu}". Jos muutat sen, vanhat linkit tähän sivuun lakkaavat ` +
-        "toimimasta. Palauta vanha polku, tai pyydä kehittäjää lisäämään ohjaus ennen julkaisua."
+        `Julkaistu osoite on "${julkaistu}". Jos muutat sen, vanhat linkit tähän sivuun lakkaavat ` +
+        "toimimasta. Palauta vanha osoite, tai pyydä kehittäjää lisäämään ohjaus ennen julkaisua."
       );
     })
     .warning();
