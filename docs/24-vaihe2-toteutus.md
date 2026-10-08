@@ -1,19 +1,16 @@
 # 24. Vaihe 2: kehys Studioon, toteutussuunnitelma
 
-*Laadittu 8.10.2026. Integroitu viiden kokonaisuuden (A–E) arkkitehtisuunnitelmista. Tila: suunnitelma, mitään ei ole vielä toteutettu.*
+*Laadittu 8.10.2026. Integroitu viiden kokonaisuuden (A–E) arkkitehtisuunnitelmista. Kriitikon löydökset (Liite A) ja käyttäjän päätökset (luku 6) on viety askeliin 8.10.2026. Tila: suunnitelma, mitään ei ole vielä toteutettu.*
 
 Lähteet: docs/23 (§0 päätökset 7.10.2026 ja §4 tiekartta), docs/09, docs/05 ja nykyinen koodi (main, bf05473). Ristiriidat on ratkaistu koodia vasten. Tarkistetut kohdat on lueteltu luvussa 1.
 
 > **Jatketaan tästä (tila 8.10.2026):**
-> 1. **Ennen toteutusta käsitellään kriitikon vakavat löydökset K1–K4 (Liite A).** Kukin korjataan omaan askeleeseensa tai perustellaan, miksi ei:
->    - K1 (askel 3): osiosivujen siemen ei saa muuttaa nykyisiä Google-kuvauksia.
->    - K2 (askel 8): vanha osoite ei saa kadota webhookissa.
->    - K3 (askel 9): poiston turvan ohje on ristiriidassa askeleen 8 kanssa.
->    - K4 (askeleet 4 ja 6): tietosuojatekstit julkisessa datasetissä ja orpojen tiedostojen siivous.
-> 2. **Käyttäjän päätökset (luku 6):** muutetaanko Lyhenne valinnaiseksi (askel 2b), ja kuka saa UptimeRobot-hälytykset.
-> 3. **Toteutus askel kerrallaan luvun 3 järjestyksessä:**
+> 1. **Tehty:** kriitikon vakavat löydökset K1–K4 ja pienet löydökset on korjattu askeliin (Liite A, jokaisessa merkintä). Käyttäjän päätökset on kirjattu lukuun 6.
+> 2. **Tehty 8.10.2026 (P0):** `npm run backup` (`production-2026-10-08.tar.gz`) ja development päivitetty sen kopioksi: `npx sanity dataset import varmuuskopiot/production-2026-10-08.tar.gz development --replace` (3836 dokumenttia). Developmentissa on lisäksi 13 vanhaa orpoa kuvaa tai tiedostoa, joita productionissa ei ole. Muuten tunnukset täsmäävät.
+> 3. **Toteutus askel kerrallaan luvun 3 järjestyksessä, alkaen askeleesta 1:**
 >    - Kukin askel tehdään omana committinaan. Toteuttajana on agentti, ja sen jälkeen riippumaton tarkastaja käy askeleen läpi.
 >    - Kehittäjä varmistaa jokaisen askeleen: type-check, lint, test ja puhdas build productionin datalla.
+>    - Ennen jokaista pushia (deploy) ja jokaista productioniin kirjoittamista kysytään käyttäjältä.
 >    - Productioniin kirjoitetaan vain luvun 5 mukaisesti.
 > 4. **Paikallinen ympäristö:** `.env.local` osoittaa `production`-datasettiin ilman lukutokenia, joten paikallinen sivu näyttää tyhjältä ja paikallinen Studio muokkaa productionia. Buildia varten anna lukutoken ympäristömuuttujana, esim. `SANITY_API_READ_TOKEN=<Sanity CLI:n authToken> npm run build`. Aja aina puhdas build (`rm -rf .next`), koska Turbopackin välimuisti palautti kerran vanhentuneet esirenderöidyt sivut.
 > 5. **Arkkitehtien yksityiskohdat:** `docs/24-liite-arkkitehdit.md`. Ristiriitatilanteessa tämä dokumentti voittaa.
@@ -57,7 +54,7 @@ Koodista tarkistetut tosiasiat:
 - Uutisen Lyhenne on pakollinen, paitsi kun kenttä `ulkoinenLinkki` on täytetty (`uutinen.ts:68-84`).
 - `LinkButton` avaa `https:`-alkuiset osoitteet itse uuteen välilehteen (`components/ui/button.tsx:85`).
 - Webhookin käsittelijä lukee vain kentät `_type` ja `slug` (`route.ts:41-44`).
-- `notFound()`-kutsuja on 22 kappaletta 19 tiedostossa.
+- `notFound()`-kutsuja on 21 kappaletta 18 tiedostossa. Lisäksi `klubi-sivu.tsx:19`:ssä on maininta kommentissa (korjattu 8.10. kriitikon mukaan).
 - `JULKINEN_RAVINTOLA` on tiedostossa `lib/ravintola-arvosana.ts:151`.
 - docs/23 §4 sijoittaa Y26:n, Y27:n askeleet 1–2, Y40:n ja Y42:n **vaiheeseen 3**.
 
@@ -79,7 +76,7 @@ Koodista tarkistetut tosiasiat:
 | R14 | Mallipohjat: A:lla `lukittu-sivu`, E:llä viisi pohjaa ja kaksi eri suodatinta. | Yksi tiedosto **`sanity/pohjat.ts`** (`pohjat(prev)` ja `PIILOTETUT_POHJAT`), jonka askel 3 luo ja askel 10 laajentaa. | Yksi paikka. |
 | R15 | Toimintojen kääreet sivulla (A: lukittu, D: vanhat osoitteet, Kopioi pohjaksi). | Järjestys `lukitulleSivulle(varoitaVanhoistaOsoitteista(t))` ja `lukitulleSivulle(kopioiPohjaksi(t))` (§2.8). | Lukitulla sivulla toiminto on aina estetty. |
 | R16 | Linkki ravintolaan, joka odottaa toista arvioijaa, veisi 404-sivulle. B piilotti vain ajastetut uutiset. | `kohdeProjektio` palauttaa `piilossa` myös tapauksessa `_type == "ravintola" && !JULKINEN_RAVINTOLA`. | Kävijä ei koskaan näe rikkinäistä linkkiä. |
-| R17 | Lyhenteen muuttaminen valinnaiseksi (C) ja Y10:n ohjeteksti (E). | **Avoin päätös** (luku 6). Askel 1 kirjoittaa ohjeen nykyisen säännön mukaan. Jos muutos hyväksytään, se tehdään erillisenä askeleena 2b. | Muuttaa käytöstä, ei vain ohjetta. |
+| R17 | Lyhenteen muuttaminen valinnaiseksi (C) ja Y10:n ohjeteksti (E). | **Päätetty 8.10.: kyllä** (luku 6). Askel 1 kirjoittaa ohjeen nykyisen säännön mukaan, ja askel 2b muuttaa säännön ja ohjeen. | Muuttaa käytöstä, ei vain ohjetta. |
 | R18 | `sivustonTila` ja kielto tehdä uusia singletoneja. | **Hyväksytään perusteltuna poikkeuksena:** järjestelmäloki, jota cron kirjoittaa ja jota isä ei muokkaa eikä näe sisältöpuussa, kuten `varmuuskopio`. Ilman sitä Studio ei näe ajastettujen tehtävien tulosta ilman Vercel-pääsyä. Pistetunnus `sivustonTila.*` ei näy julkisesta datasetistä. | docs/23 Y33. |
 | R19 | E:n Aloitus käyttäisi Management- ja Hooks-rajapintoja selaimesta (taso, token, webhook). | **Karsitaan.** Aloitus lukee vain datasetin, ja kiintiö lasketaan dataseteistä. Lomakkeiden tokenin vika näkyy, koska yöllisen huollon kirjaus vanhenee (punainen). Kehittäjällä on jo `npm run tarkista:sanity-taso`. | CORS- ja oikeusriski, eikä isä voi itse korjata näitä vikoja. |
 | R20 | Karsinnat (luku 7). | Pois jäävät: Y40 kategorian selitys, Y42 media-plugin, `ARKISTON_OSIOT`-yhdistäminen, Aloituksen Luo uusi- ja Tee näin -osiot, `ottelu-huuhkajat`-pohja, merkki "Odottaa hyväksyntää" ja `verify-redirects --sanity`. | Hyöty isän itsenäisyydelle on pieni suhteessa työhön, tai asia on tiekartassa vaiheessa 3. |
@@ -112,6 +109,7 @@ Koodista tarkistetut tosiasiat:
 | `lib/ohjaukset.ts` | `OHJATTAVAT_TYYPIT`, `TUNNISTE_TYYPIT`, `OHJAUKSELTA_VARATUT`, `normalisoiPolku`, `omaPolku`, `ratkaiseOhjaus`, `tarkistaOhjauksenLahde`, `yhdistaAiemmatPolut`, `osoitteenMuutos`, `polunMuutosViesti` (8); `vanhatOsoitteet`, `KOPIOSTA_POISTETTAVAT`, `tyhjennaKopiosta` (9) | 8, 9 | 8, 9 |
 | `sanity/lib/ohjaus.ts` | `ohjaaTaiEiLoydy(polku): Promise<never>` (server-only) | 8 | **jokainen** dynaaminen reitti |
 | `lib/sivuston-tila.ts` | `TILA_ID`, tyypit `Tila`, `TilaRivi`, `AjonTulos`, `AjoDokumentti`, säännöt `varmuuskopionTila`, `huollonTila`, `otteluhaunTila`, `kiintionTila`, `julkaisemattomienTila`, `kokonaistila`, `huoltoajonKirjaus`, `puuttuvatPerustiedot`, `DATASETIT`, `KIINTIO = 10_000` | 7 | 7 |
+| `lib/tiedostosiivous.ts`, `sanity/lib/tiedostosiivous.ts` | `TIEDOSTON_ARMOAIKA_PAIVAA`, `onSiivottavaTiedosto`; `siivoaOrvotTiedostot` (K4) | 7 | huolto, `scripts/siivoa-tiedostot.ts` |
 | `sanity/lib/tehtavat.ts` | `TEHTAVAT`, `TARKISTETTAVAT_TYYPIT` (siirto tiedostosta structure.ts), `ALOITUS_KYSELY` | 7 | structure, Aloitus |
 | `sanity/lib/kirjaa-ajo.ts` | `kirjaaAjo(client, id, tehtava, kirjaus)` | 7 | cronit |
 | `lib/pohjat.ts`, `sanity/pohjat.ts` | `TAYTA`, `taytettavatKohdat`, `taytaVielaSaanto`, pohjafunktiot (10); `pohjat(prev)`, `PIILOTETUT_POHJAT` (3, laajennus 10) | 3, 10 | sanity.config |
@@ -178,18 +176,24 @@ Jos tulos on `null`, kävijä näkee pelkän tekstin (tekstieditori) tai kohta j
 
 | Tagi | Käyttäjät | Tyhjennetään, kun | Askel |
 |---|---|---|---|
-| `sivu`, `sivu:<slug>` | osiosivut (nykyinen) | sivu muuttuu | 3 (ei muutosta) |
-| `linkit` | navigaatio, etusivu, klubin toiminta | mikä tahansa `LINKIN_KOHDETYYPIT`-tyyppi muuttuu (RIIPPUVAT yhdistetään) | 4 |
+| `sivu:<slug>` | osiosivut (askel 3) ja arkiston korttitekstit (slugikohtaiset tagit) | sivu muuttuu | 3 |
+| `linkit` | etusivu, klubin toiminta (**ei** navigaatio) | mikä tahansa `LINKIN_KOHDETYYPIT`-tyyppi muuttuu (RIIPPUVAT yhdistetään) | 4 |
 | `ohjaus` | ohjauskartta (404-haara) | `ohjaus` tai mikä tahansa `OHJATTAVAT_TYYPIT`-tyyppi muuttuu | 8 |
 | (ohitus) | – | `sivustonTila` ja `varmuuskopio` palauttavat 200 ilman tyhjennystä | 7 |
+
+Osiosivujen haku käyttää vain tagia `sivu:<slug>`, ei yleistä `sivu`-tagia. Muuten minkä tahansa sivun tai taulukon muutos (RIIPPUVAT jalkapalloTilasto → sivu) tyhjentäisi kaikki 30 listasivua (kriitikko, pieni löydös).
+
+Navigaatio (Header ja Footer, eli jokaisen sivun layout) **ei** käytä `linkit`-tagia. Muuten minkä tahansa yhdeksän tyypin muutos, myös webhookin automaattinen ravintolan arvosanapatch, tyhjentäisi koko sivuston välimuistin. Valikon linkin kohteen osoitteen muutos näkyy siksi valikossa 60 sekunnin viiveellä, kuten tekstilinkeissä.
 
 Tekstieditorin linkkien kohteiden polunmuutos päivittyy muissa dokumenteissa 60 sekunnin viiveellä (`fetch.ts`). Tämä hyväksytään.
 
 Webhookin projektio askeleesta 8 alkaen (sama kaikille, docs/17 §D):
 ```groq
 { _id, _type, "slug": slug.current, "operaatio": delta::operation(),
-  "ennen": before(){ "slug": slug.current, category, huuhkajatOsio, mestaruusmaa } }
+  "ennen": before(){ "slug": slug.current, aiemmatPolut, category, huuhkajatOsio, mestaruusmaa } }
 ```
+
+Webhookin suodatin askeleesta 8 alkaen: `!(_type in ["sivustonTila", "varmuuskopio"])`. Näin järjestelmädokumenttien kirjaukset eivät aiheuta turhia kutsuja. Käsittelijän ohitus (taulukon viimeinen rivi) jää varmistukseksi.
 
 ### 2.6 Studion rakenne ja kiinteät tunnisteet (askel 3 luo, muut täydentävät)
 
@@ -226,7 +230,7 @@ Lukitun sivun kohdan id on `osioSivuId(slug)`. Studio-polut ovat muotoa `/studio
     - `duplicate` → `kopioiPohjaksi(t)`
     - perään `PalautaVarmuuskopiosta` (9)
   - Arvostelu-, kommentti-, varmuuskopio- ja singleton-haarat ovat ennallaan.
-- `document.badges` (10) ja `presentationTool({ resolve: { locations } })` (11).
+- `document.badges` (10) ja `presentationTool({ resolve: { locations } })` (11). Funktiomuotoinen `locations` korvaa nykyisen objektikartan kokonaan, joten nykyiset lehtileike- ja etusivu-resolverit siirretään `dokumentinSijainnit`-funktioon (askel 11).
 - `plugins: [aloitus(), structureTool(…), presentationTool(…), visionTool(…), fiFILocale()]` (7).
 
 ### 2.8 Yhteiset tiedostot ja konfliktisääntö
@@ -250,14 +254,14 @@ Ne **eivät estä rinnakkaisuutta**. Rinnakkaiset haarat yhdistetään järjesty
                                                                     └─► 7 Sivuston tila (E2) ─┴─► 8 Ohjaukset (D1) ─► 9 Poiston turva (D2)
                                                                                                    ─► 10 Pohjat + merkit (E3) ─► 11 Taulukon sijainti (E4)
 12 Ohjausgeneraattorin pienet korjaukset (D3): milloin tahansa, rinnakkain minkä tahansa kanssa
-(2b Lyhenne valinnaiseksi: vain jos päätös 6.1 on kyllä, askeleen 2 jälkeen)
+(2b Lyhenne valinnaiseksi: päätetty 8.10., askeleen 2 jälkeen)
 ```
 
 | Askel | Kokonaisuus | Työ (pv) | Riippuu | Rinnakkain |
 |---|---|---|---|---|
 | 1 | E: sanasto, johdantojen ohjeet, lohkon piilotus (Y38, Y10) | 1 | – | 12 |
 | 2 | C1: rikasSisalto ja kuvasarja, korttikuva, jakokuva (Y9) | 2 | 1 | 3, 12 |
-| 2b | C: Lyhenne valinnaiseksi ja tekstin alku kortissa (päätös 6.1) | 0,25 | 2 | 3 |
+| 2b | C: Lyhenne valinnaiseksi ja tekstin alku kortissa (päätetty 8.10., luku 6) | 0,25 | 2 | 3 |
 | 3 | A: osiosivut, Klubi-ryhmä, korttiteksti (Y22, Y25) | 4 | 1 | 2, 12 |
 | 4 | B1: linkkiobjekti, alatunniste, tekstieditorin linkki (Y17 2–3, Y23) | 3,5 | 2, 3 | 12 |
 | 5 | B2: `patch:linkit`-skripti | 1 | 4 | 6, 7, 12 |
@@ -402,8 +406,8 @@ Yhteensä noin 24 työpäivää: noin 5 viikkoa yhdellä toteuttajalla tai noin 
    - `uutinenDetailQuery` käyttää perusosaa ja muotoa `coverImage{${kuva}}` **ilman** varakuvaa, jotta sama kuva ei näy kahdesti.
 7. **Renderöinti:**
    - `portable-text.tsx`: `const lohkot = { … } satisfies Record<RikasLohko, PortableTextTypeComponent<any>>`. Tyyppitarkistus varmistaa käännösaikana, että jokaisella lohkolla on renderöijä.
-   - `components/kuvasarja.tsx` (palvelinkomponentti): `stegaClean(asettelu)`, ja rakenne `<figure className="mt-8"><AlbumGrid images albumTitle={kuvaus || "Kuvasarja"} kokonaisena sarakkeet={3} />{kuvaus && <figcaption className="mt-2 text-sm text-muted">}</figure>`.
-   - `AlbumGrid` saa propin `sarakkeet?: 3 | 4` (oletus 4). Arvolla 3: `grid-cols-2 sm:grid-cols-3` ja `sizes="(min-width: 768px) 240px, 50vw"`.
+   - `components/kuvasarja.tsx` (palvelinkomponentti): `const kokonaisena = stegaClean(asettelu) === "kokonaisena"`, ja rakenne `<figure className="mt-8"><AlbumGrid images albumTitle={kuvaus || "Kuvasarja"} kokonaisena={kokonaisena} sarakkeet={3} />{kuvaus && <figcaption className="mt-2 text-sm text-muted">}</figure>`. Prop välitetään ehdollisena, muuten Kuvien muoto -valinta ei vaikuta mihinkään (kriitikko).
+   - `AlbumGrid` saa propin `sarakkeet?: 3 | 4` (oletus 4). Nyt `ul`:n luokat ovat kovakoodattuna muodossa `grid-cols-2 sm:grid-cols-3 lg:grid-cols-4` (album-grid.tsx:50), joten myös `lg:grid-cols-4` ehdollistetaan. Arvolla 3: `grid-cols-2 sm:grid-cols-3` ilman lg-luokkaa ja `sizes="(min-width: 768px) 240px, 50vw"`. Arvolla 4 luokat ovat ennallaan.
    - Alt-varateksti ja lightboxin fokuksen palautus ovat valmiina.
 8. **Jakokuva** (`lib/seo.ts`): `jakokuvaSisallosta` käy läpi `sisallonKuvat(sisalto)` (≥600 px) ennen YouTubea.
 
@@ -435,6 +439,7 @@ Yhteensä noin 24 työpäivää: noin 5 viikkoa yhdellä toteuttajalla tai noin 
   - Uutissivulla ei ole kaksoiskuvaa.
   - og:image on ennallaan.
 - Näppäimistö: ruutu → lightbox → Esc palauttaa fokuksen.
+- Kuvien muoto: testiuutisen kuvasarja näkyy rajattuna arvolla ruudukko ja kokonaisena arvolla kokonaisena, ja kolme saraketta myös leveällä näytöllä.
 - `test:saavutettavuus` sivuille /uutiset ja testiuutiselle.
 
 **docs/09:**
@@ -445,13 +450,14 @@ Yhteensä noin 24 työpäivää: noin 5 viikkoa yhdellä toteuttajalla tai noin 
 
 **docs/05:** `rikasSisalto`, käyttöpaikat ja alt-käytäntö (yksittäisen kuvan alt on pakollinen, kuvasarjassa yhteinen kuvaus).
 
-**Askel 2b (vain, jos päätös 6.1 on kyllä):**
+**Askel 2b (päätetty 8.10.2026: Lyhenne valinnaiseksi):**
 - `uutinen.excerpt`: sääntö muotoon `rule.max(200).warning("Lyhenne näkyy listassa enintään noin 200 merkin pituisena.")`. Kuvaus: "Valinnainen. 1–2 virkettä uutislistalle. Jos jätät tyhjäksi, listalla näkyy tekstin alku."
 - `uutisKortinPerus`: `"excerpt": coalesce(excerpt, tiivistelma)` ja `"ote": select(!defined(excerpt) && !defined(tiivistelma) => pt::text(body[_type == "block" && style == "normal" && !defined(listItem)][0...3]))`.
 - `korttiOte` (välilyönnit yhdeksi, enintään 200 merkkiä sanarajalla ja perään "…") ja `korttiTeksti`.
 - Kortit: `news-card.tsx`, `hero.tsx` ja `uutiset-block.tsx`. `UutinenCard.ote?`.
 - Meta-kuvauksen viimeinen vara on `korttiOte(news.ote)`.
 - Testit: `korttiOte` ja groq-js (f).
+- docs/09: "Uutisen kirjoittaminen" ja taulukko "Mikä teksti näkyy missä" päivitetään (Lyhenne valinnainen, tyhjänä listalla näkyy tekstin alku).
 
 ---
 
@@ -498,7 +504,7 @@ Yhteensä noin 24 työpäivää: noin 5 viikkoa yhdellä toteuttajalla tai noin 
    - `korttiteksti = t(korttiteksti) ?? oletus.kortti ?? null`
    - `stegaClean`-kutsu tehdään `buildMetadata`-funktiossa, kuten nyt.
 
-   `osioSivuSiemen` jättää pois avaimet, joiden arvo on undefined. `luokitteleOsioSivut` poistaa `drafts.`-etuliitteen ja tunnistaa ristiriidan kahdessa tapauksessa: rekisterin _id:llä on dokumentti väärällä polulla, tai rekisterin polulla on dokumentti väärällä _id:llä.
+   `osioSivuSiemen` jättää pois avaimet, joiden arvo on undefined. **K1:** siemen asettaa `seoDescription = oletus.description` aina, kun `oletus.description` on olemassa ja eroaa `oletus.lead`ista. Muuten noin 15 sivun (esim. jalkapalloarkisto/page.tsx:36 vs. :39, mestarit/page.tsx:21 vs. :23, huuhkajat/page.tsx:38 vs. :40) Google-kuvaus vaihtuisi P3:n jälkeen johdannoksi, joka on yli 160 merkkiä ja katkeaa. Isä näkee nykyisen kuvauksen välilehdellä Hakukoneet ja jako ja voi muokata sitä. Sääntöä `description = t(seoDescription) ?? oletus.description ?? lead` ei käytetä, koska isän muokkaama Tiivistelmä ei silloin koskaan päätyisi kuvaukseksi. `luokitteleOsioSivut` poistaa `drafts.`-etuliitteen ja tunnistaa ristiriidan kahdessa tapauksessa: rekisterin _id:llä on dokumentti väärällä polulla, tai rekisterin polulla on dokumentti väärällä _id:llä.
 
    **Rekisteri** (30 kpl, tekstit kopioidaan sanatarkasti sivutiedostoista ja vakiot poistetaan):
 
@@ -539,7 +545,7 @@ Yhteensä noin 24 työpäivää: noin 5 viikkoa yhdellä toteuttajalla tai noin 
    6. Kentät hero, body ja tilastot: `hidden: ({ document, value }) => piilotaKentta(slugOf(document), "<kenttä>", value)`. Olemassa oleva data pysyy aina näkyvissä.
    7. Esikatselun alaotsikko: `Osion sivu · /${slug}`.
 4. **`lukittu-sivu.tsx`:** `duplicate` estetään lukituilta sivuilta.
-5. **Mallipohja** `lukittu-sivu` (tiedostossa `sanity/pohjat.ts`): parametri `slug`, arvo `osioSivuSiemen`-funktiosta (title, slug, tiivistelma, korttiteksti). Pohja on piilossa globaalista Luo-valikosta.
+5. **Mallipohja** `lukittu-sivu` (tiedostossa `sanity/pohjat.ts`): parametri `slug`, arvo `osioSivuSiemen`-funktiosta (title, slug, tiivistelma, korttiteksti ja tarvittaessa seoDescription, K1). Pohja on piilossa globaalista Luo-valikosta.
 6. **Rakenne** (§2.6):
    - Apuri `lukittuSivu(S, slug, otsikko?)`: `S.listItem().id(osioSivuId(slug)).child(S.document().schemaType("sivu").documentId(osioSivuId(slug)).initialValueTemplate("lukittu-sivu", { slug }))`.
    - Sivut-listan suodatin `_type == "sivu" && !(slug.current in $lukitut) && !(defined(slug.current) && string::startsWith(slug.current, "klubi/palloveikkaus/"))` ja parametri `lukitut: [...OSIOSIVU_SLUGIT]`. Tietosuoja jää Sivut-listaan.
@@ -556,8 +562,9 @@ Yhteensä noin 24 työpäivää: noin 5 viikkoa yhdellä toteuttajalla tai noin 
    ```ts
    osioSivuQuery = defineQuery(`*[_type == "sivu" && slug.current == $slug][0]{ _updatedAt, title, tiivistelma, ingress, korttiteksti, seoTitle, seoDescription }`)
    osioSivujenKortitQuery = defineQuery(`*[_type == "sivu" && slug.current in $slugit]{ "slug": slug.current, korttiteksti }`)
-   haeOsioSivu(slug) // sanityFetch, tags ["sivu", `sivu:${slug}`], fallback null → ratkaiseOsioSivu
+   haeOsioSivu(slug) // sanityFetch, tags [`sivu:${slug}`], fallback null → ratkaiseOsioSivu
    ```
+   Pelkkä `sivu:<slug>` riittää (§2.5). Yleinen `sivu`-tagi tyhjentäisi kaikki 30 listasivua minkä tahansa sivun tai taulukon muutoksesta.
 8. **Reitit:**
    - Yleinen malli: `const OSIO = "<slug>" as const`, async `generateMetadata` → `buildMetadata({ title: s.seoTitle, description: s.description, path, …nykyiset noIndex-ehdot })`, sivun runko `title={s.title} lead={s.lead}` ja JSON-LD `s.title`/`s.description`.
    - **ottelut, uutiset/arkisto, uutiset/tunnisteet:** `export const metadata` vaihdetaan muotoon `generateMetadata()` (lue ensin Next 16:n metadata-ohje).
@@ -568,7 +575,7 @@ Yhteensä noin 24 työpäivää: noin 5 viikkoa yhdellä toteuttajalla tai noin 
    - **Klubin sivut:** `fetchKlubiSivu` säilyy, ja tekstit lasketaan `ratkaiseOsioSivu(sivu, osioSivu(SLUG)!)`-kutsulla. `KlubiSivuPage` saa propin `tekstit: OsioSivunTekstit`.
    - **klubi/yhteystiedot:** saa uuden valinnaisen johdannon.
    - **Arkiston etusivu:**
-     - `haeOsioSivu("jalkapalloarkisto")` ja `osioSivujenKortitQuery` haetaan rinnakkain nykyisen yhteenvetokyselyn kanssa, tagi `sivu`.
+     - `haeOsioSivu("jalkapalloarkisto")` ja `osioSivujenKortitQuery` haetaan rinnakkain nykyisen yhteenvetokyselyn kanssa. Korttitekstien haun tagit ovat slugikohtaiset: `sivu:jalkapalloarkisto/<osio>` jokaiselle 16 osiolle.
      - Kortin slug johdetaan kortin hrefistä.
      - Kortin teksti valitaan järjestyksessä: dokumentin korttiteksti, sitten `oletus.kortti`, sitten koodin teksti (Litmanen).
    - **Catch-all:** `generateStaticParams` suodattaa tuloksen JavaScriptissä: `slugit.filter(s => !OSIOSIVU_SLUGIT.has(s))`. Kyselyä ei muuteta.
@@ -582,7 +589,7 @@ Yhteensä noin 24 työpäivää: noin 5 viikkoa yhdellä toteuttajalla tai noin 
     - Ristiriita lopettaa ajon koodilla 1.
     - Productionissa ensin `npm run backup`. Jos se epäonnistuu, ajo lopetetaan.
     - Kirjoitus on yksi transaktio, jossa `createIfNotExists(osioSivuSiemen(o))` ja `commit({ visibility: "sync" })`.
-    - Tarkistus: 30/30 julkaistua, ja otsikko ja tiivistelmä vastaavat siementä.
+    - Tarkistus: 30/30 julkaistua, ja otsikko, tiivistelmä ja hakukonekuvaus vastaavat siementä.
     - Ajo on idempotentti: toisella kerralla tuloste on "Ei luotavaa".
 
 **Testit:**
@@ -596,7 +603,7 @@ Yhteensä noin 24 työpäivää: noin 5 viikkoa yhdellä toteuttajalla tai noin 
    - Klubin vakiot löytyvät rekisteristä
 3. Jokaisella polulla on `app/(public)/<slug>/page.tsx`.
 4. **Kattavuus:** jokainen staattinen `page.tsx` hakemistossa `app/(public)` on rekisterissä tai poikkeuslistalla. Poikkeukset ovat "", "uutiset/tunniste" ja neljä Litmanen-sivua.
-5. **Ei näkyvää muutosta:** `ratkaiseOsioSivu(osioSivuSiemen(o), o)` on sama kuin `ratkaiseOsioSivu(null, o)` (pois lukien `loytyi` ja `updatedAt`).
+5. **Ei näkyvää muutosta:** `ratkaiseOsioSivu(osioSivuSiemen(o), o)` on sama kuin `ratkaiseOsioSivu(null, o)` (pois lukien `loytyi` ja `updatedAt`) kaikille 30 sivulle. Lisäksi erillinen vertailu arkiston etusivulle ja 16 alasivulle: `description` on täsmälleen nykyisen page.tsx:n meta-kuvaus (K1).
 6. `ratkaiseOsioSivu`:
    - null → oletukset
    - otsikkona pelkkiä välilyöntejä → oletus
@@ -612,6 +619,7 @@ Yhteensä noin 24 työpäivää: noin 5 viikkoa yhdellä toteuttajalla tai noin 
 9. `osioSivuSiemen`:
    - ei undefined-avaimia
    - korttiteksti vain arkiston 16 sivulla
+   - `seoDescription` on mukana täsmälleen silloin, kun `oletus.description` on olemassa ja eroaa `oletus.lead`ista (K1)
    - slug muodossa `{ _type: "slug", current }`
 10. `luokitteleOsioSivut`:
     - productionin 8 sivua → 28 luotavaa, 2 olemassa, 0 ristiriitaa
@@ -630,7 +638,8 @@ Yhteensä noin 24 työpäivää: noin 5 viikkoa yhdellä toteuttajalla tai noin 
 - Developmentissa ajetaan `npm run luo:osiosivut -- --vie` (28 dokumenttia). Sen jälkeen Studio avaa kaikki 30 kohtaa, ja muokattu otsikko näkyy sivulla minuutin kuluessa.
 - **Varatekstin testi:** poista `sivu-galleria` developmentista, tarkista sivu ja aja skripti uudelleen.
 - Build ei tuota catch-all-parametreja koodireiteille.
-- `verify:content-routes` menee läpi.
+- `npm run verify:content` menee läpi.
+- Developmentin luontiajon jälkeen arkiston sivujen `<meta name="description">` on sama kuin ennen ajoa (K1).
 - `test:saavutettavuus` sivuille /, /klubi, /klubi/hallitus, /jalkapalloarkisto, /uutiset ja /ravintolat.
 
 **docs/09:**
@@ -681,7 +690,7 @@ Yhteensä noin 24 työpäivää: noin 5 viikkoa yhdellä toteuttajalla tai noin 
    - `tarkistaLiitetiedosto` palauttaa tekstin "Sallitut tiedostot: PDF, Word (.docx) ja Excel (.xlsx). Tallenna tiedosto ensin johonkin näistä muodoista."
    - `liitetiedostoKentta()` (`sanity/schemas/objects/liite.ts`):
      - `type: "file"`, `options: { accept: LIITTEEN_ACCEPT, storeOriginalFilename: true }`
-     - kuvaus: "PDF, Word (.docx) tai Excel (.xlsx). Tiedosto on julkinen: kuka tahansa, jolla on linkki, voi avata sen. Älä liitä jäsenluetteloita, pöytäkirjoja, joissa on henkilötietoja, tai muuta luottamuksellista."
+     - kuvaus (K4): "PDF, Word (.docx) tai Excel (.xlsx). Tiedosto on julkinen: se löytyy sivuston tietokannasta, vaikka et linkittäisi sitä, ja myös tiedoston alkuperäinen nimi näkyy. Älä liitä jäsenluetteloita, pöytäkirjoja, joissa on henkilötietoja, tai muuta luottamuksellista." Peruste: 26.10. jälkeen datasetti on julkinen, ja kuka tahansa voi listata kaikki tiedostot anonyymisti (`*[_type == "sanity.fileAsset"]{url, originalFilename}`), myös lohkosta poistetut tai korvatut. Vanha teksti "kuka tahansa, jolla on linkki" olisi väärä.
      - validointi: päätteen virhe ja asynkroninen kokovaroitus (yli 15 Mt): "Tiedosto on iso (x Mt). Pienennä PDF (esim. Wordissa Tallenna nimellä → PDF → Pienin koko)."
      - `pakollinen` (virhe "Lisää tiedosto.") vain, kun kenttä on aktiivinen
 3. **`lib/linkki.ts`:** rajapinta §2.1 ja §2.2. `kohteenTilaViesti(tila, nyt)`:
@@ -737,13 +746,13 @@ Yhteensä noin 24 työpäivää: noin 5 viikkoa yhdellä toteuttajalla tai noin 
      - jos `!onYleissivuAlavalikossa(item)`, ensimmäiseksi linkiksi "Yleisesittely"
    - `onYleissivuAlavalikossa` siirretään tiedostosta header-client.tsx.
 8. **`sanity/lib/navigaatio.ts`:** `haeNavigaatio = cache(async () => …)`:
-   - `sanityFetch` (tagit `["navigaatio", "linkit"]`, varana `defaultNavigation`) ja `haeTyhjatOsiot()`
+   - `sanityFetch` (tagi `["navigaatio"]`, **ei** `linkit`, §2.5; varana `defaultNavigation`) ja `haeTyhjatOsiot()`
    - sitten `ratkaiseNavigaatio`, hrefeille `stegaClean` ja lopuksi `piilotaTyhjat`
    - Header ja Footer kutsuvat tätä.
 9. **Footer:**
    - `linkColumns` poistetaan, ja tilalle tulee `alatunnisteenSarakkeet(await haeNavigaatio())`.
-   - **Yksi** `<nav aria-label="Alatunnisteen valikko" className="contents">`. Jokainen sarake on `div`, jossa `h2` (nykyinen tyyli) ja `ul`.
-   - Ruudukko `lg:grid-cols-[minmax(0,1.6fr)_repeat(var(--sarakkeet),minmax(0,1fr))]`, jossa `--sarakkeet` = sarakkeiden määrä + 1.
+   - **Yksi** `<nav aria-label="Alatunnisteen valikko">`, jolla on oma ruudukko. **Ei `display: contents`**: WebKit on pudottanut sillä elementin roolin saavutettavuuspuusta (kriitikko). Jokainen sarake on `div`, jossa `h2` (nykyinen tyyli) ja `ul`.
+   - Ulompi ruudukko: Yhteystiedot-sarake ja nav vierekkäin (`lg:grid-cols-[minmax(0,1.6fr)_minmax(0,var(--sarakkeet)fr)]` tai vastaava), ja nav saa `lg:col-span-1` sekä sisemmän ruudukon `lg:grid-cols-[repeat(var(--sarakkeet),minmax(0,1fr))]` (tai subgrid), jossa `--sarakkeet` = sarakkeiden määrä. Puhelimessa sarakkeet kahdessa rivissä kuten nyt.
    - Yhteystiedot-sarake ja alarivi (Tietosuojaseloste, Ylläpito) pysyvät ennallaan.
    - Productionin datalla tulos on Sivusto (Ottelut, Ravintola-arviot, Uutiset), Jalkapallo (6), Klubi (5) ja Yhteystiedot.
 10. **Renderöinti:**
@@ -794,11 +803,12 @@ Yhteensä noin 24 työpäivää: noin 5 viikkoa yhdellä toteuttajalla tai noin 
   - julkaisematon kohde → varoitus
   - kun uutista, johon Matkailu viittaa, yritetään poistaa, avautuu suomenkielinen ikkuna, jossa viittaaja on listattu
   - tyypin vaihto ei jätä piilotettuja virheitä
-- `test:saavutettavuus`: alatunnisteessa on yksi nav-landmark, ja otsikkojärjestys on kunnossa. Tarkistus myös 320 px leveydellä.
+- `test:saavutettavuus` (axe; päätös 8.10.: ruudunlukijatestiä ei tehdä erikseen): alatunnisteessa on yksi nav-landmark, ja otsikkojärjestys on kunnossa. Tarkistus myös 320 px leveydellä. Lähdekoodista tarkistetaan, ettei alatunnisteessa ole `contents`-luokkaa.
 
 **docs/09:**
 - Uusi alaluku **"Linkit"**: "Mihin linkki vie?", kolme vaihtoehtoa, tiedoston julkisuus ja keltaiset varoitukset.
-- "Valikon muokkaaminen" kirjoitetaan uudelleen, ja **alatunnisteen** kappale lisätään.
+- "Valikon muokkaaminen" kirjoitetaan uudelleen, ja **alatunnisteen** kappale lisätään. Siihen ohje: "Kun julkaiset ensimmäisen albumin tai tapahtuman, lisää Galleria tai Tapahtumat valikkoon." Uutisarkisto ja Kuvagalleria poistuvat alatunnisteesta, ja Galleriaan pääsee muuten vain etusivun lohkon kautta.
+- Liitteen ja tiedostolinkin julkisuus (K4): "Tiedosto on julkinen: se löytyy sivuston tietokannasta, vaikka et linkittäisi sitä. Yöhuolto poistaa tiedoston, jota mikään ei ole käyttänyt viikkoon (askel 7)."
 - Etusivu: pikalinkit ja "Linkin kohde".
 - Klubin toiminta: vuoden linkki.
 - Uutisen linkki: maalaa → ketjukuvake → "Mihin linkki vie?".
@@ -822,8 +832,9 @@ Yhteensä noin 24 työpäivää: noin 5 viikkoa yhdellä toteuttajalla tai noin 
 - `muunnaLinkki(vanha, hakemisto)`:
   - sisäinen polku ilman `?`/`#`, jolle löytyy julkaistu dokumentti → `{ tyyppi: "sivu", kohde: { _type: "reference", _ref } }`
   - muuten `{ tyyppi: "osoite" }` (klubin toiminnassa lisäksi `href: url`)
-  - jo muunnettu → null
-- `tekstinLinkkienMuutokset(doc, hakemisto)` palauttaa polut muodossa `body[_key=="…"].markDefs[_key=="…"]`. Vain sisäiset dokumenttipolut, myös sisäkkäiset kentät.
+  - jo muunnettu (`tyyppi` asetettu) → null
+- **Jokainen vanha linkkiobjekti saa `tyyppi`-kentän**, myös ne, joita ei muuteta viittaukseksi (ulkoiset, ankkurit ja polut ilman dokumenttia, myös tekstieditorin markDefs). Muuten Studion radiopainikkeista mikään ei ole valittuna (kriitikko). Näille asetetaan `tyyppi: "osoite"`, ja `href` säilyy.
+- `tekstinLinkkienMuutokset(doc, hakemisto)` palauttaa polut muodossa `body[_key=="…"].markDefs[_key=="…"]`. Kaikki linkkien markDefit, myös sisäkkäiset kentät: sisäiset dokumenttipolut viittauksiksi, muut `tyyppi: "osoite"`.
 - Hakemisto: `*[_type in $tyypit && defined(slug.current) && !(_id in path("drafts.**"))]{ _id, _type, "slug": slug.current }` → avain `documentHref`.
 - Isännät (myös luonnokset): navigaatio, etusivu, klubin toimintamuodot, joilla on linkki, sekä tekstieditorin dokumentit.
 - Muutokset:
@@ -846,11 +857,13 @@ Yhteensä noin 24 työpäivää: noin 5 viikkoa yhdellä toteuttajalla tai noin 
   - "#"-linkki → osoite
   - YouTube-url
   - jo muunnettu → null
-- `tekstinLinkkienMuutokset`: fixture, jossa on sisäinen, ulkoinen ja sisäkkäinen linkki.
+- `tekstinLinkkienMuutokset`: fixture, jossa on sisäinen, ulkoinen ja sisäkkäinen linkki. Ulkoinen saa `tyyppi: "osoite"` ja säilyttää hrefin.
+- Muunnoksen jälkeen yhdelläkään linkkiobjektilla ei ole tyhjää `tyyppi`-kenttää.
 
 **Hyväksymiskriteerit:**
 - Developmentissa `npm run patch:linkit` ja sitten `-- --vie`. Valikko, alatunniste, etusivu, /klubi, /klubi/toiminta/matkailu ja uutinen 2008-06-01-voittajaveikkaus-em-2008 näyttävät saman kuin ennen.
-- Studion lomakkeissa näkyy "Sivuston sivu" ja kohde.
+- Studion lomakkeissa näkyy "Sivuston sivu" ja kohde, ja vanhoissa ulkoisissa linkeissä "Muu osoite" on valittuna.
+- Ajo productioniin heti P3:n ja P4:n jälkeen (luku 5, P5): askeleen 4 `sivullaOnValinta`-varoitus näyttää muuten navigaatiossa 16 keltaista varoitusta siihen asti.
 
 **docs/09:** ei muutoksia (askel 4 kattaa). Lisätään docs/23 §0:n "Toteutettu" ja luvut.
 
@@ -877,14 +890,7 @@ Yhteensä noin 24 työpäivää: noin 5 viikkoa yhdellä toteuttajalla tai noin 
 - `docs/09`, `docs/05`, `docs/19`, `CLAUDE.md`
 
 **Toteutus:**
-1. **`RIKKAAT_LOHKOT`** lopulliseen järjestykseen (§2.3). `rikasSisalto` saa `options.insertMenu`:
-   ```ts
-   { filter: false, views: [{ name: "list" }], groups: [
-     { name: "kuvat", title: "Kuvat ja video", of: ["imageWithAlt", "kuvasarja", "youtubeVideo", "upotus"] },
-     { name: "tiedotteet", title: "Tiedotteet ja tiedostot", of: ["huomio", "painike", "liite"] },
-     { name: "taulukot", title: "Taulukot", of: ["taulukko", "kokoonpano"] } ] }
-   ```
-   Jos tekstieditorin työkalupalkki ei näytä ryhmiä (alpha-rajapinta), järjestys ja ikonit riittävät. Tulos kirjataan docs/05:een.
+1. **`RIKKAAT_LOHKOT`** lopulliseen järjestykseen (§2.3). Lohkovalikkoa ei ryhmitellä: `options.insertMenu` ei vaikuta tekstieditoriin, koska työkalupalkki rakentaa valikon funktiolla `getInsertMenuItems(schemaTypes)`, joka ei lue optionsia (tarkistettu sanity 5.31.2, kriitikko). Valikko luotetaan järjestykseen, selkeisiin otsikoihin ja ikoneihin. Yhdeksän lohkopainiketta voi täyttää työkalupalkin, joten Studio tarkistetaan puhelimen leveydellä (painikkeet siirtyvät ⋯-valikkoon eivätkä katoa). Tulos kirjataan docs/05:een.
 2. **`sivu.body`** muutetaan tyypiksi `"rikasSisalto"`. Askeleen 3 `hidden: piilotaKentta(…, "body", …)` säilyy.
 3. **`liite`** (DocumentPdfIcon, otsikko "Liite (PDF, Word, Excel)"):
    - `otsikko`: "Linkin teksti", kuvaus 'Mikä tiedosto on, esim. "Vuosikokouskutsu 2027" tai "Klubin säännöt". Sivulla näkyy myös tiedoston tyyppi ja koko.', virhe 3–100 merkkiä "Kirjoita liitteelle nimi (3–100 merkkiä)."
@@ -933,10 +939,10 @@ Yhteensä noin 24 työpäivää: noin 5 viikkoa yhdellä toteuttajalla tai noin 
     - **Painike:** `const href = linkinOsoite(value.linkki)` → `<p className="mt-6"><LinkButton href={stegaClean(href)} size="lg">`. Ilman hrefiä tai tekstiä palautetaan null.
     - **Taulukko:** `StatTable` (`caption` = otsikko, `captionVisible`), vain kun sarakkeita on.
     - **Upotus** ("use client", YouTube-lohkon malli):
-      - `tulkitseUpotus(stegaClean(osoite))`
+      - `tulkitseUpotus(stegaClean(osoite))`. Renderöidään **vain** sen palauttama `src`, ei koskaan liitettyä HTML:ää.
       - säiliö varaa tilan valmiiksi
       - ennen latausta kortti, jossa otsikko, latausteksti, `<button aria-describedby>` ja "Avaa palvelussa" -linkki (toimii ilman JavaScriptiä)
-      - latauksen jälkeen `<iframe title={otsikko} loading="lazy" referrerPolicy …>`, ja fokus siirtyy iframeen
+      - latauksen jälkeen `<iframe title={otsikko} loading="lazy" referrerPolicy … sandbox="allow-scripts allow-same-origin allow-forms allow-popups" allow="…">`, ja fokus siirtyy iframeen. `allow` on suppea: Vimeolle `fullscreen; picture-in-picture`, muille tyhjä. Sandbox on lisäturva, jos sallittujen listaan tulee virhe.
       - CSP sallii iframet (`next.config.ts:40`)
 
 **Testit:**
@@ -955,19 +961,21 @@ Yhteensä noin 24 työpäivää: noin 5 viikkoa yhdellä toteuttajalla tai noin 
   - jalkapalloTilaston editori toimii kuten ennen.
   - Tiedostot: pdf, docx ja exe (virhe) sekä yli 15 Mt:n PDF (varoitus).
   - Upotukset: Maps, Forms, Vimeo, YouTube ja vieras palvelu, kaikki virheet suomeksi.
+  - Työkalupalkki puhelimen leveydellä: kaikki 9 lohkoa löytyvät.
+- Sivun lähdekoodissa upotuksen iframella on `sandbox`, ja liitetty HTML ei päädy sivulle.
 - Developmentin testisivu `lohkotesti`, jossa ovat kaikki lohkot: `SIVUT="/lohkotesti,/uutiset" npm run test:saavutettavuus`. Lisäksi näppäimistöllä painike → iframe-fokus. Testisivu poistetaan lopuksi.
 - Esikatselussa (stega) sävy ja upotus toimivat.
 
 **docs/09:**
 - Luku "Tekstin lisäosat (+ -valikko)", taulukko lohko | milloin | miten | huomioita.
-  - **Liite:** julkinen, ei henkilötietoja, PDF Wordista, ei skannattuja kuvia. Väärän tiedoston poisto: poista lohko, julkaise ja poista tiedosto tiedostovalitsimesta. Tarkka polku varmistetaan toteutuksessa, ja jos poisto ei onnistu, ohje on "pyydä kehittäjää".
+  - **Liite:** julkinen, ei henkilötietoja, PDF Wordista, ei skannattuja kuvia. Julkisuus (K4): tiedosto löytyy sivuston tietokannasta, vaikka sitä ei linkitettäisi, ja tiedoston nimi näkyy. Väärän tiedoston poisto: poista lohko ja julkaise. Yöhuolto poistaa tiedoston, kun mikään ei ole viitannut siihen 7 päivään (askel 7). Jos tiedosto pitää saada pois heti, poista se tiedostovalitsimesta. Tarkka polku varmistetaan toteutuksessa, ja jos poisto ei onnistu, ohje on "kerro tukihenkilölle".
   - **Huomiolaatikko:** sävyt ja milloin Tärkeä.
   - **Painike.**
   - **Taulukko** ja ero Sivu → Taulukot -kenttään.
   - **Kartta, lomake tai Vimeo:** tarkat napsautuspolut.
 - Tyypilliset tilanteet: "Upotus ei kelpaa".
 - Taulukon muokkaaminen: sama editori on myös tekstin Taulukko-lohkossa.
-- "Täytä itse": tietosuojaselosteeseen kappale ulkoisista upotuksista.
+- "Täytä itse": tietosuojaselosteeseen kappale ulkoisista upotuksista ja kappale julkisista tiedostoista (K4): "Sivustolle ladatut tiedostot ja kuvat ovat julkisia. Ne poistetaan, kun niitä ei enää käytetä."
 
 **docs/05:**
 - Lohkot kenttineen ja upotusten sallittu lista.
@@ -979,7 +987,7 @@ Yhteensä noin 24 työpäivää: noin 5 viikkoa yhdellä toteuttajalla tai noin 
 
 ### Askel 7: Sivuston tila ja Aloitus (E2: Y33, karsittu)
 
-**Tavoite:** Studio avautuu Aloitukseen. Siinä on liikennevalot (varmuuskopio, yöllinen huolto, otteluohjelman haku, julkaisemattomat muutokset ja dokumenttikiintiö), odottavien tehtävien laskurit ja puuttuvat perustiedot. Lisäksi ohje UptimeRobotista. Sähköpostia Studiosta ei lähetetä (päätös 7.10.).
+**Tavoite:** Studio avautuu Aloitukseen. Siinä on liikennevalot (varmuuskopio, yöllinen huolto, otteluohjelman haku, julkaisemattomat muutokset ja dokumenttikiintiön arvio), odottavien tehtävien laskurit ja puuttuvat perustiedot. Yöhuolto siivoaa lisäksi käyttämättömät tiedostot (K4). Sähköpostia Studiosta ei lähetetä (päätös 7.10.), eikä ulkoista valvontaa (UptimeRobot) oteta käyttöön (päätös 8.10.): sivuston tila näkyy Aloituksessa, kun Studio avataan.
 
 **Tiedostot:**
 - uudet:
@@ -989,10 +997,11 @@ Yhteensä noin 24 työpäivää: noin 5 viikkoa yhdellä toteuttajalla tai noin 
   - `sanity/plugins/aloitus.tsx`
   - `sanity/components/aloitus/{Aloitus, SivustonTila, Odottaa, Puuttuvat}.tsx`, `useSivustonTila.ts`
   - `scripts/test-sivuston-tila.ts`, `scripts/test-aloitus.ts`
+  - `lib/tiedostosiivous.ts`, `sanity/lib/tiedostosiivous.ts`, `scripts/siivoa-tiedostot.ts`, `scripts/test-tiedostosiivous.ts` (K4)
 - `sanity/schemas/index.ts`, `sanity.config.ts`, `sanity/pohjat.ts`, `sanity/structure.ts`
 - `app/api/huolto/route.ts`, `app/api/varmuuskopio/route.ts`, `app/api/revalidate/route.ts`
 - `lib/ottelut.ts`, `lib/varmuuskopio.ts`, `lib/palautus.ts`
-- `scripts/test-varmuuskopio.ts`, `scripts/test-palautus.ts`, `package.json`
+- `scripts/test-varmuuskopio.ts`, `scripts/test-palautus.ts`, `package.json` (`test:tiedostosiivous`, `siivoa:tiedostot`)
 - `docs/09`, `docs/17`, `docs/05`, `CLAUDE.md`
 
 **Toteutus:**
@@ -1000,11 +1009,12 @@ Yhteensä noin 24 työpäivää: noin 5 viikkoa yhdellä toteuttajalla tai noin 
    - ActivityIcon, `readOnly`. Kentät `tehtava` (huolto tai varmuuskopio), `aika`, `onnistui`, `viimeisinOnnistunut` ja `tulokset[]{ nimi, tila: ok|huomio|virhe, viesti, maara }`.
    - Tunnukset `TILA_ID = { huolto: "sivustonTila.huolto", varmuuskopio: "sivustonTila.varmuuskopio" }`.
    - Ei rakenteessa, ei pohjaa, toiminnot `[]`.
+   - Piilossa myös Studion haulta ja viittausvalitsimista: `__experimental_omnisearch_visibility: false`.
    - `kuuluuKopioon` palauttaa false ja `EI_PALAUTETA` sisältää tyypin.
    - Webhook ohittaa tyypit `sivustonTila` ja `varmuuskopio` (200, `{ revalidated: false }`).
 2. **`kirjaaAjo`:** `createIfNotExists` ja `patch.set(kirjaus)`, `commit({ visibility: "async" })`. Virhe kirjataan `console.error`illa, eikä se kaada ajoa.
    - **Huolto:**
-     - tulokset `arvosanat` (huomio, kun korjattiin yli 0) ja `kuvat`
+     - tulokset `arvosanat` (huomio, kun korjattiin yli 0), `kuvat` ja uusi `tiedostot` (K4, kohta 2b)
      - uusi `otteluhaku` = `tarkistaOtteluhaku()`, joka **ei** vaikuta `onnistui`-arvoon eikä HTTP-koodiin
      - lopuksi `kirjaaAjo`
    - **Varmuuskopio:** onnistuminen ja `catch`-haara kirjataan. Client luodaan `try`-lohkon ulkopuolella.
@@ -1012,6 +1022,12 @@ Yhteensä noin 24 työpäivää: noin 5 viikkoa yhdellä toteuttajalla tai noin 
      - `fetchTaso(…, { tuore })` (`cache: "no-store"`, `AbortSignal.timeout(15_000)`)
      - `haeVeikkausliigaTuore()`
      - `tarkistaOtteluhaku(nyt)` → `{ lahde, maara, tulevia, virhe }`; virhe palautetaan, ei heitetä
+2b. **Orpojen tiedostojen siivous (K4).** Julkisesta datasetistä kuka tahansa voi listata kaikki tiedostot, myös lohkosta poistetut ja korvatut. Siksi käyttämättömät tiedostot poistetaan. Malli on `sanity/lib/arvostelukuvat-siivous.ts`.
+   - **`lib/tiedostosiivous.ts`** (puhtaat säännöt): `TIEDOSTON_ARMOAIKA_PAIVAA = 7`, `onSiivottavaTiedosto(asset, nyt)`. Siivottava on `sanity.fileAsset`, joka on yli 7 päivää vanha **eikä** ole varmuuskopiotiedosto (`originalFilename` alkaa `TIEDOSTON_ETULIITE` = "varmuuskopio-", lib/varmuuskopio.ts). Kuvat (`sanity.imageAsset`) eivät kuulu tähän siivoukseen.
+   - **`sanity/lib/tiedostosiivous.ts`:** `siivoaOrvotTiedostot(client, { dryRun, nyt })`. Kysely `raw`-näkökulmassa, jotta luonnosten viittaukset lasketaan: `*[_type == "sanity.fileAsset" && _createdAt < $raja && count(*[references(^._id)]) == 0]{ _id, _createdAt, originalFilename, size }`. Tulos suodatetaan `onSiivottavaTiedosto`-säännöllä. Enintään 200 kerralla, loput seuraavana yönä. Poiston virhe kirjataan, eikä se kaada huoltoa.
+   - Varmuuskopiotiedostoihin ei kosketa koskaan, vaikka varmuuskopio-dokumentti olisi poistettu: ne poistuvat vain varmuuskopioiden omalla kierrolla.
+   - Tulosrivi `tiedostot`: ok "Poistettu N käyttämätöntä tiedostoa." tai "Ei käyttämättömiä tiedostoja.", huomio, jos poisto epäonnistui.
+   - Käsiajo: `npm run siivoa:tiedostot` listaa, `-- --poista` poistaa, `-- --production` productioniin varmuuskopion jälkeen.
 3. **`lib/sivuston-tila.ts`**, säännöt ja tekstit E:n suunnitelman mukaan. Karsittu: ei Management API -rivejä (taso, lomakkeet, webhook).
    - `varmuuskopionTila`:
      - ok, kun kopio on enintään 8 päivää vanha: "Viimeisin kopio ma 5.10.2026 (3 päivää sitten), 5544 dokumenttia."
@@ -1026,7 +1042,7 @@ Yhteensä noin 24 työpäivää: noin 5 viikkoa yhdellä toteuttajalla tai noin 
      - virhe ja ohje "Ottelut-sivulla ja etusivulla näkyvät vain Studioon lisätyt ottelut. Lisää tärkeät ottelut käsin (Ottelut → +) ja kerro tukihenkilölle."
      - 0 ottelua maalis–lokakuussa → huomio
      - 0 ottelua marras–helmikuussa → ok "Talvitauko: …"
-   - `kiintionTila(kaytossa, KIINTIO)`: ok alle 80 %, huomio 80 %:sta (ohje Y4), virhe 95 %:sta.
+   - `kiintionTila(kaytossa, KIINTIO)`: rivin teksti on aina **arvio** ("Arviolta N / 10 000 dokumenttia"). Tila on enintään huomio, ei koskaan virhe eikä vihreä ok, ennen kuin laskentatapa on vahvistettu: docs/23 Y4 päättelee vain epäsuorasti, etteivät assetit kuulu kiintiöön, ja productionissa 1721 dokumenttia 5565:stä on `sanity.*`-tyyppisiä. Alle 80 %: tila tuntematon (harmaa, ei nosta kokonaistilaa), 80 %:sta huomio (ohje Y4). Testi: 99 % → huomio, ei virhe. Kehittäjä tarkistaa sanity.io/manage → Usage ennen 26.10. ja kirjaa tuloksen docs/23 Y4:ään. Jos laskentatapa vahvistuu, rajat ok/huomio/virhe (80 % ja 95 %) otetaan käyttöön erillisellä pienellä muutoksella.
    - `julkaisemattomienTila`.
    - `kokonaistila`: pahin tila; tuntematon ei nosta tilaa.
    - `huoltoajonKirjaus`.
@@ -1057,24 +1073,20 @@ Yhteensä noin 24 työpäivää: noin 5 viikkoa yhdellä toteuttajalla tai noin 
      - **Odottaa sinua** (h2): kortit `Grid columns={[1, 2, 3]}`, linkki `/studio/structure/tehtavat;<id>`, `aria-label="{otsikko}: {n}"`. Kun luku on 0, teksti on "Ei odottavia".
      - **Täydennä perustiedot** (h2, vain jos jotain puuttuu): `IntentLink intent="edit"` yhteystietoihin ja etusivulle, ja hallitukseen `/studio/structure/klubi;hallitus`.
    - Data haetaan kerran avattaessa ja Päivitä-painikkeesta. Kuuntelua ei ole.
-6. **UptimeRobot** (vain ohje, docs/17 uusi §E "Valvonta"):
-   - Free-tili, 5 minuutin väli.
-   - Monitorit:
-     - HTTPS-monitori etusivulle
-     - Keyword-monitori avainsanalla "Lahden Suomalainen Klubi"
-     - HTTPS-monitori osoitteeseen /studio
-   - Hälytysten vastaanottajat: avoin päätös 6.2.
-   - Cronien hiljaista pysähtymistä UptimeRobot ei huomaa. Sen huomaa Aloituksen punainen rivi.
+6. **Valvonta (päätös 8.10.):** ulkoista valvontaa (UptimeRobot) ei oteta käyttöön, eikä hälytyksiä lähetetä kenellekään. docs/17:ään uusi §E "Valvonta": sivuston tila näkyy Studion Aloituksessa, ja kaatuminen huomataan, kun joku käyttää sivustoa tai Studiota. Päätöksen voi muuttaa myöhemmin ilman koodimuutoksia (ilmainen valvontapalvelu etusivulle ja /studio:lle).
 
 **Testit:**
 - `test-sivuston-tila.ts`: E:n tapaukset varmuuskopiolle, huollolle, otteluhaulle, kiintiölle, julkaisemattomille, kokonaistilalle, `huoltoajonKirjaus`-funktiolle ja `puuttuvatPerustiedot`-funktiolle, aika `nyt = 2026-10-08T12:00Z`.
 - `test-aloitus.ts`: TEHTAVAT-tunnisteet ovat uniikkeja, `laskuri` alkaa merkkijonolla `count(`, ja `pois` sisältää `sivustonTila`.
 - `test-varmuuskopio.ts`: `sivustonTila` ei kuulu kopioon. `test-palautus.ts`: tyyppiä ei palauteta.
+- `test-tiedostosiivous.ts` (`npm run test:tiedostosiivous`, K4): 8 päivää vanha viittaamaton tiedosto siivotaan; 6 päivää vanha ei; varmuuskopiotiedosto (`varmuuskopio-2026-10-05.ndjson.gz`) ei koskaan, ei vaikka se olisi vuoden vanha; kuva-asset ei kuulu siivoukseen; puuttuva `originalFilename` ei kaada.
 
 **Hyväksymiskriteerit:**
 - Development: `/studio` avautuu Aloitukseen.
 - Huollon ja varmuuskopion käsiajo onnistuu: `curl -H "Authorization: Bearer $CRON_SECRET" http://localhost:3000/api/huolto` luo tilan, ja Aloitus näyttää sen.
 - Kopio ei sisällä `sivustonTila`a.
+- `sivustonTila` ei löydy Studion haulla.
+- Developmentissa `npm run siivoa:tiedostot` listaa vain viittaamattomat tiedostot eikä yhtään varmuuskopiotiedostoa. Testiliite: lohko poistetaan, ja tiedosto näkyy listassa vasta 7 päivän jälkeen (testataan `nyt`-parametrilla).
 - Rooli viewer: rivit näkyvät ilman virheitä.
 - Näppäimistö ja puhelimen leveys toimivat.
 
@@ -1083,6 +1095,8 @@ Yhteensä noin 24 työpäivää: noin 5 viikkoa yhdellä toteuttajalla tai noin 
 - Tyypilliset tilanteet: "Aloituksessa punainen rivi → lue ohje, kerro tukihenkilölle."
 
 **docs/05:** `sivustonTila` (järjestelmäloki).
+
+**docs/09:** lisäksi Aloituksen kiintiörivi on arvio, ja tiedostojen siivous (K4) kerrotaan Linkit- ja Liite-kohdissa.
 
 ---
 
@@ -1103,7 +1117,7 @@ Yhteensä noin 24 työpäivää: noin 5 viikkoa yhdellä toteuttajalla tai noin 
 - `sanity/schemas/documents/{sivu, uutinen, tapahtuma, ravintola, galleriaAlbumi, klubiToiminta, arvokisa, pelaaja, stadion, jalkapalloTilasto, kaupunki, uutisKategoria}.ts`
 - `sanity/schemas/index.ts`, `sanity/structure.ts`
 - `app/api/revalidate/route.ts`
-- 19 reittitiedostoa, joissa on `notFound()`
+- 18 reittitiedostoa, joissa on `notFound()` (21 kutsua)
 - `sanity/lib/queries/ravintolat.ts`, `components/ravintola-filters.tsx`, `app/(public)/ravintolat/page.tsx`
 - `lib/palautus.ts`, `sanity/actions/palauta-varmuuskopiosta.tsx`
 - `scripts/test-palautus.ts`
@@ -1121,7 +1135,9 @@ Yhteensä noin 24 työpäivää: noin 5 viikkoa yhdellä toteuttajalla tai noin 
      - ulkoinen kohde päättää ketjun
      - `mailto:` → null
      - isän ohjauksilla `pysyva: false`
-   - `yhdistaAiemmatPolut`: kun osoite palaa aiempaan, se poistuu listalta.
+     - **deterministinen järjestys:** jos useampi dokumentti väittää samaa aiempaa polkua, voittaa uusin `_updatedAt` (desc), tasatilanteessa pienin `_id`
+     - polut normalisoidaan ennen vertailua myös prosenttikoodauksen osalta (`decodeURIComponent`, virheellinen koodaus → polku sellaisenaan)
+   - `yhdistaAiemmatPolut(nykyinen, ennenLista, vanha, uusi)` (K2): tulos on nykyinen lista + vanha polku + ne ennen-listan polut, jotka puuttuvat nykyisestä (itsekorjaava), ilman uutta polkua ja ilman toistoja. Kun osoite palaa aiempaan, se poistuu listalta.
    - `osoitteenMuutos`, `polunMuutosViesti`.
    - **Muutos (R7):** `tarkistaOhjauksenLahde` hylkää myös polut, jotka ovat täsmälleen `KOODIIN_SIDOTUT_SIVUT`-joukossa: `Osoitteessa /${polku} on jo sivu. Valitse toinen osoite.`
    - Muut virhetekstit D:n mukaan:
@@ -1140,6 +1156,7 @@ Yhteensä noin 24 työpäivää: noin 5 viikkoa yhdellä toteuttajalla tai noin 
    - Ohjattavat tyypit: `Julkaistu osoite on "${julkaistu}". Kun julkaiset, vanha osoite ohjautuu automaattisesti uuteen, joten vanhat linkit toimivat edelleen.`
    - Tilasto ilman omaa sivua: `… Taulukko näkyy samalla sivulla kuin ennenkin. Vain suora linkki tähän taulukkoon (#${julkaistu}) vie jatkossa sivun alkuun.`
    - uutisKategoria ja kaupunki: tunnistetekstit D:n mukaan.
+   - Sivu, jolla on alasivuja (slug alkaa `<julkaistu>/`): perään "Alasivujen osoitteet eivät muutu. Tällä sivulla on N alasivua: muuta niiden osoitteet erikseen." Alasivujen slugit ovat erillisiä merkkijonoja, joten muuten esim. klubi/historia/x jäisi vanhan polun alle ja murupolun yläsivu puuttuisi. Määrä haetaan Studion kyselyllä (60 s välimuisti).
    - `polkuMuuttunut(rule)` palauttaa yhden säännön. Kaikki 11 käyttöpaikkaa pysyvät ennallaan.
 3. **`aiemmatPolutField(group?, kuvaus?)`:**
    - Otsikko "Aiemmat osoitteet", `string[]` tags, `readOnly`, piilossa kun lista on tyhjä.
@@ -1150,7 +1167,7 @@ Yhteensä noin 24 työpäivää: noin 5 viikkoa yhdellä toteuttajalla tai noin 
 4. **`ohjaus`-tyyppi** (ArrowRightIcon, otsikko "Ohjaus tai lyhytosoite"):
    - `lahde` "Osoite sivustolla": kuvaus D:n mukaan, `initialValue: "/"`. Validointi: `tarkistaOhjauksenLahde`, `lahdeOnVapaa` (virhe) ja `lahdeKorvaaAutomaattisen` (varoitus).
    - **`minne`** (tyyppi `linkki`, R6) "Minne ohjataan": kuvaus "Valitse sivuston sivu listasta, kirjoita ulkoinen osoite (https://…) tai valitse tiedosto. Kohteen voi vaihtaa milloin vain." Validointi `vaadiLinkki`, `kohdeEiItseensa` (virhe) ja `kohdeOnOhjaus` (varoitus).
-   - `muistiinpano` "Muistiinpano (ei näy sivustolla)", enintään 300 merkkiä.
+   - `muistiinpano` "Muistiinpano (ei näy sivuilla)", enintään 300 merkkiä. Kuvaus (K4): "Näkyy kaikille, jotka lukevat sivuston tietokantaa. Älä kirjoita henkilötietoja."
    - Esikatselu: select `lahde`, `minne.kohde.title`, `minne.kohde.name`, `minne.href`, `minne.tiedosto.asset.originalFilename` ja `muistiinpano` → `→ …`.
    - Studion tarkistukset (`ohjauksen-lahde.ts`):
      - Duplikaatti: `Osoitteelle … on jo ohjaus. Avaa se listasta ja muuta sen kohdetta.`
@@ -1174,13 +1191,18 @@ Yhteensä noin 24 työpäivää: noin 5 viikkoa yhdellä toteuttajalla tai noin 
      - `sanityFetch` → `kohdeHref = linkinOsoite(o.minne)`
      - `ratkaiseOhjaus(polku, stegaClean(kartta))`
      - sitten `permanentRedirect` tai `redirect`, muuten `notFound()`
-7. **22 kohtaa:** `if (!x) notFound();` muutetaan muotoon `if (!x) return ohjaaTaiEiLoydy(<polku>);`. Polut D:n taulukon mukaan, catch-all `toHref(joinSlug(slug))`. generateMetadata-funktioihin ei kosketa.
+7. **21 kohtaa:** `if (!x) notFound();` muutetaan muotoon `if (!x) return ohjaaTaiEiLoydy(<polku>);`. Polut D:n taulukon mukaan, catch-all `toHref(joinSlug(slug))`. generateMetadata-funktioihin ei kosketa.
 8. **Webhook** (§2.5):
    - `WebhookPayload`-tyyppiin lisätään kentät `_id`, `operaatio` ja `ennen`.
    - Ennen tagien tyhjennystä, kun operaatio on `update` ja tyyppi on ohjattava tai tunniste: `await tallennaAiempiOsoite(...)`.
      - Kirjoittava client (kuten `laskeArvosanat`).
      - `osoitteenMuutos` ja `yhdistaAiemmatPolut`.
-     - Transaktiossa `set aiemmatPolut` julkaistuun versioon **ja** mahdolliseen luonnokseen, `visibility: "sync"`.
+     - **K2, vanha osoite ei saa kadota.** Kolme tapaa, joilla se muuten katoaisi: (1) patch luonnokseen, jota ei ole, kaataa koko transaktion (julkaisun jälkeen luonnosta ei yleensä ole); (2) isä avaa luonnoksen ennen kuin webhook ehtii patchata, jolloin seuraava julkaisu korvaa julkaistun version ilman uutta polkua; (3) kaksi nopeaa julkaisua (A→B ja B→C) ajavat kaksi webhookia rinnakkain, ja koko listan `set` hävittää toisen polun. Siksi:
+       1. Haetaan ensin, mitkä id:t ovat olemassa: `*[_id in [$id, "drafts." + $id]]._id`. Patchataan vain ne.
+       2. Ei koko listan settiä, vaan atomiset operaatiot jokaiselle olemassa olevalle versiolle: `setIfMissing({ aiemmatPolut: [] })`, `insert("after", "aiemmatPolut[-1]", [vanha])` vain, jos polkua ei ole listassa, ja `unset(['aiemmatPolut[@ == "<uusi>"]'])`. Rinnakkaiset ajot eivät siis ylikirjoita toisiaan. Operaatiot tehdään erillisinä mutaatioina samassa transaktiossa, koska Sanity soveltaa yhden patchin operaatiot kiinteässä järjestyksessä. Toteuttaja varmistaa developmentissa, että insert tyhjään listaan toimii. Satunnainen toisto listassa ei haittaa: `ratkaiseOhjaus` sietää sen, ja seuraava ajo poistaa toistot.
+       3. Projektiossa on `ennen.aiemmatPolut` (§2.5). Jos jokin ennen-listan polku puuttuu nykyisestä (kilpailutilanne 2), webhook lisää sen takaisin samalla insertillä (itsekorjaava).
+       4. Jos patch epäonnistuu revisioristiriitaan, yritetään uudelleen enintään 3 kertaa tuoreella haulla. Lopullinen epäonnistuminen kirjataan `console.error`illa ja vastaus on 500, jotta Sanity yrittää webhookia uudelleen.
+     - `visibility: "sync"`.
      - Onnistuessa lisätään tagi `ohjaus`.
    - `OHJATTAVAT_TYYPIT` → aina tagi `ohjaus`.
    - Vanha projektio → `console.warn` "webhookin projektiosta puuttuu operaatio: aiempia osoitteita ei tallenneta (docs/07 Ajonaikaiset ohjaukset)".
@@ -1194,6 +1216,9 @@ Yhteensä noin 24 työpäivää: noin 5 viikkoa yhdellä toteuttajalla tai noin 
 **Testit:**
 
 `scripts/test-ohjaukset.ts` (`npm run test:ohjaukset`), D:n tapaukset 1–22 ja 24 sekä R7-lisäys (`/uutiset` → virhe, `/uutiset/vanha-juttu` kelpaa). Lisäksi:
+- **K2, `yhdistaAiemmatPolut`:** ennen-listan puuttuva polku palautetaan; uusi polku poistuu; ei toistoja; tyhjä ja puuttuva lista; kahden rinnakkaisen muutoksen (A→B ja B→C) tulos sisältää sekä A:n että B:n.
+- **`ratkaiseOhjaus`:** kaksi dokumenttia samalla aiemmalla polulla → uusin `_updatedAt` voittaa riippumatta syötteen järjestyksestä; `/uutiset/%C3%A4iti` ja `/uutiset/äiti` ratkeavat samoin; virheellinen prosenttikoodaus ei kaada.
+- Alasivujen viesti näkyy vain, kun alasivuja on.
 - **Rakennetesti 23:**
   - `app/(public)`-kansion koodiriveillä ei ole kutsua `notFound(`
   - kommenttirivit ja tiedosto `sanity/lib/ohjaus.ts` ohitetaan
@@ -1207,6 +1232,8 @@ Muut testit:
   - kaksi tilaa: `-- --paikallinen` (development ja localhost, webhook simuloidaan allekirjoituksella `@sanity/webhook` `encodeSignatureHeader`) ja production (aito webhook)
   - askeleet 1–7 D:n mukaan
   - erityisesti askel 5: kohteen vaihdon jälkeen ISR-välimuistiin tallennettu 307 vaihtuu 120 sekunnissa (riski R1)
+  - **K2, kilpailutilanne:** kaksi osoitteen muutosta peräkkäin ilman odotusta (A→B, heti B→C). Lopuksi `aiemmatPolut` sisältää A:n ja B:n, ja molemmat ohjautuvat C:hen. Lisäksi tapaus, jossa luonnos avataan heti julkaisun jälkeen: seuraava julkaisu ei hävitä vanhaa polkua.
+  - **K3, poisto → ohjaus:** testisivu poistetaan, nykyinen osoite antaa 404 sekunneissa, ohjaus nykyisestä osoitteesta hyväksytään (`lahdeOnVapaa`) ja ohjaa kohteeseen.
   - siivous `finally`-lohkossa
 
 **Hyväksymiskriteerit:**
@@ -1228,7 +1255,7 @@ Muut testit:
 
 **Muut dokumentit:**
 - **docs/07:** uusi luku "Ajonaikaiset ohjaukset (Sanity)": järjestys, tilakoodit, kartta ja välimuisti, projektio, ketjut, rakennetesti ja Y19:n johtopäätös.
-- **docs/17 §D:** webhookin projektio, jota käytetään myös, jos webhook luodaan uudelleen.
+- **docs/17 §D:** webhookin projektio ja suodatin (`!(_type in ["sivustonTila", "varmuuskopio"])`), joita käytetään myös, jos webhook luodaan uudelleen.
 - **CLAUDE.md:** käytäntö "Uusi dynaaminen reitti: kun sisältöä ei löydy, kutsu `return ohjaaTaiEiLoydy(polku)`, älä `notFound()`. Testi valvoo tätä."
 
 ---
@@ -1242,26 +1269,31 @@ Muut testit:
 **Toteutus:**
 - **`varoitaVanhoistaOsoitteista(t)`:** lukittu-sivu.tsx-malli, eli alkuperäinen toiminto kutsutaan aina.
   - Dialogi `confirm`, `tone: "critical"`. Painikkeet "Poista silti" tai "Piilota silti" ja "Peruuta".
-  - Tekstit D:n mukaan, ohjeena "Sivuston asetukset → Ohjaukset ja lyhytosoitteet → uusi …".
-  - Lista `<ul>`, enintään 5 osoitetta ja "ja N muuta".
+  - **K3:** Ohjausta ei voi tehdä ennen poistoa: niin kauan kuin dokumentti on olemassa, HEAD palauttaa nykyiselle osoitteelle 200 ja `lahdeOnVapaa` antaa virheen "Osoitteessa on jo sivu". Vanhat .htm- ja blogspot-osoitteet taas hylätään kiinteinä ohjauksina. Staattiset ohjaukset (lib/redirects.ts) osoittavat dokumentin **nykyiseen** osoitteeseen, joten isän ohjaus tehdään juuri siitä. Siksi:
+    - Dialogi näyttää ensimmäisenä nykyisen osoitteen ja kertoo: "Vanhat osoitteet (alla) ohjautuvat tähän osoitteeseen. Kun tämä poistuu, ne kaikki johtavat ei löydy -sivulle, ellet tee ohjausta."
+    - Järjestys dialogissa ja docs/09:ssä: 1) poista tai piilota, 2) tee heti ohjaus nykyisestä osoitteesta kohdassa Sivuston asetukset → Ohjaukset ja lyhytosoitteet → uusi. Webhook tyhjentää välimuistin, joten osoite vapautuu (HEAD 404) sekunneissa.
+  - Lista `<ul>`: nykyinen osoite, sitten vanhat, enintään 5 ja "ja N muuta".
   - Vahvistuksen jälkeen Sanityn oma viittausdialogi avautuu perään.
+- **`vanhatOsoitteet(doc)`** palauttaa nykyisen osoitteen (`documentHref`) ensimmäisenä ja sen jälkeen legacyUrl-, blogspot- ja aiemmatPolut-osoitteet.
+- **`KOPIOSTA_POISTETTAVAT`** (`tyhjennaKopiosta`): slug, `legacyUrl`, `muutLegacyUrlit`, `aiemmatPolut`, blogspot-tiedot, `needsReview`, `tarkistettavaa`, ravintolan `automaattinenArvosana` ja uutisen `publishedAt`. Ilman `aiemmatPolut`- ja `muutLegacyUrlit`-kenttiä kaksi dokumenttia väittäisi omakseen saman vanhan osoitteen. Ilman `publishedAt`-kenttää kopio saisi vanhan päivän ja menisi listassa vuosien taakse. Toteuttaja tarkistaa kenttien tarkat nimet skeemoista.
 - **`kopioiPohjaksi(t)`:** `mapDocument: tyhjennaKopiosta` (Sanityn @beta-rajapinta, merkintä docs/07:ään päivitystarkistusta varten).
   - Teksti "Kopioi pohjaksi".
   - title-teksti "Tekee kopion samalla sisällöllä ilman osoitetta ja vanhan sivuston tietoja. Anna kopiolle oma otsikko ja paina osoitteen kohdalla Luo ennen julkaisua."
 - **Kytkentä** §2.7:n mukaan.
 
 **Testit:**
-- `vanhatOsoitteet`: legacyUrl, muut legacy-osoitteet, blogspot-polku `/blogspot…`, aiemmatPolut, kategorian `/uutiset?kategoria=…` ja tyhjä dokumentti.
-- `tyhjennaKopiosta` ei muuta alkuperäistä dokumenttia.
+- `vanhatOsoitteet`: nykyinen osoite ensimmäisenä (K3), legacyUrl, muut legacy-osoitteet, blogspot-polku `/blogspot…`, aiemmatPolut, kategorian `/uutiset?kategoria=…` ja tyhjä dokumentti.
+- `tyhjennaKopiosta`: jokainen `KOPIOSTA_POISTETTAVAT`-kenttä poistuu omana tapauksenaan, muu sisältö säilyy, eikä alkuperäinen dokumentti muutu.
 
 **Hyväksymiskriteerit:**
-- Developmentissa vanhan blogiuutisen poisto näyttää osoitteet.
-- Kopioi pohjaksi tuottaa kopion ilman slugia, legacyUrlia ja blogspot-tietoa.
+- Developmentissa vanhan blogiuutisen poisto näyttää ensin nykyisen osoitteen ja sitten vanhat.
+- Poiston jälkeen ohjaus nykyisestä osoitteesta hyväksytään Studiossa (askeleen 8 e2e-testin K3-askel).
+- Kopioi pohjaksi tuottaa kopion ilman slugia, legacyUrlia, aiempia osoitteita, blogspot-tietoa ja julkaisupäivää.
 - Lukitulla sivulla Kopioi on yhä estetty.
 
 **docs/09:**
 - Kopioi-kiellon rivit korvataan tekstillä "Kopioi pohjaksi (⋯-valikko) tekee kopion ilman osoitetta ja vanhan blogin tietoja. Anna kopiolle uusi otsikko ja paina osoitteen kohdalla Luo."
-- Uusi kohta "Poistettu tai yhdistetty sivu": tee ensin ohjaus.
+- Uusi kohta "Poistettu tai yhdistetty sivu" (K3): 1) poista tai piilota, 2) tee heti ohjaus sivun nykyisestä osoitteesta (dialogi näyttää sen). Vanhat osoitteet kulkevat nykyisen kautta, joten yksi ohjaus riittää.
 
 ---
 
@@ -1273,7 +1305,7 @@ Muut testit:
 
 **Toteutus:**
 1. **`lib/pohjat.ts`:**
-   - `TAYTA = /\[täytä:[^\]]*\]/gi`, `taytettavatKohdat` (merkkijono tai blockien spanit) ja `taytaVielaSaanto` → "Täytä vielä hakasulkeissa olevat kohdat: …".
+   - `TAYTA = /\[täytä:[^\]]*\]/i` **ilman g-lippua**: globaali lippu tekisi `.test()`-kutsusta tilallisen (`lastIndex`), ja joka toinen tarkistus voisi mennä ohi. Kaikkien kohtien poimintaan käytetään `matchAll`-kutsua erillisellä `new RegExp(TAYTA.source, "gi")`-lausekkeella. `taytettavatKohdat` (merkkijono tai blockien spanit) ja `taytaVielaSaanto` → "Täytä vielä hakasulkeissa olevat kohdat: …".
    - `vuosikokousNumero(v) = v - 2007`.
    - Pohjien arvot E:n suunnitelman mukaan:
      - **vuosikokous:** otsikko `Lahden Suomalainen Klubi ry - vuosikokous ${vuosi}`, Lyhenne `Lahden Suomalainen Klubi ry:n ${N}. vuosikokous pidetään [täytä: …] klo [täytä: kellonaika] [täytä: paikka].`, kategoria Tapahtumat (haetaan slugilla `tapahtumaraportti`), tunnisteet ja neljä kappaletta
@@ -1285,13 +1317,11 @@ Muut testit:
    - `klubiArvio-ravintolalle` (parametri `ravintolaId`, ja `paiva` on tämä päivä).
    - Varmistetaan, säilyvätkö kenttätason oletusarvot (esim. `kommentointi.kaytossa`). Ellei, ne lisätään pohjaan.
 3. **`uutinen.ts`:** `taytaVielaSaanto` kenttiin title, excerpt ja body (virhetaso). Productionissa sanaa "täytä" ei esiinny yhdessäkään uutisessa.
-4. **Merkit** (`document.badges`), aina tekstinä:
-   - "Ei vielä sivustolla": kaikki sisältötyypit paitsi singletonit, varmuuskopio, sivustonTila ja arvostelu, kun dokumentti on luonnos eikä sitä ole julkaistu. Väri warning, title "Paina Julkaise, niin tämä tulee sivustolle."
+4. **Merkit** (`document.badges`), aina tekstinä. Karsittu 8.10. (kriitikko, käyttäjän päätös): "Ei vielä sivustolla" ja "Entinen jäsen" jäävät pois, koska Sanityn oma tilanäkymä (luonnos tai julkaistu) ja Hallitus-ryhmän listat Nykyinen hallitus ja Entiset jäsenet näyttävät saman tiedon. Jäljelle jäävät:
    - "Ajastettu" (uutinen, primary): "Tulee sivustolle {pvm klo}".
    - "Tarkistettava": `TARKISTETTAVAT_TYYPIT`, "Lue kohta Mitä tarkistaa."
    - "Odottaa toista arvioijaa" (ravintola): `onJulkinenRavintola`-pariteetti `JULKINEN_RAVINTOLA`-ehdon kanssa.
    - "Piilotettu" (kommentti, danger).
-   - "Entinen jäsen" (hallitusJasen).
 5. **Arvosanat ravintoloittain** (`ravintolat;arvosanat`):
    - `arvosanat-ravintoloittain`: `documentTypeList("ravintola")` → `.child(id => documentList` suodattimella `ravintola._ref == $id`, järjestys `paiva desc`, pohja `klubiArvio-ravintolalle`. `drafts.`-etuliite poistetaan id:stä.
    - `arvosanat-kaikki`: nykyinen lista.
@@ -1304,6 +1334,7 @@ Muut testit:
   - `tapahtumatId` null → kategoriat []
   - `taytettavatKohdat` (2 / 1 / 0 / 0 / 0)
   - säännöt
+  - sama syöte tarkistetaan kahdesti peräkkäin, ja molemmat tunnistavat [täytä]-kohdan (ei g-lipun tilaa)
 - `test-tilamerkit.ts`:
   - `onAjastettu`
   - `onTarkistettava`
@@ -1312,12 +1343,12 @@ Muut testit:
 
 **Hyväksymiskriteerit:**
 - Developmentissa kolme uutispohjaa luovat uutisen, ja [täytä]-kohta estää julkaisun.
-- Merkit näkyvät uutisessa, ravintolassa, kommentissa ja jäsenessä.
+- Merkit näkyvät ajastetussa uutisessa, tarkistettavassa dokumentissa, odottavassa ravintolassa ja piilotetussa kommentissa. Julkaisemattomassa dokumentissa ja entisessä jäsenessä ei ole omaa merkkiä.
 - Ravintolan + avaa arvosanan valmiiksi täytettynä.
 
 **docs/09:**
 - Alaluku "Valmiit pohjat" (Studion + -valikko → Vuosikokouskutsu ja muut).
-- Uusi kohta "Merkit dokumentin yläreunassa".
+- Uusi kohta "Merkit dokumentin yläreunassa": Ajastettu, Tarkistettava, Odottaa toista arvioijaa ja Piilotettu. Julkaisun tila näkyy Sanityn omasta tilasta (luonnos tai julkaistu).
 - Ravintolan arvosana: Ravintolat → Klubilaisten arvosanat → Ravintoloittain → ravintola → +.
 - Tyypilliset tilanteet: "Unohdin [täytä]-kohdan".
 
@@ -1348,6 +1379,7 @@ Muut testit:
   - uutisKategoria → `/uutiset?kategoria=s`.
   - ohjaus → lähdepolku.
 - **`presentation.ts`:** funktiomuotoinen `locations`, `documentStore.listenQuery(SIJAINTI_KYSELY, { id: getPublishedId(id) }, { perspective: "drafts" }).pipe(map(dokumentinSijainnit))`. `VIITTAAJA` on yhteinen sitemapin kanssa.
+  - Funktiomuoto korvaa koko nykyisen objektikartan. Siksi nykyiset lehtileike- ja etusivu-resolverit (`sanity/presentation.ts:38-49`) siirretään `dokumentinSijainnit`-funktioon samoin tuloksin (kriitikko).
 - **Rakenne:**
   - `tilastot`: `tilastot-<ryhmä>` = `documentList` suodattimella `category in $kategoriat` ja pohjilla `jalkapalloTilasto-kategoria` ({ category }).
   - Lisäksi `tilastot-kaikki`.
@@ -1356,9 +1388,11 @@ Muut testit:
 - 23 uniikkia kategoriaa, ja jokaisella on ryhmä ja sijaintisääntö.
 - `kategorianNimi`.
 - Sijainnit kaikille tyypeille (E:n lista ja ohjaus).
+- Lehtileike ja etusivu: sama sijainti kuin nykyisellä objektikartalla.
 
 **Hyväksymiskriteerit:**
 - Developmentissa Näkyy sivulla -linkki näkyy viidelle taulukolle (klubi/sivu, klubi/toiminta, huuhkajat, karsinta ja arvokisa) sekä ottelulle, kommentille ja arvosanalle.
+- Lehtileikkeen ja etusivun esikatselu toimii kuten ennen.
 - Ryhmän + täyttää kategorian.
 
 **docs/09:** "Taulukon muokkaaminen" ja "Huuhkajat-taulukon lisääminen": Näkyy sivulla, huomio "ei näy vielä millään sivulla" ja ryhmän +.
@@ -1377,20 +1411,21 @@ Ajonaikaista legacyUrl-hakua ei tehdä: kaikilla 188 .htm-osoitteella ja 530 blo
 
 ## 5. Tuotantomuutokset (kehittäjä tekee erikseen, ei toteutusaskeleissa)
 
-Jokainen kirjoitus tehdään ensin developmentiin, sitten kuivaharjoituksena productioniin ja vasta sitten oikeasti. Skriptit ajavat `npm run backup` itse ennen kirjoitusta productioniin ja keskeyttävät, jos varmuuskopio epäonnistuu. `--replace`-ajoja ei tehdä missään vaiheessa.
+Jokainen kirjoitus tehdään ensin developmentiin, sitten kuivaharjoituksena productioniin ja vasta sitten oikeasti. Skriptit ajavat `npm run backup` itse ennen kirjoitusta productioniin ja keskeyttävät, jos varmuuskopio epäonnistuu. `--replace`-ajoja ei tehdä productioniin missään vaiheessa. Ennen jokaista deployta (push `main`) ja jokaista production-kirjoitusta kysytään käyttäjältä (päätös 8.10.).
 
 | # | Milloin | Toimenpide | Production-kirjoitukset |
 |---|---|---|---|
+| P0 | ennen askelta 1 | `npm run backup` (uusin kopio 6.10.). Development päivitetään tuoreeksi productionin kopioksi tästä varmuuskopiosta (docs/23 Y4): tuonti kirjoittaa **vain** developmentiin, ja sen datasetti tarkistetaan komennosta ennen ajoa. Tarkistus: dokumenttimäärät täsmäävät productionin kanssa. | 0 |
 | P1 | askel 1 | `npm run backup`, deploy | 0 |
 | P2 | ennen askeleen 2 deployta | Lukutarkistus: `count(*[_type == "uutinen" && count(body[!(_type in $sallitut)]) > 0] + *[_type == "tapahtuma" && count(description[!(_type in $sallitut)]) > 0] + *[_type == "klubiToiminta" && count(kuvaus[!(_type in $sallitut)]) > 0])` ja `$sallitut` = `["block", …RIKKAAT_LOHKOT]`. Tilanne 8.10.: **0**. Sitten `npm run backup` ja deploy. Deployn jälkeen tarkistetaan: ei Invalid-varoituksia, 46 kuvatonta uutista saa korttikuvan, og:image ennallaan ja `test:saavutettavuus` productionia vasten (`BASE_URL`). | 0 |
-| P3 | askeleen 3 deployn jälkeen, **samana päivänä** | 1) Deploy: koodi lukee dokumentin, jos sellainen on, ja muuten oletuksen. 2) `npm run luo:osiosivut -- --production`, odotettu tulos 28 luotavaa, 2 olemassa (sivu-klubi, sivu-klubi-palloveikkaus), 0 ristiriitaa. 3) `npm run luo:osiosivut -- --production --vie`. 4) `verify:content-routes`, `verify:migration` (tarkista, ettei sivujen määrälle ole kiinteää odotusta), `test:saavutettavuus` ja silmämääräisesti /uutiset, /jalkapalloarkisto, /klubi/hallitus ja /ravintolat. | **+28** julkaistua `sivu`-dokumenttia `createIfNotExists`-kutsulla, sisältödokumentteja 3847 → 3875. Peruutus: poistetaan 28 dokumenttia tunnuksen perusteella. |
+| P3 | askeleen 3 deployn jälkeen, **samana päivänä** | 1) Deploy: koodi lukee dokumentin, jos sellainen on, ja muuten oletuksen. 2) `npm run luo:osiosivut -- --production`, odotettu tulos 28 luotavaa, 2 olemassa (sivu-klubi, sivu-klubi-palloveikkaus), 0 ristiriitaa. 3) `npm run luo:osiosivut -- --production --vie`. 4) `npm run verify:content`, `verify:migration` (tarkista, ettei sivujen määrälle ole kiinteää odotusta), `test:saavutettavuus` ja silmämääräisesti /uutiset, /jalkapalloarkisto, /klubi/hallitus ja /ravintolat. Arkiston sivujen meta-kuvaukset ovat ennallaan (K1). | **+28** julkaistua `sivu`-dokumenttia `createIfNotExists`-kutsulla, sisältödokumentteja 3847 → 3875. Peruutus: poistetaan 28 dokumenttia tunnuksen perusteella. |
 | P4 | askel 4 | `npm run backup`, deploy. Vanha data toimii (kaksoisluku). Tarkistetaan, että valikko ja etusivu ovat ennallaan ja alatunniste on valikon mukainen. | 0 |
-| P5 | askeleen 5 jälkeen, **vasta P3:n ja P4:n jälkeen** | `npm run patch:linkit -- --production` (kuivaharjoitus), sitten `-- --production --vie`. Odotettu tulos 8.10. datalla, kun osiosivut ovat olemassa: **6 dokumenttia, 53 arvoa, 52 viittausta ja 1 osoite** (navigaatio 16 viittausta, etusivu 3, Matkailu 23, Mölkky 1 osoite, sivu-klubi 9 markDefiä, uutinen-blogspot-2702900233159075591 1). Kuivaharjoitus vahvistaa luvut. 21 tekstieditorin linkkiä jää vanhaan muotoon (19 ulkoista, ankkuri ja /uutiset/arkisto/2016). Vanhat href-, url- ja ctaHref-arvot säilyvät. Jos P5 ajetaan ennen P3:a, aja se uudelleen P3:n jälkeen (idempotentti). | 6 dokumentin patch (ifRevisionId) |
+| P5 | askeleen 5 jälkeen, **heti P3:n ja P4:n jälkeen** (muuten navigaatiossa näkyy 16 keltaista "parempi valinta" -varoitusta) | `npm run patch:linkit -- --production` (kuivaharjoitus), sitten `-- --production --vie`. Odotetut viittaukset 8.10. datalla, kun osiosivut ovat olemassa: **6 dokumenttia, 53 arvoa, 52 viittausta ja 1 osoite** (navigaatio 16 viittausta, etusivu 3, Matkailu 23, Mölkky 1 osoite, sivu-klubi 9 markDefiä, uutinen-blogspot-2702900233159075591 1). Lisäksi kaikki muut vanhat linkkiobjektit saavat `tyyppi: "osoite"`, myös 21 tekstieditorin linkkiä, jotka eivät muutu viittauksiksi (19 ulkoista, ankkuri ja /uutiset/arkisto/2016). Niiden dokumentit tulevat patchattaviksi, joten dokumenttien määrä on yli 6. Kuivaharjoitus vahvistaa luvut. Vanhat href-, url- ja ctaHref-arvot säilyvät. Jos P5 ajetaan ennen P3:a, aja se uudelleen P3:n jälkeen (idempotentti). | 6 + tekstilinkkien dokumentit, patch (ifRevisionId) |
 | P6 | ennen askeleen 6 deployta | Lukutarkistus kuten P2, mutta `sivu.body` ja koko `RIKKAAT_LOHKOT`-lista. Odotettu tulos 0. Sitten `npm run backup` ja deploy. | 0 |
-| P7 | askel 7 | `npm run backup`, deploy. Huolto ja varmuuskopio ajetaan käsin Vercelissä (Cron Jobs → Run) tai odotetaan yöhön. GROQ-tarkistus: productionissa on täsmälleen 2 `sivustonTila`-dokumenttia. UptimeRobot-tili ja kolme monitoria. | **+2** järjestelmädokumenttia (automaattiset) |
-| P8 | askel 8 | 1) `npm run backup`. 2) **Ennen deployta** webhookin "Sivuston päivitys (revalidate)" projektio vaihdetaan muotoon §2.5 (sanity.io/manage → API → Webhooks → Edit). Nykyinen käsittelijä ohittaa lisäkentät. Tarkistetaan Attempts-lokista, että vastaus on 200. Paluu: `{_type, "slug": slug.current}`. 3) Deploy. 4) Varmuuskopion jälkeen, kun webhook-jono on tyhjä: `npm run e2e:ohjaukset`. Testi luo ja poistaa testisivun ja ohjauksen (netto 0), ja testisivu näkyy 2–4 minuuttia. 5) Isä tekee ensimmäisen lyhytosoitteen (esim. /jasenmaksu). | e2e netto 0. Sen jälkeen webhook kirjoittaa `aiemmatPolut`-kentän aina, kun isä muuttaa osoitetta (muutamia kertoja vuodessa). |
+| P7 | askel 7 | `npm run backup`, deploy. Huolto ja varmuuskopio ajetaan käsin Vercelissä (Cron Jobs → Run) tai odotetaan yöhön. GROQ-tarkistus: productionissa on täsmälleen 2 `sivustonTila`-dokumenttia. Ensimmäinen tiedostosiivous: `npm run siivoa:tiedostot -- --production` listaa ensin (kuivaharjoitus), ja lista tarkistetaan ennen kuin yöhuolto poistaa. Kehittäjä tarkistaa sanity.io/manage → Usage, lasketaanko assetit kiintiöön, ja kirjaa tuloksen docs/23 Y4:ään (ennen 26.10.). | **+2** järjestelmädokumenttia (automaattiset). Yöhuolto poistaa viittaamattomat, yli 7 päivää vanhat tiedostot (ei varmuuskopioita). | **+2** järjestelmädokumenttia (automaattiset) |
+| P8 | askel 8 | 1) `npm run backup`. 2) **Ennen deployta** webhookin "Sivuston päivitys (revalidate)" projektio ja suodatin vaihdetaan muotoon §2.5 (sanity.io/manage → API → Webhooks → Edit). Nykyinen käsittelijä ohittaa lisäkentät. Tarkistetaan Attempts-lokista, että vastaus on 200. Paluu: `{_type, "slug": slug.current}`. 3) Deploy. 4) Varmuuskopion jälkeen, kun webhook-jono on tyhjä: `npm run e2e:ohjaukset`. Testi luo ja poistaa testisivun ja ohjauksen (netto 0), ja testisivu näkyy 2–4 minuuttia. Mukana kilpailutilanne (K2) ja poisto → ohjaus (K3). 5) Isä tekee ensimmäisen lyhytosoitteen (esim. /jasenmaksu). | e2e netto 0. Sen jälkeen webhook kirjoittaa `aiemmatPolut`-kentän aina, kun isä muuttaa osoitetta (muutamia kertoja vuodessa). |
 | P9 | askeleet 9–12 | `npm run backup`, deploy | 0 |
-| P10 | 26.10.2026 illalla (Free-siirto) | Nykyiseen Y2-testiin (docs/17 §D) lisätään: 1) Aloituksessa huolto on ok seuraavana aamuna. 2) Yhden osoitteen muutos tallentaa `aiemmatPolut`-kentän. 3) Anonyymi `count(*[_type == "sivustonTila"])` julkisesta datasetistä palauttaa 0. Jos tulos ei ole 0, se kirjataan docs/17:ään, koska tiedot eivät ole arkaluonteisia. | 0 |
+| P10 | 26.10.2026 illalla (Free-siirto) | Nykyiseen Y2-testiin (docs/17 §D) lisätään: 1) Aloituksessa huolto on ok seuraavana aamuna. 2) Yhden osoitteen muutos tallentaa `aiemmatPolut`-kentän. 3) Anonyymi `count(*[_type == "sivustonTila"])` julkisesta datasetistä palauttaa 0. Jos tulos ei ole 0, se kirjataan docs/17:ään, koska tiedot eivät ole arkaluonteisia. 4) Anonyymi `*[_type == "sanity.fileAsset"]{originalFilename}` näyttää, mitä tiedostoja on julkisesti listattavissa (K4); tulos kirjataan docs/17:ään. | 0 |
 | P11 | noin 2 viikkoa P5:n jälkeen | `npm run patch:linkit -- --production --vie --poista-vanhat` (kuivaharjoitus kertoo määrät). Sen jälkeen koodimuutos: `url` ja `ctaHref` sekä niiden kaksoisluku poistetaan, kun `count(*[_type == "klubiToiminta" && count(vuodet[defined(linkki.url)]) > 0])` ja `count(*[_type == "etusivu" && count(blocks[defined(ctaHref)]) > 0])` palauttavat 0. Myös `linkkiValidointi` poistetaan. `linkinTyyppi`-funktion oletus jää. | samat 6 dokumenttia |
 
 **Deploy-järjestyksen sidokset:**
@@ -1406,12 +1441,17 @@ Jokainen kirjoitus tehdään ensin developmentiin, sitten kuivaharjoituksena pro
 
 ---
 
-## 6. Avoimet päätökset käyttäjälle
+## 6. Päätetty 8.10.2026
 
-1. **Muutetaanko uutisen Lyhenne valinnaiseksi (askel 2b)?** Jos Lyhenne ja Tiivistelmä puuttuvat, listalla näkyy tekstin alku (enintään 200 merkkiä). Nykyiset 756 uutista eivät muutu, koska jokaisella on lyhenne.
-   - **Suositus: kyllä.** Isän kirjoittaminen nopeutuu, ja päätös 7.10. kielsi vain kenttien yhdistämisen.
-   - Jos vastaus on ei, askel 2b jätetään pois, eikä mikään muu muutu.
-2. **UptimeRobotin tili ja hälytysten vastaanottajat:** kenen sähköpostilla tili luodaan (klubin yhteinen osoite?), ja saavatko hälytykset isä, tukihenkilö vai molemmat? Tukihenkilö on yhä nimeämättä (docs/23 §0).
+Avoimia päätöksiä ei ole. Käyttäjä päätti:
+1. **Lyhenne valinnaiseksi: kyllä.** Askel 2b toteutetaan. Jos Lyhenne ja Tiivistelmä puuttuvat, listalla näkyy tekstin alku (enintään 200 merkkiä). Nykyiset 756 uutista eivät muutu.
+2. **Ei ulkoista valvontaa.** UptimeRobot-tiliä ei luoda, eikä hälytyksiä lähetetä kenellekään. Sivuston tila näkyy Studion Aloituksessa (askel 7).
+3. **Tukihenkilö pysyy nimettömänä repossa.** Repo on julkinen GitHubissa, joten dokumenteissa ja Studion teksteissä puhutaan vain "tukihenkilöstä" ilman nimiä tai yhteystietoja.
+4. **Kriitikon löydökset K1–K4 hyväksytään sellaisinaan**, myös orpojen tiedostojen automaattinen siivous (askel 7). Pienet löydökset on viety askeliin (Liite A).
+5. **Askeleen 10 merkit karsitaan:** "Ei vielä sivustolla" ja "Entinen jäsen" jäävät pois. Ajastettu, Tarkistettava ja Odottaa toista arvioijaa jäävät. Kommentin "Piilotettu" säilyy myös, koska Sanity ei näytä piilotusta itse eikä kriitikon perustelu koske sitä.
+6. **Alatunnisteen saavutettavuus tarkistetaan axe-testillä** (`test:saavutettavuus`). Ruudunlukijatestiä ei tehdä, ja alatunniste rakennetaan ilman `display: contents` -tapaa.
+7. **Development päivitetään productionin kopioksi** tuoreen varmuuskopion jälkeen ennen askelta 1 (P0).
+8. **Eteneminen:** askeleet tehdään itsenäisesti omina committeinaan. Ennen jokaista pushia (deploy) ja jokaista production-kirjoitusta kysytään käyttäjältä.
 
 ---
 
@@ -1428,6 +1468,9 @@ Jokainen kirjoitus tehdään ensin developmentiin, sitten kuivaharjoituksena pro
 | `verify-redirects --sanity` | Askeleen 8 e2e-testi kattaa ketjun. | Kun aiempia osoitteita on kertynyt kymmeniä |
 | Raahattava järjestys (`@sanity/orderable-document-list`) | Vaatisi orderRank-migraation. Lista on nyt samassa järjestyksessä kuin sivusto (askel 1). | Jos numerojärjestys hankaloittaa |
 | Pohja `ottelu-huuhkajat` ja merkki "Odottaa hyväksyntää" | Hyöty on lähes olematon (arvostelut ovat aina luonnoksia, ja Ottelut-lista riittää). | – |
+| Merkit "Ei vielä sivustolla" ja "Entinen jäsen" | Toistavat Sanityn oman tilanäkymän ja Hallitus-ryhmän listat (kriitikko, päätös 8.10.). | – |
+| Ulkoinen valvonta (UptimeRobot) | Päätös 8.10.: ei hälytyksiä. Tila näkyy Aloituksessa. | Jos kaatumisia alkaa esiintyä |
+| Lohkovalikon ryhmittely (`insertMenu`) | Ei vaikuta tekstieditoriin (sanity 5.31.2). | Jos Sanity lisää tuen tekstieditoriin |
 | Tyhjätilatekstit kentiksi | Hylätty: ne kirjoitettiin jo kävijälle sopiviksi (Y24), ja tyhjät osiot piiloutuvat. | – |
 
 ---
@@ -1440,16 +1483,18 @@ Jokainen kirjoitus tehdään ensin developmentiin, sitten kuivaharjoituksena pro
 | Next 16 tallentaa ISR-välimuistiin myös sivutason ohjauksen (havaittu X-Vercel-Cache: HIT), joten lyhytosoitteen kohteen vaihto voisi viivästyä | Askeleen 8 e2e-testin askel 5 varmistaa tagilla tyhjenemisen. Varasuunnitelma: catch-allin `revalidate` 3600 → 300 s. |
 | Vahvat viittaukset estävät viitatun sivun poiston, mikä voi hämmentää isää | Sanityn poistoikkuna on suomeksi ja listaa viittaajat. docs/09:ssä on rivi, ja askeleen 9 varoitus täydentää. Palautus heikentää puuttuvat viittaukset. |
 | Webhook luodaan joskus uudelleen vanhalla projektiolla | `console.warn` ja projektio dokumentoitu docs/17:ään. Tarkistus myös 26.10. (P10). |
-| Rajapinnat ovat @beta- tai alpha-tasoisia: `insertMenu`, `document.badges` ja `mapDocument` | Säännöt ovat testattuina `lib/`-moduuleissa, ja käyttöliittymä on eristetty omiin tiedostoihinsa. Tarkistus Sanityn pääversiopäivityksessä (merkintä docs/07:ään). |
-| Liite jää julkiseksi Sanityn CDN:ään, vaikka lohko poistetaan | Varoitus kentässä ja poisto-ohje docs/09:ssä. |
-| Alatunnisteen sisältö muuttuu kävijälle (Uutisarkisto, Tapahtumat ja Kuvagalleria jäävät pois) | Päätöksen 7.10. mukaista. Ruudukko ja 320 px leveys testataan. |
+| Rajapintojen vakaus: `document.badges` on vakaa (DocumentBadgeComponent), `mapDocument` on @beta ja presentationin funktiomuotoinen `locations` on uusi. `insertMenu` (@alpha) jätettiin pois. | Säännöt ovat testattuina `lib/`-moduuleissa, ja käyttöliittymä on eristetty omiin tiedostoihinsa. Tarkistus Sanityn pääversiopäivityksessä (merkintä docs/07:ään). |
+| Liite ja muut tiedostot ovat julkisia: 26.10. jälkeen kuka tahansa voi listata kaikki tiedostot nimineen julkisesta datasetistä, myös lohkosta poistetut (K4) | Rehellinen varoitus kentässä, yöhuolto poistaa viittaamattomat tiedostot 7 päivän jälkeen (ei varmuuskopioita), poisto-ohje docs/09:ssä ja kappale tietosuojaselosteeseen. Ohjauksen muistiinpanon kuvaus kieltää henkilötiedot. |
+| Alatunnisteen sisältö muuttuu kävijälle (Uutisarkisto, Tapahtumat ja Kuvagalleria jäävät pois) | Päätöksen 7.10. mukaista. Ruudukko ja 320 px leveys testataan. docs/09 neuvoo lisäämään Gallerian tai Tapahtumat valikkoon ensimmäisen albumin tai tapahtuman jälkeen. |
+| Webhookin `aiemmatPolut`-kirjoitus kadottaa vanhan osoitteen (puuttuva luonnos, kilpailutilanne, rinnakkaiset ajot) | K2: vain olemassa olevat id:t, atomiset insert- ja unset-operaatiot, ennen-listan itsekorjaus ja uudelleenyritys. Testit ja e2e (askel 8). |
+| Kaatumisesta ei tule hälytystä (ei ulkoista valvontaa, päätös 8.10.) | Aloitus näyttää huollon, varmuuskopion ja otteluhaun tilan, kun Studio avataan. |
 | Kenttien uudelleennimeäminen vanhentaa isän muistikuvat | Kuvauksissa on väliaikaisesti "(Aiemmin kentän nimi oli Polku.)", ja opas päivitetään samassa commitissa. |
 
 ---
 
 ## Liite A. Riippumattoman kriitikon löydökset (8.10.2026)
 
-> Käsitellään ennen toteutusta: jokainen vakava löydös korjataan suunnitelmaan tai perustellaan, miksi ei.
+> Käsitelty 8.10.2026: kaikki vakavat ja pienet löydökset on korjattu suunnitelmaan (merkintä kunkin perässä). Käyttäjä hyväksyi K1–K4:n korjaukset sellaisinaan (luku 6).
 
 **Arvio:** Suunnitelma on pääosin hyvin perusteltu, ja tarkistamani väitteet pitävät koodia ja productionia vasten:
 - structure.ts:ssä ei ole .id()-kutsuja.
@@ -1483,37 +1528,37 @@ Ylisuunnittelua on lähinnä askeleissa 10 ja 11. Merkit toistavat Sanityn omaa 
 
 **K1. Askel 3: ratkaiseOsioSivu, osioSivuSiemen, testi 5 ja P3**
 - Ongelma: Kun dokumentti on olemassa, sääntö antaa description = seoDescription ?? lead. Siemen ei kuitenkaan sisällä seoDescriptionia. Tarkistin koodista, että arkiston etusivulla ja useimmilla alasivuilla meta-kuvaus on eri teksti kuin johdanto: esim. jalkapalloarkisto/page.tsx:36 vs. :39, mestarit/page.tsx:21 vs. :23 ja huuhkajat/page.tsx:38 vs. :40. Kun P3 on ajettu, noin 15 sivun Google-kuvaus vaihtuu johdannoksi, joka on yli 160 merkkiä ja katkeaa. Lisäksi suunnitelman oma testi 5 ('Ei näkyvää muutosta': siemen = null) kaatuu näillä sivuilla, eli suunnitelma on tässä ristiriidassa itsensä kanssa.
-- Korjaus: osioSivuSiemen asettaa seoDescription = oletus.description aina, kun se on olemassa ja eroaa oletus.leadistä. Silloin isä näkee tekstin välilehdellä Hakukoneet ja jako ja voi muokata sitä. Pidä testi 5 ennallaan ja lisää siihen vertailu nimenomaan arkiston sivuille. Vaihtoehtoinen sääntö description = t(seoDescription) ?? oletus.description ?? lead ei sovi, koska isän muokkaama Tiivistelmä ei silloin koskaan päätyisi kuvaukseksi.
+- Korjaus: osioSivuSiemen asettaa seoDescription = oletus.description aina, kun se on olemassa ja eroaa oletus.leadistä. Silloin isä näkee tekstin välilehdellä Hakukoneet ja jako ja voi muokata sitä. Pidä testi 5 ennallaan ja lisää siihen vertailu nimenomaan arkiston sivuille. Vaihtoehtoinen sääntö description = t(seoDescription) ?? oletus.description ?? lead ei sovi, koska isän muokkaama Tiivistelmä ei silloin koskaan päätyisi kuvaukseksi. **Korjattu suunnitelmaan (askel 3 ja P3).**
 
 **K2. Askel 8: webhookin tallennaAiempiOsoite**
 - Ongelma: Kolme tapaa, joilla vanha osoite voi kadota hiljaa. (1) Saman transaktion patch luonnokseen, jota ei ole olemassa, kaataa koko transaktion. Julkaisun jälkeen luonnosta ei yleensä ole, joten tämä on tavallisin tapaus. (2) Kilpailutilanne: isä avaa luonnoksen ennen kuin webhook ehtii patchata. Luonnoksesta puuttuu silloin uusi aiemmatPolut-arvo, ja seuraava julkaisu korvaa julkaistun version, jolloin vanha polku häviää. (3) Kaksi nopeaa julkaisua (A→B ja B→C) ajavat kaksi webhookia rinnakkain. Molemmat lukevat listan ja tekevät setin, jolloin toinen polku katoaa (lost update). Webhookissa on includeDrafts:false ja apiVersion v2021-03-25 (tarkistettu hooks-rajapinnasta), joten delta::operation() ja before() toimivat.
-- Korjaus: Hae ensin, mitkä id:t ovat olemassa (julkaistu ja luonnos), ja patchaa vain ne. Käytä atomista muotoa setIfMissing({aiemmatPolut: []}) + insert('after', 'aiemmatPolut[-1]', [vanha]) + unset('aiemmatPolut[@ == "<uusi>"]') tai ifRevisionId ja uudelleenyritystä, ei koko listan settiä. Lisää projektioon ennen.aiemmatPolut. Jos jokin ennen-listan polku puuttuu nykyisestä, webhook palauttaa sen (itsekorjaava). Testaa tämä yhdistämissääntö tiedostossa test-ohjaukset.ts ja lisää kilpailutilanne e2e-askeleeksi.
+- Korjaus: Hae ensin, mitkä id:t ovat olemassa (julkaistu ja luonnos), ja patchaa vain ne. Käytä atomista muotoa setIfMissing({aiemmatPolut: []}) + insert('after', 'aiemmatPolut[-1]', [vanha]) + unset('aiemmatPolut[@ == "<uusi>"]') tai ifRevisionId ja uudelleenyritystä, ei koko listan settiä. Lisää projektioon ennen.aiemmatPolut. Jos jokin ennen-listan polku puuttuu nykyisestä, webhook palauttaa sen (itsekorjaava). Testaa tämä yhdistämissääntö tiedostossa test-ohjaukset.ts ja lisää kilpailutilanne e2e-askeleeksi. **Korjattu suunnitelmaan (askel 8, §2.5 ja P8).**
 
 **K3. Askel 9: poiston turva ja ohje 'tee ensin ohjaus'**
 - Ongelma: Ohje on mahdoton toteuttaa askeleen 8 tarkistuksilla. Niin kauan kuin dokumentti on olemassa, HEAD palauttaa sen nykyiselle osoitteelle 200, ja lahdeOnVapaa antaa virheen 'Osoitteessa on jo sivu'. Vanhat .htm- ja blogspot-osoitteet hylätään puolestaan 'kiinteänä ohjauksena'. Isä ei siis voi tehdä ohjausta ennen poistoa. Lisäksi vanhatOsoitteet listaa legacyUrl-, blogspot- ja aiemmatPolut-osoitteet, mutta ei dokumentin nykyistä osoitetta. Juuri siihen staattiset ohjaukset (lib/redirects.ts) kuitenkin osoittavat, joten nykyinen osoite on ainoa, jolle isän ohjaus pitää tehdä.
-- Korjaus: Dialogi näyttää ensimmäisenä nykyisen osoitteen ja kertoo, että vanhat osoitteet kulkevat sen kautta. Järjestys docs/09:ssä ja dialogissa: 1) poista tai piilota, 2) tee ohjaus nykyisestä osoitteesta (Sivuston asetukset → Ohjaukset ja lyhytosoitteet). Webhook tyhjentää välimuistin, joten HEAD antaa 404 sekunneissa. Lisää e2e-testiin askel poisto → ohjaus.
+- Korjaus: Dialogi näyttää ensimmäisenä nykyisen osoitteen ja kertoo, että vanhat osoitteet kulkevat sen kautta. Järjestys docs/09:ssä ja dialogissa: 1) poista tai piilota, 2) tee ohjaus nykyisestä osoitteesta (Sivuston asetukset → Ohjaukset ja lyhytosoitteet). Webhook tyhjentää välimuistin, joten HEAD antaa 404 sekunneissa. Lisää e2e-testiin askel poisto → ohjaus. **Korjattu suunnitelmaan (askel 9 ja askeleen 8 e2e).**
 
 **K4. Askeleet 4 ja 6: liitetiedostot ja muut 'ei näy' -kentät julkisessa datasetissä**
 - Ongelma: Kentän kuvaus 'kuka tahansa, jolla on linkki, voi avata sen' on 26.10. jälkeen väärä. Julkisesta datasetistä kuka tahansa voi listata kaikki tiedostot anonyymisti kyselyllä *[_type == "sanity.fileAsset"]{url, originalFilename}. Listassa ovat myös tiedostot, jotka on poistettu lohkosta tai korvattu, ja storeOriginalFilename paljastaa alkuperäisen nimen (esim. jasenluettelo_2026.pdf). Riskitaulukko käsittelee vain CDN-linkin. Samasta syystä ohjaus.muistiinpano ('ei näy sivustolla') on julkisesti luettavissa.
-- Korjaus: Kentän kuvaukseksi: 'Tiedosto on julkinen: se löytyy sivuston tietokannasta, vaikka et linkittäisi sitä.' Lisää yöhuoltoon orpojen fileAssettien siivous (viittaamaton yli 7 päivää; malli tiedostosta arvostelukuvat-siivous.ts, säännöt lib-moduuliin ja testi), älä poista varmuuskopiotiedostoja. Muistiinpanon kuvaukseen: 'Näkyy kaikille, jotka lukevat sivuston tietokantaa. Älä kirjoita henkilötietoja.' Lisää tietosuojaselosteeseen ja docs/09:ään tiedostojen julkisuus.
+- Korjaus: Kentän kuvaukseksi: 'Tiedosto on julkinen: se löytyy sivuston tietokannasta, vaikka et linkittäisi sitä.' Lisää yöhuoltoon orpojen fileAssettien siivous (viittaamaton yli 7 päivää; malli tiedostosta arvostelukuvat-siivous.ts, säännöt lib-moduuliin ja testi), älä poista varmuuskopiotiedostoja. Muistiinpanon kuvaukseen: 'Näkyy kaikille, jotka lukevat sivuston tietokantaa. Älä kirjoita henkilötietoja.' Lisää tietosuojaselosteeseen ja docs/09:ään tiedostojen julkisuus. **Korjattu suunnitelmaan (askeleet 4, 6, 7 ja 8, P7, P10 ja luku 8).**
 
 ### Pienet
 
-- Askel 2: kuvasarja.tsx välittää AlbumGridille propin kokonaisena ehdoitta, joten Kuvien muoto -valinta ei vaikuta mihinkään. Pitää olla kokonaisena={stegaClean(asettelu) === "kokonaisena"}. Lisäksi AlbumGridin ul on kovakoodattu muotoon grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 (album-grid.tsx:50), joten myös lg-luokka pitää ehdollistaa.
-- Askel 6: options.insertMenu ei vaikuta tekstieditoriin. Tarkistettu sanity 5.31.2:sta: tekstieditorin työkalupalkki rakentaa valikon funktiolla getInsertMenuItems(schemaTypes), joka ei lue optionsia (index.js:33077). Vain taulukkokenttä (array input) lukee insertMenu-asetuksen. Poista asetus suunnitelmasta ja luota järjestykseen ja ikoneihin. Huom: 9 lohkopainiketta voi täyttää työkalupalkin, joten tarkista puhelimen leveys.
-- Askel 4, tagi 'linkit': tagi on Headerissa ja Footerissa, eli joka sivun layoutissa. Siksi minkä tahansa yhdeksän tyypin muutos tyhjentää koko sivuston välimuistin parametrilla expire:0 (kävijä odottaa renderöinnin). Tähän kuuluvat myös webhookin automaattiset ravintolan arvosanapatchit. Koska fetchin revalidate on jo 60 s, yksinkertaisin ratkaisu on jättää 'linkit' pois navigaatiosta ja hyväksyä sama minuutin viive kuin tekstilinkeillä. Vaihtoehtoisesti tyhjennä 'linkit' vain slugin muuttuessa tai poistossa, mikä vaatii ennen-projektion. Siirrä silloin webhookin projektiomuutos P8:sta P4:ään.
-- Askel 3: osiosivujen haun tagit ['sivu', 'sivu:<slug>'] saavat minkä tahansa sivun ja jokaisen jalkapalloTilaston muutoksen (RIIPPUVAT jalkapalloTilasto → sivu) tyhjentämään kaikki 30 listasivua. Pelkkä 'sivu:<slug>' riittää. Arkiston korttitekstien haulle riittävät slugikohtaiset tagit.
-- Askeleet 3 ja P3: npm-skriptiä verify:content-routes ei ole olemassa. Oikea nimi on npm run verify:content (package.json:33). Korjaa askeleen 3 hyväksymiskriteerit ja P3.
-- Askel 9: KOPIOSTA_POISTETTAVAT-listaan pitää ottaa myös aiemmatPolut ja muutLegacyUrlit. Muuten kaksi dokumenttia väittää omakseen saman vanhan osoitteen, ja ratkaiseOhjaus valitsee niistä satunnaisesti. Lisäksi listaan kuuluvat blogspot-tiedot, needsReview ja tarkistettavaa, ravintolan automaattinenArvosana sekä uutisen publishedAt (muuten kopio saa vanhan päivän ja menee listassa vuosien taakse). Testaa jokainen kenttä.
-- Askel 8, ratkaiseOhjaus: jos useampi dokumentti väittää samaa aiempaa polkua, valinta tarvitsee deterministisen järjestyksen (_updatedAt desc), ja sille tarvitaan testi. Normalisoi lisäksi prosenttikoodaus (decodeURIComponent) ennen vertailua.
-- Askel 8, sivun osoitteen muutos: alasivujen slugit ovat erillisiä merkkijonoja. Kun klubi/historia muuttuu muotoon klubi/tarina, alasivu klubi/historia/x jää vanhan polun alle, ja murupolun yläsivu puuttuu. polunMuutosViesti voisi kertoa alasivujen määrän: 'Alasivujen osoitteet eivät muutu, muuta ne erikseen.'
-- P5: patch:linkit jättää 21 tekstilinkkiä ilman tyyppi-kenttää, joten Studion radiopainikkeista mikään ei ole valittuna. Aseta tyyppi 'osoite' kaikille vanhoille linkkiobjekteille, myös markDefseille. Aja P5 heti P3:n ja P4:n jälkeen: askeleen 4 sivullaOnValinta-varoitus näyttää muuten navigaatiossa 16 keltaista varoitusta siihen asti.
-- Askel 4, alatunniste: <nav className="contents"> on saavutettavuusriski, koska display:contents on WebKitissä pudottanut elementin roolin saavutettavuuspuusta. Rakenna mieluummin yksi nav, jossa on oma ruudukko (lg:col-span-N ja sisempi grid tai subgrid). Tarkista lisäksi VoiceOverilla, ennen kuin askel hyväksytään.
-- Askel 4, alatunniste: Uutisarkisto ja Kuvagalleria poistuvat alatunnisteesta. Arkistoon linkitetään /uutiset-sivulta, mutta Galleria on ensimmäisen albumin jälkeen vain etusivun lohkon takana. Lisää docs/09:ään ohje: 'Kun julkaiset ensimmäisen albumin tai tapahtuman, lisää osio valikkoon.'
-- Askel 7, kiintiörivi: docs/23 Y4 päättelee vain epäsuorasti, että assetit eivät kuulu laskentaan. Productionissa on 5565 dokumenttia, joista 1721 on sanity.*-tyyppisiä. Vihreä valo voi siis olla väärä. Tarkista sanity.io/manage → Usage ennen 26.10. ja kirjaa tulos. Siihen asti teksti on 'arvio' ja tila enintään huomio, ei ok.
-- Askel 7, sivustonTila: piilota tyyppi myös Studion haulta ja viittausvalitsimista (__experimental_omnisearch_visibility: false). Suodata sivustonTila ja varmuuskopio pois jo webhookin filter-ehdossa, kun projektio muutetaan, niin turhat kutsut jäävät pois.
-- Askel 6, upotus: renderöi vain tulkitseUpotuksen palauttama src, ei liitettyä HTML:ää. Lisää iframeen sandbox="allow-scripts allow-same-origin allow-forms allow-popups" ja suppea allow-attribuutti. Tämä on lisäturva, jos sallittujen listaan tulee virhe.
-- Askel 11: presentationin funktiomuotoinen locations korvaa koko nykyisen objektikartan, joten lehtileike- ja etusivu-resolverit (sanity/presentation.ts:38-49) pitää siirtää dokumentinSijainnit-funktioon ja testata.
-- Askel 10, ylisuunnittelu: Sanityn oma tilanäkymä (luonnos tai julkaistu) näyttää jo, onko dokumentti julkaistu, joten 'Ei vielä sivustolla' ja 'Entinen jäsen' toistavat olemassa olevaa tietoa. Pidä vain Ajastettu, Tarkistettava ja Odottaa toista arvioijaa. Lisäksi riskitaulukon tasomerkinnät pitää korjata: document.badges on vakaa (DocumentBadgeComponent), mapDocument on @beta (tarkistettu) ja insertMenu on @alpha.
-- Luku 1: notFound-kutsuja on 21, ja ne ovat 18 tiedostossa. Lisäksi klubi-sivu.tsx:19:ssä on yksi kommentti. Korjaa luku. Rakennetesti ohittaa kommentit oikein.
-- Askel 10: TAYTA-regex on muotoa /…/gi. Jos sitä käytetään .test()-kutsussa, globaali lippu tekee lastIndexistä tilallisen, ja joka toinen tarkistus voi mennä ohi. Käytä match- tai matchAll-kutsua tai regexiä ilman g-lippua.
+- Askel 2: kuvasarja.tsx välittää AlbumGridille propin kokonaisena ehdoitta, joten Kuvien muoto -valinta ei vaikuta mihinkään. Pitää olla kokonaisena={stegaClean(asettelu) === "kokonaisena"}. Lisäksi AlbumGridin ul on kovakoodattu muotoon grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 (album-grid.tsx:50), joten myös lg-luokka pitää ehdollistaa. **Korjattu suunnitelmaan (askel 2).**
+- Askel 6: options.insertMenu ei vaikuta tekstieditoriin. Tarkistettu sanity 5.31.2:sta: tekstieditorin työkalupalkki rakentaa valikon funktiolla getInsertMenuItems(schemaTypes), joka ei lue optionsia (index.js:33077). Vain taulukkokenttä (array input) lukee insertMenu-asetuksen. Poista asetus suunnitelmasta ja luota järjestykseen ja ikoneihin. Huom: 9 lohkopainiketta voi täyttää työkalupalkin, joten tarkista puhelimen leveys. **Korjattu suunnitelmaan (askel 6 ja luku 7).**
+- Askel 4, tagi 'linkit': tagi on Headerissa ja Footerissa, eli joka sivun layoutissa. Siksi minkä tahansa yhdeksän tyypin muutos tyhjentää koko sivuston välimuistin parametrilla expire:0 (kävijä odottaa renderöinnin). Tähän kuuluvat myös webhookin automaattiset ravintolan arvosanapatchit. Koska fetchin revalidate on jo 60 s, yksinkertaisin ratkaisu on jättää 'linkit' pois navigaatiosta ja hyväksyä sama minuutin viive kuin tekstilinkeillä. Vaihtoehtoisesti tyhjennä 'linkit' vain slugin muuttuessa tai poistossa, mikä vaatii ennen-projektion. Siirrä silloin webhookin projektiomuutos P8:sta P4:ään. **Korjattu suunnitelmaan (§2.5 ja askel 4: linkit jätetty pois navigaatiosta, projektio pysyy P8:ssa).**
+- Askel 3: osiosivujen haun tagit ['sivu', 'sivu:<slug>'] saavat minkä tahansa sivun ja jokaisen jalkapalloTilaston muutoksen (RIIPPUVAT jalkapalloTilasto → sivu) tyhjentämään kaikki 30 listasivua. Pelkkä 'sivu:<slug>' riittää. Arkiston korttitekstien haulle riittävät slugikohtaiset tagit. **Korjattu suunnitelmaan (§2.5 ja askel 3).**
+- Askeleet 3 ja P3: npm-skriptiä verify:content-routes ei ole olemassa. Oikea nimi on npm run verify:content (package.json:33). Korjaa askeleen 3 hyväksymiskriteerit ja P3. **Korjattu suunnitelmaan (askel 3 ja P3).**
+- Askel 9: KOPIOSTA_POISTETTAVAT-listaan pitää ottaa myös aiemmatPolut ja muutLegacyUrlit. Muuten kaksi dokumenttia väittää omakseen saman vanhan osoitteen, ja ratkaiseOhjaus valitsee niistä satunnaisesti. Lisäksi listaan kuuluvat blogspot-tiedot, needsReview ja tarkistettavaa, ravintolan automaattinenArvosana sekä uutisen publishedAt (muuten kopio saa vanhan päivän ja menee listassa vuosien taakse). Testaa jokainen kenttä. **Korjattu suunnitelmaan (askel 9).**
+- Askel 8, ratkaiseOhjaus: jos useampi dokumentti väittää samaa aiempaa polkua, valinta tarvitsee deterministisen järjestyksen (_updatedAt desc), ja sille tarvitaan testi. Normalisoi lisäksi prosenttikoodaus (decodeURIComponent) ennen vertailua. **Korjattu suunnitelmaan (askel 8).**
+- Askel 8, sivun osoitteen muutos: alasivujen slugit ovat erillisiä merkkijonoja. Kun klubi/historia muuttuu muotoon klubi/tarina, alasivu klubi/historia/x jää vanhan polun alle, ja murupolun yläsivu puuttuu. polunMuutosViesti voisi kertoa alasivujen määrän: 'Alasivujen osoitteet eivät muutu, muuta ne erikseen.' **Korjattu suunnitelmaan (askel 8).**
+- P5: patch:linkit jättää 21 tekstilinkkiä ilman tyyppi-kenttää, joten Studion radiopainikkeista mikään ei ole valittuna. Aseta tyyppi 'osoite' kaikille vanhoille linkkiobjekteille, myös markDefseille. Aja P5 heti P3:n ja P4:n jälkeen: askeleen 4 sivullaOnValinta-varoitus näyttää muuten navigaatiossa 16 keltaista varoitusta siihen asti. **Korjattu suunnitelmaan (askel 5 ja P5).**
+- Askel 4, alatunniste: <nav className="contents"> on saavutettavuusriski, koska display:contents on WebKitissä pudottanut elementin roolin saavutettavuuspuusta. Rakenna mieluummin yksi nav, jossa on oma ruudukko (lg:col-span-N ja sisempi grid tai subgrid). Tarkista lisäksi VoiceOverilla, ennen kuin askel hyväksytään. **Korjattu suunnitelmaan (askel 4; VoiceOver-tarkistuksen sijaan axe, päätös 8.10.).**
+- Askel 4, alatunniste: Uutisarkisto ja Kuvagalleria poistuvat alatunnisteesta. Arkistoon linkitetään /uutiset-sivulta, mutta Galleria on ensimmäisen albumin jälkeen vain etusivun lohkon takana. Lisää docs/09:ään ohje: 'Kun julkaiset ensimmäisen albumin tai tapahtuman, lisää osio valikkoon.' **Korjattu suunnitelmaan (askel 4).**
+- Askel 7, kiintiörivi: docs/23 Y4 päättelee vain epäsuorasti, että assetit eivät kuulu laskentaan. Productionissa on 5565 dokumenttia, joista 1721 on sanity.*-tyyppisiä. Vihreä valo voi siis olla väärä. Tarkista sanity.io/manage → Usage ennen 26.10. ja kirjaa tulos. Siihen asti teksti on 'arvio' ja tila enintään huomio, ei ok. **Korjattu suunnitelmaan (askel 7 ja P7).**
+- Askel 7, sivustonTila: piilota tyyppi myös Studion haulta ja viittausvalitsimista (__experimental_omnisearch_visibility: false). Suodata sivustonTila ja varmuuskopio pois jo webhookin filter-ehdossa, kun projektio muutetaan, niin turhat kutsut jäävät pois. **Korjattu suunnitelmaan (§2.5, askeleet 7 ja 8).**
+- Askel 6, upotus: renderöi vain tulkitseUpotuksen palauttama src, ei liitettyä HTML:ää. Lisää iframeen sandbox="allow-scripts allow-same-origin allow-forms allow-popups" ja suppea allow-attribuutti. Tämä on lisäturva, jos sallittujen listaan tulee virhe. **Korjattu suunnitelmaan (askel 6).**
+- Askel 11: presentationin funktiomuotoinen locations korvaa koko nykyisen objektikartan, joten lehtileike- ja etusivu-resolverit (sanity/presentation.ts:38-49) pitää siirtää dokumentinSijainnit-funktioon ja testata. **Korjattu suunnitelmaan (askel 11 ja §2.7).**
+- Askel 10, ylisuunnittelu: Sanityn oma tilanäkymä (luonnos tai julkaistu) näyttää jo, onko dokumentti julkaistu, joten 'Ei vielä sivustolla' ja 'Entinen jäsen' toistavat olemassa olevaa tietoa. Pidä vain Ajastettu, Tarkistettava ja Odottaa toista arvioijaa. Lisäksi riskitaulukon tasomerkinnät pitää korjata: document.badges on vakaa (DocumentBadgeComponent), mapDocument on @beta (tarkistettu) ja insertMenu on @alpha. **Korjattu suunnitelmaan (askel 10, luvut 6–8).**
+- Luku 1: notFound-kutsuja on 21, ja ne ovat 18 tiedostossa. Lisäksi klubi-sivu.tsx:19:ssä on yksi kommentti. Korjaa luku. Rakennetesti ohittaa kommentit oikein. **Korjattu suunnitelmaan (luku 1 ja askel 8).**
+- Askel 10: TAYTA-regex on muotoa /…/gi. Jos sitä käytetään .test()-kutsussa, globaali lippu tekee lastIndexistä tilallisen, ja joka toinen tarkistus voi mennä ohi. Käytä match- tai matchAll-kutsua tai regexiä ilman g-lippua. **Korjattu suunnitelmaan (askel 10).**

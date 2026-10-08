@@ -2,7 +2,7 @@
 
 **Päiväys:** 5.10.2026
 **Kohde:** https://www.lahdensuomalainenklubi.com (domain siirretty Verceliin 4.10.2026)
-**Lukijat:** Veikko (kehittäjä) ja isä (sihteeri, ylläpitäjä)
+**Lukijat:** kehittäjä ja isä (sihteeri, ylläpitäjä)
 **Pohja:** 13 osa-alueen asiantuntija-auditointi. Kaikki osa-alueet saatiin auditoitua.
 
 ---

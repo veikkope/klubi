@@ -2,7 +2,7 @@
 
 **Päiväys:** 7.10.2026
 **Kohde:** https://www.lahdensuomalainenklubi.com ja Sanity Studio (/studio), Sanity-projekti zyrukn4s
-**Lukijat:** Veikko (kehittäjä) ja isä (sihteeri, ylläpitäjä)
+**Lukijat:** kehittäjä ja isä (sihteeri, ylläpitäjä)
 **Pohja:** Seitsemän tutkimusnäkökulmaa: kovakoodattu sisältö, isän tehtäväskenaariot, Sanityn ominaisuudet, linkit ja ohjaukset, kehittäjäriippuvuudet, Studion käytettävyys, rakenteellinen joustavuus ja productionin datan tila. Lisäksi kolme täydennystutkimusta: Sanityn tilaus ja kustannukset, ratkaisujen ristiriidat ja tiekartta sekä isän todellinen käyttö. Löydöksiä oli yhteensä 144, ja yksi kumottiin. Tässä raportissa päällekkäiset löydökset on yhdistetty 43 kohdaksi (Y1–Y43). Kunkin kohdan alla mainitaan alkuperäiset tunnisteet.
 **Tutkimuskysymys:** Mitä isä voi tehdä yksin, mihin tarvitaan vielä kehittäjää ja miten Sanityn omilla ominaisuuksilla riippuvuus kehittäjästä saadaan poistettua.
 
@@ -10,7 +10,7 @@
 
 ## 0. Päätökset 7.10.2026
 
-Veikko päätti luvun 7 kysymykset. Nämä ohittavat raportin suositukset siltä osin kuin ne eroavat.
+Kehittäjä päätti luvun 7 kysymykset. Nämä ohittavat raportin suositukset siltä osin kuin ne eroavat.
 
 | Aihe | Päätös | Vaikutus tiekarttaan |
 |---|---|---|
@@ -38,7 +38,7 @@ Veikko päätti luvun 7 kysymykset. Nämä ohittavat raportin suositukset siltä
 - **Y1–Y2 tarkistus:** `npm run tarkista:sanity-taso` näyttää tilauksen, datasetin näkyvyyden, tokenien ja käyttäjien roolit ja sivuston tilan (vain luku). Tilanne 7.10.: Growth Trial päättyy 26.10.2026 klo 16.30 Suomen aikaa (ei 17.30: kesäaika päättyy 25.10.), datasetti on yksityinen, ja "Vercel - lomakkeet" -tokenilla on rooli editor. Sanityn mukaan robottitokenin Editor-rooli on sallittu myös ilmaistasolla, joten lomakkeiden ei pitäisi pysähtyä. Varmistus ajetaan 26.10. illalla (docs/17 §D).
 - **Y32 palautus Studiossa:** jokaisen sisältödokumentin ⋯-valikossa on **Palauta varmuuskopiosta**, ja varmuuskopion avaamiseen tulee välilehti **Palauta poistettu**. Valittu versio palautetaan luonnokseksi, joten sivusto muuttuu vasta, kun isä julkaisee sen. Säännöt ovat tiedostossa `lib/palautus.ts`, ja testit ajetaan komennolla `npm run test:palautus`. Kirjoitus on testattu `development`-datasettiin productionin oikealla kopiolla, myös luonnosmetatiedon (`_system`) kanssa. Ohjeet ovat docs/09:ssä (Varmuuskopiot) ja docs/17 §D:ssä.
 - **Y8 blogin katkaisu:** tekninen osa tehty 7.10.: production on ajan tasalla (530 kirjoitusta, 1041 dokumenttia kommentteineen), ja blogiosoitteiden ohjaus toimii (308). Bloggerissa tehdään vielä muuttoilmoitus ja teeman skripti isän tunnuksilla (docs/14 §6, teksti valmiina). docs/09:n alkuun lisättiin huomautus "Uudet jutut kirjoitetaan Studioon".
-- **Y19 osittain:** ohjausgeneraattori ja tarkistusskriptit (`verify:blogspot`, `verify:content-routes`, `verify:migration`) lukevat Sanityä aina tokenilla. Ilman tokenia yksityinen datasetti palautti tyhjän tuloksen virheettä, ja generaattori ehti 7.10. ylikirjoittaa `lib/redirects.ts`:n lähes tyhjäksi (palautettu, ei commitoitu). Generaattori kieltäytyy nyt kirjoittamasta tiedostoa, jos Sanity palauttaa 0 dokumenttia.
+- **Y19 osittain:** ohjausgeneraattori ja tarkistusskriptit (`verify:blogspot`, `verify:content`, `verify:migration`) lukevat Sanityä aina tokenilla. Ilman tokenia yksityinen datasetti palautti tyhjän tuloksen virheettä, ja generaattori ehti 7.10. ylikirjoittaa `lib/redirects.ts`:n lähes tyhjäksi (palautettu, ei commitoitu). Generaattori kieltäytyy nyt kirjoittamasta tiedostoa, jos Sanity palauttaa 0 dokumenttia.
 - **Y11 ja Y35:** Studion ylimmäksi kohta **Tehtävät sinulle**: odottavat arvostelut, uudet kommentit (7 pv), julkaisemattomat muutokset, ajastetut uutiset ja tarkistettavat yhdessä listassa. Tarkistettaviin lisättiin sivut, tapahtumat ja galleria-albumit. Vaatii tarkistuksen -rasti näkyy vain migraation merkitsemissä dokumenteissa, ja sen ohje muistuttaa julkaisusta. Ensimmäinen ajo löysi productionista kolme julkaisematonta luonnosta (mm. "Suomi - Albania 03.10.2026").
 - **Y12 ajastus:** kaikki uutishaut käyttävät jaettua ehtoa `NAKYVA_UUTINEN` (`sanity/lib/queries/julkaisu.ts`): tulevaksi päivätty uutinen odottaa piilossa listoissa, haussa, tunnisteissa, arkistossa, etusivulla (myös Pääjuttuna), sitemapissa ja edellinen- ja seuraava-linkeissä. Studion listassa merkintä *Ajastettu*. Productionissa 756/756 uutista näkyy kuten ennen.
 - **Y16:** sivun Taulukot-kenttä näkyy nyt myös yleisellä sivupohjalla. Taulukkoprojektio on jaettu (`tilastoProjection`), ja taulukon muutos päivittää sivut webhookissa (`jalkapalloTilasto → sivu`).
@@ -51,7 +51,11 @@ Veikko päätti luvun 7 kysymykset. Nämä ohittavat raportin suositukset siltä
 - **Y41 alku:** pelattu "Seuraava ottelu" piilotettu etusivun lomakkeelta. Datan siivousmigraatio myöhemmin.
 - **Y43:** oppaan vanhentuneet kohdat korjattu (blogitunnisteet, kuvien pakkaus, tilastojen sijainti, Wepard, hallituksen vaihto, valikkoon lisääminen, lukitut sivut).
 
-Avoimena on yhä (ei valittavissa lomakkeella): kuka on domainin rekisteröijä ja kuka siirtää DNS-vyöhykkeen ennen Zonerin irtisanomista (Y6), kuka on nimetty tekninen tukihenkilö, kuka kirjoitti 4.10. Albania-uutisen ja mitä Arvostelu-kategoria tarkoittaa, ja kuka täyttää hallituksen, yhteystiedot ja tapahtumat.
+Avoimena on yhä (ei valittavissa lomakkeella): kuka on domainin rekisteröijä ja kuka siirtää DNS-vyöhykkeen ennen Zonerin irtisanomista (Y6), kuka kirjoitti 4.10. Albania-uutisen ja mitä Arvostelu-kategoria tarkoittaa, ja kuka täyttää hallituksen, yhteystiedot ja tapahtumat.
+
+**Päätetty 8.10.2026 (docs/24 luku 6):**
+- Tekninen tukihenkilö pysyy repossa nimettömänä, koska repo on julkinen GitHubissa. Dokumenteissa ja Studion teksteissä puhutaan vain "tukihenkilöstä" ilman nimeä tai yhteystietoja.
+- Ulkoista valvontaa (UptimeRobot) ei oteta käyttöön, eikä hälytyksiä lähetetä kenellekään. Sivuston tila näkyy Studion Aloituksessa (Y33, docs/24 askel 7).
 
 ---
 
@@ -524,7 +528,7 @@ Kaikkea ei voi eikä kannata siirtää Studioon. Seuraavat asiat vaativat aina j
 | Taso-rajapinnan tunnukset ja otteluhaun muutokset | Ulkoisen palvelun tekniset tunnukset | Haun tila näkyy Studiossa (Y29, Y33). |
 
 **Miten riippuvuus pidetään pienenä:**
-1. **Nimetty tukihenkilö tai tukisopimus.** Hallitus päättää, kuka ja millä budjetilla, jos Veikko ei ole tavoitettavissa.
+1. **Nimetty tukihenkilö tai tukisopimus.** Hallitus päättää, kuka ja millä budjetilla, jos kehittäjä ei ole tavoitettavissa.
 2. **Hätäohje yhdessä paikassa** (docs/17 ja salasanaholvi): palvelut, tunnukset, maksajat, uusintapäivät, muuttujat ja vaiheet.
 3. **Automaatio hoitaa toistuvan työn:** yöllinen huolto, viikkovarmuuskopio, Dependabotin automaattinen yhdistäminen, Studion automaattinen päivitys ja valvonta, joka hälyttää isälle ja tukihenkilölle.
 4. **Studio kertoo itse, kun jokin on vialla** (Sivuston tila, Y33), jotta vian huomaaminen ei vaadi kehittäjää.

@@ -16,7 +16,7 @@ kaikilla vain tarvittavat oikeudet.**
 
 | Kuka | Rooli | Miksi |
 |---|---|---|
-| Kehittäjä (Veikko) | Administrator | projektin asetukset, tokenit, CORS, webhookit |
+| Kehittäjä | Administrator | projektin asetukset, tokenit, CORS, webhookit |
 | Sihteeri (isä) | **Editor** | muokkaa ja julkaisee sisältöä, ei pääse asetuksiin |
 | Muut hallituksen jäsenet (tarvittaessa) | Editor tai Viewer | vain tarpeen mukaan |
 
