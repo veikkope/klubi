@@ -3,6 +3,8 @@ import type { SchemaTypeDefinition } from "sanity";
 import { imageWithAlt } from "./objects/imageWithAlt";
 import { galleriaKuva } from "./objects/galleriaKuva";
 import { portableText } from "./objects/portableText";
+import { rikasSisalto } from "./objects/rikasSisalto";
+import { kuvasarja } from "./objects/kuvasarja";
 import { kokoonpano } from "./objects/kokoonpano";
 import { youtubeVideo } from "./objects/youtubeVideo";
 import { paivattyKuva } from "./objects/paivattyKuva";
@@ -44,6 +46,8 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   imageWithAlt,
   galleriaKuva,
   portableText,
+  rikasSisalto,
+  kuvasarja,
   kokoonpano,
   youtubeVideo,
   paivattyKuva,

@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { FramedImage } from "@/components/framed-image";
 import { KuvaSiirtyma } from "@/components/sivunvaihto";
 import { formatDate } from "@/lib/format";
+import { korttiTeksti } from "@/lib/sisaltolohkot";
 import type { UutinenCard } from "@/lib/types";
 
 type Props = {
@@ -20,6 +21,7 @@ type Props = {
 };
 
 export function NewsCard({ news, feature = false, eager = false }: Props) {
+  const teksti = korttiTeksti(news);
   return (
     <Card href={`/uutiset/${news.slug}`} className="w-full">
       {news.coverImage?.asset && (
@@ -39,7 +41,7 @@ export function NewsCard({ news, feature = false, eager = false }: Props) {
         <time dateTime={news.publishedAt}>{formatDate(news.publishedAt)}</time>
       </CardEyebrow>
       <CardTitle className="mt-2">{news.title}</CardTitle>
-      <CardBody className="mt-2">{news.excerpt}</CardBody>
+      {teksti && <CardBody className="mt-2">{teksti}</CardBody>}
       {news.categories && news.categories.length > 0 && (
         <div className="mt-4 flex flex-wrap gap-1.5">
           {news.categories.map((c) => (

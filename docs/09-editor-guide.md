@@ -85,12 +85,19 @@ Tämä korvaa blogiin kirjoittamisen. Studio toimii myös puhelimen selaimessa.
 1. **Uutiset** → **+** (Luo uusi).
 2. **Otsikko**, sen jälkeen **Osoite sivustolla** → *Luo*. **Julkaisuaika** on oletuksena nyt.
    (Kentän nimi oli aiemmin *Polku*.)
-3. **Lyhenne (uutislista ja etusivu):** 1–2 virkettä, jotka näkyvät uutislistassa ja
-   etusivun kortissa. Uudessa jutussa **Tiivistelmän** voi jättää tyhjäksi: silloin
-   Lyhenne näkyy myös jutun alussa. Jos täytät Tiivistelmän, jutun alussa näkyy
-   Tiivistelmä eikä Lyhenne (ks. taulukko alla).
-4. **Kansikuva** ja **Sisältö**. Sisältöön voi lisätä otsikoita, listoja, linkkejä ja
-   **kuvia tekstin sekaan**: paina **+** tekstin kohdalla → *Kuva*.
+3. **Lyhenne (uutislista ja etusivu)** on valinnainen: 1–2 virkettä, jotka näkyvät
+   uutislistassa ja etusivun kortissa. Jos jätät sen tyhjäksi, listalla näkyy tekstin
+   alku (enintään noin 200 merkkiä). Uudessa jutussa **Tiivistelmän** voi jättää
+   tyhjäksi: silloin Lyhenne näkyy myös jutun alussa. Jos täytät Tiivistelmän, jutun
+   alussa näkyy Tiivistelmä eikä Lyhenne (ks. taulukko alla).
+4. **Kansikuva** ja **Sisältö**. Kansikuva on valinnainen: jos jätät sen tyhjäksi,
+   uutislistassa, etusivulla ja jaossa käytetään tekstin ensimmäistä isoa kuvaa
+   (myös kuvasarjasta). Keltainen varoitus kertoo, jos uutisessa ei ole kuvaa
+   lainkaan; uutisen voi silti julkaista. Sisältöön voi lisätä otsikoita, listoja,
+   linkkejä ja **kuvia tekstin sekaan**: paina **+** tekstin kohdalla → *Kuva*.
+   **Kuvajutussa** (esim. matkan tai juhlan kuvat) käytä yksittäisten kuvien sijaan
+   **kuvasarjaa**: kaikki kuvat kerralla ja yksi yhteinen kuvaus (ks.
+   kohta *Tekstin lisäosat* alla).
    **YouTube-video** lisätään samalla tavalla: napsauta Sisältö-kentän tekstiin ja paina
    kentän työkalupalkin oikeasta reunasta toistokolmiota ▷ (kapealla näytöllä **+**-valikosta
    *YouTube-video*). Liitä videon
@@ -101,7 +108,8 @@ Tämä korvaa blogiin kirjoittamisen. Studio toimii myös puhelimen selaimessa.
    Pelkän linkin voi edelleen tehdä tekstiin tavallisena linkkinä.
    Video toimii samoin kaikissa tekstikentissä, joissa on **+**: sivut, tapahtumat,
    ravintolat ja jalkapalloarkisto (tilastojen esittelyt ja lisätiedot, arvokisat,
-   pelaajat, stadionit, lehtileikkeet).
+   pelaajat, stadionit, lehtileikkeet). Kuvasarja sen sijaan toimii vain uutisissa,
+   tapahtumissa ja klubin toiminnassa.
 5. **Kategoriat:** rastita sopivat (esim. Palloveikkaus, Matkakuvaus, Tapahtumat).
 6. **Julkaise**.
 
@@ -110,8 +118,8 @@ Tämä korvaa blogiin kirjoittamisen. Studio toimii myös puhelimen selaimessa.
 | Paikka | Teksti |
 |---|---|
 | Jutun alussa isommalla | **Tiivistelmä**, tai jos se on tyhjä, **Lyhenne** |
-| Uutislistassa ja etusivun kortissa | **Lyhenne** |
-| Googlen hakutuloksessa ja somejaossa | **Kuvaus hakutuloksissa** (välilehti *Hakukoneet ja jako*), tai jos se on tyhjä, Tiivistelmä, ja sen puuttuessa Lyhenne |
+| Uutislistassa ja etusivun kortissa | **Lyhenne**, tai jos se on tyhjä, Tiivistelmä, ja sen puuttuessa tekstin alku (enintään noin 200 merkkiä) |
+| Googlen hakutuloksessa ja somejaossa | **Kuvaus hakutuloksissa** (välilehti *Hakukoneet ja jako*), tai jos se on tyhjä, Tiivistelmä, sen puuttuessa Lyhenne ja viimeisenä tekstin alku |
 
 Sivuilla (**Sivut**) sama periaate: sivun alussa näkyy **Tiivistelmä sivun alussa**.
 Vanha kenttä **Ingressi (vanha kenttä)** näkyy Studiossa vain sivuilla, joilla se on
@@ -124,6 +132,39 @@ odottaa piilossa ja tulee näkyviin itsestään noin minuutin kuluessa valitusta
 Listassa ja kohdassa **Tehtävät sinulle → Ajastetut uutiset** sen kohdalla lukee
 *Ajastettu* ja aika.
 
+### Tekstin lisäosat (+ -valikko)
+
+Tekstikentän **+**-valikosta (leveällä näytöllä työkalupalkin oikean reunan
+kuvakkeista) voi lisätä tekstin sekaan muutakin kuin tekstiä. Kuva, YouTube-video ja
+kokoonpano toimivat kaikissa tekstikentissä, joissa on **+**. Alla olevat lisäosat
+toimivat **uutisissa, tapahtumissa ja klubin toiminnassa**. Sivuilla (**Sivut**) niitä
+ei vielä ole.
+
+| Lisäosa | Milloin | Miten |
+|---|---|---|
+| **Kuvasarja (useita kuvia)** | Useampi kuva samasta aiheesta, esim. matkan, juhlan tai ottelun kuvat | Ks. alla |
+
+**Kuvasarja:**
+
+1. Napsauta tekstiin kohtaan, johon kuvat tulevat, ja valitse **+** →
+   *Kuvasarja (useita kuvia)*. Leveällä näytöllä sama löytyy työkalupalkin
+   kuvakkeesta, jossa on kaksi kuvaa päällekkäin.
+2. **Kuvat:** raahaa kaikki kuvat kerralla tietokoneen kansiosta kenttään. Järjestä
+   raahaamalla. Puhelimessa paina **Lisää kohde** ja kuvan kohdalla **Lataa**.
+3. **Mitä kuvissa on (yhteinen kuvaus):** lyhyt kuvaus koko sarjasta, esim. "Klubin
+   vappu 2026 Lahden torilla". Se näkyy kuvien alla, ja ruudunlukija käyttää sitä
+   kuvan kuvauksena, jos kuvalla ei ole omaa ("Klubin vappu 2026, kuva 3/9").
+   Kuvakohtaiset kuvaukset (**Mitä kuvassa on**) ovat suositeltavia, mutta eivät
+   pakollisia.
+4. **Kuvien muoto:** *Tasainen ruudukko* rajaa kuvat neliöiksi (valokuvat).
+   *Kokonaiset kuvat* näyttää kuvat rajaamatta: valitse se kuvakaappauksille,
+   lehtileikkeille ja kaavioille, joista rajaus leikkaisi tietoa pois.
+5. Sivulla kuvat näkyvät kolmen sarakkeen ruudukkona. Kuvaa painamalla se
+   suurenee, ja nuolilla voi selata sarjaa.
+
+Yksittäiselle kuvalle käytä lohkoa *Kuva* (Studio muistuttaa tästä). Yli 60 kuvan
+kokonaisuudelle sopii paremmin oma galleria-albumi.
+
 ### Jakokuva (kun linkki jaetaan WhatsAppissa tai Facebookissa)
 
 Kun sivuston linkki jaetaan, esikatselussa näkyy kuva, otsikko ja sivuston osoite. Sama
@@ -132,7 +173,9 @@ jalkapalloarkistoon. Kuva valitaan automaattisesti tässä järjestyksessä:
 
 1. sivun **oma kuva** (uutisen ja galleria-albumin kansikuva, tapahtuman kuva, sivun
    yläkuva, ravintolan, stadionin tai pelaajan ensimmäinen kuva)
-2. ensimmäinen **kuva tekstin seassa**
+2. ensimmäinen **kuva tekstin seassa tai kuvasarjassa** (vain riittävän iso, vähintään
+   600 pikseliä leveä). Uutisen kortissa uutislistassa ja etusivulla käytetään samaa
+   kuvaa, kun kansikuva puuttuu.
 3. ensimmäisen **YouTube-videon kuva** toistopainikkeella
 4. **klubin logo** valkoisella pohjalla, jos muuta ei ole
 

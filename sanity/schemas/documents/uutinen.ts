@@ -13,6 +13,7 @@ import { HAKUKONEET_RYHMA, OSOITE_OTSIKKO } from "../objects/sanasto";
 import { KategoriatInput } from "../../components/kategoriat/KategoriatInput";
 import { TunnisteetInput } from "../../components/tunnisteet/TunnisteetInput";
 import { tarkistaTunnisteet } from "../../../lib/tunnisteet";
+import { ensimmainenIsoKuva } from "../../../lib/sisaltolohkot";
 
 /** Uutisosion kiinteät reitit app/(public)/uutiset/-kansiossa. */
 const VARATUT_POLUT = new Set(["arkisto", "tunniste", "tunnisteet"]);
@@ -76,32 +77,41 @@ export const uutinen = defineType({
     defineField({
       name: "excerpt",
       title: "Lyhenne (uutislista ja etusivu)",
+      // Valinnainen (docs/24 askel 2b): tyhjänä kortissa näkyy tekstin alku
+      // (uutisKortinPerus → "ote", korttiTeksti).
       description:
-        "1–2 virkettä, jotka näkyvät uutislistassa ja etusivun kortissa. Näkyy myös jutun " +
-        "alussa, jos Tiivistelmä on tyhjä. Enintään 200 merkkiä. Ei pakollinen, jos uutinen " +
-        "on pelkkä linkki alkuperäiseen kirjoitukseen.",
+        "Valinnainen. 1–2 virkettä uutislistalle. Jos jätät tyhjäksi, listalla näkyy tekstin " +
+        "alku. Näkyy myös jutun alussa, jos Tiivistelmä on tyhjä.",
       type: "text",
       rows: 2,
       validation: (rule) =>
-        rule
-          .max(200)
-          .custom((value, context) =>
-            value || (context.document as { ulkoinenLinkki?: string } | undefined)?.ulkoinenLinkki
-              ? true
-              : "Lyhenne on pakollinen."
-          ),
+        rule.max(200).warning("Lyhenne näkyy listassa enintään noin 200 merkin pituisena."),
       group: "sisalto",
     }),
     defineField({
       name: "coverImage",
       title: "Kansikuva",
+      description:
+        "Näkyy uutislistassa, etusivulla ja kun linkki jaetaan. Jos jätät tyhjäksi, käytetään " +
+        "tekstin ensimmäistä isoa kuvaa.",
       type: "imageWithAlt",
+      // Varoitus, ei virhe: uutisen voi julkaista ilman kuvaa (docs/24 askel 2).
+      // Sama sääntö kuin korttikuvassa (sanity/lib/queries/kuvat.ts korttikuva).
+      validation: (rule) =>
+        rule
+          .custom((arvo: { asset?: unknown } | undefined, context) =>
+            arvo?.asset ||
+            ensimmainenIsoKuva((context.document as { body?: Parameters<typeof ensimmainenIsoKuva>[0] } | undefined)?.body)
+              ? true
+              : "Uutisessa ei ole kansikuvaa eikä isoa kuvaa tekstissä. Listassa näkyy pelkkä teksti ja jaossa klubin logo.",
+          )
+          .warning(),
       group: "sisalto",
     }),
     defineField({
       name: "body",
       title: "Sisältö",
-      type: "portableText",
+      type: "rikasSisalto",
       description:
         "Uutisen teksti. Ei pakollinen, jos uutinen linkittää alkuperäiseen " +
         "kirjoitukseen (kenttä Alkuperäinen kirjoitus).",

@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/format";
+import { korttiTeksti } from "@/lib/sisaltolohkot";
 import type { UutinenListItem } from "@/sanity/lib/queries/uutiset";
 
 /**
@@ -31,9 +32,11 @@ export function ArchiveList({ items }: { items: UutinenListItem[] }) {
               <span className="block font-display text-xl leading-snug text-foreground transition group-hover:text-accent">
                 {item.title}
               </span>
-              <span className="mt-1 block text-sm leading-relaxed text-muted">
-                {item.excerpt}
-              </span>
+              {korttiTeksti(item) && (
+                <span className="mt-1 block text-sm leading-relaxed text-muted">
+                  {korttiTeksti(item)}
+                </span>
+              )}
               {item.categories && item.categories.length > 0 && (
                 <span className="mt-2 flex flex-wrap gap-1.5">
                   {item.categories.map((category) => (

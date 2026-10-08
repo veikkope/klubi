@@ -45,6 +45,50 @@ tahansa YouTube-videon osoitemuoto, `lib/youtube.ts`; `t=`/`start=` → aloitusk
 painalluksesta `youtube-nocookie.com`-osoitteesta (ei evästeitä eikä YouTuben
 skriptejä ennen toistoa). Ilman JavaScriptiä painike on linkki YouTubeen.
 
+### `rikasSisalto` (docs/24 askel 2)
+
+Laajennettu tekstikenttä (`sanity/schemas/objects/rikasSisalto.ts`): sama
+tekstilohko kuin `portableText`issa (`tekstiLohko`, `portableText.ts`) ja lisäksi
+`RIKKAAT_LOHKOT` (`lib/sisaltolohkot.ts`) Studion valikon järjestyksessä:
+`imageWithAlt`, `kuvasarja`, `youtubeVideo`, `kokoonpano`. Askel 6 lisää
+upotuksen, huomiolaatikon, painikkeen, liitteen ja taulukon.
+
+- **Käyttöpaikat:** `uutinen.body`, `tapahtuma.description` ja
+  `klubiToiminta.kuvaus`. `sivu.body` siirtyy tähän askeleessa 6. Muut
+  tekstikentät (arkisto, ravintola-arvio, lehtileike, tilastojen johdannot,
+  etusivun esittely) pysyvät `portableText`-tyyppisinä, ja niiden lohkot ovat
+  `PERUSLOHKOT` (`imageWithAlt`, `kokoonpano`, `youtubeVideo`).
+- **Ei datamuutosta:** Portable Text -taulukko tallentuu ilman taulukon
+  tyyppinimeä, ja vanhoissa rungoissa on vain lohkot, jotka uusi tyyppi sallii.
+- **Renderöinti:** `components/portable-text.tsx` (`lohkot … satisfies
+  Record<RikasLohko, …>`: uusi lohko ilman renderöijää kaatuu type-checkiin).
+- **GROQ:** `runko` (`sanity/lib/queries/kuvat.ts`) lisää kuvasarjan kuviin
+  `lqip`- ja `vari`-kentät ja jättää pois kuvat ilman assetia.
+
+**`kuvasarja`** (Kuvasarja (useita kuvia), `sanity/schemas/objects/kuvasarja.ts`,
+`components/kuvasarja.tsx`):
+
+| Kenttä | Tyyppi | Pakollinen | Kuvaus |
+|---|---|---|---|
+| kuvat | `galleriaKuva`[] (grid) | kyllä, vähintään 1 | Varoitus alle 2 kuvasta ("käytä lohkoa Kuva") ja yli 60 kuvasta ("harkitse galleria-albumia") |
+| kuvaus | string, 3–120 merkkiä | kyllä | Yhteinen kuvaus: näkyy kuvien alla (`figcaption`) ja on kuvien alt-varateksti |
+| asettelu | `ruudukko` \| `kokonaisena` (radio) | ei, oletus `ruudukko` | Ruudukko rajaa neliöiksi, kokonaisena näyttää rajaamatta (kuvakaappaukset, lehtileikkeet). Vertailu `stegaClean`illa |
+
+Sivulla `AlbumGrid` (`sarakkeet={3}`: 2 saraketta, `sm` 3, ei `lg`-luokkaa) ja
+suurennos samoin kuin galleria-albumissa.
+
+**Alt-käytäntö:** yksittäisen kuvan (`imageWithAlt`) alt on pakollinen. Kuvasarjan
+kuvissa (`galleriaKuva`) alt on suositus, ja yhteinen kuvaus on pakollinen: ilman
+kuvakohtaista alt-tekstiä kuva nimetään muodossa "Klubin vappu 2026, kuva 3/9"
+(ruudun `aria-label` ja suurennoksen alt), joten jokaisella kuvalla on aina
+merkityksellinen kuvaus.
+
+**Kuvien poiminta tekstistä** (`lib/sisaltolohkot.ts`): `sisallonKuvat`
+(yksittäiset kuvat ja kuvasarjojen kuvat järjestyksessä), `ensimmainenIsoKuva`
+(ensimmäinen vähintään `KUVAN_MIN_LEVEYS_SISALTO` = 600 px leveä) ja `kuvanMitat`.
+Samaa sääntöä käyttävät GROQ-funktio `korttikuva()` (uutiskortin kuva), jakokuva
+(`lib/seo.ts`) ja uutisen kansikuvan varoitus Studiossa.
+
 ## Sisältötyypit
 
 ### 1. `sivu` (julkinen vapaamuotoinen sivu)
@@ -57,7 +101,7 @@ skriptejä ennen toistoa). Ilman JavaScriptiä painike on linkki YouTubeen.
 | tiivistelma | text | ei | Tiivistelmä sivun alussa |
 | hero | image (alt pakollinen) | ei | Iso kuva sivun yläosassa |
 | ingress | text | ei | Vanha kenttä: näkyy sivulla vain, jos `tiivistelma` on tyhjä. Studiossa piilossa, kun tyhjä (`hidden: ({ value }) => !value`) |
-| body | portableText | kyllä | Pääsisältö (otsikot, listat, lainaukset, kuvat) |
+| body | portableText | kyllä | Pääsisältö (otsikot, listat, lainaukset, kuvat). Vaihtuu `rikasSisalto`ksi askeleessa 6 (docs/24) |
 | seoTitle, seoDescription | string | ei | SEO-overrides |
 
 ### 2. `tapahtuma`
@@ -71,7 +115,7 @@ skriptejä ennen toistoa). Ilman JavaScriptiä painike on linkki YouTubeen.
 | endsAt | datetime | ei | Päättymisaika |
 | location | string | ei | Paikka (esim. "Klubin tila, Lahti") |
 | juhla | boolean | ei | Juhlatapahtuma (itsenäisyyspäivä, vuosijuhla): kortti saa messinkikorostuksen. Oletus false. |
-| description | portableText | kyllä | Tapahtuman kuvaus |
+| description | rikasSisalto | kyllä | Tapahtuman kuvaus (myös kuvasarja) |
 | image | image (alt pakollinen) | ei | Kansikuva |
 | signupUrl | url | ei | Ilmoittautumislinkki |
 | signupEmail | email | ei | Ilmoittautumis-sähköposti |
@@ -87,9 +131,9 @@ Listanäkymässä järjestys: `startsAt` desc (tulevat ensin).
 | slug | slug | kyllä | |
 | publishedAt | datetime | kyllä | Julkaisuaika |
 | tiivistelma | text | ei | Tiivistelmä jutun alussa; jos tyhjä, jutun alussa näkyy `excerpt` |
-| excerpt | text | kyllä* | Lyhenne (uutislista ja etusivu), max 200 merkkiä. *Ei pakollinen, kun `ulkoinenLinkki` on täytetty |
-| coverImage | image (alt pakollinen) | ei | Kansikuva |
-| body | portableText | kyllä | Sisältö |
+| excerpt | text | ei | Lyhenne (uutislista ja etusivu). Varoitus yli 200 merkistä. Valinnainen 8.10.2026 alkaen (docs/24 askel 2b): kortti näyttää `coalesce(excerpt, tiivistelma)`, ja jos kumpaakaan ei ole, tekstin alun (`ote` = kolmen ensimmäisen tavallisen kappaleen teksti, `korttiOte` lyhentää enintään 200 merkkiin sanarajalla). Meta-kuvauksen viimeinen vara on sama ote |
+| coverImage | image (alt pakollinen) | ei | Kansikuva. Jos tyhjä, uutiskortti (listat, etusivu, haku, tunnisteet, lehtijutut) ja jakokuva käyttävät tekstin ensimmäistä vähintään 600 px leveää kuvaa, myös kuvasarjasta (`korttikuva()`, `sanity/lib/queries/uutiskortti.ts`). Uutissivu näyttää vain oikean kansikuvan, jottei sama kuva näy kahdesti. Varoitus (ei virhe), jos kuvaa ei ole kummassakaan |
+| body | rikasSisalto | kyllä* | Sisältö. *Ei pakollinen, kun `ulkoinenLinkki` on täytetty |
 | kategoriat | array of reference → `uutisKategoria` | ei | Sihteeri hallitsee kategoriat Studiossa (4.10.2026 asti merkkijonolista `categories` koodissa). Valintaruudut: `sanity/components/kategoriat/KategoriatInput.tsx`. Ensimmäinen kategoria näkyy etusivun jutuissa sinisenä yläotsakkeena. Kyselyt palauttavat `categories: { _id, value, label }[]` (`sanity/lib/queries/kategoriat.ts`). |
 | tunnisteet | array of string | ei | Blogin "labels": aiheet, paikat, henkilöt (vapaa teksti, enintään 30 kpl, 50 merkkiä). Sama tunniste = sama slug (`lib/tunnisteet.ts`), joten "Huuhkajat" ja "huuhkajat" eivät saa olla samassa uutisessa. Studiossa oma syöttö ehdotuksineen (`sanity/components/tunnisteet/`). Jokaisella tunnisteella sivu `/uutiset/tunniste/<slug>`, hakemisto `/uutiset/tunnisteet`. Blogista tuoduissa täytetty `blogspot.tunnisteet`-kentästä (docs/14 §3). |
 | author | reference→hallitus-jasen | ei | Kirjoittaja |
@@ -313,7 +357,7 @@ uudelleen. Skeemat ovat jäädytettyjä vaiheen 1 ajan.
 
 | Tyyppi | Uudet kentät | Miksi |
 |---|---|---|
-| `uutinen` | `ulkoinenLinkki` (url), `lahde { nimi, url, pvm }`; kategoria `blogi` | Otsikkoarkisto linkittää Blogspot-kirjoituksiin; vanhat merkinnät päättyvät lähderiviin "(palloliitto.fi 07.02.2008)". `excerpt` ja `body` ovat pakollisia **paitsi** jos `ulkoinenLinkki` on annettu. |
+| `uutinen` | `ulkoinenLinkki` (url), `lahde { nimi, url, pvm }`; kategoria `blogi` | Otsikkoarkisto linkittää Blogspot-kirjoituksiin; vanhat merkinnät päättyvät lähderiviin "(palloliitto.fi 07.02.2008)". `excerpt` ja `body` ovat pakollisia **paitsi** jos `ulkoinenLinkki` on annettu (`excerpt` on valinnainen 8.10.2026 alkaen, docs/24 askel 2b). |
 | `jalkapalloTilasto` | `lisatiedot` (portableText), `paivitetty` (date), `jarjestys` (number), `kuvat` (imageWithAlt[]); kategoriat `arvokisa`, `pelaaja`, `ulkomaiset-mestarit`, `palloliitto`, `klubi`, `muu` | Ottelusivuilla taulukon jälkeen otteluraportit; useita taulukoita per sivu (lohkot A–H) tarvitsevat järjestyksen; mölkky-, veikkaus- ja jouluruokailutaulukot sekä Englannin/Venäjän mestarit ja Palloliiton puheenjohtajat eivät sopineet olemassa oleviin kategorioihin. |
 | `arvokisa` | `alkuPvm`, `loppuPvm` (date), `hopea`, `pronssi` (string); kisatyyppi `u21-em` | Kisasivut alkavat "11.06.-11.07.2010"; mitalistitaulukko Mestari/Hopea/Pronssi; Pikkuhuuhkajat = U21-EM 2009. |
 | `pelaaja` | `tilastot` (ref → jalkapalloTilasto[]) | litmanen.htm:n loukkaantumistaulukko. |

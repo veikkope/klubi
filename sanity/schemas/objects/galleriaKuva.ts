@@ -1,11 +1,12 @@
 import { defineField, defineType } from "sanity";
 
 /**
- * Galleria-albumin kuva. Kuten `imageWithAlt`, mutta alt-teksti on suositus
- * eikä pakollinen: 40 kuvan albumiin ei tarvitse kirjoittaa 40 kuvausta ennen
- * julkaisua. Ilman kuvausta sivusto nimeää kuvan albumin ja järjestysnumeron
- * mukaan ("Vappu 2026, kuva 3/40"), joten ruudunlukija ei jää tyhjän päälle
- * (components/gallery). Kuvia voi raahata albumiin useita kerralla.
+ * Galleria-albumin ja kuvasarjan (`kuvasarja`) kuva. Kuten `imageWithAlt`,
+ * mutta alt-teksti on suositus eikä pakollinen: 40 kuvan albumiin ei tarvitse
+ * kirjoittaa 40 kuvausta ennen julkaisua. Ilman kuvausta sivusto nimeää kuvan
+ * albumin nimen tai kuvasarjan kuvauksen ja järjestysnumeron mukaan
+ * ("Vappu 2026, kuva 3/40"), joten ruudunlukija ei jää tyhjän päälle
+ * (components/gallery). Kuvia voi raahata useita kerralla.
  */
 export const galleriaKuva = defineType({
   name: "galleriaKuva",
@@ -18,7 +19,7 @@ export const galleriaKuva = defineType({
       title: "Mitä kuvassa on (alt)",
       description:
         "Suositeltava, ei pakollinen. Esim. \"Klubilaiset Lahden stadionin katsomossa\". " +
-        "Ilman kuvausta sivu käyttää albumin nimeä ja kuvan numeroa.",
+        "Ilman kuvausta sivu käyttää albumin nimeä tai kuvasarjan kuvausta ja kuvan numeroa.",
       type: "string",
       validation: (rule) => [
         rule.max(200).error("Enintään 200 merkkiä."),

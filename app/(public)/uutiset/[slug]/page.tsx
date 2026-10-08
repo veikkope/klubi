@@ -24,6 +24,7 @@ import { rootCrumb } from "@/lib/nav-sections";
 import { siteUrl } from "@/lib/site";
 import { articleSchema, breadcrumbSchema } from "@/lib/schema-org";
 import { buildMetadata, resolveDescription, resolveOgImage } from "@/lib/seo";
+import { korttiOte } from "@/lib/sisaltolohkot";
 import { KommentitOsio } from "../_kommentit/kommentit-osio";
 import { hasSanity } from "@/sanity/env";
 import { sanityFetch } from "@/sanity/lib/fetch";
@@ -81,6 +82,7 @@ export async function generateMetadata({
       news.seoDescription,
       news.tiivistelma,
       news.excerpt,
+      korttiOte(news.ote),
     ),
     path: `/uutiset/${news.slug}`,
     image: news.coverImage,

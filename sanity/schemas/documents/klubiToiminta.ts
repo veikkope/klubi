@@ -55,7 +55,7 @@ export const klubiToiminta = defineType({
       name: "kuvaus",
       title: "Kuvaus",
       description: "Mistä toiminnassa on kyse, kenelle se on ja miten mukaan pääsee.",
-      type: "portableText",
+      type: "rikasSisalto",
       group: "perustiedot",
     }),
     defineField({

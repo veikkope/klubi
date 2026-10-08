@@ -72,6 +72,7 @@ public/                Staattiset tiedostot (favicon, robots, kuvat joita Sanity
 | Testaa varmuuskopiosta palauttamisen säännöt (Studion Palauta varmuuskopiosta / Palauta poistettu) | `npm run test:palautus` |
 | Testaa tyhjien osioiden piilotuksen (valikko, alatunniste, sitemap) | `npm run test:osiot` |
 | Testaa sivun polkusäännöt (varatut polut, lukitut sivut, jokainen app-reitti varattu) | `npm run test:sivupolku` |
+| Testaa tekstin lohkot ja uutiskortin (kuvasarja, korttikuvan varakäytös, jakokuva, tekstin alku kortissa; GROQ groq-js:llä) | `npm run test:lohkot` |
 | Sanityn taso ja oikeudet (tilaus, datasetin näkyvyys, tokenien ja käyttäjien roolit, sivusto; vain luku). Aja Growth-kokeilun päätyttyä 26.10.2026 ja kun lomakkeet lakkaavat toimimasta | `npm run tarkista:sanity-taso` |
 | Testaa uutishaun hakusanat | `npm run test:haku` |
 | Testaa lukuaika ja ingressisääntö (uutiset, ravintola-arviot) | `npm run test:artikkeli` |

@@ -5,7 +5,8 @@ import { defineQuery } from "next-sanity";
 import { NAKYVA_UUTINEN } from "@/sanity/lib/queries/julkaisu";
 import type { PortableTextBlock } from "@portabletext/react";
 
-import { kuva, runko } from "@/sanity/lib/queries/kuvat";
+import { runko } from "@/sanity/lib/queries/kuvat";
+import { uutisKortti } from "@/sanity/lib/queries/uutiskortti";
 import type { UutinenCard } from "@/lib/types";
 
 export type LehtileikeOsio = "lehtileikkeet" | "patsas" | "terveys";
@@ -83,15 +84,7 @@ export const uutisetTunnisteenMukaanQuery = defineQuery(`
   {
     "items": *[${NAKYVA_UUTINEN} && count((tunnisteet[])[lower(@) == $tunniste]) > 0
       && ($otsikossa == null || title match $otsikossa)]
-      | order(publishedAt desc)[0...$maara]{
-      _id,
-      title,
-      "slug": slug.current,
-      publishedAt,
-      excerpt,
-      tiivistelma,
-      coverImage{${kuva}},
-      categories
+      | order(publishedAt desc)[0...$maara]{${uutisKortti}
     },
     "total": count(*[${NAKYVA_UUTINEN} && count((tunnisteet[])[lower(@) == $tunniste]) > 0])
   }

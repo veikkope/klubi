@@ -84,7 +84,7 @@ export const tapahtuma = defineType({
     defineField({
       name: "description",
       title: "Kuvaus",
-      type: "portableText",
+      type: "rikasSisalto",
       validation: (rule) => rule.required(),
       group: "perustiedot",
     }),

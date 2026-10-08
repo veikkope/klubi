@@ -7,6 +7,7 @@ import { KuvaSiirtyma } from "@/components/sivunvaihto";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import { recentUutisetQuery } from "@/sanity/lib/queries";
 import { cn } from "@/lib/cn";
+import { korttiTeksti } from "@/lib/sisaltolohkot";
 import type { UutinenCard } from "@/lib/types";
 
 type Props = {
@@ -96,9 +97,9 @@ export async function UutisetBlock({ eyebrow, heading, count = 4, ohita = [] }: 
                 {featured.title}
               </Link>
             </h3>
-            {featured.excerpt && (
+            {korttiTeksti(featured) && (
               <p className="hidden max-w-[640px] text-lg leading-[1.65] text-muted sm:block">
-                {featured.excerpt}
+                {korttiTeksti(featured)}
               </p>
             )}
           </article>
@@ -117,9 +118,9 @@ export async function UutisetBlock({ eyebrow, heading, count = 4, ohita = [] }: 
                       {news.title}
                     </Link>
                   </h3>
-                  {i === 0 && news.excerpt && (
+                  {i === 0 && korttiTeksti(news) && (
                     <p className="hidden text-base leading-relaxed text-muted sm:line-clamp-2">
-                      {news.excerpt}
+                      {korttiTeksti(news)}
                     </p>
                   )}
                 </li>

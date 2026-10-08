@@ -166,7 +166,11 @@ export type UutinenCard = {
   title: string;
   slug: string;
   publishedAt: string;
-  excerpt: string;
+  /** Lyhenne, sen puuttuessa Tiivistelmä (sanity/lib/queries/uutiskortti.ts). */
+  excerpt?: string | null;
+  /** Tekstin alku, kun Lyhennettä ja Tiivistelmää ei ole. Näytetään `korttiTeksti`llä. */
+  ote?: string | null;
+  /** Kansikuva, kortissa sen puuttuessa tekstin ensimmäinen iso kuva. */
   coverImage?: SanityImage;
   categories?: UutinenKategoria[] | null;
 };

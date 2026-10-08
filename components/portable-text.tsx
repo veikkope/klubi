@@ -2,13 +2,16 @@ import {
   PortableText as PortableTextRaw,
   type PortableTextBlockComponent,
   type PortableTextComponents,
+  type PortableTextTypeComponent,
   type PortableTextBlock,
 } from "@portabletext/react";
 import Link from "next/link";
 import { SanityImage } from "./sanity-image";
 import { Kokoonpano, type KokoonpanoData } from "./kokoonpano";
 import { YoutubeVideo, type YoutubeVideoData } from "./youtube-video";
+import { Kuvasarja, type KuvasarjaData } from "./kuvasarja";
 import { UusiValilehti } from "@/components/ui/uusi-valilehti";
+import type { RikasLohko } from "@/lib/sisaltolohkot";
 import type { SanityImage as SanityImageData } from "@/lib/types";
 
 type OtsikkoTyyli = "h2" | "h3" | "h4";
@@ -42,6 +45,46 @@ const kappaleIngressilla: PortableTextBlockComponent = ({ children, index }) =>
   ) : (
     <p className="mt-4 text-lg leading-relaxed text-foreground">{children}</p>
   );
+
+/**
+ * Lohkojen renderöijät. `satisfies` varmistaa käännösaikana, että jokaisella
+ * `RIKKAAT_LOHKOT`-lohkolla (lib/sisaltolohkot.ts) on renderöijä: uusi lohko
+ * skeemaan ilman renderöijää kaataa type-checkin (CI).
+ */
+const lohkot = {
+  imageWithAlt: ({ value }: { value: SanityImageData }) => {
+    if (!value) return null;
+    return (
+      <figure className="mt-8">
+        {/* Rajaamaton: migroidussa sisällössä on kaavioita ja otteluohjelmia,
+            joista 3:2-rajaus leikkaisi tietoa pois. */}
+        <SanityImage
+          image={value}
+          kuvateksti={value?.caption}
+          width={1200}
+          crop={false}
+          sizes="(min-width: 768px) 720px, 100vw"
+          className="h-auto max-w-full rounded-xl"
+        />
+        {value.caption && (
+          <figcaption className="mt-2 text-sm text-muted">
+            {value.caption}
+          </figcaption>
+        )}
+      </figure>
+    );
+  },
+  kokoonpano: kokoonpanoLohko(0),
+  // Vain data client-komponentille: Portable Text antaa lohkoille myös
+  // funktioproppeja (renderNode), joita ei voi välittää palvelimelta.
+  youtubeVideo: ({ value }: { value: YoutubeVideoData }) => (
+    <YoutubeVideo value={{ url: value?.url, otsikko: value?.otsikko, kuvateksti: value?.kuvateksti }} />
+  ),
+  // Kuvasarja: galleria-albumin ruudukko ja suurennos (client) saavat vain dataa.
+  kuvasarja: ({ value }: { value: KuvasarjaData }) => (
+    <Kuvasarja value={{ kuvat: value?.kuvat ?? [], kuvaus: value?.kuvaus, asettelu: value?.asettelu }} />
+  ),
+} satisfies Record<RikasLohko, PortableTextTypeComponent>;
 
 const components: PortableTextComponents = {
   block: {
@@ -94,36 +137,7 @@ const components: PortableTextComponents = {
       );
     },
   },
-  types: {
-    imageWithAlt: ({ value }: { value: SanityImageData }) => {
-      if (!value) return null;
-      return (
-        <figure className="mt-8">
-          {/* Rajaamaton: migroidussa sisällössä on kaavioita ja otteluohjelmia,
-              joista 3:2-rajaus leikkaisi tietoa pois. */}
-          <SanityImage
-            image={value}
-            kuvateksti={value?.caption}
-            width={1200}
-            crop={false}
-            sizes="(min-width: 768px) 720px, 100vw"
-            className="h-auto max-w-full rounded-xl"
-          />
-          {value.caption && (
-            <figcaption className="mt-2 text-sm text-muted">
-              {value.caption}
-            </figcaption>
-          )}
-        </figure>
-      );
-    },
-    kokoonpano: kokoonpanoLohko(0),
-    // Vain data client-komponentille: Portable Text antaa lohkoille myös
-    // funktioproppeja (renderNode), joita ei voi välittää palvelimelta.
-    youtubeVideo: ({ value }: { value: YoutubeVideoData }) => (
-      <YoutubeVideo value={{ url: value?.url, otsikko: value?.otsikko, kuvateksti: value?.kuvateksti }} />
-    ),
-  },
+  types: lohkot,
 };
 
 /** Kokoonpanon otsikko on sisällössä h3-tasoinen otsikko (siirretään kuten muutkin). */

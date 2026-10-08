@@ -28,12 +28,31 @@ type Props = {
    * albumien valokuvat rajataan edelleen tasaiseksi ruudukoksi.
    */
   kokonaisena?: boolean;
+  /**
+   * Sarakkeita leveällä näytöllä. 3 tekstipalstan kuvasarjalle
+   * (components/kuvasarja.tsx), jossa neljä ruutua olisi liian pieniä.
+   */
+  sarakkeet?: 3 | 4;
+  /**
+   * Ruudukko on tekstin seassa (kuvasarja), ei sivun yläosassa: kuvia ei ladata
+   * heti, ettei sivun alaosan sarja kilpaile yläosan kuvan kanssa, ja ruudun nimi
+   * on muotoa "Klubin vappu 2026, kuva 3/9" kuten suurennoksessa.
+   */
+  tekstinSeassa?: boolean;
 };
 
 /** Ensimmäiset ruudut ovat näkyvissä heti — ne ladataan ilman viivettä. */
 const EAGER_COUNT = 4;
 
-export function AlbumGrid({ images, albumTitle, merkinnat, kokonaisena = false }: Props) {
+export function AlbumGrid({
+  images,
+  albumTitle,
+  merkinnat,
+  kokonaisena = false,
+  sarakkeet = 4,
+  tekstinSeassa = false,
+}: Props) {
+  const heti = tekstinSeassa ? 0 : EAGER_COUNT;
   const [active, setActive] = useState<number | null>(null);
   const triggersRef = useRef<(HTMLButtonElement | null)[]>([]);
 
@@ -45,9 +64,20 @@ export function AlbumGrid({ images, albumTitle, merkinnat, kokonaisena = false }
 
   if (images.length === 0) return null;
 
+  const sizes =
+    sarakkeet === 3
+      ? "(min-width: 768px) 240px, 50vw"
+      : "(min-width: 1024px) 264px, (min-width: 640px) 33vw, 50vw";
+
   return (
     <>
-      <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">
+      <ul
+        className={
+          sarakkeet === 3
+            ? "grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4"
+            : "grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4"
+        }
+      >
         {images.map((image, index) => {
           const builder = urlForImage(image);
           if (!builder) return null;
@@ -57,7 +87,9 @@ export function AlbumGrid({ images, albumTitle, merkinnat, kokonaisena = false }
           const label = describedBy
             ? `Avaa kuva: ${describedBy} (${position})`
             : albumTitle
-              ? `Avaa kuva ${position} albumista ${albumTitle}`
+              ? tekstinSeassa
+                ? `Avaa kuva: ${albumTitle}, kuva ${position}`
+                : `Avaa kuva ${position} albumista ${albumTitle}`
               : `Avaa kuva ${position}`;
 
           return (
@@ -83,8 +115,8 @@ export function AlbumGrid({ images, albumTitle, merkinnat, kokonaisena = false }
                     image={image}
                     alt={image.alt ?? ""}
                     width={600}
-                    sizes="(min-width: 1024px) 264px, (min-width: 640px) 33vw, 50vw"
-                    eager={index < EAGER_COUNT}
+                    sizes={sizes}
+                    eager={index < heti}
                     className="aspect-[4/5] w-full"
                   />
                 ) : (
@@ -93,8 +125,8 @@ export function AlbumGrid({ images, albumTitle, merkinnat, kokonaisena = false }
                     alt={image.alt ?? ""}
                     width={400}
                     height={400}
-                    sizes="(min-width: 1024px) 264px, (min-width: 640px) 33vw, 50vw"
-                    loading={index < EAGER_COUNT ? "eager" : undefined}
+                    sizes={sizes}
+                    loading={index < heti ? "eager" : undefined}
                     className="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-105"
                   />
                 )}

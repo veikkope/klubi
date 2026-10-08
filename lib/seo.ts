@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { stegaClean } from "next-sanity";
 
 import { absoluteUrl, siteLocale, siteName } from "@/lib/site";
+import { KUVAN_MIN_LEVEYS_SISALTO, kuvanMitat, sisallonKuvat } from "@/lib/sisaltolohkot";
 import { tulkitseYoutube } from "@/lib/youtube";
 import { urlForImage } from "@/sanity/lib/image";
 
@@ -48,7 +49,13 @@ export interface BuildMetadataInput {
   type?: "website" | "article";
 }
 
-type SisaltoLohko = { _type?: string; asset?: unknown; url?: string };
+type SisaltoLohko = {
+  _type?: string;
+  asset?: unknown;
+  url?: string;
+  /** Kuvasarjan kuvat (docs/24 askel 2). */
+  kuvat?: readonly { asset?: unknown }[] | null;
+};
 
 export type Jakokuva = { url: string; width: number; height: number };
 
@@ -56,15 +63,11 @@ const OG_LEVEYS = 1200;
 const OG_KORKEUS = 630;
 /** Tätä kapeampi rajaus ei kelpaa jakokuvaksi; varalla on logo. */
 const MIN_LEVEYS = 400;
-/** Tekstin seasta otetulta kuvalta vaaditaan enemmän (pienet logot, kaaviot). */
-const MIN_LEVEYS_SISALTO = 600;
-
-/** Kuvan mitat Sanityn kuvaviittauksesta: image-<tunnus>-<leveys>x<korkeus>-<muoto>. */
-function kuvanMitat(image: unknown): { w: number; h: number } | null {
-  const ref = (image as { asset?: { _ref?: string } } | null)?.asset?._ref ?? "";
-  const m = /-(\d+)x(\d+)-[a-z]+$/.exec(ref);
-  return m ? { w: Number(m[1]), h: Number(m[2]) } : null;
-}
+/**
+ * Tekstin seasta otetulta kuvalta vaaditaan enemmän (pienet logot, kaaviot).
+ * Sama raja kuin uutiskortin kuvalla (lib/sisaltolohkot.ts).
+ */
+const MIN_LEVEYS_SISALTO = KUVAN_MIN_LEVEYS_SISALTO;
 
 /**
  * Kuvalähteen jakokuva 1.91:1-rajauksena (hotspotin mukaan). Kuvaa ei
@@ -87,14 +90,14 @@ function jakokuvaLahteesta(image: unknown, minLeveys = MIN_LEVEYS): Jakokuva | n
 }
 
 /**
- * Jakokuva tekstisisällöstä: ensimmäinen riittävän iso kuva, muuten
- * ensimmäisen YouTube-videon kuva toistopainikkeella (app/api/og).
+ * Jakokuva tekstisisällöstä: ensimmäinen riittävän iso kuva (myös
+ * kuvasarjasta), muuten ensimmäisen YouTube-videon kuva toistopainikkeella
+ * (app/api/og).
  */
 function jakokuvaSisallosta(sisalto: readonly SisaltoLohko[] | null | undefined): Jakokuva | null {
-  for (const b of sisalto ?? []) {
-    if (b._type !== "imageWithAlt" || !b.asset) continue;
-    const kuva = jakokuvaLahteesta(b, MIN_LEVEYS_SISALTO);
-    if (kuva) return kuva;
+  for (const kuva of sisallonKuvat(sisalto)) {
+    const jakokuva = jakokuvaLahteesta(kuva, MIN_LEVEYS_SISALTO);
+    if (jakokuva) return jakokuva;
   }
   for (const b of sisalto ?? []) {
     const video = b._type === "youtubeVideo" ? tulkitseYoutube(b.url) : null;

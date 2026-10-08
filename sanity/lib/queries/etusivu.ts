@@ -16,22 +16,14 @@
 import { defineQuery } from "next-sanity";
 import { NAKYVA_UUTINEN } from "@/sanity/lib/queries/julkaisu";
 import { kuva, runko } from "@/sanity/lib/queries/kuvat";
-import { uutisenKategoriat } from "@/sanity/lib/queries/kategoriat";
+import { uutisKortti } from "@/sanity/lib/queries/uutiskortti";
 import { JULKINEN_RAVINTOLA } from "@/lib/ravintola-arvosana";
 import { TUOREIN_ARVIO } from "@/sanity/lib/queries/ravintolat";
 
 import type { StatColumn, StatRow } from "@/components/ui/stat-table";
 
-/** Yläosan pääjutun projektio: sama muoto kuin `recentUutisetQuery` (UutinenCard). */
-const nostoKortti = `
-  _id,
-  title,
-  "slug": slug.current,
-  publishedAt,
-  excerpt,
-  coverImage{${kuva}},
-  ${uutisenKategoriat}
-`;
+/** Yläosan pääjutun projektio: sama uutiskortti kuin `recentUutisetQuery` (UutinenCard). */
+const nostoKortti = uutisKortti;
 
 /**
  * Etusivun singleton.

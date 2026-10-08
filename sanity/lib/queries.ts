@@ -20,7 +20,7 @@
 import { kuva, runko, ruutukuva } from "@/sanity/lib/queries/kuvat";
 import { tilastoProjection } from "@/sanity/lib/queries/arkisto";
 import { NAKYVA_UUTINEN } from "@/sanity/lib/queries/julkaisu";
-import { uutisenKategoriat } from "@/sanity/lib/queries/kategoriat";
+import { uutisKortti } from "@/sanity/lib/queries/uutiskortti";
 
 export const navigationQuery = /* groq */ `
   *[_type == "navigaatio"][0]{
@@ -79,15 +79,7 @@ export const allSivuSlugsQuery = /* groq */ `
 /** Uusimmat uutiset etusivun nostoon. */
 export const recentUutisetQuery = /* groq */ `
   *[${NAKYVA_UUTINEN}]
-    | order(publishedAt desc)[0...$count]{
-    _id,
-    title,
-    "slug": slug.current,
-    publishedAt,
-    excerpt,
-    tiivistelma,
-    coverImage{${kuva}},
-    ${uutisenKategoriat}
+    | order(publishedAt desc)[0...$count]{${uutisKortti}
   }
 `;
 

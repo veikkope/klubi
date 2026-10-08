@@ -9,6 +9,7 @@ import { SanityImage } from "@/components/sanity-image";
 import { KuvaSiirtyma } from "@/components/sivunvaihto";
 import { Nuoli } from "@/components/ui/nuoli";
 import { cn } from "@/lib/cn";
+import { korttiTeksti } from "@/lib/sisaltolohkot";
 import { getTulevatOttelut } from "@/lib/ottelut";
 import { siteName } from "@/lib/site";
 import { sanityFetch } from "@/sanity/lib/fetch";
@@ -172,6 +173,7 @@ function Vesileima({ sarakkeet }: { sarakkeet?: string }) {
  */
 function Paajuttu({ juttu, lcp }: { juttu: UutinenCard; lcp: boolean }) {
   const kuva = juttu.coverImage?.asset ? juttu.coverImage : null;
+  const teksti = korttiTeksti(juttu);
   const kategoria = juttu.categories?.[0];
 
   return (
@@ -213,14 +215,14 @@ function Paajuttu({ juttu, lcp }: { juttu: UutinenCard; lcp: boolean }) {
           {juttu.title}
         </Link>
       </h2>
-      {juttu.excerpt && (
+      {teksti && (
         <p
           className={cn(
             "max-w-[620px] text-pretty text-base leading-[1.6] text-on-chrome-muted sm:text-lg",
             kuva ? "line-clamp-2" : "line-clamp-3",
           )}
         >
-          {juttu.excerpt}
+          {teksti}
         </p>
       )}
       <span aria-hidden className="text-base font-semibold text-on-chrome">

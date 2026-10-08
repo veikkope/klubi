@@ -14,7 +14,7 @@
 import { defineQuery } from "next-sanity";
 import { NAKYVA_UUTINEN } from "@/sanity/lib/queries/julkaisu";
 import { kuva, runko } from "@/sanity/lib/queries/kuvat";
-import { uutisenKategoriat } from "@/sanity/lib/queries/kategoriat";
+import { uutisKortinPerus, uutisKortti } from "@/sanity/lib/queries/uutiskortti";
 import type { PortableTextBlock } from "@portabletext/react";
 
 import type { Kommentointi, TapahtumaCard, UutinenCard } from "@/lib/types";
@@ -75,15 +75,8 @@ export type ArchiveYearRow = { year: string | null };
 /* Projektiot                                                                  */
 /* -------------------------------------------------------------------------- */
 
-const uutinenCardFields = `
-      _id,
-      title,
-      "slug": slug.current,
-      publishedAt,
-      excerpt,
-      tiivistelma,
-      coverImage{${kuva}},
-      ${uutisenKategoriat}`;
+/** Uutiskortti kuvan ja tekstin varakäytöksellä (uutiskortti.ts). */
+const uutinenCardFields = uutisKortti;
 
 const tapahtumaCardFields = `
       _id,
@@ -159,7 +152,9 @@ const naapurit = `
       | order(publishedAt asc, _id asc)[0]{ title, "slug": slug.current, publishedAt }`;
 
 export const uutinenDetailQuery = defineQuery(`
-  *[${uutinenFilter} && slug.current == $slug][0]{${uutinenCardFields},
+  *[${uutinenFilter} && slug.current == $slug][0]{${uutisKortinPerus},
+    // Ilman korttikuvan varakäytöstä: tekstin kuva näkyy jo tekstissä.
+    coverImage{${kuva}},
     _updatedAt,
     body[]{${runko}},
     lahde{ nimi, url, pvm },
