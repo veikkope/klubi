@@ -27,6 +27,8 @@ export interface Solu {
 
 export interface Rivi {
   _key: string;
+  /** Vain tekstin Taulukko-lohkossa (nimetty rivityyppi, taulukkoKentat.ts `riviTyyppi`). */
+  _type?: string;
   cells?: Solu[] | null;
 }
 
@@ -61,12 +63,12 @@ export function asetaSolu(rivi: Rivi, sarake: Sarake, arvo: string): FormPatch[]
 }
 
 /** Uusi rivi valmiine soluineen (tyhjät arvot jätetään pois). */
-export function uusiRivi(sarakkeet: Sarake[], arvot: string[] = []): Rivi {
+export function uusiRivi(sarakkeet: Sarake[], arvot: string[] = [], riviTyyppi?: string): Rivi {
   const cells = sarakkeet.flatMap((sarake, i) => {
     const arvo = normalisoiArvo(arvot[i] ?? "", sarake.type);
     return arvo ? [{ _key: uusiAvain(), key: sarake.key, value: arvo }] : [];
   });
-  return { _key: uusiAvain(), cells };
+  return { _key: uusiAvain(), ...(riviTyyppi ? { _type: riviTyyppi } : {}), cells };
 }
 
 export type Sijainti = { ennen: string } | { jalkeen: string } | "loppuun";

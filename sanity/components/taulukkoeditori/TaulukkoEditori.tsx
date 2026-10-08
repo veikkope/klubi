@@ -88,8 +88,13 @@ export function TaulukkoEditori(props: ArrayOfObjectsInputProps) {
   // Ilman dokumentin juurisyötettä (konteksti) ei voi muokata sarakkeita:
   // näytetään Sanityn oletussyöte, jotta data on silti muokattavissa.
   if (!patch) return props.renderDefault(props);
+  // Tekstin Taulukko-lohkon rivityyppi on nimetty (taulukkoKentat.ts `riviTyyppi`),
+  // joten uudet rivit tarvitsevat `_type`-kentän; tilaston nimettömät rivit eivät.
+  const riviNimi = props.schemaType.of[0]?.name;
+  const riviTyyppi = riviNimi && riviNimi !== "object" ? riviNimi : undefined;
   return (
     <Editori
+      riviTyyppi={riviTyyppi}
       rivit={(props.value ?? []) as Rivi[]}
       sarakkeet={sarakkeet ?? []}
       readOnly={Boolean(props.readOnly)}
@@ -105,6 +110,7 @@ type Dialogi =
   | { tyyppi: "tuonti" };
 
 interface EditoriProps {
+  riviTyyppi?: string;
   rivit: Rivi[];
   sarakkeet: Sarake[];
   readOnly: boolean;
@@ -112,6 +118,7 @@ interface EditoriProps {
 }
 
 interface Tila {
+  riviTyyppi?: string;
   rivit: Rivi[];
   sarakkeet: Sarake[];
   naytettavat: { rivi: Rivi; numero: number }[];
@@ -178,7 +185,7 @@ function luoToiminnot({ setHaku, setDialogi }: Asettajat) {
   /** Useamman solun alue Excelistä: täytetään kohdasta (r, c) alkaen, rivejä lisätään tarvittaessa. */
   const liita = (r: number, c: number, teksti: string): boolean => {
     if (!onRuudukko(teksti)) return false;
-    const { sarakkeet, naytettavat, haku, patch, toast } = tila.current;
+    const { riviTyyppi, sarakkeet, naytettavat, haku, patch, toast } = tila.current;
     const ruudukko = jasennaRuudukko(teksti);
     const kohdeSarakkeet = sarakkeet.slice(c, c + (ruudukko[0]?.length ?? 0));
     const pois = (ruudukko[0]?.length ?? 0) - kohdeSarakkeet.length;
@@ -194,7 +201,7 @@ function luoToiminnot({ setHaku, setDialogi }: Asettajat) {
           ohitetut += 1;
           return;
         }
-        uudet.push(uusiRivi(sarakkeet, [...Array<string>(c).fill(""), ...arvot]));
+        uudet.push(uusiRivi(sarakkeet, [...Array<string>(c).fill(""), ...arvot], riviTyyppi));
         return;
       }
       kohdeSarakkeet.forEach((sarake, j) => {
@@ -219,22 +226,22 @@ function luoToiminnot({ setHaku, setDialogi }: Asettajat) {
   };
 
   const lisaaRiviLoppuun = () => {
-    const { sarakkeet, patch } = tila.current;
-    const rivi = uusiRivi(sarakkeet);
+    const { riviTyyppi, sarakkeet, patch } = tila.current;
+    const rivi = uusiRivi(sarakkeet, [], riviTyyppi);
     setHaku("");
     patch(lisaaRivit([rivi], "loppuun"));
     fokusoitava = rivi._key;
   };
 
   const riviToiminto = (riviKey: string, toiminto: RiviToiminto) => {
-    const { rivit, sarakkeet, patch, toast } = tila.current;
+    const { riviTyyppi, rivit, sarakkeet, patch, toast } = tila.current;
     const indeksi = rivit.findIndex((r) => r._key === riviKey);
     const rivi = rivit[indeksi];
     if (!rivi) return;
     switch (toiminto) {
       case "ylle":
       case "alle": {
-        const uusi = uusiRivi(sarakkeet);
+        const uusi = uusiRivi(sarakkeet, [], riviTyyppi);
         patch(lisaaRivit([uusi], toiminto === "ylle" ? { ennen: riviKey } : { jalkeen: riviKey }));
         fokusoitava = uusi._key;
         return;
@@ -304,7 +311,7 @@ function luoToiminnot({ setHaku, setDialogi }: Asettajat) {
 
 const tyypinNimi = (t: string | undefined) => SARAKETYYPIT.find((x) => x.value === t)?.title ?? "Teksti";
 
-function Editori({ rivit, sarakkeet, readOnly, patch }: EditoriProps) {
+function Editori({ riviTyyppi, rivit, sarakkeet, readOnly, patch }: EditoriProps) {
   const toast = useToast();
   const [haku, setHaku] = useState("");
   const [dialogi, setDialogi] = useState<Dialogi | null>(null);
@@ -322,7 +329,7 @@ function Editori({ rivit, sarakkeet, readOnly, patch }: EditoriProps) {
   const [toiminnot] = useState(() => luoToiminnot({ setHaku, setDialogi }));
   const { asetaKehys, siirry, tallennaSolu, liita, lisaaRiviLoppuun, riviToiminto, sarakeToiminto } = toiminnot;
   useLayoutEffect(() => {
-    toiminnot.paivita({ rivit, sarakkeet, naytettavat, haku, patch, toast });
+    toiminnot.paivita({ riviTyyppi, rivit, sarakkeet, naytettavat, haku, patch, toast });
   });
 
   // Syötekentän leveys sarakkeen pisimmän arvon mukaan (4–40 merkkiä). Taulukko
@@ -552,6 +559,7 @@ function Editori({ rivit, sarakkeet, readOnly, patch }: EditoriProps) {
 
       {dialogi?.tyyppi === "tuonti" && (
         <TuontiDialogi
+          riviTyyppi={riviTyyppi}
           sarakkeet={sarakkeet}
           rivienMaara={rivit.length}
           onPeru={sulje}

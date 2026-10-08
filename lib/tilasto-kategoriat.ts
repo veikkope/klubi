@@ -72,6 +72,13 @@ export const TILASTORYHMA_OLETUS: TilastoRyhma = "muut";
 /** Skeeman valintalista. */
 export const TILASTO_KATEGORIA_VALINNAT = TILASTO_KATEGORIAT.map(({ title, value }) => ({ title, value }));
 
+/**
+ * Tilastoryhmän + -painikkeen pohjan tunnus (sanity/pohjat.ts). Sanity käyttää
+ * listan kohdan tunnusta pohjan tunnuksena, joten jokaisella kategorialla on
+ * oma pohjansa.
+ */
+export const tilastoPohjanId = (category: string) => `tilasto-${category}`;
+
 export function tilastoKategoria(value: string | null | undefined): TilastoKategoria | undefined {
   return value ? TILASTO_KATEGORIAT.find((k) => k.value === value) : undefined;
 }

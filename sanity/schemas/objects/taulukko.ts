@@ -32,6 +32,7 @@ export const taulukko = defineType({
     }),
     sarakkeetKentta(),
     rivitKentta({
+      riviTyyppi: "taulukonRivi",
       description:
         "Kirjoita kuten Excelissä, tai kopioi alue Excelistä ja liitä soluun (Ctrl+V). Sarakkeen nimi ja tyyppi muutetaan otsikon ⋮-valikosta.",
       validation: (rule) => rule.min(1).error("Lisää taulukkoon vähintään yksi rivi."),

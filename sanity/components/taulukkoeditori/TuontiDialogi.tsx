@@ -14,6 +14,7 @@ import { uusiAvain, uusiRivi, type Rivi, type Sarake } from "./patchit";
 type Tila = "lisaa" | "korvaa";
 
 interface Props {
+  riviTyyppi?: string;
   sarakkeet: Sarake[];
   rivienMaara: number;
   onPeru: () => void;
@@ -32,7 +33,7 @@ const vertailtava = (s: string) => s.trim().toLocaleLowerCase("fi");
  * - "Korvaa koko taulukko": sarakkeet ja rivit liitetystä. Samannimiset
  *   sarakkeet säilyttävät avaimensa ja tyyppinsä; uusien tyyppi arvataan.
  */
-export function TuontiDialogi({ sarakkeet, rivienMaara, onPeru, onKorvaa, onLisaa }: Props) {
+export function TuontiDialogi({ riviTyyppi, sarakkeet, rivienMaara, onPeru, onKorvaa, onLisaa }: Props) {
   const id = useId();
   const onTaulukko = sarakkeet.length > 0;
   const [teksti, setTeksti] = useState("");
@@ -81,7 +82,7 @@ export function TuontiDialogi({ sarakkeet, rivienMaara, onPeru, onKorvaa, onLisa
 
   const tuo = () => {
     if (tila === "korvaa") {
-      onKorvaa(uudetSarakkeet, data.map((arvot) => uusiRivi(uudetSarakkeet, arvot)));
+      onKorvaa(uudetSarakkeet, data.map((arvot) => uusiRivi(uudetSarakkeet, arvot, riviTyyppi)));
       return;
     }
     const rivit = data.map((arvot) => {
@@ -89,7 +90,7 @@ export function TuontiDialogi({ sarakkeet, rivienMaara, onPeru, onKorvaa, onLisa
         const i = kartta.findIndex((k) => k?._key === s._key);
         return i >= 0 ? (arvot[i] ?? "") : "";
       });
-      return uusiRivi(sarakkeet, kohdistetut);
+      return uusiRivi(sarakkeet, kohdistetut, riviTyyppi);
     });
     onLisaa(rivit.filter((r) => (r.cells?.length ?? 0) > 0));
   };

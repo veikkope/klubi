@@ -11,7 +11,7 @@ import {
   type KategoriaRivi,
 } from "../lib/pohjat";
 import { osioSivu, osioSivuSiemen } from "../lib/osiosivut";
-import { tilastoKategoria } from "../lib/tilasto-kategoriat";
+import { TILASTO_KATEGORIAT, tilastoKategoria, tilastoPohjanId } from "../lib/tilasto-kategoriat";
 import { apiVersion } from "./env";
 import { singletonTypes } from "./schemas";
 
@@ -36,11 +36,25 @@ import { singletonTypes } from "./schemas";
 /** Ajastettujen tehtävien kirjoittamat tyypit: ei pohjaa (docs/24 §2.7). */
 const AJASTUKSEN_TYYPIT: ReadonlySet<string> = new Set(["varmuuskopio", "sivustonTila"]);
 
-/** Pohjat, jotka tarvitsevat parametrin: ne eivät näy Luo-valikossa. */
+/**
+ * Tilastoryhmän + -painikkeen pohja jokaiselle kategorialle (`tilasto-<kategoria>`).
+ * Sanity käyttää listan kohdan tunnusta pohjan tunnuksena, joten parametrillinen
+ * pohja ei riitä, kun samassa ryhmässä on useita kategorioita: `.id()` antoi
+ * virheen "template not found" ja kaatoi Studion (8.10.2026).
+ */
+const tilastoPohjat: Template[] = TILASTO_KATEGORIAT.map(({ value, title }) => ({
+  id: tilastoPohjanId(value),
+  title,
+  schemaType: "jalkapalloTilasto",
+  value: { category: value },
+}));
+
+/** Pohjat, jotka tarvitsevat parametrin tai kuuluvat yhteen listaan: ne eivät näy Luo-valikossa. */
 export const PIILOTETUT_POHJAT: ReadonlySet<string> = new Set([
   "lukittu-sivu",
   "klubiArvio-ravintolalle",
   "jalkapalloTilasto-kategoria",
+  ...TILASTO_KATEGORIAT.map(({ value }) => tilastoPohjanId(value)),
 ]);
 
 const lukittuSivu: Template<{ slug: string }> = {
@@ -153,5 +167,6 @@ export function pohjat(prev: Template[]): Template[] {
     palloveikkausKausi,
     klubiArvioRavintolalle as Template,
     tilastoKategoriaan as Template,
+    ...tilastoPohjat,
   ];
 }

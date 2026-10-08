@@ -16,6 +16,16 @@ type Asetukset = {
   title?: string;
   description?: string;
   validation?: (rule: ArrayRule<unknown[]>) => ArrayRule<unknown[]> | ArrayRule<unknown[]>[];
+  /**
+   * Rivin jäsentyypin nimi. Tarvitaan tekstin Taulukko-lohkossa: Portable Text
+   * -editorin skeemasilta (@portabletext/sanity-bridge) tunnistaa sisäkkäiset
+   * objektit nimen perusteella, ja nimetön rivi ja sen sisällä nimetön solu
+   * ovat molemmat "object", joten solu tulkittiin kehäksi ilman kenttiä ja koko
+   * tekstieditori kaatui ("Cannot read properties of undefined (reading 'map')",
+   * 8.10.2026). Jalkapallotilastossa rivi pysyy nimettömänä, koska sen data
+   * on tallennettu ilman `_type`-kenttää eikä se ole tekstieditorissa.
+   */
+  riviTyyppi?: string;
 };
 
 export function sarakkeetKentta({ group }: Pick<Asetukset, "group"> = {}) {
@@ -61,6 +71,7 @@ export function rivitKentta({
   description = "Muokkaa soluja kuten Excelissä. Sarakkeen nimen, tyypin ja järjestyksen saa " +
     "muutettua otsikon ⋮-valikosta, rivit rivinumeron vierestä.",
   validation,
+  riviTyyppi,
 }: Asetukset = {}) {
   return defineField({
     name: "rows",
@@ -71,6 +82,7 @@ export function rivitKentta({
     of: [
       {
         type: "object",
+        ...(riviTyyppi ? { name: riviTyyppi, title: "Rivi" } : {}),
         fields: [
           {
             name: "cells",

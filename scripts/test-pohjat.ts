@@ -28,6 +28,7 @@ import {
 } from "../lib/pohjat";
 import { tarkistaTunnisteet } from "../lib/tunnisteet";
 import { KATEGORIAT_KYSELY, PIILOTETUT_POHJAT, RAVINTOLA_JULKAISTU_KYSELY, pohjat } from "../sanity/pohjat";
+import { TILASTO_KATEGORIAT, tilastoPohjanId } from "../lib/tilasto-kategoriat";
 import { schemaTypes } from "../sanity/schemas";
 
 let ok = 0;
@@ -269,12 +270,29 @@ async function main() {
         "uutinen-palloveikkaus-kausi",
         "klubiArvio-ravintolalle",
         "jalkapalloTilasto-kategoria",
+        ...TILASTO_KATEGORIAT.map(({ value }) => tilastoPohjanId(value)),
       ],
     );
-    // Parametria vaativat pohjat eivät näy Luo-valikossa.
+    // Parametria vaativat ja tilastoryhmän pohjat eivät näy Luo-valikossa.
     for (const t of tulos) {
-      assert.equal(PIILOTETUT_POHJAT.has(t.id), Boolean(t.parameters?.length), t.id);
+      const ryhmanPohja = t.id.startsWith("tilasto-");
+      assert.equal(PIILOTETUT_POHJAT.has(t.id), Boolean(t.parameters?.length) || ryhmanPohja, t.id);
     }
+  });
+
+  await test("tilastoryhmän pohjat: jokaisella kategorialla oma pohja valmiilla kategorialla", () => {
+    // Sanity käyttää listan kohdan tunnusta pohjan tunnuksena (sanity/structure.ts),
+    // joten jokaisen ryhmän kategorian pohjan on oltava rekisterissä omalla tunnuksellaan.
+    const tulos = pohjat([]);
+    for (const { value } of TILASTO_KATEGORIAT) {
+      const pohja = tulos.find((t) => t.id === tilastoPohjanId(value));
+      assert.ok(pohja, value);
+      assert.equal(pohja.schemaType, "jalkapalloTilasto");
+      assert.deepEqual(pohja.value, { category: value });
+    }
+    const rakenne = readFileSync(join(process.cwd(), "sanity", "structure.ts"), "utf8");
+    assert.ok(rakenne.includes("initialValueTemplateItem(tilastoPohjanId(category))"), "rakenne käyttää kategorian pohjaa");
+    assert.ok(!/initialValueTemplateItem\([^)]*\)\s*\.id\(/.test(rakenne), "listan kohdan .id() muuttaisi pohjan tunnuksen");
   });
 
   await test("jalkapalloTilasto-kategoria: kategoria valmiina, tuntematon jätetään valitsematta", () => {

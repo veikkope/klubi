@@ -28,7 +28,7 @@ import {
   type StudionRyhma,
 } from "../lib/osiosivut";
 import { PALLOVEIKKAUS_SLUG } from "../lib/path";
-import { TILASTORYHMAT, kategorianNimi, ryhmanKategoriat, ryhmanSuodatin } from "../lib/tilasto-kategoriat";
+import { TILASTORYHMAT, kategorianNimi, ryhmanKategoriat, ryhmanSuodatin, tilastoPohjanId } from "../lib/tilasto-kategoriat";
 import { OHJATTAVAT_TYYPIT, TUNNISTE_TYYPIT } from "../lib/ohjaukset";
 import { JULKINEN_RAVINTOLA } from "../lib/ravintola-arvosana";
 import { PalautaPoistettu } from "./components/varmuuskopio/palauta-poistettu";
@@ -176,9 +176,7 @@ const tilastot = (S: StructureBuilder) =>
                   .defaultOrdering([{ field: "title", direction: "asc" }])
                   .initialValueTemplates(
                     ryhmanKategoriat(id).map((category) =>
-                      S.initialValueTemplateItem("jalkapalloTilasto-kategoria", { category })
-                        .id(`tilasto-${category}`)
-                        .title(kategorianNimi(category)),
+                      S.initialValueTemplateItem(tilastoPohjanId(category)).title(kategorianNimi(category)),
                     ),
                   ),
               );
