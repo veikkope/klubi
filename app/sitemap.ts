@@ -8,6 +8,7 @@ import {
   type SitemapRow,
   type SitemapTilastoRow,
 } from "@/sanity/lib/queries/sitemap";
+import { OSIOSIVU_SLUGIT } from "@/lib/osiosivut";
 import { LITMANEN_PATH, LITMANEN_SLUG, documentRoute } from "@/lib/path";
 import { TUNNISTE_INDEKSOI_VAHINTAAN, tunnisteSlug } from "@/lib/tunnisteet";
 import { uutisetTunnisteetQuery, type TunnisteRivi } from "@/sanity/lib/queries/uutiset";
@@ -202,9 +203,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
     }));
 
-  // Klubi-osion sivu-dokumenteilla (klubi, klubi/palloveikkaus) on oma
-  // kiinteä reittinsä; sama URL ei saa esiintyä sitemapissa kahdesti.
-  const staticPaths = new Set(STATIC_ROUTES.map((route) => route.path));
 
   // Vain tilastot, joilla on oma sivu (karsinnat, muut koosteet). Listaussivun
   // osiot ja viittaajan sivulla näkyvät taulukot eivät ole omia URL:ejaan.
@@ -237,7 +235,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.5,
     changeFrequency: "monthly",
   }));
-  const sivuRows = sivut.filter((row) => row.slug && !staticPaths.has(`/${row.slug}`));
+  // Osioiden sivuilla (lib/osiosivut.ts) on oma koodireittinsä, joka on jo
+  // staattisissa reiteissä tai tarkoituksella poissa (odottavat: noindex).
+  // Sama URL ei saa esiintyä sitemapissa kahdesti.
+  const sivuRows = sivut.filter((row) => row.slug && !OSIOSIVU_SLUGIT.has(row.slug));
 
   return [
     ...staticEntries,

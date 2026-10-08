@@ -19,6 +19,7 @@ import { arkistoNav, rootCrumb } from "@/lib/nav-sections";
 import { breadcrumbSchema, collectionPageSchema } from "@/lib/schema-org";
 import { buildMetadata } from "@/lib/seo";
 import { sanityFetch } from "@/sanity/lib/fetch";
+import { haeOsioSivu } from "@/sanity/lib/osiosivu";
 import {
   stadionitListQuery,
   withSlug,
@@ -28,25 +29,18 @@ import {
 export const revalidate = 3600;
 
 const PATH = "/jalkapalloarkisto/stadionit";
-const TITLE = "Stadionit";
-const LEAD =
-  "Jalkapallostadionit, joilla Huuhkajat ja klubin matkat ovat käyneet. " +
-  "Stadionit on ryhmitelty maan mukaan, Suomi ensin.";
+/** Otsikko, johdanto ja hakukoneteksti: Studion Osioiden sivut (lib/osiosivut.ts). */
+const OSIO = "jalkapalloarkisto/stadionit" as const;
 
 /** Kotimaa nostetaan aina listan kärkeen. */
 const HOME_COUNTRY = "Suomi";
 const UNKNOWN_COUNTRY = "Maa ei tiedossa";
 
-const trail = [
-  rootCrumb,
-  { label: "Jalkapalloarkisto", href: "/jalkapalloarkisto" },
-  { label: TITLE },
-];
-
 export async function generateMetadata(): Promise<Metadata> {
+  const s = await haeOsioSivu(OSIO);
   return buildMetadata({
-    title: TITLE,
-    description: LEAD,
+    title: s.seoTitle,
+    description: s.description,
     path: PATH,
   });
 }
@@ -84,13 +78,20 @@ function countryId(country: string): string {
 }
 
 export default async function StadionitPage() {
-  const stadionit = withSlug(
-    await sanityFetch<StadionCard[]>({
+  const [rivit, s] = await Promise.all([
+    sanityFetch<StadionCard[]>({
       query: stadionitListQuery,
       tags: ["stadion"],
       fallback: [],
     }),
-  );
+    haeOsioSivu(OSIO),
+  ]);
+  const stadionit = withSlug(rivit);
+  const trail = [
+    rootCrumb,
+    { label: "Jalkapalloarkisto", href: "/jalkapalloarkisto" },
+    { label: s.title },
+  ];
 
   const groups = groupByCountry(stadionit);
 
@@ -100,8 +101,8 @@ export default async function StadionitPage() {
         schema={[
           breadcrumbSchema(trail),
           collectionPageSchema({
-            title: TITLE,
-            description: LEAD,
+            title: s.title,
+            description: s.description,
             path: PATH,
             itemCount: stadionit.length,
           }),
@@ -110,8 +111,8 @@ export default async function StadionitPage() {
 
       <PageHeader
         eyebrow="Jalkapalloarkisto"
-        title={TITLE}
-        lead={LEAD}
+        title={s.title}
+        lead={s.lead}
         breadcrumbs={trail}
         meta={
           stadionit.length > 0 ? (

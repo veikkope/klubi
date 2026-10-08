@@ -92,17 +92,31 @@ Samaa sääntöä käyttävät GROQ-funktio `korttikuva()` (uutiskortin kuva), j
 ## Sisältötyypit
 
 ### 1. `sivu` (julkinen vapaamuotoinen sivu)
-**Tarkoitus:** Yhdistyksen tietosivut kuten `/yhdistys`, `/saannot`, `/jasenyys`.
+**Tarkoitus:** Yhdistyksen tietosivut kuten `/yhdistys`, `/saannot`, `/jasenyys`, sekä osioiden sivut (alla).
 
 | Kenttä | Tyyppi | Pakollinen | Kuvaus |
 |---|---|---|---|
+| osionOhje | string (ei dataa) | – | Vain osioiden sivuilla: ohjelaatikko "Tietoa sivusta" (`sanity/components/osiosivu/OsioSivunOhje.tsx`), readOnly, ei tallenna mitään |
 | title | string | kyllä | Sivun otsikko |
-| slug | slug | kyllä | Osoite sivustolla (/[slug]) |
-| tiivistelma | text | ei | Tiivistelmä sivun alussa |
+| slug | slug | kyllä | Osoite sivustolla (/[slug]). Lukittu (readOnly) `KOODIIN_SIDOTUT_SIVUT`-poluilla |
+| kieli | string | ei | Sisällön kieli; piilossa osioiden sivuilla |
+| tiivistelma | text | osiosivuilla | Tiivistelmä sivun alussa. Pakollinen (virhe), kun osion sivulla on koodissa johdanto (`johdantoPakollinen`: 24 sivua; ei Klubin viidellä eikä ravintoloilla) |
+| korttiteksti | text, max 140 (varoitus) | ei | Vain jalkapalloarkiston 16 osion sivulla: "Teksti arkiston etusivun kortissa". Tyhjä = koodin oletus |
 | hero | image (alt pakollinen) | ei | Iso kuva sivun yläosassa |
 | ingress | text | ei | Vanha kenttä: näkyy sivulla vain, jos `tiivistelma` on tyhjä. Studiossa piilossa, kun tyhjä (`hidden: ({ value }) => !value`) |
 | body | portableText | kyllä | Pääsisältö (otsikot, listat, lainaukset, kuvat). Vaihtuu `rikasSisalto`ksi askeleessa 6 (docs/24) |
+| tilastot | array of reference → jalkapalloTilasto | ei | Taulukot sivun lopussa |
 | seoTitle, seoDescription | string | ei | SEO-overrides |
+
+**Osioiden sivut (docs/24 askel 3, `lib/osiosivut.ts`).** Sivuston 30 koodireittiä (listasivut kuten /uutiset ja /ravintolat, jalkapalloarkiston etusivu ja 16 osiota sekä Klubin viisi pääsivua) lukevat otsikkonsa, johdantonsa (`tiivistelma`, varalla `ingress`), hakukonetekstinsä ja arkiston korttitekstin lukitulta `sivu`-dokumentilta:
+- Kiinteä tunnus `osioSivuId(slug)` = `"sivu-" + slug.replaceAll("/", "-")` (esim. `sivu-uutiset`, `sivu-klubi-palloveikkaus`).
+- Rekisteri `OSIOSIVUT` sisältää kullekin polulle Studion ryhmän ja nimen, sivulla käytetyt valinnaiset kentät (`hero`, `body`, `tilastot`) ja koodin oletustekstit. Jos dokumenttia tai kenttää ei ole, käytetään oletusta (`ratkaiseOsioSivu`), joten sivu ei koskaan hajoa.
+- Hakukonekuvaus: `seoDescription`, sitten johdanto. Ilman dokumenttia koodin oletuskuvaus.
+- Lukitus: `KOODIIN_SIDOTUT_SIVUT` = 30 osiosivua + tietosuoja. Osoite on readOnly, ja poisto, julkaisun peruminen ja kopiointi on estetty (`sanity/actions/lukittu-sivu.tsx`).
+- Kentät `hero`, `body` ja `tilastot` piilotetaan osiosivulta, jos sivu ei käytä niitä eikä niissä ole arvoa (`piilotaKentta`).
+- Mallipohja `lukittu-sivu` (`sanity/pohjat.ts`, parametri `slug`): Studion rakenne avaa sivun kiinteällä tunnuksella, ja jos dokumenttia ei ole, pohja täyttää koodin oletukset (`osioSivuSiemen`). Pohja on piilossa Luo-valikoista (`PIILOTETUT_POHJAT`).
+- Dokumentit luodaan skriptillä `npm run luo:osiosivut` (`createIfNotExists`, kuivaharjoitus oletuksena). Siemen kirjoittaa `seoDescription`-kentän aina, kun oletuskuvaus eroaa johdannosta (K1), joten näkymä ja hakukonekuvaukset eivät muutu.
+- Välimuistitagi on vain `sivu:<polku>` (`sanity/lib/osiosivu.ts`).
 
 ### 2. `tapahtuma`
 **Tarkoitus:** Yhdistyksen tapahtumakalenteri (vuosikokous, vappu, mölkky, palloveikkaus).
@@ -325,7 +339,12 @@ Vain julkaistut arvostelut näkyvät. Uuden ravintolan arvostelun julkaisu vaati
 
 ## Singletonien hallinta Studiossa
 
-Singleton-dokumentit (`yhteystiedot`, `navigaatio`, `asetukset`, `etusivu`) eivät saa esiintyä "Create new" -valikossa. Tämä toteutetaan **Desk Structure** -konfiguraatiolla (`sanity/desk/`), joka näyttää singletonit erikseen "Asetukset"-osiossa.
+Singleton-dokumentit (`yhteystiedot`, `navigaatio`, `asetukset`, `etusivu`) eivät esiinny Luo-valikossa: `sanity/pohjat.ts` suodattaa niiden pohjat (samoin `varmuuskopio`n), ja `sanity.config.ts` (`newDocumentOptions`) suodattaa ne globaalista valikosta. Kopiointi, poisto ja julkaisun peruminen on estetty (`document.actions`).
+
+Studion rakenne on `sanity/structure.ts` (kiinteät `.id()`-tunnukset, docs/24 §2.6):
+- **Sivuston asetukset** (`asetukset`): Etusivu (`etusivu`), Navigaatio (`navigaatio`), Varmuuskopiot.
+- **Klubi** (`klubi`): Yhteystiedot-singleton on kohdassa Klubi → Yhteystiedot → Osoite, sähköposti ja some, Yhteystiedot-sivun otsikon ja johdannon rinnalla.
+- `asetukset`-singleton ei ole valikossa (mikään sen kentistä ei vaikuta sivustoon).
 
 ## Validointisäännöt
 

@@ -48,7 +48,7 @@ interface DatasetInput {
   path: string;
   /** Sivun otsikko — käytetään kun tilastoja ei vielä ole. */
   title: string;
-  description: string;
+  description: string | null;
   /** Oma polku taulukolle, kun taulukko asuu eri osoitteessa kuin listaus. */
   itemPath?: (tilasto: TilastoDoc) => string;
 }

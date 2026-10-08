@@ -218,7 +218,7 @@ riippuvainen web-muutoksesta C2:n jälkeen.
   Sanityn oma Backups-palvelu on vain Enterprise-tasolla):
   - **Automaattinen viikkokopio:** Vercel Cron (`vercel.json`, maanantaisin 01 UTC)
     kutsuu `/api/varmuuskopio`. Julkaistu sisältö (ei luonnoksia eikä kuvia, koska
-    dataset on julkinen) gzip-tiedostona Sanityyn, Studiossa **Sivun asetukset →
+    dataset on julkinen) gzip-tiedostona Sanityyn, Studiossa **Sivuston asetukset →
     Varmuuskopiot**. 12 uusinta säilyy. Maksuton Hobby-tasolla (1 ajastus, ~4
     funktiokutsua kuussa).
   - **Kertaluonteinen asetus:** Vercel → Settings → Environment Variables →

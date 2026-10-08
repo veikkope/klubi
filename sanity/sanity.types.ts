@@ -945,10 +945,12 @@ export type Sivu = {
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
+  osionOhje?: string;
   title?: string;
   slug?: Slug;
   kieli?: "fi" | "en" | "sv";
   tiivistelma?: string;
+  korttiteksti?: string;
   hero?: ImageWithAlt;
   ingress?: string;
   body?: PortableText;
@@ -1166,6 +1168,27 @@ export type AllSanitySchemaTypes =
   | SanityFileAsset
   | SanityAssetSourceData
   | SanityImageAsset;
+
+// Source: sanity/lib/osiosivu.ts
+// Variable: osioSivuQuery
+// Query: *[_type == "sivu" && slug.current == $slug][0]{    _updatedAt,    title,    tiivistelma,    ingress,    korttiteksti,    seoTitle,    seoDescription  }
+export type OsioSivuQueryResult = {
+  _updatedAt: string;
+  title: string | null;
+  tiivistelma: string | null;
+  ingress: string | null;
+  korttiteksti: string | null;
+  seoTitle: string | null;
+  seoDescription: string | null;
+} | null;
+
+// Source: sanity/lib/osiosivu.ts
+// Variable: osioSivujenKortitQuery
+// Query: *[_type == "sivu" && slug.current in $slugit]{ "slug": slug.current, korttiteksti }
+export type OsioSivujenKortitQueryResult = Array<{
+  slug: string | null;
+  korttiteksti: string | null;
+}>;
 
 // Source: sanity/lib/queries/arkisto-laajennus.ts
 // Variable: arvokisatListQuery
@@ -5417,6 +5440,8 @@ export type TapahtumaDetailQueryResult = {
 import "@sanity/client";
 declare module "@sanity/client" {
   interface SanityQueries {
+    '\n  *[_type == "sivu" && slug.current == $slug][0]{\n    _updatedAt,\n    title,\n    tiivistelma,\n    ingress,\n    korttiteksti,\n    seoTitle,\n    seoDescription\n  }\n': OsioSivuQueryResult;
+    '\n  *[_type == "sivu" && slug.current in $slugit]{ "slug": slug.current, korttiteksti }\n': OsioSivujenKortitQueryResult;
     '\n  *[_type == "arvokisa" && defined(slug.current)] | order(vuosi desc, title asc){\n    _id,\n    title,\n    "slug": slug.current,\n    tiivistelma,\n    kisatyyppi,\n    vuosi,\n    isantamaat,\n    voittaja,\n    suomenSijoitus\n  }\n': ArvokisatListQueryResult;
     '\n  *[_type == "arvokisa" && defined(slug.current)][].slug.current\n': ArvokisaSlugsQueryResult;
     '\n  *[_type == "arvokisa" && slug.current == $slug][0]{\n    _id,\n    _updatedAt,\n    title,\n    "slug": slug.current,\n    tiivistelma,\n    kisatyyppi,\n    vuosi,\n    isantamaat,\n    voittaja,\n    suomenSijoitus,\n    alkuPvm,\n    loppuPvm,\n    hopea,\n    pronssi,\n    kuvaus[]{...,\n  _type == "imageWithAlt" => { "lqip": asset->metadata.lqip },\n  _type == "kuvasarja" => { "kuvat": kuvat[defined(asset)]{ ..., "lqip": asset->metadata.lqip, "vari": asset->metadata.palette.dominant.background } }},\n    tilastot[]->{\n      _id,\n      _updatedAt,\n      title,\n      "slug": slug.current,\n      tiivistelma,\n      category,\n      intro[]{...,\n  _type == "imageWithAlt" => { "lqip": asset->metadata.lqip },\n  _type == "kuvasarja" => { "kuvat": kuvat[defined(asset)]{ ..., "lqip": asset->metadata.lqip, "vari": asset->metadata.palette.dominant.background } }},\n      columns[]{ key, label, type },\n      rows[]{ cells[]{ key, value } },\n      lisatiedot[]{...,\n  _type == "imageWithAlt" => { "lqip": asset->metadata.lqip },\n  _type == "kuvasarja" => { "kuvat": kuvat[defined(asset)]{ ..., "lqip": asset->metadata.lqip, "vari": asset->metadata.palette.dominant.background } }},\n      kuvat[]{ _key, alt, caption, asset, hotspot, crop, "lqip": asset->metadata.lqip },\n      paivitetty,\n      jarjestys,\n      "sources": coalesce(sources, [])\n    },\n    kuvat[]{ _key, alt, caption, asset, hotspot, crop, "lqip": asset->metadata.lqip },\n    seoTitle,\n    seoDescription\n  }\n': ArvokisaBySlugQueryResult;

@@ -6,6 +6,7 @@ import { PortableText } from "@/components/portable-text";
 import { FramedImage } from "@/components/framed-image";
 import { JsonLd } from "@/components/seo/json-ld";
 import { klubiNav, rootCrumb } from "@/lib/nav-sections";
+import type { OsioSivunTekstit } from "@/lib/osiosivut";
 import { breadcrumbSchema, webPageSchema, type Crumb } from "@/lib/schema-org";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import { klubiSivuQuery, type KlubiSivu } from "@/sanity/lib/queries/klubi";
@@ -33,17 +34,20 @@ export function fetchKlubiSivu(slug: string) {
 
 export function KlubiSivuPage({
   sivu,
+  tekstit,
   path,
-  fallbackTitle,
   emptyDescription,
   parent,
   subNav,
   children,
 }: {
   sivu: KlubiSivu | null;
+  /**
+   * Otsikko ja johdanto: osion sivulla `ratkaiseOsioSivu` (koodin oletus, kun
+   * dokumenttia ei vielä ole Studiossa), alasivulla dokumentin omat.
+   */
+  tekstit: Pick<OsioSivunTekstit, "title" | "lead">;
   path: string;
-  /** Otsikko kun dokumenttia ei vielä ole Studiossa. */
-  fallbackTitle: string;
   emptyDescription: string;
   /** Yläsivu murupolussa, kun sivu on alasivu (esim. Palloveikkaus). */
   parent?: Crumb;
@@ -52,8 +56,7 @@ export function KlubiSivuPage({
   /** Sivukohtainen lisäsisältö sisällön alle. */
   children?: React.ReactNode;
 }) {
-  const title = sivu?.title || fallbackTitle;
-  const lead = sivu?.tiivistelma || sivu?.ingress || null;
+  const { title, lead } = tekstit;
   const trail: Crumb[] = [
     rootCrumb,
     { label: "Klubi", href: "/klubi" },

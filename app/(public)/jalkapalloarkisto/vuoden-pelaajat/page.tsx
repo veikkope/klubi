@@ -5,6 +5,7 @@ import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbSchema } from "@/lib/schema-org";
 import { buildMetadata } from "@/lib/seo";
 import { sanityFetch } from "@/sanity/lib/fetch";
+import { haeOsioSivu } from "@/sanity/lib/osiosivu";
 import {
   arkistoTags,
   tilastotByCategoryQuery,
@@ -18,19 +19,16 @@ import { StatSections } from "../_tilastot/stat-sections";
 export const revalidate = 3600;
 
 const path = "/jalkapalloarkisto/vuoden-pelaajat";
-const title = "Vuoden pelaajat";
-const description =
-  "Suomen vuoden jalkapalloilijat ja FIFA:n vuoden pelaajat omina taulukkoinaan — palkitut vuosittain seuroineen ja maineen.";
-const lead =
-  "Kaksi palkintoa, kaksi taulukkoa: Suomen Palloliiton vuoden " +
-  "jalkapalloilija ja FIFA:n valitsema maailman vuoden pelaaja. " +
-  "Molemmat listat kattavat palkitut vuosittain.";
+/** Otsikko, johdanto ja hakukoneteksti: Studion Osioiden sivut (lib/osiosivut.ts). */
+const OSIO = "jalkapalloarkisto/vuoden-pelaajat" as const;
 
-export function generateMetadata(): Metadata {
-  return buildMetadata({ title, description, path });
+export async function generateMetadata(): Promise<Metadata> {
+  const s = await haeOsioSivu(OSIO);
+  return buildMetadata({ title: s.seoTitle, description: s.description, path });
 }
 
 export default async function VuodenPelaajatPage() {
+  const { title, lead, description } = await haeOsioSivu(OSIO);
   const tilastot = await sanityFetch<TilastoDoc[]>({
     query: tilastotByCategoryQuery,
     params: { category: "vuoden-pelaaja" },

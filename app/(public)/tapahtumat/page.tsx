@@ -9,6 +9,7 @@ import { rootCrumb } from "@/lib/nav-sections";
 import { breadcrumbSchema, collectionPageSchema } from "@/lib/schema-org";
 import { buildMetadata } from "@/lib/seo";
 import { haeTyhjatOsiot } from "@/sanity/lib/tyhjat-osiot";
+import { haeOsioSivu } from "@/sanity/lib/osiosivu";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import {
   menneetTapahtumatQuery,
@@ -22,26 +23,23 @@ export const revalidate = 3600;
 
 const PATH = "/tapahtumat";
 
-const LEAD =
-  "Yhdistys järjestää vuosittain vuosikokouksen, vapunvieton, " +
-  "mölkkyturnauksen, jouluruokailun ja muita tilaisuuksia jäsenille ja " +
-  "heidän vierailleen.";
-
-const trail = [rootCrumb, { label: "Tapahtumat" }];
+/** Otsikko, johdanto ja hakukoneteksti: Studion Osioiden sivut (lib/osiosivut.ts). */
+const OSIO = "tapahtumat" as const;
 
 export async function generateMetadata(): Promise<Metadata> {
   // Tyhjä osio ei näy valikossa eikä sitemapissa, eikä sitä indeksoida (lib/osiot.ts).
-  const tyhja = (await haeTyhjatOsiot()).has(PATH);
+  const [tyhjat, s] = await Promise.all([haeTyhjatOsiot(), haeOsioSivu(OSIO)]);
+  const tyhja = tyhjat.has(PATH);
   return buildMetadata({
-    title: "Tapahtumat",
-    description: LEAD,
+    title: s.seoTitle,
+    description: s.description,
     path: PATH,
     noIndex: tyhja,
   });
 }
 
 export default async function TapahtumatPage() {
-  const [upcoming, past] = await Promise.all([
+  const [upcoming, past, s] = await Promise.all([
     sanityFetch<TapahtumaListItem[]>({
       query: tulevatTapahtumatQuery,
       tags: ["tapahtuma"],
@@ -52,8 +50,10 @@ export default async function TapahtumatPage() {
       tags: ["tapahtuma"],
       fallback: [],
     }),
+    haeOsioSivu(OSIO),
   ]);
 
+  const trail = [rootCrumb, { label: s.title }];
   const hasAny = upcoming.length > 0 || past.length > 0;
 
   return (
@@ -62,8 +62,8 @@ export default async function TapahtumatPage() {
         schema={[
           breadcrumbSchema(trail),
           collectionPageSchema({
-            title: "Tapahtumat",
-            description: LEAD,
+            title: s.title,
+            description: s.description,
             path: PATH,
             itemCount: upcoming.length + past.length,
           }),
@@ -71,7 +71,7 @@ export default async function TapahtumatPage() {
       />
 
       <Container className="pt-12">
-        <PageHeader title="Tapahtumat" lead={LEAD} breadcrumbs={trail} />
+        <PageHeader title={s.title} lead={s.lead} breadcrumbs={trail} />
       </Container>
 
       <Container className="py-16">

@@ -13,6 +13,8 @@ import { formatDate } from "@/lib/format";
 import { breadcrumbSchema, collectionPageSchema } from "@/lib/schema-org";
 import { buildMetadata } from "@/lib/seo";
 import { sanityFetch } from "@/sanity/lib/fetch";
+import { haeOsioSivu, haeOsioSivujenKorttitekstit } from "@/sanity/lib/osiosivu";
+import { osioSivu, type OsioSivuSlug } from "@/lib/osiosivut";
 import {
   arkistoSummaryQuery,
   arkistoTags,
@@ -22,7 +24,6 @@ import {
 import { ArkistoPage } from "./_tilastot/arkisto-page";
 import {
   arkistoBasePath,
-  arkistoTitle,
   arkistoTrail,
   countByCategory,
   latestUpdate,
@@ -33,20 +34,20 @@ import { eurocupCategories } from "./eurocupit/competitions";
 
 export const revalidate = 3600;
 
-const description =
-  "Klubin jalkapalloarkisto: Huuhkajien ottelut, arvokisat, Suomen mestarit, eurocupit, valmentajat ja FIFA-ranking taulukoina.";
+/** Otsikko, johdanto ja hakukoneteksti: Studion Osioiden sivut (lib/osiosivut.ts). */
+const OSIO = "jalkapalloarkisto" as const;
 
-const lead =
-  "Lahden Suomalainen Klubi on koonnut jalkapallon tilastoja vuodesta 2007 " +
-  "alkaen. Arkisto kattaa Suomen maajoukkueen ottelut ja karsinnat, " +
-  "arvokisojen tulokset, Suomen mestarit, eurocupien finaalit sekä " +
-  "palkintojen voittajat — vanhimmat taulukot ulottuvat 1900-luvun alkuun.";
-
+/**
+ * Osioiden kortit. Kortin otsikko ja yläotsake ovat valikkonimiä (koodissa);
+ * teksti tulee osion sivulta Studiosta (kenttä "Teksti arkiston etusivun
+ * kortissa"), oletuksena lib/osiosivut.ts. `body` on vain Litmasella, joka ei
+ * ole osion sivu.
+ */
 interface ArkistoSection {
   href: string;
   title: string;
   eyebrow: string;
-  body: string;
+  body?: string;
   /** Kategoriat joista kortin taulukkomäärä lasketaan. */
   categories?: string[];
 }
@@ -56,139 +57,141 @@ const sections: ArkistoSection[] = [
     href: "/jalkapalloarkisto/huuhkajat",
     title: "Huuhkajat",
     eyebrow: "Maajoukkue",
-    body: "Suomen maajoukkueen otteluhistoria, pelaajatilastot ja karsintasarjat.",
     categories: ["huuhkajat", "karsinta"],
   },
   {
     href: "/jalkapalloarkisto/arvokisat",
     title: "Arvokisat",
     eyebrow: "MM ja EM",
-    body: "MM- ja EM-kisojen tulokset, tilastot ja Kansojen liiga kisa kerrallaan.",
   },
   {
     href: "/jalkapalloarkisto/mestarit",
     title: "Suomen mestarit",
     eyebrow: "Sarjat",
-    body: "Suomen mestaruuden voittaneet seurat vuosi vuodelta.",
     categories: ["champions"],
   },
   {
     href: "/jalkapalloarkisto/eurocupit",
     title: "Eurocupit",
     eyebrow: "Seurajoukkueet",
-    body: "Champions League, Europa League, Conference League, Super Cup ja Intercontinental.",
     categories: eurocupCategories,
   },
   {
     href: "/jalkapalloarkisto/litmanen",
     title: "Litmanen",
     eyebrow: "Henkilöt",
-    body: "Jari Litmasen pelaajaprofiili ja ammattilaisuran merkittävimmät loukkaantumiset.",
+    body: "Jari Litmasen ura, lehtileikkeet, patsas ja loukkaantumiset.",
   },
   {
     href: "/jalkapalloarkisto/vuoden-pelaajat",
     title: "Vuoden pelaajat",
     eyebrow: "Palkinnot",
-    body: "Suomen vuoden jalkapalloilijat ja FIFA:n vuoden pelaajat.",
     categories: ["vuoden-pelaaja"],
   },
   {
     href: "/jalkapalloarkisto/euroopan-paras",
     title: "Euroopan paras",
     eyebrow: "Palkinnot",
-    body: "Ballon d'Or eli Euroopan parhaan pelaajan palkinto vuodesta 1956.",
     categories: ["ballon-dor"],
   },
   {
     href: "/jalkapalloarkisto/maailman-parhaat",
     title: "Maailman parhaat",
     eyebrow: "Kokoonpanot",
-    body: "Maailman paras avauskokoonpano vuosittain kenttäkaavioina vuodesta 2006.",
     categories: ["maailman-parhaat"],
   },
   {
     href: "/jalkapalloarkisto/valmentajat",
     title: "Valmentajat",
     eyebrow: "Maajoukkue",
-    body: "Huuhkajien päävalmentajat kausittain sekä tiedot valmentajien palkoista.",
     categories: ["valmentajat", "valmentajien-palkat"],
   },
   {
     href: "/jalkapalloarkisto/fifa-ranking",
     title: "FIFA-ranking",
     eyebrow: "Tilastot",
-    body: "Suomen sijoitus FIFA:n maailmanlistalla ja listan kärkimaat.",
     categories: ["fifa-ranking"],
   },
   {
     href: "/jalkapalloarkisto/lupaavat",
     title: "Lupaavat pelaajat",
     eyebrow: "Palkinnot",
-    body: "Vuosien 1980–1991 lupaavimmiksi valitut suomalaispelaajat.",
     categories: ["lupaavat"],
   },
   {
     href: "/jalkapalloarkisto/saavutukset",
     title: "TOP 10 saavutukset",
     eyebrow: "Historia",
-    body: "Suomen jalkapallon kymmenen suurinta saavutusta.",
     categories: ["saavutukset"],
   },
   {
     href: "/jalkapalloarkisto/jarkytykset",
     title: "TOP 10 järkytykset",
     eyebrow: "Historia",
-    body: "Suomen jalkapallon kymmenen suurinta järkytystä.",
     categories: ["jarkytykset"],
   },
   {
     href: "/jalkapalloarkisto/ulkomaiset-mestarit",
     title: "Ulkomaiset mestarit",
     eyebrow: "Sarjat",
-    body: "Englannin ja Venäjän mestarit sekä Englannin seurojen mestaruudet ja cupvoitot.",
     categories: ["ulkomaiset-mestarit"],
   },
   {
     href: "/jalkapalloarkisto/palloliitto",
     title: "Palloliiton puheenjohtajat",
     eyebrow: "Historia",
-    body: "Suomen Palloliiton puheenjohtajat kausittain.",
     categories: ["palloliitto"],
   },
   {
     href: "/jalkapalloarkisto/stadionit",
     title: "Stadionit",
     eyebrow: "Paikat",
-    body: "Jalkapallostadionit, joilla klubi on vieraillut tai joita arkisto käsittelee.",
   },
   {
     href: "/jalkapalloarkisto/tilastot",
     title: "Muut tilastot",
     eyebrow: "Koosteet",
-    body: "Unohtumattomat ottelut ja puutteelliset järjestelyt omina koosteinaan.",
     categories: ["muu"],
   },
 ];
 
-export function generateMetadata(): Metadata {
+/** Kortin polku hrefistä ("/jalkapalloarkisto/mestarit" → "jalkapalloarkisto/mestarit"), jos se on osion sivu. */
+function osionPolku(section: ArkistoSection): OsioSivuSlug | null {
+  return osioSivu(section.href.replace(/^\//, ""))?.slug ?? null;
+}
+
+const KORTTIEN_POLUT = sections.map(osionPolku).filter((polku): polku is OsioSivuSlug => polku !== null);
+
+/** Kortin teksti: osion sivun korttiteksti Studiosta, sitten koodin oletus, sitten koodin teksti (Litmanen). */
+function korttiteksti(section: ArkistoSection, tekstit: Map<string, string>): string {
+  const polku = osionPolku(section);
+  return (polku && tekstit.get(polku)) || (polku && osioSivu(polku)?.oletus.kortti) || section.body || "";
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const s = await haeOsioSivu(OSIO);
   return buildMetadata({
-    title: arkistoTitle,
-    description,
+    title: s.seoTitle,
+    description: s.description,
     path: arkistoBasePath,
   });
 }
 
 export default async function JalkapalloarkistoPage() {
-  const summary = await sanityFetch<TilastoSummary[]>({
-    query: arkistoSummaryQuery,
-    tags: arkistoTags,
-    fallback: [],
-  });
+  const [summary, s, tekstit] = await Promise.all([
+    sanityFetch<TilastoSummary[]>({
+      query: arkistoSummaryQuery,
+      tags: arkistoTags,
+      fallback: [],
+    }),
+    haeOsioSivu(OSIO),
+    haeOsioSivujenKorttitekstit(KORTTIEN_POLUT),
+  ]);
 
   const counts = countByCategory(summary);
   const total = summary.length;
   const updated = latestUpdate(summary);
-  const trail = arkistoTrail({ label: arkistoTitle });
+  const trail = arkistoTrail({ label: s.title });
 
   return (
     <>
@@ -196,8 +199,8 @@ export default async function JalkapalloarkistoPage() {
         schema={[
           breadcrumbSchema(trail),
           collectionPageSchema({
-            title: arkistoTitle,
-            description,
+            title: s.title,
+            description: s.description,
             path: arkistoBasePath,
             itemCount: sections.length,
           }),
@@ -205,8 +208,8 @@ export default async function JalkapalloarkistoPage() {
       />
 
       <ArkistoPage
-        title={arkistoTitle}
-        lead={lead}
+        title={s.title}
+        lead={s.lead}
         eyebrow="Arkisto"
         breadcrumbs={trail}
         meta={
@@ -232,7 +235,7 @@ export default async function JalkapalloarkistoPage() {
                 <Card href={section.href} className="flex w-full flex-col">
                   <CardEyebrow>{section.eyebrow}</CardEyebrow>
                   <CardTitle className="mt-2">{section.title}</CardTitle>
-                  <CardBody className="mt-2">{section.body}</CardBody>
+                  <CardBody className="mt-2">{korttiteksti(section, tekstit)}</CardBody>
                   {count > 0 && (
                     <p className="mt-3 text-sm text-muted">
                       {tableCountLabel(count)}

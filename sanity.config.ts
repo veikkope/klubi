@@ -13,6 +13,7 @@ import { HyvaksyJaLuoRavintola, ilmanJulkaisuaEhdotukselle } from "./sanity/acti
 import { PiilotaKommentti, PoistaKommentti } from "./sanity/actions/kommentin-moderointi";
 import { PalautaVarmuuskopiosta } from "./sanity/actions/palauta-varmuuskopiosta";
 import { lukitulleSivulle } from "./sanity/actions/lukittu-sivu";
+import { PIILOTETUT_POHJAT, pohjat } from "./sanity/pohjat";
 
 export default defineConfig({
   name: "klubi",
@@ -22,10 +23,8 @@ export default defineConfig({
   dataset,
   schema: {
     types: schemaTypes,
-    // Estä singletonien duplikointi
-    // Singletoneja ja varmuuskopioita ei luoda käsin (varmuuskopiot tekee ajastus).
-    templates: (templates) =>
-      templates.filter(({ schemaType }) => !singletonTypes.has(schemaType) && schemaType !== "varmuuskopio"),
+    // Singletoneja ja varmuuskopioita ei luoda käsin; osion sivun pohja (sanity/pohjat.ts).
+    templates: pohjat,
   },
   document: {
     actions: (input, context) => {
@@ -59,11 +58,14 @@ export default defineConfig({
           PalautaVarmuuskopiosta,
         ];
       }
-      // Lukittujen sivujen poisto ja julkaisun peruminen pois käytöstä (docs/23 Y21).
+      // Lukittujen sivujen poisto, julkaisun peruminen ja kopiointi pois käytöstä
+      // (docs/23 Y21, docs/24 askel 3).
       if (context.schemaType === "sivu") {
         return [
           ...input.map((toiminto) =>
-            toiminto.action === "delete" || toiminto.action === "unpublish" ? lukitulleSivulle(toiminto) : toiminto,
+            toiminto.action === "delete" || toiminto.action === "unpublish" || toiminto.action === "duplicate"
+              ? lukitulleSivulle(toiminto)
+              : toiminto,
           ),
           PalautaVarmuuskopiosta,
         ];
@@ -74,12 +76,12 @@ export default defineConfig({
       return [...input, PalautaVarmuuskopiosta];
     },
     newDocumentOptions: (prev, { creationContext }) => {
+      // Parametria vaativat pohjat (osion sivu) avataan vain Studion rakenteesta.
+      const nakyvat = prev.filter((templateItem) => !PIILOTETUT_POHJAT.has(templateItem.templateId));
       if (creationContext.type === "global") {
-        return prev.filter(
-          (templateItem) => !singletonTypes.has(templateItem.templateId),
-        );
+        return nakyvat.filter((templateItem) => !singletonTypes.has(templateItem.templateId));
       }
-      return prev;
+      return nakyvat;
     },
   },
   plugins: [

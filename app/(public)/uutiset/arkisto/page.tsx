@@ -9,6 +9,7 @@ import { rootCrumb } from "@/lib/nav-sections";
 import { breadcrumbSchema, collectionPageSchema } from "@/lib/schema-org";
 import { buildMetadata } from "@/lib/seo";
 import { sanityFetch } from "@/sanity/lib/fetch";
+import { haeOsioSivu } from "@/sanity/lib/osiosivu";
 import {
   uutisetArchiveYearsQuery,
   type ArchiveYearRow,
@@ -24,15 +25,17 @@ export const revalidate = 3600;
 
 const PATH = "/uutiset/arkisto";
 
-const LEAD =
-  "Klubin kirjoitukset vuosi kerrallaan. Arkistossa ovat vanhan sivuston " +
-  "kommentti- ja blogisivut sekä kaikki myöhemmin julkaistut uutiset.";
+/** Otsikko, johdanto ja hakukoneteksti: Studion Osioiden sivut (lib/osiosivut.ts). */
+const OSIO = "uutiset/arkisto" as const;
 
-export const metadata: Metadata = buildMetadata({
-  title: "Uutisarkisto",
-  description: LEAD,
-  path: PATH,
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const s = await haeOsioSivu(OSIO);
+  return buildMetadata({
+    title: s.seoTitle,
+    description: s.description,
+    path: PATH,
+  });
+}
 
 const trail = [
   rootCrumb,
@@ -41,11 +44,14 @@ const trail = [
 ];
 
 export default async function UutisarkistoPage() {
-  const rows = await sanityFetch<ArchiveYearRow[]>({
-    query: uutisetArchiveYearsQuery,
-    tags: ["uutinen"],
-    fallback: [],
-  });
+  const [rows, s] = await Promise.all([
+    sanityFetch<ArchiveYearRow[]>({
+      query: uutisetArchiveYearsQuery,
+      tags: ["uutinen"],
+      fallback: [],
+    }),
+    haeOsioSivu(OSIO),
+  ]);
 
   const years = toArchiveYears(rows);
   const decades = groupByDecade(years);
@@ -57,8 +63,8 @@ export default async function UutisarkistoPage() {
         schema={[
           breadcrumbSchema(trail),
           collectionPageSchema({
-            title: "Uutisarkisto",
-            description: LEAD,
+            title: s.title,
+            description: s.description,
             path: PATH,
             itemCount: total,
           }),
@@ -66,7 +72,7 @@ export default async function UutisarkistoPage() {
       />
 
       <Container className="py-16">
-        <PageHeader title="Uutisarkisto" lead={LEAD} breadcrumbs={trail} />
+        <PageHeader title={s.title} lead={s.lead} breadcrumbs={trail} />
 
         {decades.length === 0 ? (
           <div className="mt-12 rounded-2xl border border-dashed border-border bg-surface p-10 text-center">

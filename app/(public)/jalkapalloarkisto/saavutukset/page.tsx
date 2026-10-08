@@ -4,6 +4,7 @@ import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbSchema } from "@/lib/schema-org";
 import { buildMetadata } from "@/lib/seo";
 import { sanityFetch } from "@/sanity/lib/fetch";
+import { haeOsioSivu } from "@/sanity/lib/osiosivu";
 import {
   arkistoTags,
   tilastotByCategoryQuery,
@@ -17,18 +18,16 @@ import { StatSections } from "../_tilastot/stat-sections";
 export const revalidate = 3600;
 
 const path = "/jalkapalloarkisto/saavutukset";
-const title = "Suomen jalkapallon TOP 10 saavutukset";
-const description =
-  "Suomen jalkapallon kymmenen suurinta saavutusta: ottelu, turnaus, päivämäärä, paikka, tulos ja yleisömäärä.";
-const lead =
-  "Suomalaisen jalkapallon kymmenen suurinta saavutusta maajoukkueen " +
-  "ja seurojen otteluista.";
+/** Otsikko, johdanto ja hakukoneteksti: Studion Osioiden sivut (lib/osiosivut.ts). */
+const OSIO = "jalkapalloarkisto/saavutukset" as const;
 
-export function generateMetadata(): Metadata {
-  return buildMetadata({ title, description, path });
+export async function generateMetadata(): Promise<Metadata> {
+  const s = await haeOsioSivu(OSIO);
+  return buildMetadata({ title: s.seoTitle, description: s.description, path });
 }
 
 export default async function SaavutuksetPage() {
+  const { title, lead, description } = await haeOsioSivu(OSIO);
   const tilastot = await sanityFetch<TilastoDoc[]>({
     query: tilastotByCategoryQuery,
     params: { category: "saavutukset" },

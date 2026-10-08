@@ -13,6 +13,7 @@ import {
 import { breadcrumbSchema, collectionPageSchema } from "@/lib/schema-org";
 import { buildMetadata } from "@/lib/seo";
 import { sanityFetch } from "@/sanity/lib/fetch";
+import { haeOsioSivu } from "@/sanity/lib/osiosivu";
 import {
   arkistoTags,
   huuhkajatHubQuery,
@@ -34,13 +35,8 @@ import { VanhaAnkkuriOhjaus } from "../_tilastot/vanha-ankkuri";
 export const revalidate = 3600;
 
 const path = huuhkajatPath;
-const title = "Huuhkajat";
-const description =
-  "Suomen miesten maajoukkueen otteluhistoria ja pelaajatilastot: maaottelut, maalintekijät ja edustusmäärät taulukoina.";
-const lead =
-  "Huuhkajat on Suomen miesten A-maajoukkueen nimi. Arkisto kokoaa " +
-  "maajoukkueen tilastot aiheittain: pelaajatilastot, klubin oma " +
-  "Huuhkaja-arvostelu, Kansojen liiga ja karsintasarjat.";
+/** Otsikko, johdanto ja hakukoneteksti: Studion Osioiden sivut (lib/osiosivut.ts). */
+const OSIO = "jalkapalloarkisto/huuhkajat" as const;
 
 /** Sisarsivut, joilla Huuhkajien tilastot jatkuvat. */
 const relatedLinks = [
@@ -73,11 +69,13 @@ const relatedLinks = [
 const headingClass =
   "font-display text-2xl leading-tight text-foreground sm:text-3xl";
 
-export function generateMetadata(): Metadata {
-  return buildMetadata({ title, description, path });
+export async function generateMetadata(): Promise<Metadata> {
+  const s = await haeOsioSivu(OSIO);
+  return buildMetadata({ title: s.seoTitle, description: s.description, path });
 }
 
 export default async function HuuhkajatPage() {
+  const { title, lead, description } = await haeOsioSivu(OSIO);
   const { taulukot, karsinnat } = await sanityFetch<HuuhkajatHub>({
     query: huuhkajatHubQuery,
     tags: arkistoTags,

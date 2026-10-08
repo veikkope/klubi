@@ -73,6 +73,7 @@ public/                Staattiset tiedostot (favicon, robots, kuvat joita Sanity
 | Testaa tyhjien osioiden piilotuksen (valikko, alatunniste, sitemap) | `npm run test:osiot` |
 | Testaa sivun polkusäännöt (varatut polut, lukitut sivut, jokainen app-reitti varattu) | `npm run test:sivupolku` |
 | Testaa tekstin lohkot ja uutiskortin (kuvasarja, korttikuvan varakäytös, jakokuva, tekstin alku kortissa; GROQ groq-js:llä) | `npm run test:lohkot` |
+| Testaa osioiden sivut (rekisteri, lukitus, reittien kattavuus, oletustekstit, siemen ei muuta näkymää eikä meta-kuvauksia) | `npm run test:osiosivut` |
 | Sanityn taso ja oikeudet (tilaus, datasetin näkyvyys, tokenien ja käyttäjien roolit, sivusto; vain luku). Aja Growth-kokeilun päätyttyä 26.10.2026 ja kun lomakkeet lakkaavat toimimasta | `npm run tarkista:sanity-taso` |
 | Testaa uutishaun hakusanat | `npm run test:haku` |
 | Testaa lukuaika ja ingressisääntö (uutiset, ravintola-arviot) | `npm run test:artikkeli` |
@@ -84,6 +85,7 @@ public/                Staattiset tiedostot (favicon, robots, kuvat joita Sanity
 | Päästä päähän -testi productionissa: kahden klubilaisen sääntö webhookin kautta (luo ja poistaa testiravintolan; varmuuskopio ensin, webhook-jono tyhjänä) | `npm run e2e:arvioijasaanto` |
 | Blogin tunnisteet muokattavaan kenttään (kuivaharjoitus; `-- --vie` kirjoittaa, `-- --production` productioniin varmuuskopion kanssa) | `npm run patch:tunnisteet` (docs/14 §3.1) |
 | Uutiskategoriat koodista Sanityyn: kategoriadokumentit ja uutisten viittaukset (kuivaharjoitus; `-- --vie`, `-- --production --vie` varmuuskopion kanssa; `--poista-vanhat` poistaa vanhan `categories`-kentän deployn jälkeen; ajettu 4.10.2026) | `npm run patch:uutiskategoriat` |
+| Osioiden sivut Sanityyn: 30 koodireitin lukitut `sivu`-dokumentit koodin oletusteksteillä (`createIfNotExists`; kuivaharjoitus; `-- --vie` kirjoittaa, `-- --production --vie` varmuuskopion kanssa; idempotentti, productioniin vasta deployn jälkeen, docs/24 P3) | `npm run luo:osiosivut` |
 | Palloveikkaussivun jako veikkausten omiksi alasivuiksi (kuivaharjoitus; `-- --vie` kirjoittaa, `-- --production` varmuuskopion kanssa; kertaluonteinen) | `npm run patch:palloveikkaus` |
 | Litmanen-osio: päävalikon Pelaajat → Litmanen ja `litmanen.htm` loukkaantumissivulle (kuivaharjoitus; `-- --vie` kirjoittaa, `-- --production` varmuuskopion kanssa; kertaluonteinen) | `npm run patch:litmanen` |
 | Järkytykset ja maailman paras avaus omille sivuilleen (kategoriat `jarkytykset`, `maailman-parhaat`; kuivaharjoitus; `-- --vie` kirjoittaa, `-- --production` varmuuskopion kanssa; kertaluonteinen, productioniin vasta deployn jälkeen) | `npm run patch:omat-sivut` |

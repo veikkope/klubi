@@ -3,8 +3,8 @@ import { stegaClean } from "next-sanity";
 import { sanityFetch } from "@/sanity/lib/fetch";
 
 /**
- * Klubin sähköpostiosoite Studion Yhteystiedoista (Sivun asetukset →
- * Yhteystiedot). Ainoa lähde: osoitetta ei kovakoodata mihinkään. Jos kenttä on
+ * Klubin sähköpostiosoite Studion Yhteystiedoista (Klubi → Yhteystiedot →
+ * Osoite, sähköposti ja some). Ainoa lähde: osoitetta ei kovakoodata mihinkään. Jos kenttä on
  * tyhjä tai Sanityyn ei saada yhteyttä, palautetaan null, jolloin osoitetta ei
  * näytetä (docs/16 §5).
  */

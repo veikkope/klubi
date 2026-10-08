@@ -48,7 +48,9 @@ export const jalkapalloTilasto = defineType({
     defineField({
       name: "category",
       title: "Kategoria",
-      description: "Vaikuttaa siihen, miten tilasto näytetään sivulla.",
+      description:
+        "Vaikuttaa siihen, miten tilasto näytetään sivulla. Muu tilasto saa oman sivun osoitteeseen " +
+        "/jalkapalloarkisto/tilastot/… Uusi pysyvä arkiston osio vaatii kehittäjän.",
       type: "string",
       options: {
         list: [

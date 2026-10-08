@@ -21,13 +21,13 @@ import { buildMetadata } from "@/lib/seo";
 import type { ContactData } from "@/lib/types";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import { contactQuery } from "@/sanity/lib/queries";
+import { haeOsioSivu } from "@/sanity/lib/osiosivu";
 
 export const revalidate = 3600;
 
 const PATH = "/klubi/yhteystiedot";
-const TITLE = "Yhteystiedot";
-const DESCRIPTION =
-  "Lahden Suomalainen Klubi ry:n yhteystiedot: osoite, sähköposti, puhelin ja laskutustiedot.";
+/** Otsikko, valinnainen johdanto ja hakukoneteksti: Studion Klubi-ryhmä (lib/osiosivut.ts). */
+const OSIO = "klubi/yhteystiedot" as const;
 
 function getContact() {
   return sanityFetch<ContactData>({
@@ -37,21 +37,22 @@ function getContact() {
   });
 }
 
-export function generateMetadata(): Metadata {
+export async function generateMetadata(): Promise<Metadata> {
+  const s = await haeOsioSivu(OSIO);
   return buildMetadata({
-    title: TITLE,
-    description: DESCRIPTION,
+    title: s.seoTitle,
+    description: s.description,
     path: PATH,
   });
 }
 
 export default async function YhteystiedotPage() {
-  const contact = await getContact();
+  const [contact, s] = await Promise.all([getContact(), haeOsioSivu(OSIO)]);
 
   const trail: Crumb[] = [
     rootCrumb,
     { label: "Klubi", href: "/klubi" },
-    { label: TITLE },
+    { label: s.title },
   ];
 
   const hasAddress = Boolean(contact.address);
@@ -74,8 +75,8 @@ export default async function YhteystiedotPage() {
             phone: contact.phone,
           }),
           webPageSchema({
-            title: TITLE,
-            description: DESCRIPTION,
+            title: s.title,
+            description: s.description,
             path: PATH,
           }),
           breadcrumbSchema(trail),
@@ -83,7 +84,7 @@ export default async function YhteystiedotPage() {
       />
 
       <Container className="py-12 sm:py-16">
-        <PageHeader title={TITLE} breadcrumbs={trail} />
+        <PageHeader title={s.title} lead={s.lead} breadcrumbs={trail} />
         <SectionNav items={klubiNav} label="Klubin osiot" className="mt-8" />
 
         <dl className="mt-12 grid gap-8 sm:grid-cols-2">

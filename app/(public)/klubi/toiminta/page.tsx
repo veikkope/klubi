@@ -16,6 +16,7 @@ import {
   collectionPageSchema,
   type Crumb,
 } from "@/lib/schema-org";
+import { osioSivu, ratkaiseOsioSivu } from "@/lib/osiosivut";
 import { TOIMINTA_SIVU_SLUG } from "@/lib/path";
 import { buildMetadata, resolveDescription } from "@/lib/seo";
 import { sanityFetch } from "@/sanity/lib/fetch";
@@ -33,7 +34,8 @@ const PATH = "/klubi/toiminta";
  * ilman sitä sivu on silti ehjä, koska kortit ovat sivun varsinainen sisältö.
  */
 const SIVU_SLUG = TOIMINTA_SIVU_SLUG;
-const FALLBACK_TITLE = "Toiminta";
+/** Oletustekstit, kun dokumenttia ei ole (lib/osiosivut.ts). */
+const OSIO = osioSivu(SIVU_SLUG)!;
 
 function getToiminnat() {
   return sanityFetch<KlubiToimintaCard[]>({
@@ -44,14 +46,10 @@ function getToiminnat() {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  const sivu = await fetchKlubiSivu(SIVU_SLUG);
+  const s = ratkaiseOsioSivu(await fetchKlubiSivu(SIVU_SLUG), OSIO);
   return buildMetadata({
-    title: sivu?.seoTitle || sivu?.title || FALLBACK_TITLE,
-    description: resolveDescription(
-      sivu?.seoDescription,
-      sivu?.tiivistelma,
-      sivu?.ingress,
-    ),
+    title: s.seoTitle,
+    description: resolveDescription(s.description),
     path: PATH,
   });
 }
@@ -62,8 +60,7 @@ export default async function ToimintaPage() {
     getToiminnat(),
   ]);
 
-  const title = sivu?.title || FALLBACK_TITLE;
-  const lead = sivu?.tiivistelma || sivu?.ingress || null;
+  const { title, lead } = ratkaiseOsioSivu(sivu, OSIO);
   const trail: Crumb[] = [
     rootCrumb,
     { label: "Klubi", href: "/klubi" },

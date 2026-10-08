@@ -11,6 +11,7 @@ import {
 import { breadcrumbSchema, collectionPageSchema } from "@/lib/schema-org";
 import { buildMetadata } from "@/lib/seo";
 import { sanityFetch } from "@/sanity/lib/fetch";
+import { haeOsioSivu } from "@/sanity/lib/osiosivu";
 import {
   arkistoSummaryQuery,
   arkistoTags,
@@ -29,19 +30,16 @@ import { eurocupCompetitions } from "./competitions";
 export const revalidate = 3600;
 
 const path = "/jalkapalloarkisto/eurocupit";
-const title = "Eurocupit";
-const description =
-  "Euroopan seurajoukkuekilpailut yhdessä: Champions League, Europa League, Conference League, Super Cup ja Intercontinental.";
-const lead =
-  "Euroopan seurajoukkuekilpailut vuodesta 1955 nykypäivään. Jokaisella " +
-  "kilpailulla on oma sivunsa, jolla finaalit, voittajat ja suomalaisjoukkueiden " +
-  "otteet on koottu taulukoiksi.";
+/** Otsikko, johdanto ja hakukoneteksti: Studion Osioiden sivut (lib/osiosivut.ts). */
+const OSIO = "jalkapalloarkisto/eurocupit" as const;
 
-export function generateMetadata(): Metadata {
-  return buildMetadata({ title, description, path });
+export async function generateMetadata(): Promise<Metadata> {
+  const s = await haeOsioSivu(OSIO);
+  return buildMetadata({ title: s.seoTitle, description: s.description, path });
 }
 
 export default async function EurocupitPage() {
+  const { title, lead, description } = await haeOsioSivu(OSIO);
   const summary = await sanityFetch<TilastoSummary[]>({
     query: arkistoSummaryQuery,
     tags: arkistoTags,

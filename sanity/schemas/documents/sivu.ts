@@ -1,5 +1,5 @@
 import { DocumentIcon } from "@sanity/icons";
-import { defineField, defineType } from "sanity";
+import { defineField, defineType, type SanityDocumentLike } from "sanity";
 import { seoFields } from "../objects/seoFields";
 import {
   legacyUrlField,
@@ -8,11 +8,12 @@ import {
   tarkistettavaaField,
   tiivistelmaField,
   polkuMuuttunut,
-  koodiinSidottuSlug,
 } from "../objects/contentMeta";
 import { HAKUKONEET_RYHMA, OSOITE_OTSIKKO } from "../objects/sanasto";
-import { KOODIIN_SIDOTUT_SIVUT } from "../../../lib/path";
+import { onLukittuSivu } from "../../../lib/path";
+import { johdantoPakollinen, osioSivu, piilotaKentta } from "../../../lib/osiosivut";
 import { tarkistaSivunPolku } from "../../../lib/sivupolku";
+import { OsioSivunOhje } from "../../components/osiosivu/OsioSivunOhje";
 
 /**
  * Yleisen sisältösivun dokumenttityyppi. Yksi `sivu` per polku — slug voi
@@ -21,6 +22,9 @@ import { tarkistaSivunPolku } from "../../../lib/sivupolku";
  * Polkurakenne renderöityy `/[...slug]`-reitissä. Studiossa slug muotoillaan
  * automaattisesti otsikosta, mutta käyttäjä saa muokata sitä.
  */
+
+/** Dokumentin polku (slug.current). */
+const slugOf = (document?: SanityDocumentLike) => (document?.slug as { current?: string } | undefined)?.current;
 
 /**
  * Slugify joka säilyttää kauttaviivat hierarkkista polkua varten.
@@ -49,6 +53,17 @@ export const sivu = defineType({
     HAKUKONEET_RYHMA,
   ],
   fields: [
+    // Osioiden sivuilla (lib/osiosivut.ts) ohjelaatikko: mitä tässä muokataan
+    // ja mikä tulee sivulle automaattisesti. Ei tallenna dataa.
+    defineField({
+      name: "osionOhje",
+      title: "Tietoa sivusta",
+      type: "string",
+      readOnly: true,
+      hidden: ({ document }) => !osioSivu(slugOf(document)),
+      components: { input: OsioSivunOhje },
+      group: "sisalto",
+    }),
     defineField({
       name: "title",
       title: "Otsikko",
@@ -61,17 +76,19 @@ export const sivu = defineType({
       title: OSOITE_OTSIKKO,
       description:
         "Vain pieniä kirjaimia, numeroita ja yhdysmerkkejä. Alasivulle kauttaviiva: " +
-        "klubi/historia → /klubi/historia. Klubi-osion pääsivujen ja tietosuojaselosteen " +
-        "osoitteet on lukittu.",
+        "klubi/historia → /klubi/historia. Osioiden sivujen (esim. /uutiset), Klubin " +
+        "pääsivujen ja tietosuojaselosteen osoitteet on lukittu, koska sivusto hakee ne " +
+        "osoitteen perusteella.",
       type: "slug",
-      readOnly: ({ document }) => koodiinSidottuSlug(document, KOODIIN_SIDOTUT_SIVUT),
+      readOnly: ({ document }) =>
+        onLukittuSivu(document?._id, (document?.slug as { current?: string } | undefined)?.current),
       options: {
         source: "title",
         maxLength: 96,
         slugify: slugifyPath,
       },
       validation: (rule) => [
-        rule.required().custom((slug) => tarkistaSivunPolku(slug?.current)),
+        rule.required().custom((slug, context) => tarkistaSivunPolku(slug?.current, context.document?._id)),
         polkuMuuttunut(rule),
       ],
       group: "sisalto",
@@ -93,17 +110,43 @@ export const sivu = defineType({
         direction: "horizontal",
       },
       initialValue: "fi",
+      // Osioiden sivut ovat aina suomeksi.
+      hidden: ({ document }) => Boolean(osioSivu(slugOf(document))),
       group: "sisalto",
     }),
     tiivistelmaField("sisalto", {
       title: "Tiivistelmä sivun alussa",
       description: "2–3 virkettä, jotka näkyvät sivun alussa isommalla tekstillä ja hakukoneissa.",
+      validation: (rule) => [
+        rule.max(300).warning("Suositus: alle 300 merkkiä — tiivistelmä, ei johdanto."),
+        rule.custom((arvo, { document }) => {
+          const o = osioSivu(slugOf(document));
+          return o && johdantoPakollinen(o) && !String(arvo ?? "").trim()
+            ? "Tiivistelmä on tällä sivulla pakollinen: se näkyy otsikon alla johdantona ja hakukoneissa."
+            : true;
+        }),
+      ],
+    }),
+    // Vain jalkapalloarkiston osioiden sivuilla (lib/osiosivut.ts oletus.kortti).
+    defineField({
+      name: "korttiteksti",
+      title: "Teksti arkiston etusivun kortissa",
+      description:
+        "Yksi lyhyt virke, joka näkyy Jalkapalloarkiston etusivulla tämän osion kortissa. " +
+        "Jos jätät tyhjäksi, käytetään sivuston oletustekstiä.",
+      type: "text",
+      rows: 2,
+      validation: (rule) => rule.max(140).warning("Suositus: alle 140 merkkiä, kortti on pieni."),
+      hidden: ({ document, value }) => !osioSivu(slugOf(document))?.oletus.kortti && !value,
+      group: "sisalto",
     }),
     defineField({
       name: "hero",
       title: "Iso kuva sivun yläosassa",
       description: "Valinnainen. Näkyy sivun yläosassa (tavallisilla sivuilla otsikon takana, Klubi-osiossa omana kuvanaan) ja somejaoissa.",
       type: "imageWithAlt",
+      // Osion sivulla vain, jos sivu näyttää kuvan (olemassa oleva kuva näkyy aina).
+      hidden: ({ document, value }) => piilotaKentta(slugOf(document), "hero", value),
       group: "sisalto",
     }),
     defineField({
@@ -122,6 +165,7 @@ export const sivu = defineType({
       name: "body",
       title: "Pääsisältö",
       type: "portableText",
+      hidden: ({ document, value }) => piilotaKentta(slugOf(document), "body", value),
       group: "sisalto",
     }),
     defineField({
@@ -132,6 +176,7 @@ export const sivu = defineType({
         "ylläpidetään Jalkapallotilasto-dokumentteina kategorialla \"Klubin omat tilastot\".",
       type: "array",
       of: [{ type: "reference", to: [{ type: "jalkapalloTilasto" }] }],
+      hidden: ({ document, value }) => piilotaKentta(slugOf(document), "tilastot", value),
       group: "sisalto",
     }),
     needsReviewField("sisalto"),
@@ -143,7 +188,8 @@ export const sivu = defineType({
   preview: {
     select: { title: "title", subtitle: "slug.current", media: "hero" },
     prepare({ title, subtitle, media }) {
-      return { title, subtitle: subtitle ? `/${subtitle}` : "", media };
+      const polku = subtitle ? `/${subtitle}` : "";
+      return { title, subtitle: osioSivu(subtitle) ? `Osion sivu · ${polku}` : polku, media };
     },
   },
 });

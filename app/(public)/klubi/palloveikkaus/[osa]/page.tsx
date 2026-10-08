@@ -66,8 +66,8 @@ export default async function VeikkausPage({
   return (
     <KlubiSivuPage
       sivu={sivu}
+      tekstit={{ title: sivu.title, lead: sivu.tiivistelma || sivu.ingress || null }}
       path={`${PALLOVEIKKAUS_PATH}/${osa}`}
-      fallbackTitle={sivu.title}
       emptyDescription="Veikkauksen säännöt ja tulokset julkaistaan tällä sivulla."
       parent={{ label: PALLOVEIKKAUS_TITLE, href: PALLOVEIKKAUS_PATH }}
       subNav={{ items: veikkausNav(veikkaukset), label: "Veikkaukset" }}

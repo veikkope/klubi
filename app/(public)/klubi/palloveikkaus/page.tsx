@@ -8,12 +8,12 @@ import {
   CardEyebrow,
   CardTitle,
 } from "@/components/ui/card";
+import { osioSivu, ratkaiseOsioSivu } from "@/lib/osiosivut";
 import { buildMetadata, resolveDescription } from "@/lib/seo";
 
 import {
   PALLOVEIKKAUS_PATH,
   PALLOVEIKKAUS_SLUG,
-  PALLOVEIKKAUS_TITLE,
   fetchVeikkaukset,
   veikkausHref,
   veikkausNav,
@@ -21,15 +21,15 @@ import {
 
 export const revalidate = 3600;
 
+/** Oletustekstit, kun dokumenttia ei ole (lib/osiosivut.ts). */
+const OSIO = osioSivu(PALLOVEIKKAUS_SLUG)!;
+
 export async function generateMetadata(): Promise<Metadata> {
   const sivu = await fetchKlubiSivu(PALLOVEIKKAUS_SLUG);
+  const s = ratkaiseOsioSivu(sivu, OSIO);
   return buildMetadata({
-    title: sivu?.seoTitle || sivu?.title || PALLOVEIKKAUS_TITLE,
-    description: resolveDescription(
-      sivu?.seoDescription,
-      sivu?.tiivistelma,
-      sivu?.ingress,
-    ),
+    title: s.seoTitle,
+    description: resolveDescription(s.description),
     path: PALLOVEIKKAUS_PATH,
     image: sivu?.hero,
     sisalto: sivu?.body,
@@ -45,8 +45,8 @@ export default async function PalloveikkausPage() {
   return (
     <KlubiSivuPage
       sivu={sivu}
+      tekstit={ratkaiseOsioSivu(sivu, OSIO)}
       path={PALLOVEIKKAUS_PATH}
-      fallbackTitle={PALLOVEIKKAUS_TITLE}
       emptyDescription="Palloveikkauksen säännöt, kierrokset ja tulokset julkaistaan tällä sivulla."
       subNav={
         veikkaukset.length > 0

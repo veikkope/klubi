@@ -13,6 +13,7 @@ import { breadcrumbSchema, collectionPageSchema } from "@/lib/schema-org";
 import { buildMetadata } from "@/lib/seo";
 import { ULKOMAISET_MESTARIT_PATH } from "@/lib/ulkomaiset-mestarit";
 import { sanityFetch } from "@/sanity/lib/fetch";
+import { haeOsioSivu } from "@/sanity/lib/osiosivu";
 import {
   arkistoTags,
   tilastotByCategoryQuery,
@@ -28,19 +29,16 @@ import { groupByMaa, maaNav } from "./maat";
 export const revalidate = 3600;
 
 const path = ULKOMAISET_MESTARIT_PATH;
-const title = "Ulkomaiset mestarit";
-const description =
-  "Englannin ja Venäjän jalkapallomestarit vuosi vuodelta sekä Englannin seurojen mestaruudet ja cupvoitot taulukoina.";
-const lead =
-  "Suomen mestareiden rinnalle arkisto on koonnut kahden jalkapallomaan " +
-  "mestaruushistorian: Englannin ja Venäjän mestarit sekä Englannin seurojen " +
-  "kokonaismäärät.";
+/** Otsikko, johdanto ja hakukoneteksti: Studion Osioiden sivut (lib/osiosivut.ts). */
+const OSIO = "jalkapalloarkisto/ulkomaiset-mestarit" as const;
 
-export function generateMetadata(): Metadata {
-  return buildMetadata({ title, description, path });
+export async function generateMetadata(): Promise<Metadata> {
+  const s = await haeOsioSivu(OSIO);
+  return buildMetadata({ title: s.seoTitle, description: s.description, path });
 }
 
 export default async function UlkomaisetMestaritPage() {
+  const { title, lead, description } = await haeOsioSivu(OSIO);
   const tilastot = await sanityFetch<TilastoDoc[]>({
     query: tilastotByCategoryQuery,
     params: { category: "ulkomaiset-mestarit" },

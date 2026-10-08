@@ -9,6 +9,7 @@ import { rootCrumb } from "@/lib/nav-sections";
 import { breadcrumbSchema, collectionPageSchema } from "@/lib/schema-org";
 import { buildMetadata } from "@/lib/seo";
 import { ryhmitaAlkukirjaimittain, suosituimmat, TUNNISTEET_POLKU } from "@/lib/tunnisteet";
+import { haeOsioSivu } from "@/sanity/lib/osiosivu";
 
 import { haeTunnisteet } from "../_lib/tunnisteet";
 
@@ -21,15 +22,17 @@ export const revalidate = 3600;
 
 const SUOSITUIMPIA = 30;
 
-const LEAD =
-  "Uutisten aiheet, paikat, ravintolat ja henkilöt. Valitse tunniste, niin näet " +
-  "kaikki sen kirjoitukset. Luku kertoo kirjoitusten määrän.";
+/** Otsikko, johdanto ja hakukoneteksti: Studion Osioiden sivut (lib/osiosivut.ts). */
+const OSIO = "uutiset/tunnisteet" as const;
 
-export const metadata: Metadata = buildMetadata({
-  title: "Uutisten tunnisteet",
-  description: LEAD,
-  path: TUNNISTEET_POLKU,
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const s = await haeOsioSivu(OSIO);
+  return buildMetadata({
+    title: s.seoTitle,
+    description: s.description,
+    path: TUNNISTEET_POLKU,
+  });
+}
 
 const trail = [rootCrumb, { label: "Uutiset", href: "/uutiset" }, { label: "Tunnisteet" }];
 
@@ -39,7 +42,7 @@ function ankkuri(kirjain: string) {
 }
 
 export default async function TunnisteetPage() {
-  const { tunnisteet } = await haeTunnisteet();
+  const [{ tunnisteet }, s] = await Promise.all([haeTunnisteet(), haeOsioSivu(OSIO)]);
   const ryhmat = ryhmitaAlkukirjaimittain(tunnisteet);
   const suosikit = suosituimmat(tunnisteet, SUOSITUIMPIA);
 
@@ -49,8 +52,8 @@ export default async function TunnisteetPage() {
         schema={[
           breadcrumbSchema(trail),
           collectionPageSchema({
-            title: "Uutisten tunnisteet",
-            description: LEAD,
+            title: s.seoTitle,
+            description: s.description,
             path: TUNNISTEET_POLKU,
             itemCount: tunnisteet.length,
           }),
@@ -59,8 +62,8 @@ export default async function TunnisteetPage() {
 
       <Container className="pt-12">
         <PageHeader
-          title="Tunnisteet"
-          lead={LEAD}
+          title={s.title}
+          lead={s.lead}
           breadcrumbs={trail}
           actions={
             <LinkButton href="/uutiset" variant="secondary">

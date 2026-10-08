@@ -11,6 +11,7 @@ import {
 import { breadcrumbSchema, collectionPageSchema } from "@/lib/schema-org";
 import { buildMetadata } from "@/lib/seo";
 import { sanityFetch } from "@/sanity/lib/fetch";
+import { haeOsioSivu } from "@/sanity/lib/osiosivu";
 import {
   arkistoTags,
   tilastotByCategoryQuery,
@@ -24,15 +25,12 @@ import { ArkistoEmpty } from "../_tilastot/stat-sections";
 export const revalidate = 3600;
 
 const path = muutTilastotPath;
-const title = "Muut tilastot";
-const description =
-  "Jalkapalloarkiston erilliset koosteet, jotka eivät kuulu mihinkään sarjaan: unohtumattomat ottelut ja puutteelliset järjestelyt.";
-const lead =
-  "Erilliset koosteet, joilla on arkistossa oma sivunsa: muistelut, " +
-  "havainnot ja listat, jotka eivät kuulu yksittäiseen sarjaan tai kisaan.";
+/** Otsikko, johdanto ja hakukoneteksti: Studion Osioiden sivut (lib/osiosivut.ts). */
+const OSIO = "jalkapalloarkisto/tilastot" as const;
 
-export function generateMetadata(): Metadata {
-  return buildMetadata({ title, description, path });
+export async function generateMetadata(): Promise<Metadata> {
+  const s = await haeOsioSivu(OSIO);
+  return buildMetadata({ title: s.seoTitle, description: s.description, path });
 }
 
 function rowsLabel(tilasto: TilastoDoc): string {
@@ -41,6 +39,7 @@ function rowsLabel(tilasto: TilastoDoc): string {
 }
 
 export default async function MuutTilastotPage() {
+  const { title, lead, description } = await haeOsioSivu(OSIO);
   const tilastot = await sanityFetch<TilastoDoc[]>({
     query: tilastotByCategoryQuery,
     params: { category: "muu" },

@@ -1,4 +1,5 @@
 import { resolveHuuhkajatOsio } from "./huuhkajat-osiot";
+import { OSIOSIVUT, osioSivuId } from "./osiosivut";
 import { mestaruusmaaPath, resolveMestaruusmaa } from "./ulkomaiset-mestarit";
 
 /**
@@ -113,8 +114,7 @@ export const LITMANEN_PATSAS_PATH = `${LITMANEN_PATH}/patsas`;
 
 /**
  * Klubi-osion sivut, joiden reitit hakevat sisältönsä kiinteällä slugilla
- * (app/(public)/klubi/…). Studio lukitsee näiden slugit (sivu.ts): muutos
- * veisi koko sivun 404:ään, eikä redirect auttaisi.
+ * (app/(public)/klubi/…). Ne kuuluvat osioiden sivuihin (lib/osiosivut.ts).
  */
 export const KLUBI_SIVU_SLUG = "klubi";
 export const HALLITUS_SIVU_SLUG = "klubi/hallitus";
@@ -123,13 +123,25 @@ export const PALLOVEIKKAUS_SLUG = "klubi/palloveikkaus";
 /** Tietosuojaseloste: alatunniste ja lomakkeet linkittävät kiinteään osoitteeseen. */
 export const TIETOSUOJA_SLUG = "tietosuoja";
 export const TIETOSUOJA_PATH = `/${TIETOSUOJA_SLUG}`;
-export const KOODIIN_SIDOTUT_SIVUT: readonly string[] = [
-  KLUBI_SIVU_SLUG,
-  HALLITUS_SIVU_SLUG,
-  TOIMINTA_SIVU_SLUG,
-  PALLOVEIKKAUS_SLUG,
-  TIETOSUOJA_SLUG,
-];
+/**
+ * Lukitut sivut: osioiden sivut (30 koodireittiä, lib/osiosivut.ts) ja
+ * tietosuojaseloste. Sivusto hakee ne kiinteällä polulla, joten Studio
+ * lukitsee osoitteen (sivu.ts) ja estää poiston, piilotuksen ja kopioinnin
+ * (sanity/actions/lukittu-sivu.tsx): muutos veisi sivun tekstit koodin
+ * oletuksiin tai 404:ään, eikä ohjaus auttaisi.
+ */
+export const KOODIIN_SIDOTUT_SIVUT: readonly string[] = [...OSIOSIVUT.map((o) => o.slug), TIETOSUOJA_SLUG];
+
+/**
+ * Onko dokumentti lukittu sivu: osoite on listalla JA tunnus on sen kiinteä
+ * tunnus (`sivu-<osoite>`, luonnoksen `drafts.`-etuliite ohitetaan). Pelkkä
+ * osoite ei riitä: tavallinen sivu, jolle isä antaa vahingossa osoitteen
+ * "galleria", jäisi muuten lukituksi eikä osoitetta voisi enää korjata.
+ */
+export function onLukittuSivu(id: string | undefined, slug: string | undefined): boolean {
+  if (!id || !slug || !KOODIIN_SIDOTUT_SIVUT.includes(slug)) return false;
+  return id.replace(/^drafts\./, "") === osioSivuId(slug);
+}
 
 /** Lehtileikkeen `osio` → Litmanen-osion sivu (docs/20). */
 const LEHTILEIKE_OSIO_PATH: Record<string, string> = {

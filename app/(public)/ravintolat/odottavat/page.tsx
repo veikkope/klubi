@@ -5,33 +5,24 @@ import { PageHeader } from "@/components/layout/page-header";
 import { OdottavaRavintolaKortti } from "@/components/odottava-ravintola";
 import { normalizeSearch, siistiHaku } from "@/lib/haku";
 import { rootCrumb } from "@/lib/nav-sections";
-import { VAHIMMAISARVIOIJAT } from "@/lib/ravintola-arvosana";
 import { buildMetadata } from "@/lib/seo";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import { odottavatRavintolatQuery, type OdottavaRavintola } from "@/sanity/lib/queries/ravintolat";
+import { haeOsioSivu } from "@/sanity/lib/osiosivu";
 import { OdottavatHaku, type OdottavaKaupunki } from "./odottavat-haku";
 
 export const revalidate = 3600;
 
-const TITLE = "Odottavat toista arvioijaa";
 const PATH = "/ravintolat/odottavat";
-const LEAD =
-  `Ravintola julkaistaan sivuilla, kun vähintään ${VAHIMMAISARVIOIJAT} klubilaista on arvioinut sen. ` +
-  "Näissä paikoissa on käynyt yksi klubilainen. Kun käyt itse, lähetä arvostelu: " +
-  "ravintola tulee sivuille, kun arvostelusi on hyväksytty.";
-
-const trail = [
-  rootCrumb,
-  { label: "Ravintola-arviot", href: "/ravintolat" },
-  { label: "Arvostele ravintola", href: "/ravintolat/arvostele" },
-  { label: TITLE },
-];
+/** Otsikko, johdanto ja hakukoneteksti: Studion Osioiden sivut (lib/osiosivut.ts). */
+const OSIO = "ravintolat/odottavat" as const;
 
 type PageProps = { searchParams: Promise<Record<string, string | string[] | undefined>> };
 
 export async function generateMetadata(): Promise<Metadata> {
+  const s = await haeOsioSivu(OSIO);
   // Kahden arvioijan sääntö: julkaisemattomat paikat eivät kuulu hakukoneisiin.
-  return buildMetadata({ title: TITLE, description: LEAD, path: PATH, noIndex: true });
+  return buildMetadata({ title: s.seoTitle, description: s.description, path: PATH, noIndex: true });
 }
 
 type Kaupunki = {
@@ -75,13 +66,21 @@ export default async function OdottavatPage({ searchParams }: PageProps) {
   const sp = await searchParams;
   const valittu = typeof sp.kaupunki === "string" ? sp.kaupunki : null;
   const haku = siistiHaku(typeof sp.q === "string" ? sp.q : "");
-  const kaikki = kaupungeittain(
-    await sanityFetch<OdottavaRavintola[]>({
+  const [rivit, s] = await Promise.all([
+    sanityFetch<OdottavaRavintola[]>({
       query: odottavatRavintolatQuery,
       tags: ["ravintola", "kaupunki"],
       fallback: [],
     }),
-  );
+    haeOsioSivu(OSIO),
+  ]);
+  const kaikki = kaupungeittain(rivit);
+  const trail = [
+    rootCrumb,
+    { label: "Ravintola-arviot", href: "/ravintolat" },
+    { label: "Arvostele ravintola", href: "/ravintolat/arvostele" },
+    { label: s.title },
+  ];
 
   const kaupungit: OdottavaKaupunki[] = kaikki.map((k) => ({
     avain: k.avain,
@@ -101,7 +100,7 @@ export default async function OdottavatPage({ searchParams }: PageProps) {
 
   return (
     <Container size="default" className="py-12 sm:py-16">
-      <PageHeader title={TITLE} lead={LEAD} eyebrow="Ravintolat" topic="food" breadcrumbs={trail} />
+      <PageHeader title={s.title} lead={s.lead} eyebrow="Ravintolat" topic="food" breadcrumbs={trail} />
 
       {kaikki.length === 0 ? (
         <p className="mt-10 rounded-sm bg-surface p-6 text-muted">

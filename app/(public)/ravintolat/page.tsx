@@ -25,6 +25,7 @@ import { buildMetadata } from "@/lib/seo";
 import { rootCrumb } from "@/lib/nav-sections";
 import { breadcrumbSchema, collectionPageSchema } from "@/lib/schema-org";
 import { sanityFetch } from "@/sanity/lib/fetch";
+import { haeOsioSivu } from "@/sanity/lib/osiosivu";
 import {
   RAVINTOLAT_PAGE_SIZE,
   buildRavintolatFacets,
@@ -42,10 +43,11 @@ import {
 
 export const revalidate = 3600;
 
-const TITLE = "Ravintola-arviot";
+/** Otsikko, johdanto ja hakukoneteksti: Studion Osioiden sivut (lib/osiosivut.ts). */
+const OSIO = "ravintolat" as const;
 
 /**
- * Ingressi johdetaan datasta, ei kovakoodata.
+ * Ingressi johdetaan datasta, kun Studiossa ei ole kirjoitettu Tiivistelmää.
  *
  * Aiemmin tässä luki "vuodesta 2007", mikä oli väärin: yhdistys perustettiin
  * 2007, mutta vanhin kirjattu ravintolakäynti on vuodelta 1997. Kovakoodattu
@@ -60,8 +62,6 @@ function buildLead(facets: RavintolatFacetData): string {
     "arvosanan sekä osa-arviot ruoasta, hinnasta ja viihtyvyydestä."
   );
 }
-
-const trail = [rootCrumb, { label: TITLE }];
 
 const emptyFacets: RavintolatFacetsRaw = {
   places: [],
@@ -89,16 +89,14 @@ function queryParams(filters: RavintolaFilterValues, facets: RavintolatFacetData
 export async function generateMetadata({
   searchParams,
 }: PageProps): Promise<Metadata> {
-  const filters = parseRavintolaFilters(await searchParams);
+  const [sp, s] = await Promise.all([searchParams, haeOsioSivu(OSIO)]);
+  const filters = parseRavintolaFilters(sp);
   const filtered = hasActiveRavintolaFilters(filters);
   const path = buildRavintolaHref(filters);
 
   return buildMetadata({
-    title: filters.sivu > 1 ? `${TITLE} — sivu ${filters.sivu}` : TITLE,
-    description:
-      "Klubin ravintola-arvostelut: kokonaisarvosana sekä osa-arviot ruoasta, " +
-      "hinnasta ja viihtyvyydestä. Suodata maan, maakunnan, kaupungin " +
-      "ja arvosanan mukaan.",
+    title: filters.sivu > 1 ? `${s.seoTitle} — sivu ${filters.sivu}` : s.seoTitle,
+    description: s.description,
     path,
     // Rajattu näkymä on sama sisältö toisin järjestettynä — ei indeksoitavaksi.
     noIndex: filtered,
@@ -131,7 +129,7 @@ export default async function RavintolatPage({ searchParams }: PageProps) {
   // Alue- tai hakunäkymässä myös toista arvioijaa odottavat (klubilainen kaupungissa:
   // mitä on arvioitu ja missä kannattaa käydä).
   const alueTaiHaku = Boolean(filters.kaupunki || filters.maa || filters.maakunta.length || filters.q);
-  const [items, total, odottavat, odottaviaYhteensa] = await Promise.all([
+  const [items, total, odottavat, odottaviaYhteensa, s] = await Promise.all([
     sanityFetch<RavintolaCardData[]>({
       query: ravintolatDirectoryQuery({
         ordering: filters.jarjesta,
@@ -158,11 +156,13 @@ export default async function RavintolatPage({ searchParams }: PageProps) {
       : Promise.resolve([] as OdottavaRavintola[]),
     // Linkki odottavien listaan otsikon alla (klubilainen bongaa kohteet kaupungeittain).
     sanityFetch<number>({ query: odottavatRavintolatMaaraQuery, tags: ["ravintola"], fallback: 0 }),
+    haeOsioSivu(OSIO),
   ]);
 
   const pageCount = Math.max(1, Math.ceil(total / RAVINTOLAT_PAGE_SIZE));
   const isFiltered = hasActiveRavintolaFilters(filters);
-  const lead = buildLead(facets);
+  const lead = s.lead ?? buildLead(facets);
+  const trail = [rootCrumb, { label: s.title }];
 
   return (
     <>
@@ -170,7 +170,7 @@ export default async function RavintolatPage({ searchParams }: PageProps) {
         schema={[
           breadcrumbSchema(trail),
           collectionPageSchema({
-            title: TITLE,
+            title: s.title,
             description: lead,
             path: "/ravintolat",
             itemCount: total,
@@ -180,7 +180,7 @@ export default async function RavintolatPage({ searchParams }: PageProps) {
 
       <Container size="wide" className="py-12 sm:py-16">
         <PageHeader
-          title={TITLE}
+          title={s.title}
           lead={lead}
           eyebrow="Klubin arvostelut"
           topic="food"

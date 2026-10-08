@@ -59,6 +59,7 @@ Avoimena on yhä (ei valittavissa lomakkeella): kuka on domainin rekisteröijä 
 
 **Toteutettu vaiheessa 2 (docs/24):**
 - **Askel 1, Y38 ja Y10:** Studion sanasto (`sanity/schemas/objects/sanasto.ts`): "Polku (slug)" → "Osoite sivustolla" ja "SEO" → "Hakukoneet ja jako" kymmenessä tyypissä, hakukonekenttien, ison yläkuvan, suodatinosoitteiden ja järjestyskenttien nimet selkokielisiksi. Uutisen ja sivun johdantokenttien (Tiivistelmä, Lyhenne, Ingressi) ohjeet kertovat, missä kukin näkyy; sivun Ingressi näkyy Studiossa vain, jos se on täytetty. Etusivun lohkon voi piilottaa rastilla poistamatta sitä (`piilota`), ja Klubin toiminta -lista on Studiossa samassa järjestyksessä kuin sivustolla. Dataa ei muutettu.
+- **Askel 3, Y22 ja Y25:** Osioiden sivut (`lib/osiosivut.ts`): 30 koodireitin otsikko, johdanto (Tiivistelmä), hakukonetekstit ja jalkapalloarkiston 16 kortin teksti luetaan lukitulta `sivu`-dokumentilta, ja koodin teksti on varana. Studioon Klubi-ryhmä (Esittely, Toiminta, Hallitus, Palloveikkaus, Yhteystiedot) ja Osioiden sivut; "Sivun asetukset" on nyt "Sivuston asetukset", ja Sivut-lista näyttää vain omat sivut. Dokumentit luodaan skriptillä `npm run luo:osiosivut` (28 uutta productionissa, docs/24 P3); näkymä ja meta-kuvaukset eivät muutu.
 
 ---
 

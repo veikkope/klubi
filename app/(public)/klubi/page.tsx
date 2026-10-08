@@ -22,6 +22,7 @@ import {
   webPageSchema,
   type Crumb,
 } from "@/lib/schema-org";
+import { osioSivu, ratkaiseOsioSivu } from "@/lib/osiosivut";
 import { KLUBI_SIVU_SLUG } from "@/lib/path";
 import { buildMetadata, resolveDescription } from "@/lib/seo";
 import { sanityFetch } from "@/sanity/lib/fetch";
@@ -36,8 +37,8 @@ export const revalidate = 3600;
 
 const PATH = "/klubi";
 const SIVU_SLUG = KLUBI_SIVU_SLUG;
-/** Otsikko kun Studiossa ei vielä ole `sivu`-dokumenttia slugilla "klubi". */
-const FALLBACK_TITLE = "Klubi";
+/** Oletustekstit, kun Studiossa ei ole `sivu`-dokumenttia slugilla "klubi" (lib/osiosivut.ts). */
+const OSIO = osioSivu(SIVU_SLUG)!;
 
 /** Alasivut, joihin hub linkittää. Esittely on tämä sivu itse. */
 const subpages = klubiNav.filter((item) => item.href !== PATH);
@@ -53,13 +54,10 @@ function getSivu() {
 
 export async function generateMetadata(): Promise<Metadata> {
   const sivu = await getSivu();
+  const s = ratkaiseOsioSivu(sivu, OSIO);
   return buildMetadata({
-    title: sivu?.seoTitle || sivu?.title || FALLBACK_TITLE,
-    description: resolveDescription(
-      sivu?.seoDescription,
-      sivu?.tiivistelma,
-      sivu?.ingress,
-    ),
+    title: s.seoTitle,
+    description: resolveDescription(s.description),
     path: PATH,
     image: sivu?.hero,
     sisalto: sivu?.body,
@@ -76,8 +74,7 @@ export default async function KlubiPage() {
     }),
   ]);
 
-  const title = sivu?.title || FALLBACK_TITLE;
-  const lead = sivu?.tiivistelma || sivu?.ingress || null;
+  const { title, lead } = ratkaiseOsioSivu(sivu, OSIO);
   const trail: Crumb[] = [rootCrumb, { label: title }];
   const hasBody = Boolean(sivu?.body && sivu.body.length > 0);
 

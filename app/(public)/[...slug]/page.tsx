@@ -14,6 +14,7 @@ import { hasSanity } from "@/sanity/env";
 import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbSchema, webPageSchema } from "@/lib/schema-org";
 import { buildMetadata, resolveDescription } from "@/lib/seo";
+import { OSIOSIVU_SLUGIT } from "@/lib/osiosivut";
 import { ancestorSlugs, joinSlug, toHref } from "@/lib/path";
 import type { SivuWithAncestors } from "@/lib/types";
 
@@ -28,7 +29,8 @@ export async function generateStaticParams(): Promise<Params[]> {
     tags: ["sivu"],
     fallback: [],
   });
-  return slugs.map((slug) => ({ slug: slug.split("/") }));
+  // Osioiden sivut näyttää oma koodireittinsä (lib/osiosivut.ts): ei rinnakkaisia parametreja.
+  return slugs.filter((slug) => !OSIOSIVU_SLUGIT.has(slug)).map((slug) => ({ slug: slug.split("/") }));
 }
 
 async function getSivu(segments: string[]) {

@@ -17,6 +17,7 @@ import {
   personSchema,
   type Crumb,
 } from "@/lib/schema-org";
+import { osioSivu, ratkaiseOsioSivu } from "@/lib/osiosivut";
 import { HALLITUS_SIVU_SLUG } from "@/lib/path";
 import { buildMetadata, resolveDescription } from "@/lib/seo";
 import { sanityFetch } from "@/sanity/lib/fetch";
@@ -31,7 +32,8 @@ export const revalidate = 3600;
 const PATH = "/klubi/hallitus";
 /** Valinnainen johdanto Studiosta — sama kuvio kuin muilla hub-sivuilla. */
 const SIVU_SLUG = HALLITUS_SIVU_SLUG;
-const FALLBACK_TITLE = "Hallitus";
+/** Oletustekstit, kun dokumenttia ei ole (lib/osiosivut.ts). */
+const OSIO = osioSivu(SIVU_SLUG)!;
 
 function getJasenet() {
   return sanityFetch<HallitusJasen[]>({
@@ -47,14 +49,10 @@ function anchorId(id: string): string {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  const sivu = await fetchKlubiSivu(SIVU_SLUG);
+  const s = ratkaiseOsioSivu(await fetchKlubiSivu(SIVU_SLUG), OSIO);
   return buildMetadata({
-    title: sivu?.seoTitle || sivu?.title || FALLBACK_TITLE,
-    description: resolveDescription(
-      sivu?.seoDescription,
-      sivu?.tiivistelma,
-      sivu?.ingress,
-    ),
+    title: s.seoTitle,
+    description: resolveDescription(s.description),
     path: PATH,
   });
 }
@@ -65,8 +63,7 @@ export default async function HallitusPage() {
     getJasenet(),
   ]);
 
-  const title = sivu?.title || FALLBACK_TITLE;
-  const lead = sivu?.tiivistelma || sivu?.ingress || null;
+  const { title, lead } = ratkaiseOsioSivu(sivu, OSIO);
   const trail: Crumb[] = [
     rootCrumb,
     { label: "Klubi", href: "/klubi" },

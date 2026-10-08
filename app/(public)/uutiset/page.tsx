@@ -17,6 +17,7 @@ import { buildMetadata } from "@/lib/seo";
 import { tunnisteHref, tunnisteSlug, TUNNISTEET_POLKU } from "@/lib/tunnisteet";
 import { haeKategoria, haeKaytetytKategoriat, type KategoriaSivulle } from "@/lib/uutinen-categories";
 import { sanityFetch } from "@/sanity/lib/fetch";
+import { haeOsioSivu } from "@/sanity/lib/osiosivu";
 import {
   uutisetHakuQuery,
   uutisetPageQuery,
@@ -39,9 +40,8 @@ export const revalidate = 3600;
 
 const PER_PAGE = 12;
 
-const LEAD =
-  "Klubin tiedotteet, tapahtumat ja ottelutapahtumat sekä jalkapallo- ja " +
-  "ravintola-aiheiset kirjoitukset. Uusimmat ensin.";
+/** Otsikko, johdanto ja hakukoneteksti: Studion Osioiden sivut (lib/osiosivut.ts). */
+const OSIO = "uutiset" as const;
 
 type SearchParams = Record<string, SearchParamValue>;
 
@@ -67,8 +67,8 @@ function pathFor(category: { value: string } | null, page: number, haku = "") {
   });
 }
 
-function titleFor(category: KategoriaSivulle | null, page: number, haku = "") {
-  const aihe = category ? `Uutiset: ${category.label}` : "Uutiset";
+function titleFor(category: KategoriaSivulle | null, page: number, haku = "", perus = "Uutiset") {
+  const aihe = category ? `${perus}: ${category.label}` : perus;
   const base = haku ? `Haku “${haku}”${category ? ` (${category.label})` : ""}` : aihe;
   return page > 1 ? `${base} — sivu ${page}` : base;
 }
@@ -78,12 +78,12 @@ export async function generateMetadata({
 }: {
   searchParams: Promise<SearchParams>;
 }): Promise<Metadata> {
-  const { category, page, haku, terms } = await readParams(await searchParams);
+  const [{ category, page, haku, terms }, s] = await Promise.all([readParams(await searchParams), haeOsioSivu(OSIO)]);
 
   // Hakutulokset eivät ole omaa sisältöä: ei hakukoneisiin, mutta linkit seurataan.
   if (terms.length > 0) {
     return buildMetadata({
-      title: titleFor(category, page, haku),
+      title: titleFor(category, page, haku, s.seoTitle),
       description: `Hakutulokset uutisista haulla “${haku}”.`,
       path: pathFor(category, page, haku),
       noIndex: true,
@@ -91,11 +91,11 @@ export async function generateMetadata({
   }
 
   return buildMetadata({
-    title: titleFor(category, page),
+    title: titleFor(category, page, "", s.seoTitle),
     description: category
       ? category.kuvaus?.trim() ||
         `Lahden Suomalainen Klubi ry:n uutiset aiheesta ${category.label.toLowerCase()}. Uusimmat kirjoitukset ensin.`
-      : LEAD,
+      : s.description,
     // Sivutetut näkymät ovat aitoja osajoukkoja, joten kanoninen osoite
     // osoittaa sivuun itseensä. Niitä ei merkitä noindexiksi, koska
     // `buildMetadata` kytkee noindexin ja nofollow'n yhteen — silloin
@@ -118,7 +118,7 @@ export default async function UutisetPage({
   const { start, end } = pageRange(page, PER_PAGE);
   const hakee = terms.length > 0;
 
-  const [result, kategoriat, hakuTunniste] = await Promise.all([
+  const [result, kategoriat, hakuTunniste, s] = await Promise.all([
     sanityFetch<Paged<UutinenListItem>>({
       query: hakee ? uutisetHakuQuery : uutisetPageQuery,
       params: hakee
@@ -130,6 +130,7 @@ export default async function UutisetPage({
     haeKaytetytKategoriat(),
     // Haku on täsmälleen jokin tunniste ("huuhkajat") → vinkki sen sivulle.
     hakee && tunnisteSlug(haku) ? haeTunniste(tunnisteSlug(haku)) : null,
+    haeOsioSivu(OSIO),
   ]);
 
   const total = result.total;
@@ -139,10 +140,10 @@ export default async function UutisetPage({
   const trail = category
     ? [
         rootCrumb,
-        { label: "Uutiset", href: "/uutiset" },
+        { label: s.title, href: "/uutiset" },
         { label: category.label },
       ]
-    : [rootCrumb, { label: "Uutiset" }];
+    : [rootCrumb, { label: s.title }];
 
   return (
     <>
@@ -150,8 +151,8 @@ export default async function UutisetPage({
         schema={[
           breadcrumbSchema(trail),
           collectionPageSchema({
-            title: titleFor(category, page),
-            description: LEAD,
+            title: titleFor(category, page, "", s.title),
+            description: s.description,
             path,
             itemCount: total,
           }),
@@ -160,8 +161,8 @@ export default async function UutisetPage({
 
       <Container className="pt-12">
         <PageHeader
-          title="Uutiset"
-          lead={LEAD}
+          title={s.title}
+          lead={s.lead}
           breadcrumbs={trail}
           actions={
             <>

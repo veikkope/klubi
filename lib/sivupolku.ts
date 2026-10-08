@@ -11,7 +11,7 @@
  * Puhdas moduuli: testataan komennolla `npm run test:sivupolku`, joka
  * tarkistaa myös, että jokainen app-kansion reitti on listalla.
  */
-import { KOODIIN_SIDOTUT_SIVUT, PALLOVEIKKAUS_SLUG } from "./path";
+import { KOODIIN_SIDOTUT_SIVUT, PALLOVEIKKAUS_SLUG, onLukittuSivu } from "./path";
 
 /** Ensimmäiset polun osat, jotka ovat kokonaan koodin reittejä. */
 export const VARATUT_YLATASON_POLUT: ReadonlySet<string> = new Set([
@@ -42,8 +42,15 @@ export const VARATUT_KLUBIN_POLUT: ReadonlySet<string> = new Set([
 const OSA = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const VARATTU = "Tämä osoite on sivuston oma osio, joten sivu ei näkyisi siinä. Valitse toinen osoite.";
 
-/** `true`, jos polku kelpaa sivulle, muuten suomenkielinen ohje. */
-export function tarkistaSivunPolku(slug: string | undefined): true | string {
+const LUKITUN_OMA =
+  "Tämä osoite kuuluu sivuston omalle sivulle (Studiossa kohdassa Osioiden sivut tai Klubi). " +
+  "Muokkaa sitä siellä, tai valitse tälle sivulle toinen osoite.";
+
+/**
+ * `true`, jos polku kelpaa sivulle, muuten suomenkielinen ohje. Kun `id`
+ * annetaan (Studio), lukitun sivun osoite kelpaa vain sen omalle dokumentille.
+ */
+export function tarkistaSivunPolku(slug: string | undefined, id?: string): true | string {
   if (!slug) return "Osoite on pakollinen.";
   if (slug.length > 96) return "Osoite on liian pitkä (enintään 96 merkkiä).";
   const osat = slug.split("/");
@@ -54,7 +61,9 @@ export function tarkistaSivunPolku(slug: string | undefined): true | string {
     }
   }
   // Lukitut sivut ovat koodireittien sisältöä (esim. klubi/hallitus).
-  if (KOODIIN_SIDOTUT_SIVUT.includes(slug)) return true;
+  if (KOODIIN_SIDOTUT_SIVUT.includes(slug)) {
+    return id === undefined || onLukittuSivu(id, slug) ? true : LUKITUN_OMA;
+  }
   if (VARATUT_YLATASON_POLUT.has(osat[0])) return VARATTU;
   // Palloveikkauksen alasivut (klubi/palloveikkaus/veikkausliiga) näyttää koodin reitti.
   if (slug.startsWith(`${PALLOVEIKKAUS_SLUG}/`) && osat.length === 3) return true;

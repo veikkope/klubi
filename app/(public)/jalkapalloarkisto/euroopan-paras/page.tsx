@@ -4,6 +4,7 @@ import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbSchema } from "@/lib/schema-org";
 import { buildMetadata } from "@/lib/seo";
 import { sanityFetch } from "@/sanity/lib/fetch";
+import { haeOsioSivu } from "@/sanity/lib/osiosivu";
 import {
   arkistoTags,
   tilastotByCategoryQuery,
@@ -17,18 +18,16 @@ import { StatSections } from "../_tilastot/stat-sections";
 export const revalidate = 3600;
 
 const path = "/jalkapalloarkisto/euroopan-paras";
-const title = "Euroopan paras pelaaja";
-const description =
-  "Ballon d'Or eli Euroopan parhaan jalkapalloilijan palkinto vuodesta 1956: voittajat, seurat ja maat vuosittain taulukkona.";
-const lead =
-  "Ranskalainen France Football on palkinnut Euroopan parhaan pelaajan " +
-  "vuodesta 1956. Taulukko listaa voittajat vuosittain seuroineen ja maineen.";
+/** Otsikko, johdanto ja hakukoneteksti: Studion Osioiden sivut (lib/osiosivut.ts). */
+const OSIO = "jalkapalloarkisto/euroopan-paras" as const;
 
-export function generateMetadata(): Metadata {
-  return buildMetadata({ title, description, path });
+export async function generateMetadata(): Promise<Metadata> {
+  const s = await haeOsioSivu(OSIO);
+  return buildMetadata({ title: s.seoTitle, description: s.description, path });
 }
 
 export default async function EuroopanParasPage() {
+  const { title, lead, description } = await haeOsioSivu(OSIO);
   const tilastot = await sanityFetch<TilastoDoc[]>({
     query: tilastotByCategoryQuery,
     params: { category: "ballon-dor" },

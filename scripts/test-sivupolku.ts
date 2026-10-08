@@ -10,7 +10,7 @@ import assert from "node:assert/strict";
 import { existsSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 
-import { KOODIIN_SIDOTUT_SIVUT } from "../lib/path";
+import { KOODIIN_SIDOTUT_SIVUT, onLukittuSivu } from "../lib/path";
 import { VARATUT_KLUBIN_POLUT, VARATUT_YLATASON_POLUT, tarkistaSivunPolku } from "../lib/sivupolku";
 
 let ok = 0;
@@ -29,26 +29,49 @@ test("vapaat polut kelpaavat", () => {
 });
 
 test("lukitut sivut ja palloveikkauksen alasivut kelpaavat", () => {
+  // 30 osioiden sivua (lib/osiosivut.ts) ja tietosuojaseloste.
+  assert.equal(KOODIIN_SIDOTUT_SIVUT.length, 31);
   for (const slug of KOODIIN_SIDOTUT_SIVUT) assert.equal(kelpaa(slug), true, slug);
   assert.equal(kelpaa("tietosuoja"), true);
+  assert.equal(kelpaa("ravintolat/odottavat"), true);
+  assert.equal(kelpaa("uutiset/arkisto"), true);
+  assert.equal(kelpaa("jalkapalloarkisto/mestarit"), true);
   assert.equal(kelpaa("klubi/palloveikkaus/veikkausliiga"), true);
   assert.equal(kelpaa("klubi/palloveikkaus/a/b"), false, "liian syvä");
 });
 
+test("lukitun sivun osoite kelpaa vain sen omalle dokumentille", () => {
+  // Studio antaa tunnuksen: tavallinen sivu, jolla on osion osoite, ei lukitu
+  // eikä jää jumiin, vaan saa ohjeen valita toisen osoitteen.
+  assert.equal(tarkistaSivunPolku("galleria", "sivu-galleria"), true);
+  assert.equal(tarkistaSivunPolku("galleria", "drafts.sivu-galleria"), true);
+  assert.equal(tarkistaSivunPolku("klubi/hallitus", "sivu-klubi-hallitus"), true);
+  assert.equal(tarkistaSivunPolku("tietosuoja", "sivu-tietosuoja"), true);
+  assert.match(String(tarkistaSivunPolku("galleria", "3f2a-uusi-sivu")), /sivuston omalle sivulle/);
+  assert.match(String(tarkistaSivunPolku("tietosuoja", "drafts.3f2a")), /sivuston omalle sivulle/);
+  assert.equal(onLukittuSivu("sivu-galleria", "galleria"), true);
+  assert.equal(onLukittuSivu("drafts.sivu-uutiset-arkisto", "uutiset/arkisto"), true);
+  assert.equal(onLukittuSivu("3f2a-uusi-sivu", "galleria"), false);
+  assert.equal(onLukittuSivu("sivu-galleria", "galleria-2"), false);
+  assert.equal(onLukittuSivu("sivu-english", "english"), false);
+  assert.equal(onLukittuSivu(undefined, "galleria"), false);
+});
+
 test("koodin reitit on varattu koko polulta", () => {
+  // Osioiden sivut itse ovat lukittuja (kelpaavat), mutta niiden alle ei voi tehdä sivua.
   for (const slug of [
-    "uutiset",
     "uutiset/oma",
-    "ottelut",
+    "ottelut/2026",
     "blogspot",
     "jalkapalloarkisto/historia",
-    "klubi/yhteystiedot",
+    "klubi/yhteystiedot/kartta",
     "klubi/toiminta/matkailu",
     "klubi/hallitus/2026",
+    "studio",
   ]) {
     assert.equal(kelpaa(slug), false, slug);
   }
-  assert.match(String(tarkistaSivunPolku("ottelut")), /sivuston oma osio/);
+  assert.match(String(tarkistaSivunPolku("ottelut/2026")), /sivuston oma osio/);
 });
 
 test("muoto", () => {

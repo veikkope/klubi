@@ -4,6 +4,7 @@ import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbSchema } from "@/lib/schema-org";
 import { buildMetadata } from "@/lib/seo";
 import { sanityFetch } from "@/sanity/lib/fetch";
+import { haeOsioSivu } from "@/sanity/lib/osiosivu";
 import {
   arkistoTags,
   tilastotByCategoryQuery,
@@ -17,18 +18,16 @@ import { StatSections } from "../_tilastot/stat-sections";
 export const revalidate = 3600;
 
 const path = "/jalkapalloarkisto/mestarit";
-const title = "Suomen mestarit";
-const description =
-  "Suomen jalkapallon mestaruuden voittaneet seurat vuosi vuodelta — mestaruussarjan ja Veikkausliigan voittajat yhdessä taulukossa.";
-const lead =
-  "Suomen mestaruudesta on pelattu vuodesta 1908. Taulukot kokoavat " +
-  "mestaruuden voittaneet seurat vuosittain sekä seurojen kokonaismäärät.";
+/** Otsikko, johdanto ja hakukoneteksti: Studion Osioiden sivut (lib/osiosivut.ts). */
+const OSIO = "jalkapalloarkisto/mestarit" as const;
 
-export function generateMetadata(): Metadata {
-  return buildMetadata({ title, description, path });
+export async function generateMetadata(): Promise<Metadata> {
+  const s = await haeOsioSivu(OSIO);
+  return buildMetadata({ title: s.seoTitle, description: s.description, path });
 }
 
 export default async function MestaritPage() {
+  const { title, lead, description } = await haeOsioSivu(OSIO);
   const tilastot = await sanityFetch<TilastoDoc[]>({
     query: tilastotByCategoryQuery,
     params: { category: "champions" },

@@ -12,36 +12,39 @@ import {
 import { breadcrumbSchema, collectionPageSchema } from "@/lib/schema-org";
 import { buildMetadata } from "@/lib/seo";
 import { haeTyhjatOsiot } from "@/sanity/lib/tyhjat-osiot";
+import { haeOsioSivu } from "@/sanity/lib/osiosivu";
 import { rootCrumb } from "@/lib/nav-sections";
 
 export const revalidate = 3600;
 
-const title = "Galleria";
-const lead =
-  "Kuvia Lahden Suomalainen Klubi ry:n tapahtumista, retkistä ja kohokohdista vuosien varrelta. Albumit on järjestetty uusimmasta vanhimpaan.";
-
-const trail = [rootCrumb, { label: title }];
+/** Otsikko, johdanto ja hakukoneteksti: Studion Osioiden sivut (lib/osiosivut.ts). */
+const OSIO = "galleria" as const;
 
 /** Ensimmäinen rivi on näkyvissä heti — sen kuvat eivät saa olla lazy. */
 const EAGER_COUNT = 3;
 
 export async function generateMetadata(): Promise<Metadata> {
   // Tyhjä osio ei näy valikossa eikä sitemapissa, eikä sitä indeksoida (lib/osiot.ts).
-  const tyhja = (await haeTyhjatOsiot()).has("/galleria");
+  const [tyhjat, s] = await Promise.all([haeTyhjatOsiot(), haeOsioSivu(OSIO)]);
+  const tyhja = tyhjat.has("/galleria");
   return buildMetadata({
-    title,
-    description: lead,
+    title: s.seoTitle,
+    description: s.description,
     path: "/galleria",
     noIndex: tyhja,
   });
 }
 
 export default async function GalleriaPage() {
-  const albums = await sanityFetch<GalleriaAlbumCard[]>({
-    query: galleriaAlbumitQuery,
-    tags: ["galleriaAlbumi"],
-    fallback: [],
-  });
+  const [albums, s] = await Promise.all([
+    sanityFetch<GalleriaAlbumCard[]>({
+      query: galleriaAlbumitQuery,
+      tags: ["galleriaAlbumi"],
+      fallback: [],
+    }),
+    haeOsioSivu(OSIO),
+  ]);
+  const trail = [rootCrumb, { label: s.title }];
 
   return (
     <>
@@ -49,8 +52,8 @@ export default async function GalleriaPage() {
         schema={[
           breadcrumbSchema(trail),
           collectionPageSchema({
-            title,
-            description: lead,
+            title: s.title,
+            description: s.description,
             path: "/galleria",
             itemCount: albums.length,
           }),
@@ -58,7 +61,7 @@ export default async function GalleriaPage() {
       />
 
       <Container size="wide" className="pt-10 sm:pt-14">
-        <PageHeader title={title} lead={lead} breadcrumbs={trail} />
+        <PageHeader title={s.title} lead={s.lead} breadcrumbs={trail} />
       </Container>
 
       <Container size="wide" className="py-12 sm:py-16">

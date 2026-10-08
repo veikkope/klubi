@@ -59,10 +59,9 @@ toimii niiden varassa. Kehittäjä hoitaa ne.
     muutos (⋯ → **Hylkää muutokset**).
   - **Ajastetut uutiset:** uutiset, joiden julkaisuaika on tulevaisuudessa
   - **Vaatii tarkistuksen (kaikki):** migraation merkitsemät dokumentit yhdessä listassa
-- **Sivun asetukset**
+- **Sivuston asetukset**
   - **Etusivu:** etusivun yläosa (pääjuttu, pikalinkit) ja lohkot
   - **Navigaatio:** yläpalkin linkit
-  - **Yhteystiedot:** osoite, sähköposti, puhelin ja some. Näkyvät footerissa ja yhteystietosivulla
   - **Varmuuskopiot:** automaattiset viikkokopiot ja poistettujen palautus (ks. alla)
 - **Tarkistettavat:** migraation merkitsemät dokumentit tyypeittäin (ks. alla)
 - **Uutiset:** tiedotteet ja blogikirjoitukset, myös blogin kaikki 530 kirjoitusta vuodesta 2007
@@ -70,11 +69,21 @@ toimii niiden varassa. Kehittäjä hoitaa ne.
 - **Kommentit ja veikkaukset:** jäsenten viestit uusin ensin sekä piilotetut
 - **Ottelut:** etusivun ja /ottelut-sivun otteluohjelma
 - **Tapahtumat:** klubin tulevat tapahtumat
-- **Galleria-albumit** ja **Sivut** (esim. säännöt ja tietosuojaseloste)
-- **Klubin toiminta:** vappu, mölkky, matkat ym. vuosimerkintöineen
-- **Hallitus**
+- **Galleria-albumit**
+- **Sivut:** omat sivusi (esim. säännöt ja tietosuojaseloste). Osioiden sivut ja
+  palloveikkauksen sivut ovat omissa kohdissaan alla.
+- **Klubi:** sama rakenne kuin sivuston Klubi-osiossa
+  - **Esittely:** Klubi-sivun teksti ja kuva
+  - **Toiminta:** Toiminta-sivun otsikko ja johdanto sekä **Toimintamuodot** (vappu,
+    mölkky, matkat ym. vuosimerkintöineen)
+  - **Hallitus:** Hallitus-sivun otsikko ja johdanto, **Nykyinen hallitus** ja **Entiset jäsenet**
+  - **Palloveikkaus:** Palloveikkaus-sivu ja **Veikkausten alasivut**
+  - **Yhteystiedot:** **Osoite, sähköposti ja some** (näkyvät alatunnisteessa ja
+    yhteystietosivulla) sekä Yhteystiedot-sivun otsikko ja johdanto
 - **Ravintolat:** ravintolat, **odottavat arvostelut**, klubilaisten arvosanat ja kaupungit
 - **Jalkapalloarkisto:** tilastot, arvokisat, pelaajat ja stadionit
+- **Osioiden sivut:** listasivujen otsikot, johdannot ja hakukonetekstit (Uutiset ja
+  tapahtumat, Ravintolat, Jalkapalloarkisto). Ks. *Osioiden sivut* alla.
 
 ## Yleiset toimenpiteet
 
@@ -327,6 +336,36 @@ leveä, tärkein kohta keskellä. Kuvaan ei tarvitse kirjoittaa tapahtuman nime�
 aikaa, koska otsikko näkyy esikatselussa kuvan vieressä. Lisätietoa kohdassa
 *Jakokuva* uutisohjeen alla.
 
+### Osioiden sivut: otsikko, johdanto ja hakukoneteksti
+
+Sivuston listasivuilla (esim. /uutiset, /tapahtumat, /ravintolat ja jalkapalloarkiston
+osiot) lista tai taulukot tulevat automaattisesti. Otsikkoa, otsikon alla näkyvää
+johdantoa ja hakukonetekstiä muokkaat itse:
+
+1. **Osioiden sivut** → valitse ryhmä ja sivu, esim. **Uutiset ja tapahtumat → Tapahtumat**.
+   Klubin sivut ovat kohdassa **Klubi** (esim. **Klubi → Hallitus → Hallitus-sivun
+   otsikko ja johdanto**).
+2. Muokkaa **Otsikkoa** ja **Tiivistelmää sivun alussa**. Tiivistelmä näkyy otsikon alla
+   johdantona. Listasivuilla se on pakollinen.
+3. Välilehdellä **Hakukoneet ja jako** voit kirjoittaa tekstin, joka näkyy Googlen
+   hakutuloksessa (**Kuvaus hakutuloksissa**). Jos jätät sen tyhjäksi, Google näyttää
+   Tiivistelmän.
+4. **Julkaise**. Muutos näkyy sivulla viimeistään minuutissa.
+
+Hyvä tietää:
+- Lomakkeen alussa oleva sininen laatikko kertoo, mikä sivulle tulee automaattisesti.
+- Osion sivua ei voi poistaa, piilottaa eikä kopioida, eikä sen osoitetta voi muuttaa:
+  sivusto hakee sen osoitteen perusteella.
+- Välilehtien ja arkiston etusivun korttien **otsikot** pysyvät ennallaan, koska ne ovat
+  valikkonimiä.
+- Jalkapalloarkiston osion sivulla on lisäksi kenttä **Teksti arkiston etusivun
+  kortissa**: yksi lyhyt virke, joka näkyy Jalkapalloarkiston etusivulla osion kortissa.
+- **Ravintola-arviot:** jos Tiivistelmä on tyhjä, sivusto kirjoittaa johdannon itse
+  ravintoloiden määrästä (esim. "Klubi on arvioinut 573 ravintolaa vuodesta 1997
+  alkaen…"). Kirjoittamasi teksti korvaa sen, eikä määrä silloin päivity itsestään.
+- Kun valitset uutislistalla kategorian, otsikko ja kuvaus tulevat kategoriasta
+  (**Uutiskategoriat**).
+
 ### Uusi sivu (esim. säännöt)
 
 1. **Sivut** → **+**.
@@ -380,7 +419,7 @@ Etusivun yläosa päivittyy itsestään: siinä näkyy aina **uusin juttu** ison
 ja oikealla **Seuraavaksi**-kortissa seuraava Huuhkajien ottelu laskurin kanssa
 ja seuraava klubin tapahtuma. Kun julkaiset uutisen, se nousee yläosaan.
 
-1. **Sivun asetukset → Etusivu → Yläosa**.
+1. **Sivuston asetukset → Etusivu → Yläosa**.
 2. Halutessasi:
    - **Pääjuttu:** valitse juttu, jos haluat nostaa jonkin muun kuin uusimman
      (esim. vuosikokouskutsun). Anna **Pääjuttu näkyy asti** -päivä, niin yläosa
@@ -403,12 +442,12 @@ ja seuraava klubin tapahtuma. Kun julkaiset uutisen, se nousee yläosaan.
 
 ### Yhteystiedot
 
-**Sivun asetukset → Yhteystiedot** → muokkaa → **Julkaise**. Muutos näkyy footerissa ja
+**Klubi → Yhteystiedot → Osoite, sähköposti ja some** → muokkaa → **Julkaise**. Muutos näkyy footerissa ja
 yhteystietosivulla.
 
 ### Valikon muokkaaminen
 
-1. **Sivun asetukset → Navigaatio**.
+1. **Sivuston asetukset → Navigaatio**.
 2. Muokkaa linkkiä: klikkaa sitä ja muuta **Otsikko** tai **Linkki**.
 3. Uusi linkki: **+** listan alla. Linkki alkaa `/` (oma sivu) tai `https://` (muu sivusto).
    Oman sivun linkki on sivun **Osoite sivustolla** kauttaviivalla alussa: sivu, jonka osoite on
@@ -422,24 +461,28 @@ Päälinkkejä enintään 7.
 
 ### Hallituksen jäsenet
 
-Uusi jäsen: **Hallitus** → **+** → **Nimi**, **Rooli** (esim. Sihteeri) ja
+Uusi jäsen: **Klubi → Hallitus → Nykyinen hallitus** → **+** → **Nimi**, **Rooli** (esim. Sihteeri) ja
 **Järjestys hallitussivulla** (1 = ensimmäisenä, yleensä puheenjohtaja) → **Julkaise**. Kuva, esittely, sähköposti ja
 puhelin ovat vapaaehtoisia.
 
 Jäsen vaihtuu: avaa vanha jäsen, ota rasti pois kohdasta **Nykyinen jäsen** ja
-**Julkaise**. Älä poista jäsentä: hän siirtyy listaan **Hallitus → Entiset jäsenet**
-eikä näy enää hallitussivulla. Lisää sitten uusi jäsen.
+**Julkaise**. Älä poista jäsentä: hän siirtyy listaan **Klubi → Hallitus → Entiset
+jäsenet** eikä näy enää hallitussivulla. Lisää sitten uusi jäsen.
+
+Hallitus-sivun otsikon alle voit kirjoittaa johdannon: **Klubi → Hallitus →
+Hallitus-sivun otsikko ja johdanto** → **Tiivistelmä sivun alussa** → **Julkaise**.
 
 ### Klubin toiminta: uusi vuosi
 
-1. **Klubin toiminta** → valitse toiminta (esim. Mölkky).
+1. **Klubi → Toiminta → Toimintamuodot** → valitse toiminta (esim. Mölkky).
 2. Välilehti **Vuosittain** → **+**.
 3. Täytä **Vuosi**. Muut kentät ovat vapaaehtoisia. **Monesko kerta** on tavallinen
    luku (esim. 37), ja sivulla se näkyy muodossa (37.).
 4. **Julkaise**. Uusin vuosi näkyy sivulla ensimmäisenä.
 
 Toimintamuotojen järjestys Toiminta-sivulla määräytyy kentästä **Järjestys listassa**
-(pienempi luku ylempänä). Studion Klubin toiminta -lista on samassa järjestyksessä.
+(pienempi luku ylempänä). Studion Toimintamuodot-lista on samassa järjestyksessä.
+Toiminta-sivun johdanto: **Klubi → Toiminta → Toiminta-sivun otsikko ja johdanto**.
 
 ### Ravintolan arvosana ja klubilaisten pisteet
 
@@ -601,12 +644,13 @@ päätyvät kaikki taulukot, joiden kategoria on *Maailman paras avaus*.
 
 ### Palloveikkauksen sivut
 
-Jokaisella veikkauksella on oma sivunsa: **Sivut → Maaottelujen tulosveikkaus,
-Arvokisaveikkaus, Veikkausliigan palloveikkaus**. Säännöt kirjoitetaan sivun
+Jokaisella veikkauksella on oma sivunsa: **Klubi → Palloveikkaus → Veikkausten
+alasivut → Maaottelujen tulosveikkaus, Arvokisaveikkaus, Veikkausliigan palloveikkaus**. Säännöt kirjoitetaan sivun
 pääsisältöön, ja veikkauksen taulukot lisätään sivun kohtaan **Taulukot** (uusi kausi:
 tee taulukko ja lisää se listan alkuun). Palloveikkaus-sivu (`/klubi/palloveikkaus`)
-listaa veikkaukset automaattisesti. Uusi veikkaus tehdään luomalla uusi sivu, jonka
-osoite sivustolla alkaa `klubi/palloveikkaus/`, esimerkiksi `klubi/palloveikkaus/mestarisarja`.
+listaa veikkaukset automaattisesti. Uusi veikkaus tehdään luomalla uusi sivu
+(**Veikkausten alasivut → +**), jonka osoite sivustolla alkaa `klubi/palloveikkaus/`,
+esimerkiksi `klubi/palloveikkaus/mestarisarja`.
 
 ### Taulukon muokkaaminen (tilastot, palloveikkaus, mölkky)
 
@@ -694,12 +738,14 @@ saman listoissa.
 
 Näitä ei ollut vanhalla sivulla. Tarkista, että ne on täytetty:
 
-- [ ] Yhteystiedot: osoite, **sähköposti**, puhelin (Sivun asetukset → Yhteystiedot)
-- [ ] Y-tunnus ja IBAN (Sivun asetukset → Yhteystiedot)
-- [ ] Sosiaalinen media (Sivun asetukset → Yhteystiedot)
-- [ ] Hallituksen jäsenet (Hallitus)
+- [ ] Yhteystiedot: osoite, **sähköposti**, puhelin (Klubi → Yhteystiedot → Osoite, sähköposti ja some)
+- [ ] Y-tunnus ja IBAN (Klubi → Yhteystiedot → Osoite, sähköposti ja some)
+- [ ] Sosiaalinen media (Klubi → Yhteystiedot → Osoite, sähköposti ja some)
+- [ ] Hallituksen jäsenet (Klubi → Hallitus → Nykyinen hallitus)
+- [ ] Hallitus- ja Toiminta-sivun johdanto, vapaaehtoinen (Klubi → Hallitus → Hallitus-sivun
+  otsikko ja johdanto; Klubi → Toiminta → Toiminta-sivun otsikko ja johdanto)
 - [ ] Tulevat tapahtumat (Tapahtumat)
-- [ ] Etusivun kuvat: taustakuva ja Klubista-kuva (Sivun asetukset → Etusivu)
+- [ ] Etusivun kuvat: taustakuva ja Klubista-kuva (Sivuston asetukset → Etusivu)
 - [ ] Tietosuojaselosteen vahvistus hallitukselta (Sivut → Tietosuojaseloste)
 
 ## Tietosuojapyynnöt
@@ -720,24 +766,26 @@ Jos joku pyytää poistamaan tietonsa (kommentti, veikkaus tai arvostelu kuvinee
 | Linkki ei toimi | Ulkoinen linkki alkaa `https://`, sivuston oma osoite `/` (esim. `/uutiset`). Keltainen varoitus "Sivustolla ei ole sivua…" kertoo kirjoitusvirheestä tai julkaisemattomasta sivusta |
 | Jotain meni pieleen (alle 3 päivää sitten) | Kellokuvake → versiohistoria → palauta edellinen versio |
 | Jotain meni pieleen (yli 3 päivää sitten) | Dokumentin **⋯** → **Palauta varmuuskopiosta** → valitse viikko → tarkista → **Julkaise** |
-| Poistin vahingossa | **Sivun asetukset → Varmuuskopiot** → uusin kopio → välilehti **Palauta poistettu** |
+| Poistin vahingossa | **Sivuston asetukset → Varmuuskopiot** → uusin kopio → välilehti **Palauta poistettu** |
 
 ## Mitä EI saa tehdä
 
-- **Älä poista** Sivun asetuksien dokumentteja. Niitä ei voi poistaa eikä niiden julkaisua
+- **Älä poista** Sivuston asetusten eikä Klubin Osoite, sähköposti ja some -dokumentteja. Niitä ei voi poistaa eikä niiden julkaisua
   perua, mutta jos jokin menee pieleen, soita kehittäjälle.
 - **Älä muuta julkaistun sivun Osoitetta sivustolla**, koska se rikkoo linkit. Studio varoittaa
   keltaisella, jos osoite poikkeaa julkaistusta. Jos muutos on pakko tehdä, kerro
-  kehittäjälle, joka tekee ohjauksen. Klubin pääsivujen (Klubi, Hallitus, Toiminta,
-  Palloveikkaus), tietosuojaselosteen ja Jari Litmasen osoitteet on lukittu kokonaan, koska
-  sivusto hakee ne osoitteen perusteella. Klubin pääsivuja ja tietosuojaselostetta ei voi
-  myöskään poistaa eikä piilottaa, mutta niiden sisältöä saa muokata vapaasti.
+  kehittäjälle, joka tekee ohjauksen. Osioiden sivujen (esim. Uutiset, Ravintola-arviot,
+  jalkapalloarkiston osiot), Klubin pääsivujen (Esittely, Toiminta, Hallitus,
+  Palloveikkaus, Yhteystiedot), tietosuojaselosteen ja Jari Litmasen osoitteet on lukittu
+  kokonaan, koska sivusto hakee ne osoitteen perusteella. Osioiden sivuja, Klubin
+  pääsivuja ja tietosuojaselostetta ei voi myöskään poistaa, piilottaa eikä kopioida, mutta
+  niiden sisältöä saa muokata vapaasti.
 - **Älä muuta** kenttiä **Vanha osoite** tai **Alkuperäinen Blogspot-kirjoitus**. Vanhat linkit ohjautuvat niiden varassa.
 
 ## Varmuuskopiot
 
 Sivusto tekee joka maanantaiyö automaattisesti varmuuskopion kaikesta julkaistusta
-sisällöstä (tekstit ja tiedot). Kopiot näkyvät kohdassa **Sivun asetukset →
+sisällöstä (tekstit ja tiedot). Kopiot näkyvät kohdassa **Sivuston asetukset →
 Varmuuskopiot**, ja 12 uusinta säilyy (noin kolme kuukautta).
 
 - Sinun ei tarvitse tehdä mitään. Kopioita ei voi muokata eikä poistaa käsin.
@@ -762,7 +810,7 @@ siihen):
 
 ### Poistetun dokumentin palautus
 
-1. **Sivun asetukset → Varmuuskopiot** → avaa uusin kopio, jossa dokumentti vielä oli.
+1. **Sivuston asetukset → Varmuuskopiot** → avaa uusin kopio, jossa dokumentti vielä oli.
 2. Valitse yläreunasta välilehti **Palauta poistettu**. Siinä ovat kaikki kopion jälkeen
    poistetut dokumentit.
 3. Hae nimellä ja paina **Palauta** → **Avaa** → tarkista → **Julkaise**.

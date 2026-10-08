@@ -1,4 +1,5 @@
 import type { SectionNavItem } from "@/components/layout/section-nav";
+import { osioSivu } from "@/lib/osiosivut";
 import { PALLOVEIKKAUS_SLUG, toHref } from "@/lib/path";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import { klubiAlasivutQuery, type KlubiAlasivu } from "@/sanity/lib/queries/klubi";
@@ -11,7 +12,8 @@ import { klubiAlasivutQuery, type KlubiAlasivu } from "@/sanity/lib/queries/klub
 
 export const PALLOVEIKKAUS_PATH = "/klubi/palloveikkaus";
 export { PALLOVEIKKAUS_SLUG };
-export const PALLOVEIKKAUS_TITLE = "Palloveikkaus";
+/** Murupolun ja välilehden nimi alasivuilla: koodin oletus (lib/osiosivut.ts). */
+export const PALLOVEIKKAUS_TITLE = osioSivu(PALLOVEIKKAUS_SLUG)!.oletus.title;
 
 export function fetchVeikkaukset() {
   return sanityFetch<KlubiAlasivu[]>({

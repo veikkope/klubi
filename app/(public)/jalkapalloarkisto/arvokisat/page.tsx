@@ -17,6 +17,7 @@ import { arkistoNav, rootCrumb } from "@/lib/nav-sections";
 import { breadcrumbSchema, collectionPageSchema } from "@/lib/schema-org";
 import { buildMetadata } from "@/lib/seo";
 import { sanityFetch } from "@/sanity/lib/fetch";
+import { haeOsioSivu } from "@/sanity/lib/osiosivu";
 import {
   KISATYYPIT,
   arvokisaMitalitaulukotQuery,
@@ -33,21 +34,14 @@ import { StatSections } from "../_tilastot/stat-sections";
 export const revalidate = 3600;
 
 const PATH = "/jalkapalloarkisto/arvokisat";
-const TITLE = "Arvokisat";
-const LEAD =
-  "Jalkapallon arvokisat kisa kerrallaan: isäntämaat, voittajat ja Suomen sijoitus. " +
-  "Kisat on ryhmitelty kisatyypin mukaan, uusin vuosi ensin.";
-
-const trail = [
-  rootCrumb,
-  { label: "Jalkapalloarkisto", href: "/jalkapalloarkisto" },
-  { label: TITLE },
-];
+/** Otsikko, johdanto ja hakukoneteksti: Studion Osioiden sivut (lib/osiosivut.ts). */
+const OSIO = "jalkapalloarkisto/arvokisat" as const;
 
 export async function generateMetadata(): Promise<Metadata> {
+  const s = await haeOsioSivu(OSIO);
   return buildMetadata({
-    title: TITLE,
-    description: LEAD,
+    title: s.seoTitle,
+    description: s.description,
     path: PATH,
   });
 }
@@ -68,7 +62,7 @@ function resolveKisatyyppi(item: ArvokisaCard): Kisatyyppi {
 }
 
 export default async function ArvokisatPage() {
-  const [kisatRaw, mitalitaulukot] = await Promise.all([
+  const [kisatRaw, mitalitaulukot, s] = await Promise.all([
     sanityFetch<ArvokisaCard[]>({
       query: arvokisatListQuery,
       tags: ["arvokisa"],
@@ -81,8 +75,14 @@ export default async function ArvokisatPage() {
       tags: ["jalkapalloTilasto", "arvokisa"],
       fallback: [],
     }),
+    haeOsioSivu(OSIO),
   ]);
   const kisat = withSlug(kisatRaw);
+  const trail = [
+    rootCrumb,
+    { label: "Jalkapalloarkisto", href: "/jalkapalloarkisto" },
+    { label: s.title },
+  ];
 
   const groups = groupByKisatyyppi(kisat);
 
@@ -92,8 +92,8 @@ export default async function ArvokisatPage() {
         schema={[
           breadcrumbSchema(trail),
           collectionPageSchema({
-            title: TITLE,
-            description: LEAD,
+            title: s.title,
+            description: s.description,
             path: PATH,
             itemCount: kisat.length,
           }),
@@ -102,8 +102,8 @@ export default async function ArvokisatPage() {
 
       <PageHeader
         eyebrow="Jalkapalloarkisto"
-        title={TITLE}
-        lead={LEAD}
+        title={s.title}
+        lead={s.lead}
         breadcrumbs={trail}
         meta={
           kisat.length > 0 ? (
