@@ -75,7 +75,7 @@ public/                Staattiset tiedostot (favicon, robots, kuvat joita Sanity
 | Blogi → `development` | `npm run migrate:blogspot` (ensimmäinen kerta) · `npm run sync:blogspot` (vain uudet, säilyttää Studion muokkaukset) |
 | Blogin uudet kirjoitukset → `production` | `npm run sync:blogspot:production` (kuivaharjoitus) · `-- --vie` (varmuuskopio + `--missing` + tarkistus) |
 | Generoi redirectit (lukee productionia, vain luku; tarkista `git diff lib/redirects.ts`) | `npm run redirects` |
-| Vie uutta sisältöä `development` → `production` | **Vain lisäys:** `npx sanity dataset import data/migration-<tyyppi>.ndjson --dataset production --missing`. **Ei koskaan `--replace` koko datasettiin**: isä muokkaa productionia (docs/17 §D) |
+| Vie uutta sisältöä `development` → `production` (käyttäjä ajaa itse `!`-etuliitteellä, varmuuskopio ensin) | **Vain lisäys:** `npx sanity dataset import data/migration-<tyyppi>.ndjson --dataset production --missing`. **Ei koskaan `--replace` koko datasettiin**: isä muokkaa productionia (docs/17 §D) |
 | Varmuuskopio productionista | `npm run backup` → `varmuuskopiot/` (gitignoressa, kuvineen). Aina ennen isompaa muutosta. Lisäksi automaattinen viikkokopio Studioon (`/api/varmuuskopio`, docs/17 §D) |
 | Testaa varmuuskopion säännöt | `npm run test:varmuuskopio` |
 | Testaa varmuuskopiosta palauttamisen säännöt (Studion Palauta varmuuskopiosta / Palauta poistettu) | `npm run test:palautus` |
@@ -126,20 +126,12 @@ public/                Staattiset tiedostot (favicon, robots, kuvat joita Sanity
 7. **Uusi dynaaminen reitti:** kun sisältöä ei löydy, kutsu `return ohjaaTaiEiLoydy(polku)` (`sanity/lib/ohjaus.ts`), älä `notFound()`. Näin isän lyhytosoitteet ja muuttuneiden osoitteiden ohjaukset toimivat. Testi (`npm run test:ohjaukset`) valvoo tätä.
 8. **Studio- tai skeemamuutoksen jälkeen aja `npm run savutesti:studio` ennen pushia.** Type-check, yksikkötestit, `sanity schema validate` ja build eivät havaitse Studion ajonaikaisia kaatumisia (8.10.2026 kaksi pääsi tuotantoon); savutesti avaa Studion selaimessa.
 
-## Sub-agenttien käyttö
+## Agentit, skillit ja tuotantomuutokset
 
-Erikoistuneet agentit ovat `.claude/agents/`-kansiossa. Käytä niitä proaktiivisesti:
-
-- **content-audit-agent** — kun pitää tutkia vanhan sivuston sisältöä
-- **ia-sitemap-agent** — URL-rakenne, navigaatio, redirect-suunnittelu
-- **cms-architecture-agent** — Sanity-skeemat ja CMS-päätökset
-- **design-system-agent** — visuaalinen suunta, komponentit, värit, fontit
-- **migration-agent** — vanhan sisällön siirto Sanityyn
-- **seo-agent** — metadata, sitemap, JSON-LD, redirectit
-- **build-implementation-agent** — featuren rakentaminen
-- **editor-ux-agent** — Sanity Studion käytettävyys ja isälle ohjeet
-
-Täydellinen työnkulku: `docs/10-agent-workflow.md`.
+- Klubin omat agentit (`.claude/agents/`): **studio-agent** (skeemat, Studio, ylläpito-ohjeen kortit) ja **design-system-agent** (komponentit, tyyliopas).
+- Yleiset skillit ja **reviewer** tulevat `tyokalut`-pluginista: `tyokalut:julkaisu`, `tyokalut:vie-tuotantoon`, `tyokalut:uusi-sisaltotyyppi`, `tyokalut:paatos`, `tyokalut:retro`. Reviewerin klubikohtainen lista: `docs/runbooks/katselmointi.md`; SEO ja ohjaukset: `docs/runbooks/seo.md`.
+- **Tuotantokomennot ajaa käyttäjä itse `!`-etuliitteellä.** Vartija ja `.claude/settings.json` estävät Claudea ajamasta productioniin kirjoittavia komentoja (`--dataset production`, skriptien `-- --production`, `sync:blogspot:production`, e2e-testit productioniin). Claude tekee kuivaharjoituksen developmentissa, valmistelee komennot ja tarkistaa tuloksen lukemalla (skill `tyokalut:vie-tuotantoon`).
+- Vanha roolijako (8 agenttia): `docs/10-agent-workflow.md` (historiallinen).
 
 ## Mitä EI saa tehdä
 

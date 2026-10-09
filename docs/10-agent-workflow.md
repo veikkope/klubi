@@ -1,5 +1,7 @@
 # 10 — Agenttityönkulku
 
+> **Historiallinen (9.10.2026).** Roolijako korvattiin: klubin omat agentit ovat `studio-agent` ja `design-system-agent`, yleiset skillit ja `reviewer` tulevat `tyokalut`-pluginista. Ks. `CLAUDE.md`.
+
 Tämä projekti hyödyntää Claude Coden **sub-agenttejä**. Jokainen erikoisagentti tuntee oman alueensa parhaat käytännöt ja päivittää oman dokumentaation tiedostonsa.
 
 ## Agentin valinta — vuokaavio

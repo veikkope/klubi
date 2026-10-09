@@ -39,5 +39,8 @@
       "Bash(npx sanity *)",
       "Bash(vercel *)"
     ]
+  },
+  "enabledPlugins": {
+    "tyokalut@smoot": true
   }
 }
