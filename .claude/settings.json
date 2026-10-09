@@ -40,6 +40,14 @@
       "Bash(vercel *)"
     ]
   },
+  "extraKnownMarketplaces": {
+    "smoot": {
+      "source": {
+        "source": "github",
+        "repo": "veikkope/claude-tyokalut"
+      }
+    }
+  },
   "enabledPlugins": {
     "tyokalut@smoot": true
   }
