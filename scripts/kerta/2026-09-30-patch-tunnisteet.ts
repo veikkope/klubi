@@ -3,10 +3,10 @@
  * alkuperäisistä tunnisteista (`blogspot.tunnisteet`), docs/14 §3.
  *
  * Ajo:
- *   npm run patch:tunnisteet                             # development, kuivaharjoitus
- *   npm run patch:tunnisteet -- --vie                    # development, kirjoitus
- *   npm run patch:tunnisteet -- --production             # production, kuivaharjoitus
- *   npm run patch:tunnisteet -- --production --vie       # varmuuskopio + kirjoitus + tarkistus
+ *   npx tsx scripts/kerta/2026-09-30-patch-tunnisteet.ts                             # development, kuivaharjoitus
+ *   npx tsx scripts/kerta/2026-09-30-patch-tunnisteet.ts --vie                    # development, kirjoitus
+ *   npx tsx scripts/kerta/2026-09-30-patch-tunnisteet.ts --production             # production, kuivaharjoitus
+ *   npx tsx scripts/kerta/2026-09-30-patch-tunnisteet.ts --production --vie       # varmuuskopio + kirjoitus + tarkistus
  *
  * Säännöt (CLAUDE.md, docs/17 §D):
  *  - **Vain puuttuvat.** Kosketaan vain uutisiin, joilla `tunnisteet` puuttuu
@@ -23,8 +23,8 @@ import { existsSync } from "node:fs";
 
 import { createClient } from "@sanity/client";
 
-import { siistiTunnisteLista, TUNNISTEITA_MAX } from "../lib/tunnisteet";
-import { sanityWriteToken } from "./lib/sanity-token";
+import { siistiTunnisteLista, TUNNISTEITA_MAX } from "../../lib/tunnisteet";
+import { sanityWriteToken } from "../lib/sanity-token";
 
 type Rivi = { _id: string; _rev: string; title?: string; alkuperaiset: string[] };
 
@@ -69,7 +69,7 @@ async function main() {
   if (patchit.length > 5) console.log(`  … ja ${patchit.length - 5} muuta`);
 
   if (!vie) {
-    console.log(`\nKuivaharjoitus: mitään ei kirjoitettu. Kirjoita: npm run patch:tunnisteet -- ${dataset === "production" ? "--production " : ""}--vie`);
+    console.log(`\nKuivaharjoitus: mitään ei kirjoitettu. Kirjoita: npx tsx scripts/kerta/2026-09-30-patch-tunnisteet.ts ${dataset === "production" ? "--production " : ""}--vie`);
     return;
   }
 

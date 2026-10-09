@@ -5,7 +5,7 @@
  * karsinnan että Kansojen liigan. Migraatio jakoi sivun kahdeksi
  * dokumentiksi, joilla on sama `legacyUrl`: siitä parit tunnistetaan.
  * Käytetään tuonnissa (`import-huuhkajat.ts`) ja olemassa olevan datan
- * korjauksessa (`patch-kansojen-liiga.ts`).
+ * korjauksessa (`scripts/kerta/2026-10-06-patch-kansojen-liiga.ts`).
  */
 import { osioLiittyyKauteen } from "../../lib/huuhkajat-osiot";
 

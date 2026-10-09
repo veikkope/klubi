@@ -137,11 +137,11 @@ voi lisätä tunnisteita myös uusiin uutisiin, ja blogin alkuperäinen lista s�
 
 - **Tuonti:** `import-blogspot.ts` täyttää kentän (`siistiTunnisteLista`:
   välilyönnit siistitty, saman slugin toistot pois).
-- **Jo tuodut uutiset:** `npm run patch:tunnisteet` kopioi
+- **Jo tuodut uutiset:** `npx tsx scripts/kerta/2026-09-30-patch-tunnisteet.ts` kopioi
   `blogspot.tunnisteet` → `tunnisteet` niille, joilta kenttä puuttuu
   (`setIfMissing`, myös luonnokset). Oletuksena kuivaharjoitus, `-- --vie` kirjoittaa.
   Development täytetty 30.9.2026 (525 uutista, 671 tunnistetta).
-- **Production:** `npm run patch:tunnisteet -- --production` (kuivaharjoitus), sitten
+- **Production:** `npx tsx scripts/kerta/2026-09-30-patch-tunnisteet.ts --production` (kuivaharjoitus), sitten
   `-- --production --vie` (varmuuskopio ensin). **Aja vasta, kun kentän sisältävä
   Studio on julkaistu Verceliin**, muuten vanha Studio näyttää kentän tuntemattomana.
   Production täytetty 30.9.2026 julkaisun jälkeen (525 uutista, varmuuskopio

@@ -4,10 +4,10 @@
  * eikä profiiliin.
  *
  * Ajo:
- *   npm run patch:litmanen                         # development, kuivaharjoitus
- *   npm run patch:litmanen -- --vie                # development, kirjoitus
- *   npm run patch:litmanen -- --production         # production, kuivaharjoitus
- *   npm run patch:litmanen -- --production --vie   # varmuuskopio + kirjoitus
+ *   npx tsx scripts/kerta/2026-10-01-patch-litmanen.ts                         # development, kuivaharjoitus
+ *   npx tsx scripts/kerta/2026-10-01-patch-litmanen.ts --vie                # development, kirjoitus
+ *   npx tsx scripts/kerta/2026-10-01-patch-litmanen.ts --production         # production, kuivaharjoitus
+ *   npx tsx scripts/kerta/2026-10-01-patch-litmanen.ts --production --vie   # varmuuskopio + kirjoitus
  *
  * Säännöt (CLAUDE.md, docs/17 §D): dokumenttikohtaiset patchit `ifRevisionId`-
  * ehdolla samassa transaktiossa, productioniin aina varmuuskopion jälkeen.
@@ -18,8 +18,8 @@ import { existsSync } from "node:fs";
 
 import { createClient } from "@sanity/client";
 
-import { LITMANEN_PATH } from "../lib/path";
-import { sanityWriteToken } from "./lib/sanity-token";
+import { LITMANEN_PATH } from "../../lib/path";
+import { sanityWriteToken } from "../lib/sanity-token";
 
 const NAV_ID = "navigaatio";
 const PELAAJA_ID = "pelaaja-jari-litmanen";
@@ -83,7 +83,7 @@ async function main() {
   console.log(muutokset.join("\n"));
 
   if (!vie) {
-    console.log(`\nKuivaharjoitus: mitään ei kirjoitettu. Kirjoita: npm run patch:litmanen -- ${dataset === "production" ? "--production " : ""}--vie`);
+    console.log(`\nKuivaharjoitus: mitään ei kirjoitettu. Kirjoita: npx tsx scripts/kerta/2026-10-01-patch-litmanen.ts ${dataset === "production" ? "--production " : ""}--vie`);
     return;
   }
 

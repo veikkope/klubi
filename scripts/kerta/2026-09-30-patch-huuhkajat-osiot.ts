@@ -2,8 +2,8 @@
  * Asettaa Huuhkajat-taulukoille osion (`huuhkajatOsio`), jonka mukaan
  * Huuhkajat-sivu jakautuu osiosivuihin (/jalkapalloarkisto/huuhkajat/[osio]).
  *
- * Ajo:   npx tsx scripts/patch-huuhkajat-osiot.ts               (development)
- *        npx tsx scripts/patch-huuhkajat-osiot.ts --production  (tuotanto; ensin npm run backup)
+ * Ajo:   npx tsx scripts/kerta/2026-09-30-patch-huuhkajat-osiot.ts               (development)
+ *        npx tsx scripts/kerta/2026-09-30-patch-huuhkajat-osiot.ts --production  (tuotanto; ensin npm run backup)
  *        lisää --dry-run nähdäksesi muutokset kirjoittamatta
  *
  * Vain lisäys: kenttä asetetaan `setIfMissing`-operaatiolla, joten Studiossa
@@ -12,8 +12,8 @@
  */
 import { createClient } from "@sanity/client";
 
-import { huuhkajatOsioForSlug } from "./lib/huuhkajat-osio";
-import { sanityWriteToken } from "./lib/sanity-token";
+import { huuhkajatOsioForSlug } from "../lib/huuhkajat-osio";
+import { sanityWriteToken } from "../lib/sanity-token";
 
 const DATASET = process.argv.includes("--production") ? "production" : "development";
 const DRY_RUN = process.argv.includes("--dry-run");

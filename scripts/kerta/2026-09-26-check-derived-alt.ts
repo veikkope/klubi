@@ -1,9 +1,9 @@
-/** Tarkistus: kuinka moni alt-teksti on johdettavissa tiedostonimestä ja miltä tulos näyttää. Ajo: npx tsx scripts/check-derived-alt.ts */
+/** Tarkistus: kuinka moni alt-teksti on johdettavissa tiedostonimestä ja miltä tulos näyttää. Ajo: npx tsx scripts/kerta/2026-09-26-check-derived-alt.ts */
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 
-import { deriveAltFromFilename } from "./lib/derive-alt";
-import type { KuvaRecord } from "./download-images";
+import { deriveAltFromFilename } from "../lib/derive-alt";
+import type { KuvaRecord } from "../download-images";
 
 const INVENTORY = join(process.cwd(), "data", "normalized", "kuvat.json");
 

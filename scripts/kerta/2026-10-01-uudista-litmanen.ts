@@ -4,10 +4,10 @@
  * patsaskuvat patsas-osioon.
  *
  * Ajo:
- *   npm run patch:litmanen-osio                         # development, kuivaharjoitus
- *   npm run patch:litmanen-osio -- --vie                # development, kirjoitus
- *   npm run patch:litmanen-osio -- --production         # production, kuivaharjoitus
- *   npm run patch:litmanen-osio -- --production --vie   # varmuuskopio + kirjoitus + tarkistus
+ *   npx tsx scripts/kerta/2026-10-01-uudista-litmanen.ts                         # development, kuivaharjoitus
+ *   npx tsx scripts/kerta/2026-10-01-uudista-litmanen.ts --vie                # development, kirjoitus
+ *   npx tsx scripts/kerta/2026-10-01-uudista-litmanen.ts --production         # production, kuivaharjoitus
+ *   npx tsx scripts/kerta/2026-10-01-uudista-litmanen.ts --production --vie   # varmuuskopio + kirjoitus + tarkistus
  *
  * Kuivaharjoitus kirjoittaa jutut tiedostoon data/litmanen-leikkeet.tsv
  * tarkistettavaksi. Productioniin vasta, kun uudet sivut on julkaistu.
@@ -21,7 +21,7 @@ import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 
 import { createClient } from "@sanity/client";
 
-import { sanityWriteToken } from "./lib/sanity-token";
+import { sanityWriteToken } from "../lib/sanity-token";
 
 const PELAAJA_ID = "pelaaja-jari-litmanen";
 const PATSAS_URL = "/litmanenjaripatsas.htm";
@@ -436,7 +436,7 @@ async function main() {
   console.log(`  Tarkistuslista: ${RAPORTTI}`);
 
   if (!vie) {
-    console.log(`\nKuivaharjoitus: mitään ei kirjoitettu. Kirjoita: npm run patch:litmanen-osio -- ${dataset === "production" ? "--production " : ""}--vie`);
+    console.log(`\nKuivaharjoitus: mitään ei kirjoitettu. Kirjoita: npx tsx scripts/kerta/2026-10-01-uudista-litmanen.ts ${dataset === "production" ? "--production " : ""}--vie`);
     return;
   }
 

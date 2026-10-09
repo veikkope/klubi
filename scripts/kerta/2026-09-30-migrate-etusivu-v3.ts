@@ -2,7 +2,7 @@
  * Päivittää etusivun, navigaation ja otteluohjelman tyylioppaan "Sivut v3"
  * mukaiseksi (docs/design-handoff/, docs/04).
  *
- * Ajo:   npx tsx --env-file=.env.local scripts/migrate-etusivu-v3.ts
+ * Ajo:   npx tsx --env-file=.env.local scripts/kerta/2026-09-30-migrate-etusivu-v3.ts
  * Kohde: Sanity development (production päivitetään export/import-parilla,
  *        ks. CLAUDE.md).
  *

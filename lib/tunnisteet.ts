@@ -34,7 +34,7 @@ export function siistiTunniste(nimi: string): string {
 /**
  * Lista tallennettavaksi: siistitty, tyhjät ja osoitteettomat pois, saman
  * tunnisteen toistot pois (ensimmäinen kirjoitusasu jää). Blogin tuonti ja
- * `patch-tunnisteet.ts` käyttävät tätä.
+ * `scripts/kerta/2026-09-30-patch-tunnisteet.ts` käyttävät tätä.
  */
 export function siistiTunnisteLista(nimet: readonly unknown[] | null | undefined): string[] {
   const nahdyt = new Set<string>();

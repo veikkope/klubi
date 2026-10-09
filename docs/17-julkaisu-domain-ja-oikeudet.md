@@ -109,7 +109,7 @@ Päätetty 28.9.2026: klubi **ei ota jäsenhakemuksia vastaan sivuston kautta**.
 Lomake, `/klubi/liity`-sivu ja Resend on poistettu, ja vanha osoite ohjautuu
 `/klubi`-sivulle (next.config.ts). Siksi DNS:ään ei tarvita Resendin DKIM- tai
 SPF-tietueita. Tietosuojaselosteen jäsenhakemusosio poistetaan skriptillä
-`scripts/poista-jasenhakemus-tietosuojasta.ts` (ensin development, sitten
+`scripts/kerta/2026-09-28-poista-jasenhakemus-tietosuojasta.ts` (ensin development, sitten
 `--production` varmuuskopion jälkeen).
 
 ---

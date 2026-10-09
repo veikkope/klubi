@@ -10,7 +10,7 @@
  * pääteltävissä nimestä. Tämä skripti mittaa, kuinka usein liitos ja
  * tiedostonimi ovat eri mieltä.
  *
- * Ajo: `npx tsx scripts/check-image-links.ts`
+ * Ajo: `npx tsx scripts/kerta/2026-09-26-check-image-links.ts`
  */
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";

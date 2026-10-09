@@ -2,8 +2,8 @@
  * Poistaa tietosuojaselosteesta jäsenhakemusta koskevat kohdat: klubi ei ota
  * jäsenhakemuksia vastaan sivuston kautta, joten lomake ja Resend on poistettu.
  *
- * Ajo:  npx tsx scripts/poista-jasenhakemus-tietosuojasta.ts               (development)
- *       npx tsx scripts/poista-jasenhakemus-tietosuojasta.ts --production  (tuotanto, varmuuskopio ensin)
+ * Ajo:  npx tsx scripts/kerta/2026-09-28-poista-jasenhakemus-tietosuojasta.ts               (development)
+ *       npx tsx scripts/kerta/2026-09-28-poista-jasenhakemus-tietosuojasta.ts --production  (tuotanto, varmuuskopio ensin)
  *
  * Kohdat tunnistetaan tekstistä, ei avaimista, joten Studiossa tehdyt muut
  * muokkaukset säilyvät. Patchataan julkaistu dokumentti ja mahdollinen luonnos.
@@ -11,7 +11,7 @@
  */
 import { createClient } from "@sanity/client";
 
-import { sanityWriteToken } from "./lib/sanity-token";
+import { sanityWriteToken } from "../lib/sanity-token";
 
 const DATASET = process.argv.includes("--production") ? "production" : "development";
 const IDS = ["sivu-tietosuoja", "drafts.sivu-tietosuoja"];

@@ -3,8 +3,8 @@
  * components/kavijatilasto.tsx): oma kohta käsittelyihin, palveluntarjoaja
  * listaan ja selosteen päivityskuukausi.
  *
- * Ajo:  npx tsx scripts/lisaa-kavijatilastot-tietosuojaan.ts               (development)
- *       npx tsx scripts/lisaa-kavijatilastot-tietosuojaan.ts --production  (tuotanto, varmuuskopio ensin: npm run backup)
+ * Ajo:  npx tsx scripts/kerta/2026-10-09-lisaa-kavijatilastot-tietosuojaan.ts               (development)
+ *       npx tsx scripts/kerta/2026-10-09-lisaa-kavijatilastot-tietosuojaan.ts --production  (tuotanto, varmuuskopio ensin: npm run backup)
  *
  * Lisäyskohdat tunnistetaan edeltävän kohdan tekstin alusta, ei avaimista,
  * joten Studiossa tehdyt muut muokkaukset säilyvät. Jos kohtaa ei löydy, se
@@ -15,7 +15,7 @@
 import { createHash } from "node:crypto";
 import { createClient } from "@sanity/client";
 
-import { sanityWriteToken } from "./lib/sanity-token";
+import { sanityWriteToken } from "../lib/sanity-token";
 
 const DATASET = process.argv.includes("--production") ? "production" : "development";
 const IDS = ["sivu-tietosuoja", "drafts.sivu-tietosuoja"];
@@ -50,7 +50,7 @@ const LISAYKSET: { jalkeen: string; tunniste: string; rivit: Rivi[] }[] = [
   },
 ];
 
-/** Tekstin alku → uusi teksti, kuten scripts/lisaa-kuvat-tietosuojaan.ts. */
+/** Tekstin alku → uusi teksti, kuten scripts/kerta/2026-09-30-lisaa-kuvat-tietosuojaan.ts. */
 const MUUTOKSET: { alku: string; vanha: string; uusi: string }[] = [
   {
     alku: "Päivitämme selostetta, kun sivuston toiminta muuttuu.",

@@ -1,8 +1,8 @@
 /**
  * Luo tietosuojaselosteen Sanity-sivuksi `/tietosuoja` (docs/16, este 5).
  *
- * Ajo:  npx tsx scripts/luo-tietosuojaseloste.ts               (development)
- *       npx tsx scripts/luo-tietosuojaseloste.ts --production  (tuotanto)
+ * Ajo:  npx tsx scripts/kerta/2026-10-09-luo-tietosuojaseloste.ts               (development)
+ *       npx tsx scripts/kerta/2026-10-09-luo-tietosuojaseloste.ts --production  (tuotanto)
  *
  * Sisältö kuuluu Sanityyn (CLAUDE.md §1), joten tämä on kertaluonteinen
  * pohja: `createIfNotExists` ei koskaan ylikirjoita sivua, jota on jo muokattu
@@ -13,7 +13,7 @@
 import { createHash } from "node:crypto";
 import { createClient } from "@sanity/client";
 
-import { sanityWriteToken } from "./lib/sanity-token";
+import { sanityWriteToken } from "../lib/sanity-token";
 
 const DATASET = process.argv.includes("--production") ? "production" : "development";
 const ID = "sivu-tietosuoja";

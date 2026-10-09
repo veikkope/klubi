@@ -488,7 +488,7 @@ kreikka Ateena → `?maa=kreikka` (Egina mukaan), venaja Pietari (23/35) → `?m
 6. ~~Kansojen liigan lohkotaulukot (M2) voisi linkittää arvokisojen `tilastot`-kenttään (M4).~~
    Korjattu 6.10.2026 toisin: lohkotaulukko viittaa saman kauden karsintasivuun
    (`kaudenOttelut`), koska ottelut ovat siellä. Karsintasivu näyttää taulukon, ja
-   Kansojen liiga -sivu linkittää otteluihin (`npm run patch:kansojen-liiga`).
+   Kansojen liiga -sivu linkittää otteluihin (`npx tsx scripts/kerta/2026-10-06-patch-kansojen-liiga.ts`).
 7. MM-kisojen mitalistitaulukossa on tulevia rivejä (2030, 2034), joissa on vain
    isäntämaa. Ne jätettiin, koska isäntä on todellinen tieto. QA päättää, rikkovatko
    ne §1.2:n sääntöä "ei tulevaisuuden päiväyksiä".

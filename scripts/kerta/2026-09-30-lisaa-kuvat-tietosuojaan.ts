@@ -2,8 +2,8 @@
  * Päivittää tietosuojaselosteen ravintola-arvostelujen kohdat kattamaan
  * arvostelujen kuvat (docs/18 §7).
  *
- * Ajo:  npx tsx scripts/lisaa-kuvat-tietosuojaan.ts               (development)
- *       npx tsx scripts/lisaa-kuvat-tietosuojaan.ts --production  (tuotanto, varmuuskopio ensin: npm run backup)
+ * Ajo:  npx tsx scripts/kerta/2026-09-30-lisaa-kuvat-tietosuojaan.ts               (development)
+ *       npx tsx scripts/kerta/2026-09-30-lisaa-kuvat-tietosuojaan.ts --production  (tuotanto, varmuuskopio ensin: npm run backup)
  *
  * Kohdat tunnistetaan tekstin alusta, ei avaimista, joten Studiossa tehdyt
  * muut muokkaukset säilyvät. Jos hallitus on jo muotoillut kohdan uudelleen
@@ -12,7 +12,7 @@
  */
 import { createClient } from "@sanity/client";
 
-import { sanityWriteToken } from "./lib/sanity-token";
+import { sanityWriteToken } from "../lib/sanity-token";
 
 const DATASET = process.argv.includes("--production") ? "production" : "development";
 const IDS = ["sivu-tietosuoja", "drafts.sivu-tietosuoja"];

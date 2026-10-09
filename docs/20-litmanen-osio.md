@@ -74,9 +74,9 @@ Ankkuri sivulla: `leike-<_id>` (pysyvä, myös Studiossa luoduille).
 Kuva + alt (pakollinen) + kuvateksti + `paivamaara`. Päivämäärä järjestää
 patsaskuvat, eikä sitä tarvitse lukea kuvatekstistä.
 
-## 4. Siirto (`npm run patch:litmanen-osio`)
+## 4. Siirto (`npx tsx scripts/kerta/2026-10-01-uudista-litmanen.ts`)
 
-Skripti `scripts/uudista-litmanen.ts` jäsentää nykyisen `kuvaus`-kentän:
+Skripti `scripts/kerta/2026-10-01-uudista-litmanen.ts` jäsentää nykyisen `kuvaus`-kentän:
 
 1. Jutun alku = h3-otsikko tai lyhyt (≤ 90 merkkiä) kappale ilman loppupistettä
    edellisen jutun lähdemerkinnän jälkeen.

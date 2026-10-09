@@ -5,10 +5,10 @@
  * yläbanneri ja tiivistelmä, ja se listaa alasivut kortteina.
  *
  * Ajo:
- *   npm run patch:palloveikkaus                         # development, kuivaharjoitus
- *   npm run patch:palloveikkaus -- --vie                # development, kirjoitus
- *   npm run patch:palloveikkaus -- --production         # production, kuivaharjoitus
- *   npm run patch:palloveikkaus -- --production --vie   # varmuuskopio + kirjoitus + tarkistus
+ *   npx tsx scripts/kerta/2026-10-01-jaa-palloveikkaus.ts                         # development, kuivaharjoitus
+ *   npx tsx scripts/kerta/2026-10-01-jaa-palloveikkaus.ts --vie                # development, kirjoitus
+ *   npx tsx scripts/kerta/2026-10-01-jaa-palloveikkaus.ts --production         # production, kuivaharjoitus
+ *   npx tsx scripts/kerta/2026-10-01-jaa-palloveikkaus.ts --production --vie   # varmuuskopio + kirjoitus + tarkistus
  *
  * Säännöt (CLAUDE.md, docs/17 §D):
  *  - Alasivut luodaan `createIfNotExists`: olemassa olevaa ei ylikirjoiteta.
@@ -21,7 +21,7 @@ import { existsSync } from "node:fs";
 
 import { createClient } from "@sanity/client";
 
-import { sanityWriteToken } from "./lib/sanity-token";
+import { sanityWriteToken } from "../lib/sanity-token";
 
 const HUB_ID = "sivu-klubi-palloveikkaus";
 
@@ -147,7 +147,7 @@ async function main() {
   console.log(`  ~ /klubi/palloveikkaus: pääsisältö (${body.length} lohkoa), taulukot (${tilastot.length}) ja muut vanhat osoitteet siirtyvät alasivuille`);
 
   if (!vie) {
-    console.log(`\nKuivaharjoitus: mitään ei kirjoitettu. Kirjoita: npm run patch:palloveikkaus -- ${dataset === "production" ? "--production " : ""}--vie`);
+    console.log(`\nKuivaharjoitus: mitään ei kirjoitettu. Kirjoita: npx tsx scripts/kerta/2026-10-01-jaa-palloveikkaus.ts ${dataset === "production" ? "--production " : ""}--vie`);
     return;
   }
 

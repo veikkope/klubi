@@ -13,16 +13,16 @@
  * korjata. Jos isä on jo muokannut dokumenttia, se ohitetaan eikä ylikirjoiteta.
  *
  * Ajo:
- *   npm run siivoa:tarkistettavat                         # production, kuivaharjoitus
- *   npm run siivoa:tarkistettavat -- --vie                # varmuuskopio + kirjoitus + tarkistus
- *   npm run siivoa:tarkistettavat -- --development        # development, kuivaharjoitus
+ *   npx tsx scripts/kerta/2026-10-01-siivoa-tarkistettavat.ts                         # production, kuivaharjoitus
+ *   npx tsx scripts/kerta/2026-10-01-siivoa-tarkistettavat.ts --vie                # varmuuskopio + kirjoitus + tarkistus
+ *   npx tsx scripts/kerta/2026-10-01-siivoa-tarkistettavat.ts --development        # development, kuivaharjoitus
  */
 import { spawnSync } from "node:child_process";
 import { existsSync } from "node:fs";
 
 import { createClient, type SanityClient } from "@sanity/client";
 
-import { sanityWriteToken } from "./lib/sanity-token";
+import { sanityWriteToken } from "../lib/sanity-token";
 
 /* -------------------------------------------------------------------------- */
 /* 1. Merkintä pois: ei toimenpidettä                                          */
@@ -381,7 +381,7 @@ async function main() {
   }
 
   if (!vie) {
-    console.log(`\nKuivaharjoitus: mitään ei kirjoitettu. Kirjoita: npm run siivoa:tarkistettavat -- ${dataset === "development" ? "--development " : ""}--vie`);
+    console.log(`\nKuivaharjoitus: mitään ei kirjoitettu. Kirjoita: npx tsx scripts/kerta/2026-10-01-siivoa-tarkistettavat.ts ${dataset === "development" ? "--development " : ""}--vie`);
     return;
   }
   if (toimet.length === 0 && !luoLissabon) {

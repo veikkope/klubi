@@ -6,10 +6,10 @@
  * taulukolta kauden otteluihin.
  *
  * Ajo:
- *   npm run patch:kansojen-liiga                         # development, kuivaharjoitus
- *   npm run patch:kansojen-liiga -- --vie                # development, kirjoitus
- *   npm run patch:kansojen-liiga -- --production         # production, kuivaharjoitus
- *   npm run patch:kansojen-liiga -- --production --vie   # varmuuskopio + kirjoitus
+ *   npx tsx scripts/kerta/2026-10-06-patch-kansojen-liiga.ts                         # development, kuivaharjoitus
+ *   npx tsx scripts/kerta/2026-10-06-patch-kansojen-liiga.ts --vie                # development, kirjoitus
+ *   npx tsx scripts/kerta/2026-10-06-patch-kansojen-liiga.ts --production         # production, kuivaharjoitus
+ *   npx tsx scripts/kerta/2026-10-06-patch-kansojen-liiga.ts --production --vie   # varmuuskopio + kirjoitus
  *
  * Idempotentti: jo asetettua viittausta ei muuteta (isä on voinut valita sen
  * Studiossa itse). Productioniin vasta deployn jälkeen, kun skeemassa on kenttä.
@@ -19,8 +19,8 @@ import { existsSync } from "node:fs";
 
 import { createClient } from "@sanity/client";
 
-import { paritaKaudet, type KausiTaulukko } from "./lib/kaudet";
-import { sanityWriteToken } from "./lib/sanity-token";
+import { paritaKaudet, type KausiTaulukko } from "../lib/kaudet";
+import { sanityWriteToken } from "../lib/sanity-token";
 
 type Tilasto = KausiTaulukko & { _rev: string; title: string; kaudenOttelut?: string | null };
 
@@ -73,7 +73,7 @@ async function main() {
   }
 
   if (!vie) {
-    console.log(`\nKuivaharjoitus: mitään ei kirjoitettu. Kirjoita: npm run patch:kansojen-liiga -- ${dataset === "production" ? "--production " : ""}--vie`);
+    console.log(`\nKuivaharjoitus: mitään ei kirjoitettu. Kirjoita: npx tsx scripts/kerta/2026-10-06-patch-kansojen-liiga.ts ${dataset === "production" ? "--production " : ""}--vie`);
     return;
   }
 
