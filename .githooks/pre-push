@@ -1,0 +1,8 @@
+#!/bin/sh
+# Ajaa samat tarkistukset kuin CI (.github/workflows/tarkistukset.yml) ennen pushia.
+# Käyttöön: npm install (postinstall asettaa core.hooksPath = .githooks).
+echo "pre-push: npm run tarkista"
+npm run tarkista || {
+  echo "pre-push: tarkistus epäonnistui, push peruttu. Korjaa virhe (ei --no-verify)." >&2
+  exit 1
+}

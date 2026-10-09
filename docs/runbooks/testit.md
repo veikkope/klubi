@@ -4,6 +4,7 @@
 
 | Tehtävä | Komento |
 |---|---|
+| Kaikki tarkistukset (sama kuin pre-push-hook `.githooks/pre-push` ja CI `.github/workflows/tarkistukset.yml`) | `npm run tarkista` |
 | Tarkista TypeScript (sovellus ja `scripts/`) | `npm run type-check` |
 | Lint | `npm run lint` |
 | Build | `npm run build` |

@@ -1,4 +1,5 @@
-# Laatuportti jokaiselle pushille ja PR:lle: tyypit, lint ja kaikki yksikkötestit (npm test).
+# Laatuportti jokaiselle pushille ja PR:lle: npm run tarkista (tyypit, lint, yksikkötestit).
+# Sama tarkistus ajetaan paikallisesti pre-push-hookissa (.githooks/pre-push).
 # Build ja sisältötarkistukset ajetaan Vercelissä ja käsin (docs/16).
 name: Tarkistukset
 
@@ -20,6 +21,4 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npm run type-check
-      - run: npm run lint
-      - run: npm test
+      - run: npm run tarkista

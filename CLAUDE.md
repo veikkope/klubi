@@ -28,7 +28,7 @@ Next.js 16 (App Router) + TypeScript + Tailwind CSS v4 · Sanity CMS, Studio `/s
 | | |
 |---|---|
 | Kehityspalvelin (Studio `/studio`) | `npm run dev` → http://localhost:3000 |
-| Tarkistukset (sama kuin CI) | `npm run type-check`, `npm run lint`, `npm test` |
+| Kaikki tarkistukset (sama kuin pre-push ja CI: type-check, lint, test) | `npm run tarkista` |
 | Studion savutesti | `npm run savutesti:studio` (dev käynnissä) |
 | Kaikki muut | `docs/runbooks/` (testit, tuotantomuutokset, migraatio, ylläpito, ympäristöt) |
 

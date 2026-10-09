@@ -1,0 +1,10 @@
+# Rivinvaihdot LF kaikilla koneilla (Windowsin core.autocrlf ei sekoita tiedostoja).
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.woff2 binary
+*.gz binary

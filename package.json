@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "tarkista": "npm run type-check && npm run lint && npm test",
     "type-check": "tsc --noEmit && tsc -p tsconfig.scripts.json --noEmit",
     "redirects": "tsx scripts/generate-redirects.ts",
     "parse:ravintolat": "tsx scripts/parse-ravintolat.ts",
@@ -84,7 +85,8 @@
     "backup": "tsx scripts/varmuuskopio.ts",
     "tarkista:sanity-taso": "tsx scripts/tarkista-sanity-taso.ts",
     "siivoa:arvostelukuvat": "tsx scripts/siivoa-arvostelukuvat.ts",
-    "siivoa:tiedostot": "tsx scripts/siivoa-tiedostot.ts"
+    "siivoa:tiedostot": "tsx scripts/siivoa-tiedostot.ts",
+    "postinstall": "node scripts/asenna-hookit.mjs"
   },
   "dependencies": {
     "@portabletext/react": "^6.2.0",
