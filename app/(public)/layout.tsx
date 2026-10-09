@@ -1,6 +1,7 @@
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { Sivunvaihto } from "@/components/sivunvaihto";
+import { Kavijatilasto } from "@/components/kavijatilasto";
 
 export default function PublicLayout({
   children,
@@ -20,6 +21,8 @@ export default function PublicLayout({
         <Sivunvaihto>{children}</Sivunvaihto>
       </main>
       <Footer />
+      {/* Vain tuotanto: esikatselut ja kehitys eivät päädy tilastoihin. */}
+      {process.env.VERCEL_ENV === "production" && <Kavijatilasto />}
     </>
   );
 }
