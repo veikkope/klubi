@@ -89,7 +89,7 @@
     "postinstall": "node scripts/asenna-hookit.mjs"
   },
   "dependencies": {
-    "@portabletext/react": "^6.2.0",
+    "@portabletext/react": "^8.0.1",
     "@sanity/icons": "^3.7.4",
     "@sanity/image-url": "^2.1.1",
     "@sanity/locale-fi-fi": "^1.1.40",
