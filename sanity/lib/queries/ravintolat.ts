@@ -245,24 +245,33 @@ const directoryFilter = /* groq */ `
 /** Montako ravintolaa yhdellä hakemistosivulla. */
 export const RAVINTOLAT_PAGE_SIZE = 24;
 
-/**
- * Parhaat ensin. Tasapisteissä (arvosana yhden desimaalin tarkkuudella)
- * ratkaisee arvioijien määrä ja sen jälkeen tuoreempi arvio. Vanhan sivuston
- * arvosanalla ei ole arvioijamäärää, joten se lasketaan nollaksi.
- */
-const OVERALL = `round(coalesce(ratingOverall, stars, 0), 1) desc,
-  coalesce(automaattinenArvosana.arvioijia, 0) desc,
-  coalesce(${TUOREIN_ARVIO}, "0000-00-00") desc, name asc`;
+/** Tuorein arvio ensin; ilman päivää loppuun (null olisi laskevassa järjestyksessä ensin). */
+const TUOREIN_ENSIN = `coalesce(${TUOREIN_ARVIO}, "0000-00-00") desc, name asc`;
 
-/** Osa-arvosanan puuttuminen lajitellaan loppuun (`null` olisi GROQ:ssa ensin). */
+/**
+ * Tasapisteiden ratkaisu kaikissa arvosanajärjestyksissä: ensin eri
+ * arvioijien (klubilaisten) määrä, sitten tuoreempi arvio, lopuksi nimi.
+ * Vanhan sivuston arvosanalla ei ole arvioijamäärää, joten se lasketaan
+ * nollaksi. Testi: scripts/test-ravintolajarjestys.ts.
+ */
+const TASAPISTEET = `coalesce(automaattinenArvosana.arvioijia, 0) desc, ${TUOREIN_ENSIN}`;
+
+/**
+ * Arvosanan mukaan, paras ensin. Vertailu yhden desimaalin tarkkuudella, kuten
+ * kortti sen näyttää. Puuttuva arvosana lajitellaan loppuun (`null` olisi
+ * GROQ:ssa laskevassa järjestyksessä ensin).
+ */
+const parhaat = (arvosana: string) => `round(coalesce(${arvosana}, -1), 1) desc, ${TASAPISTEET}`;
+
+const OVERALL = parhaat("ratingOverall, stars");
+
 const ORDERINGS = {
-  // Ilman käyntipäivää loppuun (null olisi laskevassa järjestyksessä ensin).
-  uusin: `coalesce(${TUOREIN_ARVIO}, "0000-00-00") desc, name asc`,
+  uusin: TUOREIN_ENSIN,
   arvosana: OVERALL,
   nimi: "name asc",
-  ruoka: `round(coalesce(ratingFood, -1), 1) desc, ${OVERALL}`,
-  hinta: `round(coalesce(ratingPrice, -1), 1) desc, ${OVERALL}`,
-  viihtyvyys: `round(coalesce(ratingAtmosphere, -1), 1) desc, ${OVERALL}`,
+  ruoka: parhaat("ratingFood"),
+  hinta: parhaat("ratingPrice"),
+  viihtyvyys: parhaat("ratingAtmosphere"),
 } as const;
 
 export type RavintolatOrdering = keyof typeof ORDERINGS;
