@@ -49,7 +49,7 @@ const paivays = new Intl.DateTimeFormat("fi-FI", {
 export async function Hero({ data }: { data: EtusivuData }) {
   const [ottelut, tapahtumat] = await Promise.all([
     data.heroLaskuri !== false
-      ? getTulevatOttelut(1, { vainMaajoukkue: true })
+      ? getTulevatOttelut(1, { vainHuuhkajat: true })
       : Promise.resolve([]),
     sanityFetch<TapahtumaCard[]>({
       query: upcomingTapahtumatQuery,

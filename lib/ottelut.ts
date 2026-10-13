@@ -24,13 +24,15 @@
  * automaattisesti merkinnän "Klubi paikalla". Vieraspeleihin klubi ei yleensä
  * mene; niihin merkinnän voi valita Studiossa käsin.
  * Muut Suomi-joukkueet kirjoitetaan tarkenteella (esim. "Suomi (naiset)",
- * "Suomi U21"), jolloin niitä ei tulkita Huuhkajiksi.
+ * "Suomi U21"), jolloin niitä ei tulkita Huuhkajiksi. Studiossa lisätyt
+ * ottelut näkyvät listassa aina (lib/ottelusuodatus.ts).
  */
 
 import { unstable_cache } from "next/cache";
 
 import { fetchVeikkausliigaText } from "@/lib/fetch-with-intermediate";
 import { HUUHKAJAT, normalizeTeam } from "@/lib/joukkueet";
+import { ottelunSuodatin, tarvitaanSyote, type Rajaus } from "@/lib/ottelusuodatus";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import { tulevatOttelutQuery } from "@/sanity/lib/queries/ottelut";
 import { OTTELU_NAKYY_ALUN_JALKEEN_MS } from "@/lib/sijainnit";
@@ -47,6 +49,8 @@ export type Ottelu = {
   vierasmatka: boolean;
   /** Miesten maajoukkueen ottelu (Huuhkajat). */
   maajoukkue: boolean;
+  /** Ottelu on Studiossa (oma tai automaattiseen yhdistetty). */
+  studiossa: boolean;
 };
 
 type SanityOttelu = {
@@ -117,6 +121,7 @@ export function parseVeikkausliigaIcs(ics: string): Ottelu[] {
       klubiPaikalla: false,
       vierasmatka: false,
       maajoukkue: false,
+      studiossa: false,
     });
   }
   return result;
@@ -211,6 +216,7 @@ async function fetchTaso(apiKey: string, { tuore = false }: { tuore?: boolean } 
             klubiPaikalla: false,
             vierasmatka: false,
             maajoukkue: false,
+            studiossa: false,
           },
         ];
       });
@@ -267,28 +273,15 @@ export async function getJoukkueet(): Promise<string[]> {
   return [...nimet.values()].sort((a, b) => a.localeCompare(b, "fi"));
 }
 
-type Options = {
-  /**
-   * Rajaa Huuhkajien otteluihin (etusivun oletus) sekä `seurat`-listan
-   * joukkueiden otteluihin.
-   */
-  vainMaajoukkue?: boolean;
-  /**
-   * Rajauksen lisäksi näytettävät seurat, esim. ["FC Lahti"]. Nimi verrataan
-   * kuten Studion ja syötteen yhdistämisessä (kirjainkoko ja välimerkit ohitetaan).
-   */
-  seurat?: string[];
-};
-
-export async function getTulevatOttelut(
-  limit: number,
-  { vainMaajoukkue = false, seurat = [] }: Options = {},
-): Promise<Ottelu[]> {
-  const valitutSeurat = new Set(seurat.map(normalizeTeam).filter(Boolean));
-  // Ulkoiset syötteet kattavat vain seurajoukkueet: pelkille Huuhkajille niitä ei haeta.
-  const tarvitaanSyote = !vainMaajoukkue || valitutSeurat.size > 0;
+/**
+ * Rajaus (lib/ottelusuodatus.ts): etusivu ja /ottelut käyttävät
+ * `vainMaajoukkue` + `seurat`, laskuri `vainHuuhkajat`. Seuran nimi verrataan
+ * kuten Studion ja syötteen yhdistämisessä (kirjainkoko ja välimerkit ohitetaan).
+ */
+export async function getTulevatOttelut(limit: number, rajaus: Rajaus = {}): Promise<Ottelu[]> {
   const [external, manual] = await Promise.all([
-    tarvitaanSyote ? fetchExternal() : Promise.resolve([]),
+    // Ulkoiset syötteet kattavat vain seurajoukkueet: pelkille Huuhkajille niitä ei haeta.
+    tarvitaanSyote(rajaus) ? fetchExternal() : Promise.resolve([]),
     sanityFetch<SanityOttelu[]>({
       query: tulevatOttelutQuery,
       tags: ["ottelu"],
@@ -310,6 +303,7 @@ export async function getTulevatOttelut(
       klubiPaikalla: Boolean(s.klubiPaikalla),
       vierasmatka: Boolean(s.vierasmatka),
       maajoukkue: false,
+      studiossa: true,
     };
     const key = matchKey(own);
     const auto = byKey.get(key);
@@ -323,6 +317,7 @@ export async function getTulevatOttelut(
             stadion: own.stadion ?? auto.stadion,
             klubiPaikalla: own.klubiPaikalla,
             vierasmatka: own.vierasmatka,
+            studiossa: true,
           }
         : own,
     );
@@ -336,14 +331,8 @@ export async function getTulevatOttelut(
       // Klubi on paikalla jokaisessa Huuhkajien kotiottelussa.
       return { ...o, maajoukkue, klubiPaikalla: o.klubiPaikalla || isHuuhkajat(o.koti) };
     })
-    .filter(
-      (o) =>
-        new Date(o.aika).getTime() >= cutoff &&
-        (!vainMaajoukkue ||
-          o.maajoukkue ||
-          valitutSeurat.has(normalizeTeam(o.koti)) ||
-          valitutSeurat.has(normalizeTeam(o.vieras))),
-    )
+    .filter((o) => new Date(o.aika).getTime() >= cutoff)
+    .filter(ottelunSuodatin(rajaus))
     .sort((a, b) => a.aika.localeCompare(b.aika))
     .slice(0, limit);
 }

@@ -222,7 +222,7 @@ export const etusivu = defineType({
               name: "vainMaajoukkue",
               title: "Näytä vain Huuhkajien ja valittujen seurojen ottelut",
               description:
-                "Päällä: listassa miesten maajoukkueen (Suomi) ja alla lueteltujen seurojen ottelut. Pois: kaikki Veikkausliigan ja Ottelut-osion ottelut. Koskee vain etusivua; /ottelut-sivulla näkyvät aina vain Huuhkajat ja alla luetellut seurat.",
+                "Päällä: listassa miesten maajoukkueen (Suomi), Ottelut-osioon itse lisättyjen otteluiden (esim. Suomi U21) ja alla lueteltujen seurojen ottelut. Pois: kaikki Veikkausliigan ja Ottelut-osion ottelut. Koskee vain etusivua; /ottelut-sivulla näkyvät aina Huuhkajat, itse lisätyt ottelut ja alla luetellut seurat.",
               type: "boolean",
               initialValue: true,
             },

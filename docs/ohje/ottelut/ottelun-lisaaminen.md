@@ -63,6 +63,7 @@ ottelut, joihin klubi lähtee. Ottelut näkyvät etusivulla ja Ottelut-sivulla.
 - **Alkamisaika** on punainen: aika on väärässä muodossa. Valitse se kalenterista.
 - Ottelu ei näy: tarkista, että painoit **Julkaise**. Lomakkeen yläreunassa lukee
   "Ottelu on jo pelattu…", jos aika on mennyt.
-- Muut Suomen joukkueet: kirjoita tarkenne, esimerkiksi "Suomi (naiset)" tai "Suomi U21".
+- Muut Suomen joukkueet: kirjoita tarkenne, esimerkiksi "Suomi (naiset)" tai "Suomi U21". Itse lisätty
+  ottelu näkyy etusivulla ja Ottelut-sivulla aina, myös U21- ja naisten ottelut.
 
 Katso myös: [Lisää tapahtuma](tapahtuman-lisaaminen.md) · [Muutos ei näy sivustolla](../vianetsinta/muutos-ei-nay-sivustolla.md)

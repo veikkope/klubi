@@ -29,10 +29,10 @@ type Props = {
  * molemmat ovat tyhjiä, lohkoa ei renderöidä.
  *
  * Ottelupuolen yläreunassa on laskuri seuraavaan Huuhkajien otteluun. Se
- * lasketaan samoista Studion otteluista kuin lista, joten erillistä
- * ylläpitoa ei ole. Etusivu näyttää oletuksena Huuhkajien ja Studiossa
- * valittujen seurojen (esim. FC Lahti) ottelut. Sama seuralista rajaa
- * /ottelut-sivun, jossa on pidempi lista.
+ * haetaan samoista Studion otteluista (vain Huuhkajat, vaikka listan
+ * ensimmäinen olisi esim. U21), joten erillistä ylläpitoa ei ole. Etusivu
+ * näyttää oletuksena Huuhkajien, Studioon lisättyjen otteluiden (esim. Suomi
+ * U21) ja valittujen seurojen (esim. FC Lahti) ottelut. Sama rajaus koskee /ottelut-sivua, jossa on pidempi lista.
  */
 export async function OtteluohjelmaBlock({
   ottelutHeading = "Tulevat ottelut",
@@ -43,13 +43,10 @@ export async function OtteluohjelmaBlock({
   tapahtumatHeading = "Nähdään",
   tapahtumatCount = 3,
 }: Props) {
-  const vainHuuhkajat = vainMaajoukkue && seurat.length === 0;
   const [ottelut, huuhkajat, tapahtumat] = await Promise.all([
     getTulevatOttelut(ottelutCount, { vainMaajoukkue, seurat }),
-    // Laskurin ottelu. Kun lista on rajattu pelkkiin Huuhkajiin, se on listan ensimmäinen.
-    laskuri && !vainHuuhkajat
-      ? getTulevatOttelut(1, { vainMaajoukkue: true })
-      : Promise.resolve(null),
+    // Laskurin ottelu: aina Huuhkajat, ei Studion muita otteluita (esim. U21).
+    laskuri ? getTulevatOttelut(1, { vainHuuhkajat: true }) : Promise.resolve([]),
     sanityFetch<TapahtumaCard[]>({
       query: upcomingTapahtumatQuery,
       params: { count: tapahtumatCount },
@@ -58,7 +55,7 @@ export async function OtteluohjelmaBlock({
     }),
   ]);
 
-  const seuraava = laskuri ? (huuhkajat ?? ottelut)[0] : undefined;
+  const seuraava = huuhkajat[0];
 
   if (ottelut.length === 0 && tapahtumat.length === 0) return null;
   const both = ottelut.length > 0 && tapahtumat.length > 0;
