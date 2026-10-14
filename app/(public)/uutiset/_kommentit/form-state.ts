@@ -63,6 +63,25 @@ export function sijojenMaara(k: Kommentointi): number {
   return 0;
 }
 
+/**
+ * Mistä kommenttilista haetaan (docs/decisions/001-sanity-kiintio.md).
+ *
+ * Kun kommentointi on auki, ohi Sanityn CDN:n: lähettäjä näkee viestinsä
+ * heti `updateTag`illa, eikä CDN saa palauttaa listaa ilman sitä. Uudet viestit
+ * päivittää `updateTag` ja piilotukset webhook, joten tunnin tarkistusväli riittää.
+ *
+ * Muuten (ei käytössä tai sulkeutunut) uusia viestejä ei tule, joten haku
+ * kulkee CDN:n kautta sivuston tavallisella tarkistusvälillä, joka korjaa myös
+ * CDN:n harvinaisen viiveen piilotuksen jälkeen. Näitä ovat lähes kaikki
+ * uutiset, ja bottien kierrellessä ne kuluttivat suoran rajapinnan kiintiötä.
+ */
+export function kommenttienHaku(
+  k: Kommentointi | null | undefined,
+  now = new Date(),
+): { useCdn: boolean; revalidate?: number } {
+  return kommentointiAuki(k, now) ? { useCdn: false, revalidate: 3600 } : { useCdn: true };
+}
+
 /** Kommenttilistan välimuistitagi (haku ja `updateTag` lähetyksen jälkeen). */
 export function kommentitTag(uutinenId: string): string {
   return `kommentit:${uutinenId}`;

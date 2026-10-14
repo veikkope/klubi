@@ -10,6 +10,7 @@
 import { ravintolaAvain } from "@/lib/ravintolan-nimi";
 import { readToken } from "@/sanity/env";
 import { client } from "@/sanity/lib/client";
+import { TARKISTUSVALI_S } from "@/sanity/lib/fetch";
 import {
   tuoreetArvostelutQuery,
   type RavintolaOption,
@@ -35,13 +36,18 @@ const EHDOTUKSIA = 30;
  */
 export async function tuoreetArvostelut(ravintolat: Pick<RavintolaOption, "_id">[]): Promise<Tuoreet> {
   if (!client) return { tuoreet: [], ehdotukset: [] };
+  // Ohi CDN:n: lähettäjän oma arvostelu näkyy listan kärjessä heti updateTagin
+  // jälkeen, eikä CDN:n viive saa tallentaa välimuistiin listaa ilman sitä.
+  // Muiden lähetykset ovat luonnoksia, joista webhook ei kerro, joten ne tulevat
+  // sivuston tavallisella tarkistusvälillä. Minuutin väli kulutti suoran
+  // rajapinnan kiintiötä (docs/decisions/001-sanity-kiintio.md).
   const lukija = client.withConfig({
     useCdn: false,
     ...(readToken ? { token: readToken, perspective: "raw" as const } : {}),
   });
   try {
     const rivit = await lukija.fetch<TuoreArvostelu[]>(tuoreetArvostelutQuery, {}, {
-      next: { tags: [TUOREET_TAG, "ravintolaKayttajaArvostelu"], revalidate: 60 },
+      next: { tags: [TUOREET_TAG, "ravintolaKayttajaArvostelu"], revalidate: TARKISTUSVALI_S },
     });
     const tunnetut = new Set(ravintolat.map((r) => r._id));
     const nahty = new Set<string>();

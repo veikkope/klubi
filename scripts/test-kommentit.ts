@@ -9,7 +9,7 @@
  */
 import assert from "node:assert/strict";
 
-import { kommentointiAuki, type Kommentointi } from "../app/(public)/uutiset/_kommentit/form-state";
+import { kommenttienHaku, kommentointiAuki, type Kommentointi } from "../app/(public)/uutiset/_kommentit/form-state";
 import {
   jarjestysLomakkeelta,
   lomakkeenArvot,
@@ -109,6 +109,19 @@ test("sulkeutuminen", () => {
   assert.ok(!kommentointiAuki({ kaytossa: false }));
   assert.ok(!kommentointiAuki({ kaytossa: true, sulkeutuu: "2020-01-01T00:00:00Z" }));
   assert.ok(kommentointiAuki({ kaytossa: true, sulkeutuu: "2999-01-01T00:00:00Z" }));
+});
+
+test("kiintiö: suora rajapinta vain avoimessa kommentoinnissa (docs/decisions/001)", () => {
+  // Avoin: lähettäjä näkee viestinsä heti, CDN ei saa jättää sitä pois.
+  assert.deepEqual(kommenttienHaku({ kaytossa: true }), { useCdn: false, revalidate: 3600 });
+  assert.equal(kommenttienHaku({ kaytossa: true, sulkeutuu: "2999-01-01T00:00:00Z" }).useCdn, false);
+  // Uusia viestejä ei tule: CDN. Tämä koskee lähes kaikkia uutisia.
+  assert.equal(kommenttienHaku(null).useCdn, true);
+  assert.equal(kommenttienHaku(undefined).useCdn, true);
+  assert.equal(kommenttienHaku({ kaytossa: false }).useCdn, true);
+  assert.equal(kommenttienHaku({ kaytossa: true, sulkeutuu: "2020-01-01T00:00:00Z" }).useCdn, true);
+  // Suljetussa sivuston tavallinen tarkistusväli, ei tuntia (CDN:n viive piilotuksen jälkeen).
+  assert.equal(kommenttienHaku({ kaytossa: false }).revalidate, undefined);
 });
 
 console.log(`\n${ok} testiä ok`);

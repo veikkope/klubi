@@ -29,9 +29,11 @@ Tavoite: pysyä ilmaistasolla ilman, että kävijän kokemus heikkenee.
 ## Päätös
 `sanityFetch` hakee oletuksena Sanityn CDN:n kautta, ja välimuistissa olevan
 tuloksen tarkistusväli on 5 min (`TARKISTUSVALI_S`). Julkaisun päivittää
-edelleen webhook heti. Suora rajapinta on varattu kommenteille (lähettäjä
-näkee viestinsä heti `updateTag`illa, tarkistusväli 1 h), luonnosnäkymälle ja
-kirjoituksille. Jos suoran rajapinnan kiintiö silti loppuu, `sanityFetch`
+edelleen webhook heti. Suora rajapinta on varattu avoimen kommentoinnin
+kommenteille (lähettäjä näkee viestinsä heti `updateTag`illa, tarkistusväli
+1 h; muiden uutisten kommentit CDN:n kautta, `kommenttienHaku`), arvostelun
+"Viimeksi arvioidut" -listalle (oma arvostelu heti, väli 5 min),
+luonnosnäkymälle ja kirjoituksille. Jos suoran rajapinnan kiintiö silti loppuu, `sanityFetch`
 siirtyy automaattisesti CDN:ään (402 → CDN), jolloin sivut näkyvät eivätkä
 kaadu. Lomakkeet kertovat kiintiövirheestä selvästi, eivätkä pyydä
 yrittämään hetken päästä. `robots.txt` estää ravintolahakemiston rajaukset
@@ -47,6 +49,11 @@ yrittämään hetken päästä. `robots.txt` estää ravintolahakemiston rajauks
   päivitetty.
 - Valikon linkin kohteen osoitteen muutos näkyy valikossa 5 min viiveellä;
   vanha osoite ohjautuu sillä välin.
+- Toinen kierros 14.10.: kommenttiosio haki suoraan rajapinnasta jokaisella
+  uutissivulla (botit kiertävät satoja vanhoja uutisia), ja arvostelusivun
+  "Viimeksi arvioidut" minuutin välein. Muiden klubilaisten uudet lähetykset
+  (luonnoksia, joista webhook ei kerro) näkyvät listassa nyt viiden minuutin
+  kuluessa.
 - Kehityspalvelin käyttää myös CDN:ää, joten kehitys ei kuluta suoran
   rajapinnan kiintiötä (skriptit kuluttavat edelleen).
 - Kun suoran rajapinnan kiintiö on täynnä, kirjoitukset (arvostelut,

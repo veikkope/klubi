@@ -3,7 +3,7 @@ import { stegaClean } from "next-sanity";
 import { formatDate, formatDateTime } from "@/lib/format";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import { kommentitQuery } from "@/sanity/lib/queries/kommentit";
-import { kommentitTag, kommentointiAuki, type KommenttiItem, type Kommentointi } from "./form-state";
+import { kommenttienHaku, kommentitTag, kommentointiAuki, type KommenttiItem, type Kommentointi } from "./form-state";
 import { KommenttiLomake } from "./kommentti-lomake";
 
 /**
@@ -11,8 +11,9 @@ import { KommenttiLomake } from "./kommentti-lomake";
  *
  * Näytetään, kun kommentointi on päällä tai uutisella on kommentteja (vanhat
  * blogista tuodut veikkaukset näkyvät, vaikka uusia ei voi jättää). Lista
- * haetaan ohi Sanityn CDN:n ja omalla tagillaan, jotta Server Actionin
- * `updateTag` näyttää uuden viestin lähettäjälle heti.
+ * haetaan omalla tagillaan, jotta Server Actionin `updateTag` näyttää uuden
+ * viestin lähettäjälle heti; avoimessa kommentoinnissa ohi Sanityn CDN:n
+ * (`kommenttienHaku`).
  */
 export async function KommentitOsio({
   uutinenId,
@@ -30,13 +31,9 @@ export async function KommentitOsio({
     params: { uutinenId },
     tags: ["kommentti", kommentitTag(uutinenId)],
     fallback: [],
-    // Ohi CDN:n, jotta updateTag näyttää lähettäjälle uuden viestin heti
-    // (buildissa sanityFetch käyttää silti CDN:ää). Tunnin tarkistusväli
-    // riittää: uuden viestin päivittää updateTag ja piilotuksen webhook
-    // (tagi "kommentti"), joten suoran rajapinnan kiintiötä kuluu vähän
-    // (docs/decisions/001).
-    useCdn: false,
-    revalidate: 3600,
+    // Suora rajapinta vain avoimessa kommentoinnissa (buildissa sanityFetch
+    // käyttää silti CDN:ää), muuten CDN.
+    ...kommenttienHaku(kommentointi),
   });
 
   const kaytossa = Boolean(kommentointi?.kaytossa);
