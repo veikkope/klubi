@@ -201,6 +201,30 @@ riippuvainen web-muutoksesta C2:n jälkeen.
   varmuuskopio (cPanel → Tiedostot → Varmuuskopio) talteen kahteen paikkaan ja Zonerilta kirjallinen
   vahvistus, että domain ja DNS-vyöhyke jäävät voimaan (vyöhyke on nyt webhotellin cPanelissa).
 
+### C7. Webhotellin irrotus, sovittu 14.10.2026
+
+- **Zoner (Isabel, 14.10.):** tilaus muutetaan pelkäksi verkkotunnukseksi (.com 28,50 €/v alv 0 %).
+  Webhotelli, levytila ja Zonerin posti poistuvat irrotuksessa. Nimipalvelimet eivät vaihdu heti;
+  sen jälkeen DNS:ää hallitaan **Zoner Homessa** (ei enää cPanelissa). Zoner lisää tietueet
+  puolestamme, kun ne lähetetään. Päivä sovitaan, kellonaikaa ei luvata. Verkkotunnus on siirretty
+  Wepardista ja on "sinun omistuksessasi", eli rekisteröijäksi ei vahvistettu nimenomaan yhdistystä.
+- **Kotihakemiston varmuuskopio otettu** 14.10.2026 ennen irrotusta.
+- **Vastaus 14.10.:** irrotus to 22.10.2026, ilmoitus sähköpostiin kun tehty. Tietueet pyydettiin
+  lisäämään Zoner Homeen ennen nimipalvelinten vaihtoa (arvot tarkistettu julkisesta DNS:stä 14.10.):
+
+  | Nimi | Tyyppi | Arvo |
+  |---|---|---|
+  | apex | A | `216.198.79.1` |
+  | `www` | CNAME | `b0e6106b7627dd0d.vercel-dns-017.com` |
+  | apex | TXT | `v=spf1 -all` |
+  | `_dmarc` | TXT | `v=DMARC1; p=reject` |
+
+  MX, DKIM, `mail` ja cPanelin omia tietueita ei siirretä.
+- **Kun Zonerin ilmoitus tulee:** `nslookup -type=NS` (uudet nimipalvelimet kirjataan tähän),
+  A, `www` CNAME ja molemmat TXT:t uusilta nimipalvelimilta, sitten selaimessa https www, apex →
+  www, `/studio`. Jos jokin puuttuu, isä lisää sen Zoner Homessa tai pyytää Zoneria.
+- **Auki:** rekisteröijän nimi (pitää olla Lahden Suomalainen Klubi ry), tarkistetaan Zoner Homesta.
+
 ---
 
 ## D. Sisältö ja datasetit julkaisun jälkeen
@@ -303,7 +327,7 @@ riippuvainen web-muutoksesta C2:n jälkeen.
 | 11 | Perustiedot Studiossa (docs/09 "Täytä itse") | isä + hallitus | ☐ 30.9.: sähköposti, osoite, Y-tunnus, hallitus (0), tapahtumat (0), etusivun kuvat, /english-kieli |
 | 12 | Tietosuojaselosteen vahvistus | hallitus | ☐ |
 | 13 | Jäsenhakemukset poistettu (ei Resendiä) | kehittäjä | ✅ 28.9. koodi · ✅ tietosuojaselosteessa ei mainintaa (tarkistettu 30.9.) |
-| 14 | DNS C1–C4 | kehittäjä + isä | ✅ 4.10. web Verceliin (cPanel Zone Editor), posti lopetettu (versio A, §C6), webhook → www, vercel.app → www (308). ☐ Search Console, blogin ohjaus, Zonerin webhotellin irtisanominen |
+| 14 | DNS C1–C4 | kehittäjä + isä | ✅ 4.10. web Verceliin (cPanel Zone Editor), posti lopetettu (versio A, §C6), webhook → www, vercel.app → www (308). ☐ Search Console, blogin ohjaus, Zonerin webhotellin irrotus 22.10. (§C7, varmuuskopio ✅ 14.10.) |
 | 15 | Blogin ohjaus (docs/14 §6) | kehittäjä | ☐ siirron jälkeen (tuotantopolku ja dynaaminen /blogspot-reitti valmiit 30.9.) |
 | 16 | Arvostelukuvat: tietosuojaselosteen patch (docs/18 §7) | kehittäjä | ✅ 30.9. (varmuuskopio ensin) |
 | 17 | Vercel-osoitteet noindex (`X-Robots-Tag`) | kehittäjä | ✅ 30.9. |
