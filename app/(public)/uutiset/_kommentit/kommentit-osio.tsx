@@ -30,10 +30,13 @@ export async function KommentitOsio({
     params: { uutinenId },
     tags: ["kommentti", kommentitTag(uutinenId)],
     fallback: [],
-    // Buildissa CDN: satoja uutissivuja rinnakkain suoraan API:in ylitti Sanityn
-    // pyyntörajan ja kaatoi buildin (4.10.2026). Ajon aikana ohi CDN:n, jotta
-    // updateTag näyttää uuden viestin heti.
-    useCdn: process.env.NEXT_PHASE === "phase-production-build",
+    // Ohi CDN:n, jotta updateTag näyttää lähettäjälle uuden viestin heti
+    // (buildissa sanityFetch käyttää silti CDN:ää). Tunnin tarkistusväli
+    // riittää: uuden viestin päivittää updateTag ja piilotuksen webhook
+    // (tagi "kommentti"), joten suoran rajapinnan kiintiötä kuluu vähän
+    // (docs/decisions/001).
+    useCdn: false,
+    revalidate: 3600,
   });
 
   const kaytossa = Boolean(kommentointi?.kaytossa);

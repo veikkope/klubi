@@ -20,6 +20,7 @@ import { ravintolaAvain } from "@/lib/ravintolan-nimi";
 import { ilmoitaOsoitteeseen } from "@/lib/yhteystiedot";
 import { apiVersion, dataset, hasSanity, projectId } from "@/sanity/env";
 import { sanityFetch } from "@/sanity/lib/fetch";
+import { onKiintioTaynna } from "@/sanity/lib/kiintio";
 import {
   COMMENT_MAX,
   EMPTY_REVIEW_VALUES,
@@ -394,6 +395,19 @@ export async function submitReview(
     // Peruutus: ladatut kuvat pois, ettei moderoimattomia orpoja jää. Jos
     // poisto epäonnistuu, orvot voi poistaa: npm run siivoa:arvostelukuvat.
     await Promise.allSettled(uploadedAssetIds.map((id) => writeClient.delete(id)));
+    if (onKiintioTaynna(error)) {
+      // Sanityn kuukausikiintiö on täynnä (docs/decisions/001): uusi yritys
+      // hetken päästä ei auta, joten kerrotaan se suoraan.
+      return {
+        status: "error",
+        message:
+          "Arvostelujen vastaanotto on tilapäisesti poissa käytöstä. Arvosteluasi ei " +
+          "tallennettu, mutta se on tallessa tässä puhelimessa, joten voit lähettää sen " +
+          `myöhemmin uudelleen. ${await ilmoitaOsoitteeseen()}`,
+        fieldErrors: {},
+        values,
+      };
+    }
     return {
       status: "error",
       message:

@@ -13,7 +13,7 @@ alapalkissa on merkki **Ajastettu**. Studion listassa uutisen alla lukee "Ajaste
 
 **Näin korjaat:**
 
-1. Jos ajastus on tarkoituksellinen, älä tee mitään. Uutinen tulee näkyviin noin minuutin kuluttua valitusta ajasta.
+1. Jos ajastus on tarkoituksellinen, älä tee mitään. Uutinen tulee näkyviin viiden minuutin kuluessa valitusta ajasta.
 2. Haluat uutisen näkyviin heti: paina kentän **Julkaisuaika** oikean reunan kalenterin kuvaa.
 3. Paina kalenterissa **Aseta nykyiseen aikaan**.
 4. Oikeassa alakulmassa paina **Julkaise**.

@@ -10,6 +10,12 @@
  *  3. Tarjoilee luonnokset kun Next.js:n draft mode on päällä, jolloin
  *     Sanityn Presentation-näkymä näyttää muokkaukset heti
  *
+ * Kiintiö (docs/decisions/001-sanity-kiintio.md): haut kulkevat oletuksena
+ * Sanityn CDN:n kautta, ja sivun data tarkistetaan varmuuden vuoksi viiden
+ * minuutin välein. Julkaisun päivittää webhook heti (app/api/revalidate).
+ * Suora rajapinta (`useCdn: false`) on varattu sisällölle, jonka lähettäjän
+ * pitää nähdä oma muutoksensa heti (kommentit), ja kirjoituksille.
+ *
  * Draft mode ei riko staattista generointia: tuotannossa sivut renderöidään
  * etukäteen, ja vain pyynnöt joissa on draft-eväste ohittavat välimuistin.
  *
@@ -24,6 +30,7 @@
 import { draftMode } from "next/headers";
 
 import { client } from "./client";
+import { onKiintioTaynna } from "./kiintio";
 import { hasSanity, readToken, studioUrl } from "../env";
 
 type FetchOptions<T> = {
@@ -34,16 +41,26 @@ type FetchOptions<T> = {
   /** Palautetaan jos Sanity ei ole konfiguroitu tai tulos on null. Ei virheen sattuessa. */
   fallback: T;
   /**
-   * Oletus false = ohita Sanityn CDN. Webhook (app/api/revalidate) tyhjentää
-   * Next.js:n välimuistin heti julkaisun jälkeen, ja uudelleenrenderöinti
-   * alkaa sekunneissa. CDN palauttaisi silloin vielä vanhan tuloksen, joka
-   * jäisi sivun välimuistiin minuuteiksi (e2e-arvioijasaanto 4.10.2026: poistettu
-   * ravintola näkyi ~10 min). Sanityyn mennään vain uudelleenrenderöinnissä,
-   * joten kutsuja on vähän. true vain sisällölle, jota webhook ei päivitä.
-   * Buildissa oletus on CDN: satoja sivuja rinnakkain ilman CDN:ää voi
-   * törmätä Sanityn API-rajoihin, eikä buildissa ole webhook-kilpailua.
+   * Oletus true = Sanityn CDN, jonka kiintiö on nelinkertainen suoraan
+   * rajapintaan verrattuna. Suoran rajapinnan kiintiö loppui 14.10.2026, kun
+   * jokainen haku meni sinne minuutin välein (docs/decisions/001).
+   *
+   * Hinta: CDN voi harvoin palauttaa julkaisun jälkeen vielä vanhan tuloksen
+   * (e2e-arvioijasaanto 4.10.2026: poistettu ravintola näkyi ~10 min). Viiden
+   * minuutin tarkistusväli korjaa sen itsestään.
+   *
+   * false vain, kun lähettäjän pitää nähdä oma muutoksensa heti (kommentit,
+   * updateTag). Buildissa käytetään aina CDN:ää: satoja sivuja rinnakkain
+   * suoraan rajapintaan ylitti pyyntörajan (4.10.2026).
    */
   useCdn?: boolean;
+  /**
+   * Sekunteina, kuinka usein välimuistissa oleva tulos tarkistetaan Sanitystä
+   * varmuuden vuoksi. Julkaisut päivittää webhook heti; tämä väli hoitaa
+   * ajastetut sisällöt (uutisen julkaisuaika, etusivun nosto, ottelut) ja CDN:n
+   * viiveen. Oletus 300 (5 min).
+   */
+  revalidate?: number;
   /**
    * true = vain julkaistu sisältö myös luonnosnäkymässä (draft mode). Kävijöiden
    * lähettämälle moderoitavalle sisällölle (ravintola-arvostelut): luonnos on
@@ -63,6 +80,9 @@ async function isDraftEnabled(): Promise<boolean> {
   }
 }
 
+/** Välimuistissa olevan tuloksen varmistusväli (s), ks. `revalidate`. */
+export const TARKISTUSVALI_S = 300;
+
 const PYYNTORAJAN_YRITYKSET = 5;
 
 function onPyyntoraja(error: unknown): boolean {
@@ -74,18 +94,20 @@ export async function sanityFetch<T>({
   params,
   tags,
   fallback,
-  useCdn = process.env.NEXT_PHASE === "phase-production-build",
+  useCdn: pyydettyCdn = true,
+  revalidate = TARKISTUSVALI_S,
   vainJulkaistu = false,
 }: FetchOptions<T>): Promise<T> {
   if (!hasSanity || !client) {
     return fallback;
   }
 
+  const useCdn = pyydettyCdn || process.env.NEXT_PHASE === "phase-production-build";
   const isDraft = readToken && !vainJulkaistu ? await isDraftEnabled() : false;
 
   // Luonnosnäkymässä ohitetaan CDN ja välimuisti, ja stega-koodaus kytketään
   // päälle jotta Presentationin klikkaa-ja-muokkaa-peittokuva löytää kentät.
-  const activeClient = isDraft
+  let activeClient = isDraft
     ? client.withConfig({
         token: readToken,
         perspective: "drafts",
@@ -110,14 +132,22 @@ export async function sanityFetch<T>({
   // ajettiin samaan aikaan muuta Sanity-liikennettä. Siksi odotetaan ja yritetään
   // uudelleen (1, 2, 4, 8 ja 16 s) ennen kuin virhe kaataa buildin. Kolme
   // yritystä ei riittänyt, kun välimuisti oli juuri tyhjentynyt datan muutosten jälkeen.
+  // Suoran rajapinnan kuukausikiintiön loppuessa (402) haku tehdään CDN:n
+  // kautta, jonka kiintiö on erillinen: sivu näkyy hieman vanhemmalla datalla
+  // sen sijaan, että koko sivusto kaatuisi kuun loppuun asti (14.10.2026).
   try {
     for (let yritys = 0; ; yritys++) {
       try {
         const result = await activeClient.fetch<T | null>(query, params ?? {}, {
-          next: isDraft ? { revalidate: 0 } : { tags, revalidate: 60 },
+          next: isDraft ? { revalidate: 0 } : { tags, revalidate },
         });
         return result ?? fallback;
       } catch (error) {
+        if (onKiintioTaynna(error) && !activeClient.config().useCdn) {
+          console.warn(`[sanityFetch] rajapinnan kiintiö täynnä, haetaan CDN:stä (${tags?.join(", ") || "ei tageja"})`);
+          activeClient = activeClient.withConfig({ useCdn: true });
+          continue;
+        }
         if (yritys >= PYYNTORAJAN_YRITYKSET || !onPyyntoraja(error)) throw error;
         await new Promise((valmis) => setTimeout(valmis, 1000 * 2 ** yritys));
       }

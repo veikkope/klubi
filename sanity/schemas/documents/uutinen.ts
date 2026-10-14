@@ -70,7 +70,7 @@ export const uutinen = defineType({
       title: "Julkaisuaika",
       description:
         "Uutinen näkyy sivustolla tästä hetkestä alkaen. Ajastus: valitse tuleva aika ja paina " +
-        "Julkaise. Uutinen odottaa piilossa ja tulee näkyviin itsestään noin minuutin kuluessa " +
+        "Julkaise. Uutinen odottaa piilossa ja tulee näkyviin itsestään viiden minuutin kuluessa " +
         "valitusta ajasta. Listassa se näkyy siihen asti merkinnällä Ajastettu.",
       type: "datetime",
       initialValue: () => new Date().toISOString(),

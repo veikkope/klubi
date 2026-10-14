@@ -46,7 +46,7 @@ Kun uutinen pitää saada näkyviin myöhemmin, esim. vuosikokouskutsu maanantai
 
 ## Tulos
 
-- Uutinen tulee sivustolle noin minuutin kuluessa valitusta ajasta.
+- Uutinen tulee sivustolle viiden minuutin kuluessa valitusta ajasta.
 - Siihen asti se on listassa **Tehtävät sinulle → Ajastetut uutiset**.
 
 ## Lisävalinnat
@@ -60,7 +60,7 @@ Kun uutinen pitää saada näkyviin myöhemmin, esim. vuosikokouskutsu maanantai
 ## Jos jokin menee vikaan
 
 - Merkin selitys sanoo "…, kun painat Julkaise.": muutit aikaa, mutta et julkaissut. Paina **Julkaise**.
-- Uutinen ei näy ajan jälkeen: odota minuutti ja päivitä sivu. Katso [Uutinen ei näy sivustolla, ja alapalkissa lukee Ajastettu](../vianetsinta/uutinen-ei-nay-ajastettu.md).
+- Uutinen ei näy ajan jälkeen: odota viisi minuuttia ja päivitä sivu. Katso [Uutinen ei näy sivustolla, ja alapalkissa lukee Ajastettu](../vianetsinta/uutinen-ei-nay-ajastettu.md).
 - Linkissä toiseen sivuun näkyy keltainen "Uutinen tulee näkyviin …": linkki ajastettuun uutiseen näkyy sivustolla vasta sen julkaisuaikana. Tämä on normaalia.
 
 Katso myös: [Kirjoita uutinen](uutisen-kirjoittaminen.md) · [Aloita uutinen valmiista pohjasta](valmiit-pohjat.md)

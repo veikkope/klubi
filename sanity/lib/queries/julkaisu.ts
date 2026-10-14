@@ -3,8 +3,8 @@
  *
  * Sanityn ajastettu julkaisu ei kuulu ilmaistasoon, joten ajastus tehdään
  * julkaisuajalla: uutinen, jonka julkaisuaika on tulevaisuudessa, odottaa
- * piilossa ja tulee näkyviin itsestään (sivujen välimuisti päivittyy noin
- * minuutissa). Ehto on kaikissa uutishauissa: listat, haku, tunnisteet,
+ * piilossa ja tulee näkyviin itsestään (sivujen välimuisti tarkistetaan
+ * viiden minuutin välein, sanity/lib/fetch.ts). Ehto on kaikissa uutishauissa: listat, haku, tunnisteet,
  * arkisto, etusivu, sitemap sekä edellinen- ja seuraava-linkit.
  *
  * Julkaisuaika on pakollinen kenttä; ehto sallii puuttuvan varmuuden vuoksi,

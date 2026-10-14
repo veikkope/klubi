@@ -5,6 +5,7 @@ import { createClient } from "next-sanity";
 
 import { ilmoitaOsoitteeseen } from "@/lib/yhteystiedot";
 import { apiVersion, dataset, hasSanity, projectId } from "@/sanity/env";
+import { onKiintioTaynna } from "@/sanity/lib/kiintio";
 import {
   INITIAL_KOMMENTTI_STATE,
   kommentointiAuki,
@@ -40,6 +41,17 @@ const RAJA_SIVUSTO = 20;
 function text(data: FormData, key: string): string {
   const value = data.get(key);
   return typeof value === "string" ? value : "";
+}
+
+/**
+ * Sanityn kuukausikiintiön ollessa täynnä (docs/decisions/001) uusi yritys
+ * hetken päästä ei auta, joten kerrotaan se suoraan.
+ */
+async function tallennusVirhe(error: unknown): Promise<string> {
+  if (onKiintioTaynna(error)) {
+    return `Viestien vastaanotto on tilapäisesti poissa käytöstä. Viestiäsi ei tallennettu. ${await ilmoitaOsoitteeseen()}`;
+  }
+  return "Tallennus epäonnistui teknisen virheen vuoksi. Viestiäsi ei tallennettu — yritä hetken kuluttua uudelleen.";
 }
 
 export async function lahetaKommentti(
@@ -100,7 +112,7 @@ export async function lahetaKommentti(
     );
   } catch (error) {
     console.error("[lahetaKommentti] haku epäonnistui:", error);
-    return fail("Tallennus epäonnistui teknisen virheen vuoksi. Viestiäsi ei tallennettu — yritä hetken kuluttua uudelleen.");
+    return fail(await tallennusVirhe(error));
   }
 
   const kommentointi = tila.uutinen?.kommentointi;
@@ -133,7 +145,7 @@ export async function lahetaKommentti(
     });
   } catch (error) {
     console.error("[lahetaKommentti] tallennus epäonnistui:", error);
-    return fail("Tallennus epäonnistui teknisen virheen vuoksi. Viestiäsi ei tallennettu — yritä hetken kuluttua uudelleen.");
+    return fail(await tallennusVirhe(error));
   }
 
   // Lähettäjä näkee oman viestinsä heti (read-your-own-writes).

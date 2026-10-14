@@ -27,8 +27,25 @@ const aiCrawlers = [
   "Applebot-Extended",
 ];
 
-/** Polut joita ei indeksoida: hallinta, rajapinnat, lomakkeiden paluusivut. */
-const disallowedPaths = ["/studio", "/studio/", "/api/"];
+/**
+ * Polut joita ei indeksoida: hallinta, rajapinnat, lomakkeiden paluusivut.
+ *
+ * Lisäksi hakutulokset ja ravintolahakemiston rajaukset: niiden yhdistelmiä
+ * (maakunnat, maa, kaupunki, arvosana, sivu, hakusana) on rajattomasti, eikä
+ * mikään niistä ole välimuistissa, joten jokainen botin käynti haki Sanitystä.
+ * Tämä kulutti Sanityn kiintiön 14.10.2026 (docs/decisions/001). Ravintolat
+ * ja uutiset löytyvät silti: jokainen on sitemapissa omalla osoitteellaan, ja
+ * uutisten kategoria- ja sivulistat (`?kategoria=`, `?sivu=`) jäävät sallituiksi.
+ */
+const disallowedPaths = [
+  "/studio",
+  "/studio/",
+  "/api/",
+  "/ravintolat?",
+  "/ravintolat/odottavat?",
+  "/*?q=",
+  "/*&q=",
+];
 
 /**
  * Jakokuvien generaattori on rajapinnan alla, mutta somepalveluiden haku-

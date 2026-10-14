@@ -16,8 +16,9 @@ import { haeTyhjatOsiot } from "@/sanity/lib/tyhjat-osiot";
  *
  * Tagi on vain `navigaatio`, ei `linkit` (docs/24 §2.5): valikko on jokaisen
  * sivun layoutissa, ja `linkit` tyhjenee minkä tahansa linkitettävän sisällön
- * muuttuessa. Kohteen osoitteen muutos näkyy valikossa siksi minuutin
- * viiveellä (fetch.ts, revalidate 60), kuten tekstin linkeissä.
+ * muuttuessa. Kohteen osoitteen muutos näkyy valikossa siksi tarkistusvälin
+ * viiveellä (fetch.ts, 5 min), kuten tekstin linkeissä. Vanha osoite ohjautuu
+ * sillä välin uuteen (aiemmat osoitteet, docs/24 askel 8).
  */
 export const haeNavigaatio = cache(async (): Promise<NavigationItem[]> => {
   const [nav, tyhjat] = await Promise.all([

@@ -17,7 +17,8 @@ import {
  * Sanity-webhook: tyhjentää välimuistin kun sisältö muuttuu.
  *
  * Ilman tätä isän Studiossa tekemä muutos näkyisi vasta kun sivun
- * välimuistin 60 sekunnin ikkuna (sanity/lib/fetch.ts) umpeutuu. Webhookin kanssa se näkyy sekunneissa.
+ * välimuistin viiden minuutin tarkistusväli (sanity/lib/fetch.ts) umpeutuu.
+ * Webhookin kanssa se näkyy yleensä sekunneissa.
  *
  * Sanityssa (sanity.io/manage → API → Webhooks, docs/17 §D, docs/07):
  *   Nimi:     Sivuston päivitys (revalidate)
@@ -58,7 +59,8 @@ const SISALLON_RIIPPUVAT: Record<string, string[]> = {
  * Linkin kohteen osoite näkyy etusivun pikalinkeissä ja napeissa sekä klubin
  * toiminnan vuosilinkeissä (tagi `linkit`, docs/24 §2.5). Valikko ja
  * alatunniste eivät käytä tagia: ne ovat jokaisella sivulla, ja kohteen
- * osoitteen muutos näkyy niissä minuutin viiveellä, kuten tekstin linkeissä.
+ * osoitteen muutos näkyy niissä tarkistusvälin (5 min) viiveellä, kuten
+ * tekstin linkeissä. Vanha osoite ohjautuu sillä välin uuteen.
  */
 const LINKIT: Record<string, string[]> = Object.fromEntries(LINKIN_KOHDETYYPIT.map((t) => [t, ["linkit"]]));
 
