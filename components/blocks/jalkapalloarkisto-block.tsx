@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { stegaClean } from "next-sanity";
 
+import { FifaNosto } from "@/components/kaaviot/fifa-nosto";
 import { Container } from "@/components/layout/container";
 import { BlockHeading } from "@/components/blocks/block-heading";
 import { LinkButton } from "@/components/ui/button";
@@ -12,6 +13,7 @@ import {
 } from "@/sanity/lib/queries/etusivu";
 import { arkistoNav } from "@/lib/nav-sections";
 import { formatDate } from "@/lib/format";
+import { jasennaPisteet } from "@/lib/sijoitushistoria";
 
 /**
  * Jalkapalloarkiston teaser (docs/02 §"Etusivun rakenne", kohta 6).
@@ -70,7 +72,11 @@ export async function JalkapalloarkistoBlock({
   const counts = buildCounts(data);
   const fifaColumns = data.fifa?.columns ?? [];
   const fifaRows = data.fifa?.rows ?? [];
-  const showFifa = fifaColumns.length > 0 && fifaRows.length > 0;
+  // Sijoitushistoriassa ensimmäiset rivit ovat vanhimmat (1993), joten
+  // taulukon sijaan nosto, joka näyttää nykyisen sijan (docs/decisions/002).
+  const fifaPisteet = data.fifa?.kaavio === "sijoitushistoria" ? jasennaPisteet(fifaColumns, fifaRows) : [];
+  const showNosto = fifaPisteet.length >= 2;
+  const showFifa = !showNosto && data.fifa?.kaavio !== "sijoitushistoria" && fifaColumns.length > 0 && fifaRows.length > 0;
 
   // Yleiskatsaus on jo CTA-napissa, joten se jätetään linkkiruudukosta pois.
   const sections = arkistoNav.filter((item) => item.href !== ctaHref);
@@ -131,6 +137,12 @@ export async function JalkapalloarkistoBlock({
               </LinkButton>
             </div>
           </div>
+
+          {showNosto && (
+            <div>
+              <FifaNosto pisteet={fifaPisteet} otsikkotaso="h3" className="bg-background" />
+            </div>
+          )}
 
           {showFifa && data.fifa && (
             <div>

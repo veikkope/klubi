@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { FifaNosto } from "@/components/kaaviot/fifa-nosto";
 import { JsonLd } from "@/components/seo/json-ld";
 import { Nuoli } from "@/components/ui/nuoli";
 import {
@@ -12,11 +13,14 @@ import {
 } from "@/components/ui/card";
 import { breadcrumbSchema, collectionPageSchema } from "@/lib/schema-org";
 import { buildMetadata } from "@/lib/seo";
+import { jasennaPisteet } from "@/lib/sijoitushistoria";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import { haeOsioSivu } from "@/sanity/lib/osiosivu";
 import {
   arkistoTags,
+  fifaNostoQuery,
   huuhkajatHubQuery,
+  type FifaNostoData,
   type HuuhkajatHub,
 } from "@/sanity/lib/queries/arkisto";
 
@@ -62,7 +66,7 @@ const relatedLinks = [
     href: "/jalkapalloarkisto/fifa-ranking",
     title: "FIFA-ranking",
     eyebrow: "Tilastot",
-    body: "Suomen sijoitus FIFA:n maailmanlistalla ja listan kärkimaat.",
+    body: "Huuhkajien sijoitus FIFA:n maailmanlistalla kuukausittain vuodesta 1993.",
   },
 ];
 
@@ -76,11 +80,15 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function HuuhkajatPage() {
   const { title, lead, description } = await haeOsioSivu(OSIO);
-  const { taulukot, karsinnat } = await sanityFetch<HuuhkajatHub>({
-    query: huuhkajatHubQuery,
-    tags: arkistoTags,
-    fallback: { taulukot: [], karsinnat: [] },
-  });
+  const [{ taulukot, karsinnat }, fifa] = await Promise.all([
+    sanityFetch<HuuhkajatHub>({
+      query: huuhkajatHubQuery,
+      tags: arkistoTags,
+      fallback: { taulukot: [], karsinnat: [] },
+    }),
+    sanityFetch<FifaNostoData | null>({ query: fifaNostoQuery, tags: arkistoTags, fallback: null }),
+  ]);
+  const fifaPisteet = jasennaPisteet(fifa?.columns, fifa?.rows);
 
   const osiot = groupByOsio(taulukot);
   const aiheet = osiot.filter((osio) => osio.hubKohta === "aiheet");
@@ -115,6 +123,9 @@ export default async function HuuhkajatPage() {
       <VanhaAnkkuriOhjaus kohteet={kohteet} />
 
       <ArkistoPage title={title} lead={lead} breadcrumbs={trail}>
+        {/* Maajoukkueen nykyinen FIFA-sija heti alkuun (palaute 16.10.2026). */}
+        <FifaNosto pisteet={fifaPisteet} className="mb-16" />
+
         <section aria-labelledby="aiheet-otsikko">
           <h2 id="aiheet-otsikko" className={headingClass}>
             Tilastot aiheittain

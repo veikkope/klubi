@@ -33,7 +33,7 @@ function Tunnusluku({ otsikko, arvo, selite, children }: { otsikko: string; arvo
   );
 }
 
-function Muutos({ nyt, ennen }: { nyt: Piste; ennen: Piste | null }) {
+export function Muutos({ nyt, ennen }: { nyt: Piste; ennen: Piste | null }) {
   if (!ennen) return null;
   const ero = ennen.sija - nyt.sija;
   const vertailu = `edellisestä listasta (${kuukausiLyhyt(ennen.kuukausi)})`;

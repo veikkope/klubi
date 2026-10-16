@@ -329,3 +329,11 @@ export function yhteenveto(pisteet: Piste[], nimi: string): string {
     `heikoin ${t.heikoin.sija} (${kuukausiPitka(t.heikoin.kuukausi)}), keskiarvo ${desimaali(t.keskiarvo)}.`
   );
 }
+
+/** Viimeiset `vuotta` vuotta uusimmasta listasta taaksepäin (nostot ja pienet käyrät). */
+export function viimeisetVuodet(pisteet: Piste[], vuotta: number): Piste[] {
+  const viimeinen = pisteet[pisteet.length - 1];
+  if (!viimeinen) return [];
+  const raja = viimeinen.indeksi - vuotta * 12 + 1;
+  return pisteet.filter((p) => p.indeksi >= raja);
+}

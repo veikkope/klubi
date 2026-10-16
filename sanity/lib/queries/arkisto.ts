@@ -91,6 +91,23 @@ export const tilastotByCategoryQuery = defineQuery(/* groq */ `
   }
 `);
 
+/**
+ * FIFA-rankingin sijoitushistoria nostoja varten (Huuhkajat-sivu,
+ * docs/decisions/002): sarakkeet ja rivit, kun kuvaaja on valittu.
+ */
+export const fifaNostoQuery = defineQuery(/* groq */ `
+  *[_type == "jalkapalloTilasto" && category == "fifa-ranking" && kaavio == "sijoitushistoria"
+    && defined(slug.current)] | order(_updatedAt desc)[0]{
+    columns[]{ key, label, type },
+    rows[]{ cells[]{ key, value } }
+  }
+`);
+
+export interface FifaNostoData {
+  columns: StatColumn[] | null;
+  rows: StatRow[] | null;
+}
+
 /** Usean kategorian tilastot yhdellä haulla (eurocup-hubin esikatselut). */
 export const tilastotByCategoriesQuery = defineQuery(/* groq */ `
   *[_type == "jalkapalloTilasto" && category in $categories]

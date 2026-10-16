@@ -8,11 +8,14 @@
  *  - kuukausi vain kerran; aikajärjestysvirhe on varoitus, ei virhe
  *  - vaihtokuukausi kuuluu uudelle valmentajalle (data/fifa-ranking.tsv)
  *  - Excel-tuonnin otsikot (Aika, Sija, Valmentaja) tunnistetaan
+ *  - etusivun arkistolohko ei näytä sijoitushistorian vanhimpia rivejä
+ *    (1993) "tuoreimpana rankingina", vaan saa kaikki rivit nostoa varten
  *
  * Ajo: npm run test:sijoitushistoria
  */
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { evaluate, parse } from "groq-js";
 
 import {
   jasennaKuukausi,
@@ -23,15 +26,21 @@ import {
   tunnistaSarakkeet,
   tunnusluvut,
   valmentajakaudet,
+  viimeisetVuodet,
   type Rivi,
   type Sarake,
 } from "../lib/sijoitushistoria";
+import { etusivuArkistoQuery } from "../sanity/lib/queries/etusivu";
 
 let ok = 0;
-function test(nimi: string, fn: () => void) {
-  fn();
-  ok += 1;
-  console.log(`✓ ${nimi}`);
+// Testit ajetaan järjestyksessä yhtenä ketjuna (osa on asynkronisia, groq-js).
+let ketju: Promise<void> = Promise.resolve();
+function test(nimi: string, fn: () => void | Promise<void>) {
+  ketju = ketju.then(async () => {
+    await fn();
+    ok += 1;
+    console.log(`✓ ${nimi}`);
+  });
 }
 
 const SARAKKEET: Sarake[] = [
@@ -172,4 +181,38 @@ test("data/fifa-ranking.tsv: lähdedata kelpaa ja vastaa vanhaa sivua", () => {
   assert.equal(valmentajakaudet(pisteet).length, 14);
 });
 
-console.log(`\n${ok} testiä läpi.`);
+test("viimeiset vuodet lasketaan kalenterista uusimmasta listasta", () => {
+  const pisteet = jasennaPisteet(SARAKKEET, [
+    rivi("2020/09", "56"),
+    rivi("2020/10", "55"),
+    rivi("2020/11", "54"),
+    rivi("2025/10", "72"),
+  ]);
+  // 5 vuotta = 60 kuukautta uusin mukaan lukien: 11/2020–10/2025.
+  assert.deepEqual(viimeisetVuodet(pisteet, 5).map((p) => p.kuukausi), ["2020-11", "2025-10"]);
+  assert.deepEqual(viimeisetVuodet([], 5), []);
+});
+
+test("etusivun lohko: sijoitushistoria kokonaan, muu taulukko viisi riviä", async () => {
+  const rivit = Array.from({ length: 8 }, (_, i) => ({ _key: `r${i}`, cells: [{ key: "kuukausi", value: `2026/0${i + 1}` }] }));
+  const tilasto = (kaavio?: string) => ({
+    _id: "fifa",
+    _type: "jalkapalloTilasto",
+    category: "fifa-ranking",
+    slug: { current: "fifa-ranking" },
+    ...(kaavio ? { kaavio } : {}),
+    rows: rivit,
+  });
+  const aja = async (doc: object) =>
+    (await (await evaluate(parse(etusivuArkistoQuery), { dataset: [doc] })).get()) as { fifa: { rows: unknown[] } };
+  assert.equal((await aja(tilasto("sijoitushistoria"))).fifa.rows.length, 8);
+  assert.equal((await aja(tilasto())).fifa.rows.length, 5);
+});
+
+ketju.then(
+  () => console.log(`\n${ok} testiä läpi.`),
+  (virhe: unknown) => {
+    console.error(virhe);
+    process.exit(1);
+  },
+);

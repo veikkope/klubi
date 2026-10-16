@@ -110,7 +110,8 @@ export const etusivuRavintolatQuery = defineQuery(`
 /**
  * Jalkapalloarkiston teaser.
  *
- * Nostaa tuoreimman FIFA-rankingin viisi ensimmäistä riviä (docs/02 §"Etusivun
+ * Nostaa FIFA-rankingin: sijoitushistoriasta nykyisen sijan ja käyrän
+ * (docs/decisions/002), muuten taulukon viisi ensimmäistä riviä (docs/02 §"Etusivun
  * rakenne") ja arkiston kokoluvut. Luvut kertovat kävijälle, kuinka laajasta
  * aineistosta on kyse — ne ovat dataa, eivät markkinointitekstiä.
  */
@@ -125,8 +126,14 @@ export const etusivuArkistoQuery = defineQuery(`
       title,
       "slug": slug.current,
       _updatedAt,
+      kaavio,
       columns[]{ key, label, type },
-      "rows": rows[0...5]{ cells[]{ key, value } }
+      // Sijoitushistoria (kuukausi kerrallaan, vanhin ensin) näytetään nostona,
+      // joka tarvitsee kaikki rivit; muuten taulukon viisi ensimmäistä.
+      "rows": select(
+        kaavio == "sijoitushistoria" => rows[]{ cells[]{ key, value } },
+        rows[0...5]{ cells[]{ key, value } }
+      )
     }
   }
 `);
@@ -141,6 +148,7 @@ export type ArkistoTeaserData = {
     title: string;
     slug: string;
     _updatedAt: string;
+    kaavio: "sijoitushistoria" | "ei" | null;
     columns: StatColumn[] | null;
     rows: StatRow[] | null;
   } | null;
