@@ -45,7 +45,7 @@ Ajo: `npx tsx scripts/kerta/<tiedosto>.ts [--production] [--vie]`. Kaikki ovat o
 | `2026-10-06-patch-kansojen-liiga` | Kansojen liigan lohkotaulukot kauden karsintasivulle (`kaudenOttelut`) | tarkistamatta |
 | `2026-10-09-luo-tietosuojaseloste` | Tietosuojaselosteen luonti | tarkistamatta |
 | `2026-10-09-lisaa-kavijatilastot-tietosuojaan` | Kävijätilastot (GoatCounter) tietosuojaselosteeseen | tarkistamatta |
-| `2026-10-16-fifa-ranking` | FIFA-ranking taulukoksi `data/fifa-ranking.tsv`:stä ja kuvaaja päälle; vanha rankingkuva ja käsin kirjoitettu sija pois johdannosta, osiosivun tekstit (docs/decisions/002). Vasta deployn jälkeen | odottaa |
+| `2026-10-16-fifa-ranking` | FIFA-ranking taulukoksi `data/fifa-ranking.tsv`:stä ja kuvaaja päälle; vanha rankingkuva ja käsin kirjoitettu sija pois johdannosta, osiosivun tekstit (docs/decisions/002). Vasta deployn jälkeen | ajettu 16.10.2026 |
 
 `tyokalut:siivous` poistaa yli 3 kk vanhat ajetut kertaskriptit (git muistaa).
 
@@ -59,3 +59,4 @@ Ajo: `npx tsx scripts/kerta/<tiedosto>.ts [--production] [--vie]`. Kaikki ovat o
 | 5.10.2026 | Datasetit yksityisiksi (docs/17 §A4) | Sanityn hallinta | |
 | 8.10.2026 | P0: development productionin kopioksi | `npx sanity dataset import … development --replace` (vain development) | `production-2026-10-08.tar.gz` |
 | 8.10.2026 | P3, P5 (osiosivut, linkit), P8 (webhook, e2e 25/25) | docs/24 luku 5 | `production-2026-10-08.tar.gz` |
+| 16.10.2026 | FIFA-ranking taulukoksi ja kuvaaja päälle, vanha rankingkuva pois (docs/decisions/002) | `2026-10-16-fifa-ranking --production --vie` | `production-2026-10-16-1328.tar.gz` |
