@@ -3,7 +3,7 @@
 import type { OhjeSisalto } from "../../lib/ohje/tyypit";
 
 export const OHJE: OhjeSisalto = {
-  "versio": "299d259b8a77",
+  "versio": "9091f382574d",
   "osiot": [
     {
       "id": "pikaopas",
@@ -1226,6 +1226,61 @@ export const OHJE: OhjeSisalto = {
             },
             {
               "id": "tilastotaulukon-paivitys--jos-jokin-menee-vikaan",
+              "teksti": "Jos jokin menee vikaan",
+              "taso": 2
+            }
+          ]
+        },
+        {
+          "id": "fifa-ranking",
+          "otsikko": "Lisää uusi FIFA-ranking",
+          "osio": "arkisto",
+          "avainsanat": [
+            "FIFA",
+            "FIFA-ranking",
+            "ranking",
+            "maailmanlista",
+            "sijoitus",
+            "sija",
+            "Huuhkajat",
+            "kuvaaja",
+            "käyrä",
+            "kaavio",
+            "valmentaja",
+            "uusi valmentaja",
+            "kuukausittain",
+            "Excel"
+          ],
+          "tyypit": [
+            "jalkapalloTilasto"
+          ],
+          "kesto": "noin 3 minuuttia",
+          "paivitetty": "2026-10-16",
+          "html": "<h2 id=\"fifa-ranking--milloin\">Milloin</h2>\n<p>Kun FIFA julkaisee uuden maailmanlistan, yleensä kerran kuussa. Lisäät yhden rivin, ja sivu\n<strong>Jalkapalloarkisto → FIFA-ranking</strong> piirtää kuvaajan, nykyisen sijan, parhaan ja heikoimman sijan,\nkeskiarvon ja valmentajien kaudet itse. Kuvaa ei enää tehdä Excelissä.</p>\n<h2 id=\"fifa-ranking--askeleet\">Askeleet</h2>\n<p><button type=\"button\" class=\"ohje-kuvanappi\" data-ohje-kuva=\"/studio-ohje/fifa-ranking-01-taulukko.webp\" aria-label=\"Suurenna kuva: FIFA-rankingin taulukko. 1: Taulukko, joka vierii omassa laatikossaan. 2: Lisää rivi -painike taulukon alla.\"><img class=\"ohje-kuva\" src=\"/studio-ohje/fifa-ranking-01-taulukko.webp\" alt=\"FIFA-rankingin taulukko. 1: Taulukko, joka vierii omassa laatikossaan. 2: Lisää rivi -painike taulukon alla.\" width=\"731\" height=\"1018\" loading=\"lazy\" decoding=\"async\"></button></p>\n<ol>\n<li>Vasemmasta valikosta valitse <strong>Jalkapalloarkisto</strong>, sitten <strong>Tilastot</strong> ja <strong>Muut arkiston taulukot</strong>.</li>\n<li>Valitse listasta taulukko Huuhkajien FIFA-ranking.</li>\n<li>Valitse otsikon alta välilehti <strong>Tilastodata</strong>.</li>\n<li>Taulukko näyttää kerralla noin 20 riviä. Vieritä taulukkoa sen omassa laatikossa loppuun asti:\nviimeisellä rivillä on edellinen lista. ①</li>\n<li>Paina taulukon alla <strong>Lisää rivi</strong>. ②\nUusi tyhjä rivi tulee taulukon loppuun.</li>\n<li>Kirjoita uudelle riville:\n<ul>\n<li>Kuukausi: vuosi, kauttaviiva ja kuukausi kahdella numerolla, esimerkiksi 2026/11</li>\n<li>Sija: pelkkä numero, esimerkiksi 74</li>\n<li>Valmentaja: päävalmentajan sukunimi samoin kuin edellisellä rivillä, esimerkiksi Friis.</li>\n</ul>\n</li>\n<li>Paina oikeassa alakulmassa <strong>Julkaise</strong>.</li>\n</ol>\n<div class=\"markdown-alert markdown-alert-tip\">\n<p class=\"markdown-alert-title\">Vinkki</p>\n<p>Kun päävalmentaja vaihtuu, kirjoita uuden valmentajan nimi jo ensimmäiselle uudelle riville.\nJos sama valmentaja palaa myöhemmin, erota kaudet numerolla kuten taulukossa on tehty\n(Kanerva 1, Kanerva 2, Kanerva 3).</p>\n</div>\n<h2 id=\"fifa-ranking--tulos\">Tulos</h2>\n<ul>\n<li>Alapalkissa lukee &quot;Viimeksi julkaistu juuri nyt&quot;.</li>\n<li>Noin minuutin kuluttua sivun kuvaaja jatkuu uuteen kuukauteen, ja kortti &quot;Sija nyt&quot; näyttää\nuuden sijan ja muutoksen edelliseen listaan.</li>\n</ul>\n<h2 id=\"fifa-ranking--lisavalinnat\">Lisävalinnat</h2>\n<ul>\n<li>FIFA julkaisi kuukaudessa kaksi listaa: kirjoita vain kuukauden viimeinen. Kuukausi saa olla\ntaulukossa vain kerran.</li>\n<li>FIFA ei julkaissut listaa jonain kuukautena: jätä kuukausi pois. Kuvaaja yhdistää viereiset kuukaudet.</li>\n<li>Koko taulukko kerralla Excelistä: paina <strong>Tuo Excelistä</strong>, liitä solut otsikkoriveineen ja valitse\n<strong>Korvaa koko taulukko (sarakkeet ja rivit)</strong>. Sarakkeet ovat Kuukausi (tai Aika), Sija ja Valmentaja.</li>\n<li>Uutinen rankingista: kirjoita se kenttään <strong>Johdanto</strong> välilehdellä <strong>Perustiedot</strong>. Uutiset näkyvät\nkuvaajan alla. Lukuja ei tarvitse kirjoittaa tekstiin, sillä sivu laskee ne itse.</li>\n<li>Muu taulukon muokkaus: <a href=\"/studio/ohjeet/tilastotaulukon-paivitys\" data-ohje-kortti=\"tilastotaulukon-paivitys\">Päivitä tilastotaulukko</a></li>\n</ul>\n<h2 id=\"fifa-ranking--jos-jokin-menee-vikaan\">Jos jokin menee vikaan</h2>\n<ul>\n<li><strong>Julkaise</strong> ei toimi, ja taulukon yläpuolella on punainen ilmoitus, esimerkiksi\n&quot;Rivi 387: kuukausi … on väärässä muodossa&quot;: korjaa ilmoituksen rivi ja julkaise uudelleen.\nIlmoitus kertoo myös oikean muodon.</li>\n<li>&quot;Kuukausi … on jo rivillä …&quot;: sama kuukausi on kahdesti. Poista toinen rivin valikosta ⋮ <strong>Poista rivi</strong>.</li>\n<li>Kuvaaja ei näy sivulla: tarkista välilehdeltä <strong>Tilastodata</strong>, että kohdassa\n<strong>Kuvaaja taulukon yläpuolella</strong> on valittuna <strong>Sijoitushistoria (esim. FIFA-ranking)</strong>.</li>\n</ul>\n<p>Katso myös: <a href=\"/studio/ohjeet/tilastotaulukon-paivitys\" data-ohje-kortti=\"tilastotaulukon-paivitys\">Päivitä tilastotaulukko</a> · <a href=\"/studio/ohjeet/luonnos-julkaisu-ja-peruminen\" data-ohje-kortti=\"luonnos-julkaisu-ja-peruminen\">Luonnos, julkaisu ja peruminen</a></p>\n",
+          "teksti": "Milloin Kun FIFA julkaisee uuden maailmanlistan, yleensä kerran kuussa. Lisäät yhden rivin, ja sivu Jalkapalloarkisto → FIFA-ranking piirtää kuvaajan, nykyisen sijan, parhaan ja heikoimman sijan, keskiarvon ja valmentajien kaudet itse. Kuvaa ei enää tehdä Excelissä. Askeleet Vasemmasta valikosta valitse Jalkapalloarkisto , sitten Tilastot ja Muut arkiston taulukot . Valitse listasta taulukko Huuhkajien FIFA-ranking. Valitse otsikon alta välilehti Tilastodata . Taulukko näyttää kerralla noin 20 riviä. Vieritä taulukkoa sen omassa laatikossa loppuun asti: viimeisellä rivillä on edellinen lista. ① Paina taulukon alla Lisää rivi . ② Uusi tyhjä rivi tulee taulukon loppuun. Kirjoita uudelle riville: Kuukausi: vuosi, kauttaviiva ja kuukausi kahdella numerolla, esimerkiksi 2026/11 Sija: pelkkä numero, esimerkiksi 74 Valmentaja: päävalmentajan sukunimi samoin kuin edellisellä rivillä, esimerkiksi Friis. Paina oikeassa alakulmassa Julkaise . Kun päävalmentaja vaihtuu, kirjoita uuden valmentajan nimi jo ensimmäiselle uudelle riville. Jos sama valmentaja palaa myöhemmin, erota kaudet numerolla kuten taulukossa on tehty (Kanerva 1, Kanerva 2, Kanerva 3). Tulos Alapalkissa lukee \"Viimeksi julkaistu juuri nyt\". Noin minuutin kuluttua sivun kuvaaja jatkuu uuteen kuukauteen, ja kortti \"Sija nyt\" näyttää uuden sijan ja muutoksen edelliseen listaan. Lisävalinnat FIFA julkaisi kuukaudessa kaksi listaa: kirjoita vain kuukauden viimeinen. Kuukausi saa olla taulukossa vain kerran. FIFA ei julkaissut listaa jonain kuukautena: jätä kuukausi pois. Kuvaaja yhdistää viereiset kuukaudet. Koko taulukko kerralla Excelistä: paina Tuo Excelistä , liitä solut otsikkoriveineen ja valitse Korvaa koko taulukko (sarakkeet ja rivit) . Sarakkeet ovat Kuukausi (tai Aika), Sija ja Valmentaja. Uutinen rankingista: kirjoita se kenttään Johdanto välilehdellä Perustiedot . Uutiset näkyvät kuvaajan alla. Lukuja ei tarvitse kirjoittaa tekstiin, sillä sivu laskee ne itse. Muu taulukon muokkaus: Päivitä tilastotaulukko Jos jokin menee vikaan Julkaise ei toimi, ja taulukon yläpuolella on punainen ilmoitus, esimerkiksi \"Rivi 387: kuukausi … on väärässä muodossa\": korjaa ilmoituksen rivi ja julkaise uudelleen. Ilmoitus kertoo myös oikean muodon. \"Kuukausi … on jo rivillä …\": sama kuukausi on kahdesti. Poista toinen rivin valikosta ⋮ Poista rivi . Kuvaaja ei näy sivulla: tarkista välilehdeltä Tilastodata , että kohdassa Kuvaaja taulukon yläpuolella on valittuna Sijoitushistoria (esim. FIFA-ranking) . Katso myös: Päivitä tilastotaulukko · Luonnos, julkaisu ja peruminen",
+          "otsikot": [
+            {
+              "id": "fifa-ranking--milloin",
+              "teksti": "Milloin",
+              "taso": 2
+            },
+            {
+              "id": "fifa-ranking--askeleet",
+              "teksti": "Askeleet",
+              "taso": 2
+            },
+            {
+              "id": "fifa-ranking--tulos",
+              "teksti": "Tulos",
+              "taso": 2
+            },
+            {
+              "id": "fifa-ranking--lisavalinnat",
+              "teksti": "Lisävalinnat",
+              "taso": 2
+            },
+            {
+              "id": "fifa-ranking--jos-jokin-menee-vikaan",
               "teksti": "Jos jokin menee vikaan",
               "taso": 2
             }

@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 
+import { Sijoitushistoria } from "@/components/kaaviot/sijoitushistoria";
 import { PortableText } from "@/components/portable-text";
 import { Nuoli } from "@/components/ui/nuoli";
 import { UusiValilehti } from "@/components/ui/uusi-valilehti";
@@ -8,6 +9,7 @@ import { SanityImage } from "@/components/sanity-image";
 import { StatTable } from "@/components/ui/stat-table";
 import { cn } from "@/lib/cn";
 import { formatDate } from "@/lib/format";
+import { jasennaPisteet } from "@/lib/sijoitushistoria";
 import type { SanityImage as SanityImageData } from "@/lib/types";
 import type { TilastoDoc } from "@/sanity/lib/queries/arkisto";
 
@@ -128,23 +130,43 @@ export function TilastoBody({
   // uutinen, EM 2028 -karsinnan ottelut): tyhjää taulukkoa ei silloin mainita.
   const hasText = hasBlocks(tilasto.intro) || hasBlocks(tilasto.lisatiedot);
   const hasImages = (tilasto.kuvat ?? []).some((kuva) => kuva?.asset);
+  // Sijoitushistoria (FIFA-ranking): kuvaaja ja tunnusluvut ensin, koko
+  // kuukausitaulukko avattavana lopussa (docs/decisions/002).
+  const pisteet = tilasto.kaavio === "sijoitushistoria" ? jasennaPisteet(tilasto.columns, tilasto.rows) : [];
+  const kaavio = pisteet.length >= 2;
+
+  const taulukko = (
+    <StatTable
+      className="mt-6"
+      caption={tilasto.title}
+      columns={tilasto.columns ?? []}
+      rows={tilasto.rows ?? []}
+      emptyLabel="Taulukon rivejä ei ole vielä lisätty."
+    />
+  );
 
   return (
     <div className={className}>
+      {kaavio && (
+        <Sijoitushistoria pisteet={pisteet} nimi={tilasto.title} otsikkotaso={ylinOtsikko} className="mt-6 mb-12" />
+      )}
+
       {hasBlocks(tilasto.intro) && (
         <div className="max-w-3xl">
           <PortableText value={tilasto.intro} ylinOtsikko={ylinOtsikko} />
         </div>
       )}
 
-      {(hasTable || (!hasText && !hasImages)) && (
-        <StatTable
-          className="mt-6"
-          caption={tilasto.title}
-          columns={tilasto.columns ?? []}
-          rows={tilasto.rows ?? []}
-          emptyLabel="Taulukon rivejä ei ole vielä lisätty."
-        />
+      {kaavio ? (
+        <details className="group mt-10 rounded-2xl border border-border bg-surface">
+          <summary className="flex min-h-11 cursor-pointer items-center gap-2 rounded-2xl px-4 py-3 font-medium text-foreground hover:bg-surface-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
+            <span aria-hidden="true" className="transition-transform group-open:rotate-90">›</span>
+            Kaikki {pisteet.length} kuukautta taulukkona
+          </summary>
+          <div className="px-2 pb-2 sm:px-4 sm:pb-4">{taulukko}</div>
+        </details>
+      ) : (
+        (hasTable || (!hasText && !hasImages)) && taulukko
       )}
 
       {tilasto.paivitetty && (

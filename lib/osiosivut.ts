@@ -377,11 +377,11 @@ export const OSIOSIVUT: readonly OsioSivu[] = [
   arkistonOsio("fifa-ranking", {
     title: "FIFA-ranking",
     lead:
-      "FIFA on julkaissut maailmanlistaa vuodesta 1992. Taulukot seuraavat " +
-      "Suomen sijoitusta ja listan kärkimaita julkaisukierroksittain.",
+      "FIFA on julkaissut miesten maailmanlistaa vuodesta 1992. Kuvaaja seuraa " +
+      "Huuhkajien sijoitusta jokaisella listalla elokuusta 1993 alkaen, päävalmentajittain.",
     description:
-      "Suomen sijoitus FIFA:n maailmanlistalla vuosittain sekä listan kärkimaat. Ranking päivittyy FIFA:n julkaisujen mukaan.",
-    kortti: "Suomen sijoitus FIFA:n maailmanlistalla ja listan kärkimaat.",
+      "Huuhkajien sijoitus FIFA:n maailmanlistalla kuukausittain vuodesta 1993: kuvaaja, paras ja heikoin sija, keskiarvo ja päävalmentajien kaudet.",
+    kortti: "Huuhkajien sijoitus FIFA:n maailmanlistalla kuukausittain vuodesta 1993.",
   }),
   arkistonOsio("lupaavat", {
     title: "Lupaavat pelaajat 1980–1991",

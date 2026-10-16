@@ -3,6 +3,7 @@ import { defineField, defineType } from "sanity";
 import { HUUHKAJAT_OSIOT, findHuuhkajatOsio, osioLiittyyKauteen } from "../../../lib/huuhkajat-osiot";
 import { TILASTO_KATEGORIA_VALINNAT, kategorianNimi } from "../../../lib/tilasto-kategoriat";
 import { MESTARUUSMAAT } from "../../../lib/ulkomaiset-mestarit";
+import { tarkistaSijoitushistoria, type Ongelma, type Rivi, type Sarake } from "../../../lib/sijoitushistoria";
 import { TaulukkoKontekstiInput } from "../../components/taulukkoeditori/konteksti";
 import { seoFields } from "../objects/seoFields";
 import {
@@ -16,6 +17,22 @@ import {
 } from "../objects/contentMeta";
 import { HAKUKONEET_RYHMA, OSOITE_OTSIKKO } from "../objects/sanasto";
 import { rivitKentta, sarakkeetKentta } from "../objects/taulukkoKentat";
+
+/** Näytetään enintään viisi ongelmaa kerralla, jotta ilmoitus pysyy luettavana. */
+function sijoitushistorianOngelmat(
+  rivit: unknown,
+  document: Record<string, unknown> | undefined,
+  taso: Ongelma["taso"],
+): true | string {
+  if (document?.kaavio !== "sijoitushistoria") return true;
+  const ongelmat = tarkistaSijoitushistoria(document.columns as Sarake[] | undefined, rivit as Rivi[] | undefined).filter(
+    (o) => o.taso === taso,
+  );
+  if (ongelmat.length === 0) return true;
+  const naytetyt = ongelmat.slice(0, 5).map((o) => o.viesti);
+  if (ongelmat.length > 5) naytetyt.push(`… ja ${ongelmat.length - 5} muuta.`);
+  return naytetyt.join(" ");
+}
 
 export const jalkapalloTilasto = defineType({
   name: "jalkapalloTilasto",
@@ -136,8 +153,34 @@ export const jalkapalloTilasto = defineType({
       type: "portableText",
       group: "perustiedot",
     }),
+    defineField({
+      name: "kaavio",
+      title: "Kuvaaja taulukon yläpuolella",
+      description:
+        "Sijoitushistoria piirtää taulukosta käyrän, tunnusluvut ja valmentajakaudet itsestään. " +
+        "Taulukossa tarvitaan sarakkeet Kuukausi (esim. 2026/10), Sija (numero) ja Valmentaja. " +
+        "Uusi kuukausi lisätään taulukon loppuun, ja kuvaaja päivittyy julkaisun jälkeen.",
+      type: "string",
+      options: {
+        list: [
+          { title: "Ei kuvaajaa, pelkkä taulukko", value: "ei" },
+          { title: "Sijoitushistoria (esim. FIFA-ranking)", value: "sijoitushistoria" },
+        ],
+        layout: "radio",
+      },
+      // Toistaiseksi vain FIFA-rankingille (docs/decisions/002); jo valittu näkyy aina.
+      hidden: ({ document }) => document?.category !== "fifa-ranking" && !document?.kaavio,
+      group: "data",
+    }),
     sarakkeetKentta({ group: "data" }),
-    rivitKentta({ group: "data" }),
+    rivitKentta({
+      group: "data",
+      // Kuvaajan data tarkistetaan tiukasti, muut taulukot ovat vapaata tekstiä.
+      validation: (rule) => [
+        rule.custom((rivit, context) => sijoitushistorianOngelmat(rivit, context.document, "virhe")),
+        rule.custom((rivit, context) => sijoitushistorianOngelmat(rivit, context.document, "varoitus")).warning(),
+      ],
+    }),
     defineField({
       name: "lisatiedot",
       title: "Lisätiedot taulukon jälkeen",

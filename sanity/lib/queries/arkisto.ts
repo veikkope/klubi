@@ -39,6 +39,8 @@ export interface TilastoDoc {
   intro: PortableTextBlock[] | null;
   columns: StatColumn[] | null;
   rows: StatRow[] | null;
+  /** Taulukosta piirrettävä kuvaaja (`lib/sijoitushistoria.ts`); "ei" tai null = pelkkä taulukko. */
+  kaavio: "sijoitushistoria" | "ei" | null;
   /** Taulukon alla näytettävä teksti: otteluraportit, kokoonpanot, selitteet. */
   lisatiedot: PortableTextBlock[] | null;
   kuvat: SanityImage[] | null;
@@ -72,6 +74,7 @@ export const tilastoProjection = /* groq */ `
   intro[]{${runko}},
   columns[]{ key, label, type },
   rows[]{ cells[]{ key, value } },
+  kaavio,
   lisatiedot[]{${runko}},
   kuvat[]{ _key, alt, caption, asset, hotspot, crop, ${lqip} },
   paivitetty,

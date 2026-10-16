@@ -78,8 +78,9 @@ const ARKISTON_META_KUVAUKSET: Record<string, string> = {
     "Maailman paras avauskokoonpano vuosittain: jokaisen vuoden yksitoista pelaajaa pelipaikkoineen ja maineen sekä kenttäkaaviot.",
   "jalkapalloarkisto/valmentajat":
     "Suomen miesten maajoukkueen päävalmentajat kausittain sekä tiedot valmentajien palkoista yhtenä koottuna taulukkona.",
+  // Muutettu tarkoituksella 16.10.2026: sivulla on kuvaaja, ei kärkimaita (docs/decisions/002).
   "jalkapalloarkisto/fifa-ranking":
-    "Suomen sijoitus FIFA:n maailmanlistalla vuosittain sekä listan kärkimaat. Ranking päivittyy FIFA:n julkaisujen mukaan.",
+    "Huuhkajien sijoitus FIFA:n maailmanlistalla kuukausittain vuodesta 1993: kuvaaja, paras ja heikoin sija, keskiarvo ja päävalmentajien kaudet.",
   "jalkapalloarkisto/lupaavat":
     "Vuosina 1980–1991 lupaavimmiksi valitut suomalaiset jalkapalloilijat: palkitut vuosittain seuroineen yhtenä taulukkona.",
   "jalkapalloarkisto/saavutukset":

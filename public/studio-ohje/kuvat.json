@@ -95,6 +95,12 @@
     "skaala": 2,
     "sanity": "5.31.2"
   },
+  "fifa-ranking-01-taulukko": {
+    "leveys": 1462,
+    "korkeus": 2036,
+    "skaala": 2,
+    "sanity": "5.31.2"
+  },
   "galleria-albumi-01-lomake": {
     "leveys": 3200,
     "korkeus": 4126,

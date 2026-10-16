@@ -45,6 +45,7 @@ Ajo: `npx tsx scripts/kerta/<tiedosto>.ts [--production] [--vie]`. Kaikki ovat o
 | `2026-10-06-patch-kansojen-liiga` | Kansojen liigan lohkotaulukot kauden karsintasivulle (`kaudenOttelut`) | tarkistamatta |
 | `2026-10-09-luo-tietosuojaseloste` | Tietosuojaselosteen luonti | tarkistamatta |
 | `2026-10-09-lisaa-kavijatilastot-tietosuojaan` | Kävijätilastot (GoatCounter) tietosuojaselosteeseen | tarkistamatta |
+| `2026-10-16-fifa-ranking` | FIFA-ranking taulukoksi `data/fifa-ranking.tsv`:stä ja kuvaaja päälle; vanha rankingkuva ja käsin kirjoitettu sija pois johdannosta, osiosivun tekstit (docs/decisions/002). Vasta deployn jälkeen | odottaa |
 
 `tyokalut:siivous` poistaa yli 3 kk vanhat ajetut kertaskriptit (git muistaa).
 

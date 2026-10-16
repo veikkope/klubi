@@ -595,6 +595,25 @@ export const KUVAT: KuvaMaarite[] = [
     rajaus: { kohteet: [ALAPALKKI], reunus: 0 },
   },
   {
+    // Oikea dokumentti, ei siementä: data on julkista FIFA-dataa (docs/decisions/002).
+    id: "fifa-ranking-01-taulukko",
+    kuvaus: "FIFA-ranking: taulukko ja Lisää rivi",
+    avaa: muokkaa("jalkapalloTilasto-fifa-ranking", "jalkapalloTilasto"),
+    korkeus: 1100,
+    valmis: { testid: "group-tab-data" },
+    toiminnot: [
+      { ryhma: "data" },
+      { odota: { rooli: "button", nimi: "Lisää rivi" } },
+      { vierita: { kentta: "rows" } },
+    ],
+    // Taulukossa on satoja rivejä, ja editori vierii omassa laatikossaan: rajaus kenttään.
+    merkinnat: {
+      1: { kohde: { kentta: "rows" }, kehys: true, paikka: "vasen" },
+      2: { kohde: { rooli: "button", nimi: "Lisää rivi" }, kehys: true },
+    },
+    rajaus: { kohteet: [{ kentta: "rows" }], reunus: 40 },
+  },
+  {
     id: "uusi-tilastotaulukko-01-ryhmat",
     leveys: 1600,
     kuvaus: "Tilastot-ryhmät ja ryhmän lista",

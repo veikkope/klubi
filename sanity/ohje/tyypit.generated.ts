@@ -50,6 +50,7 @@ export const OHJE_TYYPEILLE: Readonly<Record<string, readonly string[]>> = {
     "video-kartta-lomake",
     "tekstin-muotoilu",
     "tilastotaulukon-paivitys",
+    "fifa-ranking",
     "uusi-tilastotaulukko",
     "huuhkajat-ja-kansojen-liiga",
     "karsinnat",
