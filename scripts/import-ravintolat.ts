@@ -118,10 +118,6 @@ function toIsoDate(finnish: string | null): string | null {
   return `${yyyy}-${mm}-${dd}`;
 }
 
-function formatRating(value: number | null): string | null {
-  return value === null ? null : value.toFixed(1).replace(".", ",");
-}
-
 function fold(input: string): string {
   return input
     .toLowerCase()
@@ -139,67 +135,6 @@ function allVisits(r: Ravintola): string[] {
     .map(toIsoDate)
     .filter((d): d is string => d !== null);
   return [...new Set(visits)].sort().reverse();
-}
-
-/**
- * Tiivistelmä koostetaan mitatuista faktoista, ei keksitä.
- *
- * Tämä on sivun ensimmäinen kappale ja se teksti, jonka hakukone
- * todennäköisimmin lainaa (docs/11 §7.2). Siksi se kertoo arvosanan,
- * sijainnin ja käyntimäärän — ne ovat kysymykset joihin ihminen haluaa
- * vastauksen ennen kuin lukee pidemmälle.
- *
- * Kaupunkia ei toisteta, jos se on jo osoitteessa ("Mariankatu 8 Lahti"),
- * eikä alueviitettä (maa tai maakunta) esitetä kaupunkina.
- */
-function buildTiivistelma(r: Ravintola, cityName: string | null): string {
-  const parts: string[] = [];
-
-  const overall = formatRating(r.ratingOverall);
-  if (overall) {
-    const sub = [
-      r.ratingFood !== null ? `ruoka ${formatRating(r.ratingFood)}` : null,
-      r.ratingPrice !== null ? `hinta ${formatRating(r.ratingPrice)}` : null,
-      r.ratingAtmosphere !== null
-        ? `viihtyvyys ${formatRating(r.ratingAtmosphere)}`
-        : null,
-    ].filter(Boolean);
-    parts.push(
-      `Klubin arvio ${overall}/5${sub.length ? ` (${sub.join(", ")})` : ""}.`,
-    );
-  }
-
-  const address = r.address?.trim() || null;
-  const cityInAddress =
-    address && cityName ? ` ${fold(address)} `.includes(` ${fold(cityName)} `) : false;
-  if (address) {
-    const where = cityName && !cityInAddress ? `${address}, ${cityName}` : address;
-    parts.push(`${r.name} sijaitsee osoitteessa ${where}.`);
-  } else if (cityName) {
-    parts.push(`${r.name} sijaitsee kaupungissa ${cityName}.`);
-  }
-
-  const visits = allVisits(r);
-  const years = visits.map((v) => v.slice(0, 4));
-  const firstYear = years.at(-1);
-  const lastYear = years[0];
-  if (visits.length > 1 && firstYear) {
-    const span = lastYear && lastYear !== firstYear ? `vuosina ${firstYear}–${lastYear}` : `vuonna ${firstYear}`;
-    parts.push(`Klubi on vieraillut ravintolassa ${visits.length} kertaa ${span}.`);
-  } else if (firstYear) {
-    parts.push(`Klubi vieraili ravintolassa vuonna ${firstYear}.`);
-  }
-
-  if (r.closed) parts.push("Ravintolan toiminta on sittemmin loppunut.");
-
-  // Katkaistaan kokonaiseen virkkeeseen, ei kesken sanan.
-  let out = "";
-  for (const part of parts) {
-    const next = out ? `${out} ${part}` : part;
-    if (next.length > 300) break;
-    out = next;
-  }
-  return out;
 }
 
 interface CityDoc {
@@ -518,7 +453,7 @@ async function main() {
       skipped += 1;
       return [];
     }
-    const { doc: city, isArea } = cityFor(r, cities);
+    const { doc: city } = cityFor(r, cities);
     cityNames.set(r, city.name);
     const perPage = pageCities.get(r.sourcePage) ?? new Map<string, number>();
     perPage.set(city.slug.current, (perPage.get(city.slug.current) ?? 0) + 1);
@@ -546,7 +481,8 @@ async function main() {
         _type: "ravintola" as const,
         name: r.name,
         slug: { _type: "slug" as const, current: slug },
-        tiivistelma: buildTiivistelma(r, isArea ? null : city.name) || undefined,
+        // Ei tiivistelmää: arvosana, osoite ja käynnit näkyvät sivulla ajantasaisina
+        // (palaute 22.–23.10.2026, scripts/kerta/2026-10-22-ravintolat-tiivistelma.ts).
         city: { _type: "reference" as const, _ref: city._id },
         address: r.address ?? undefined,
         postalCode: r.postalCode ?? undefined,

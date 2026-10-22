@@ -46,6 +46,7 @@ Ajo: `npx tsx scripts/kerta/<tiedosto>.ts [--production] [--vie]`. Kaikki ovat o
 | `2026-10-09-luo-tietosuojaseloste` | Tietosuojaselosteen luonti | tarkistamatta |
 | `2026-10-09-lisaa-kavijatilastot-tietosuojaan` | Kävijätilastot (GoatCounter) tietosuojaselosteeseen | tarkistamatta |
 | `2026-10-16-fifa-ranking` | FIFA-ranking taulukoksi `data/fifa-ranking.tsv`:stä ja kuvaaja päälle; vanha rankingkuva ja käsin kirjoitettu sija pois johdannosta, osiosivun tekstit (docs/decisions/002). Vasta deployn jälkeen | ajettu 16.10.2026 |
+| `2026-10-22-ravintolat-tiivistelma` | Ravintoloiden tuonnin tiivistelmä pois: ensin arvosana- ja osoitevirke (22.10.), sitten jäljelle jäänyt käyntivirke, jolloin kenttä poistetaan (23.10.). Luvut olivat jäädytettyjä; sivu laskee ne itse. Isän tekstiin ei kosketa. Ei vaadi deployta | ajettu 22.10.2026 (molemmat vaiheet) |
 
 `tyokalut:siivous` poistaa yli 3 kk vanhat ajetut kertaskriptit (git muistaa).
 
@@ -60,3 +61,5 @@ Ajo: `npx tsx scripts/kerta/<tiedosto>.ts [--production] [--vie]`. Kaikki ovat o
 | 8.10.2026 | P0: development productionin kopioksi | `npx sanity dataset import … development --replace` (vain development) | `production-2026-10-08.tar.gz` |
 | 8.10.2026 | P3, P5 (osiosivut, linkit), P8 (webhook, e2e 25/25) | docs/24 luku 5 | `production-2026-10-08.tar.gz` |
 | 16.10.2026 | FIFA-ranking taulukoksi ja kuvaaja päälle, vanha rankingkuva pois (docs/decisions/002) | `2026-10-16-fifa-ranking --production --vie` | `production-2026-10-16-1328.tar.gz` |
+| 22.10.2026 | Ravintoloiden tiivistelmästä arvosana- ja osoitevirke pois (498 kpl, palaute) | `2026-10-22-ravintolat-tiivistelma --production --vie` | `production-2026-10-22-2111.tar.gz` |
+| 22.10.2026 | Ravintoloiden tuonnin tiivistelmä kokonaan pois (käyntivirke, 498 kpl, palaute) | `2026-10-22-ravintolat-tiivistelma --production --vie` | `production-2026-10-22-2122.tar.gz` |
