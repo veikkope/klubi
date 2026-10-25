@@ -223,6 +223,15 @@ riippuvainen web-muutoksesta C2:n jälkeen.
 - **Kun Zonerin ilmoitus tulee:** `nslookup -type=NS` (uudet nimipalvelimet kirjataan tähän),
   A, `www` CNAME ja molemmat TXT:t uusilta nimipalvelimilta, sitten selaimessa https www, apex →
   www, `/studio`. Jos jokin puuttuu, isä lisää sen Zoner Homessa tai pyytää Zoneria.
+- **Tarkistettu 25.10.2026:** irrotus tehty, webhotelli Zoner Homessa "Peruutettu". Nimipalvelimet
+  `zoner.g1-dns.one` ja `zoner.g1-dns.com`. DNS: Zoner Home → Omat tuotteet → Verkkotunnukset →
+  lahdensuomalainenklubi.com → DNS-hallinta. A, `www` CNAME ja `_dmarc` siirtyivät oikein. Zoner lisäsi
+  omat MX:t (`mx1/mx2.zoner.fi`) ja korvasi SPF:n muotoon `v=spf1 include:spf.zoner.fi ~all`; postia
+  ei käytetä, joten **auki:** palautetaanko `v=spf1 -all` ja poistetaanko MX:t.
+- **Google Search Console 25.10.2026:** verkkotunnusomaisuus vahvistettu TXT-tietueella
+  (`google-site-verification=…`, pääverkkotunnus, älä poista). `sitemap.xml` lähetetty ja luettu samana
+  päivänä: Onnistui, 1 724 sivua (ensimmäinen tila "Noutaminen epäonnistui" oli vain odotustila).
+  Indeksointi pyydetty avainsivuille. Bing Webmaster Tools tuotu Search Consolesta 25.10.
 - **Auki:** rekisteröijän nimi (pitää olla Lahden Suomalainen Klubi ry), tarkistetaan Zoner Homesta.
 
 ---
@@ -327,7 +336,7 @@ riippuvainen web-muutoksesta C2:n jälkeen.
 | 11 | Perustiedot Studiossa (docs/09 "Täytä itse") | isä + hallitus | ☐ 30.9.: sähköposti, osoite, Y-tunnus, hallitus (0), tapahtumat (0), etusivun kuvat, /english-kieli |
 | 12 | Tietosuojaselosteen vahvistus | hallitus | ☐ |
 | 13 | Jäsenhakemukset poistettu (ei Resendiä) | kehittäjä | ✅ 28.9. koodi · ✅ tietosuojaselosteessa ei mainintaa (tarkistettu 30.9.) |
-| 14 | DNS C1–C4 | kehittäjä + isä | ✅ 4.10. web Verceliin (cPanel Zone Editor), posti lopetettu (versio A, §C6), webhook → www, vercel.app → www (308). ☐ Search Console, blogin ohjaus, Zonerin webhotellin irrotus 22.10. (§C7, varmuuskopio ✅ 14.10.) |
+| 14 | DNS C1–C4 | kehittäjä + isä | ✅ 4.10. web Verceliin (cPanel Zone Editor), posti lopetettu (versio A, §C6), webhook → www, vercel.app → www (308). ✅ Zonerin webhotellin irrotus (§C7, DNS Zoner Homessa), ✅ Search Console 25.10. (sitemap luettu, 1 724 sivua), ✅ Bing 25.10. ☐ Blogin ohjaus. |
 | 15 | Blogin ohjaus (docs/14 §6) | kehittäjä | ☐ siirron jälkeen (tuotantopolku ja dynaaminen /blogspot-reitti valmiit 30.9.) |
 | 16 | Arvostelukuvat: tietosuojaselosteen patch (docs/18 §7) | kehittäjä | ✅ 30.9. (varmuuskopio ensin) |
 | 17 | Vercel-osoitteet noindex (`X-Robots-Tag`) | kehittäjä | ✅ 30.9. |
