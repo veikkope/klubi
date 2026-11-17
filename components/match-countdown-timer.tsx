@@ -45,13 +45,22 @@ function split(diff: number): number[] {
  * `pieni`: etusivun yläosan kapea palsta, jossa laskuri on yksi monesta
  * asiasta eikä osion pääosa.
  */
-export function MatchCountdownTimer({ aika, pieni = false }: { aika: string; pieni?: boolean }) {
+export function MatchCountdownTimer({
+  aika,
+  pieni = false,
+  alkanut = "Ottelu on alkanut – Huuhkajat!",
+}: {
+  aika: string;
+  pieni?: boolean;
+  /** Teksti, joka näkyy laskurin paikalla, kun aika on täynnä (esim. tapahtumalle oma). */
+  alkanut?: string;
+}) {
   const target = new Date(aika).getTime();
   const now = useSyncExternalStore(subscribe, getNow, getServerNow);
 
   if (now !== null && now >= target) {
-    // Etusivu päivittyy tunnin välein; silloin laskuri siirtyy seuraavaan otteluun.
-    return <p className="text-lg font-semibold text-on-chrome">Ottelu on alkanut – Huuhkajat!</p>;
+    // Etusivu päivittyy tunnin välein; silloin laskuri siirtyy seuraavaan otteluun tai tapahtumaan.
+    return <p className="text-lg font-semibold text-on-chrome">{alkanut}</p>;
   }
 
   const values = now === null ? null : split(target - now);

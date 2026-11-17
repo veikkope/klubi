@@ -256,6 +256,15 @@ function OttelunTiedot({ ottelu }: { ottelu: Ottelu }) {
 
 function TapahtumanTiedot({ tapahtuma }: { tapahtuma: TapahtumaCard }) {
   return (
+    <div className="flex flex-col gap-3.5">
+      <TapahtumanOtsikko tapahtuma={tapahtuma} />
+      <MatchCountdownTimer aika={tapahtuma.startsAt} pieni alkanut="Tapahtuma on alkanut – tervetuloa!" />
+    </div>
+  );
+}
+
+function TapahtumanOtsikko({ tapahtuma }: { tapahtuma: TapahtumaCard }) {
+  return (
     <div className="flex flex-col gap-1">
       <p className="text-sm text-on-chrome-muted">Klubilla</p>
       <h3 className="font-display text-lg leading-snug">

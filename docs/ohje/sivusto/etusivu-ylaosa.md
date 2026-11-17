@@ -2,7 +2,7 @@
 otsikko: Muuta etusivun yläosaa
 jarjestys: 10
 kesto: noin 5 minuuttia
-avainsanat: [etusivu, yläosa, pääjuttu, nosto, taustakuva, pikalinkit, laskuri, Huuhkajat, seuraava ottelu, Seuraavaksi, kansikuva, hakukoneet]
+avainsanat: [etusivu, tapahtuma, aikalaskuri, yläosa, pääjuttu, nosto, taustakuva, pikalinkit, laskuri, Huuhkajat, seuraava ottelu, Seuraavaksi, kansikuva, hakukoneet]
 tyypit: [etusivu]
 kuvat:
   - id: etusivu-ylaosa-01-lomake
@@ -15,13 +15,13 @@ kuvat:
       5: "Taustakuva (valinnainen)"
       6: "Pikalinkit"
     alt: "Etusivun Yläosa-välilehti. 1: Sivuston asetukset. 2: Etusivu. 3: Pääjuttu. 5: Taustakuva. 6: Pikalinkit."
-paivitetty: 2026-10-08
+paivitetty: 2026-11-17
 ---
 
 ## Milloin
 
 Etusivun yläosa päivittyy itsestään. Siinä näkyy uusin juttu isona. Oikealla olevassa
-Seuraavaksi-kortissa näkyvät seuraava Huuhkajien ottelu laskurin kanssa ja seuraava tapahtuma.
+Seuraavaksi-kortissa näkyvät seuraava Huuhkajien ottelu ja seuraava klubin tapahtuma, kumpikin laskurin kanssa.
 Muokkaa yläosaa, kun haluat nostaa tietyn jutun, vaihtaa taustakuvan tai pikalinkit.
 
 [Avaa Etusivu](studio:muokkaa/etusivu)
@@ -62,6 +62,7 @@ Muokkaa yläosaa, kun haluat nostaa tietyn jutun, vaihtaa taustakuvan tai pikali
 
 - Pääjuttu ei näy: juttua ei ole julkaistu, sen julkaisuaika on tulevaisuudessa tai päivä **Pääjuttu näkyy asti** on jo mennyt.
 - **Julkaise** ei onnistu: kuvalta puuttuu **Vaihtoehtoinen teksti (alt)**, tai **Etusivun kuvaus hakukoneille** on tyhjä.
-- Laskuria ei näy: seuraavaa Huuhkajien ottelua ei ole tiedossa. Lisää ottelu: [Lisää ottelu](../ottelut/ottelun-lisaaminen.md).
+- Ottelun laskuri ei näy: seuraavaa Huuhkajien ottelua ei ole tiedossa. Lisää ottelu: [Lisää ottelu](../ottelut/ottelun-lisaaminen.md).
+- Tapahtuman laskuri ei näy: tapahtumaa ei ole julkaistu tai sen alkamisaika on jo mennyt. Tapahtuma tehdään kohtaan **Tapahtumat**, ei uutisena. Muista painaa **Julkaise**.
 
 Katso myös: [Järjestä, piilota tai lisää etusivun lohkoja](etusivun-lohkot.md) · [Tee linkki](../tekstit/linkit.md)
