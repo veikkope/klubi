@@ -244,7 +244,7 @@ export const etusivu = defineType({
               type: "boolean",
               hidden: true,
             },
-            { name: "tapahtumatHeading", title: "Tapahtumien otsikko", type: "string", initialValue: "Nähdään" },
+            { name: "tapahtumatHeading", title: "Tapahtumien otsikko", type: "string", initialValue: "Tulevat tapahtumat" },
             { name: "tapahtumatCount", title: "Tapahtumien määrä", type: "number", initialValue: 3, validation: (r) => r.min(1).max(6) },
           ],
           preview: {

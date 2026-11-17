@@ -40,7 +40,7 @@ export async function OtteluohjelmaBlock({
   vainMaajoukkue = true,
   seurat = [],
   laskuri = true,
-  tapahtumatHeading = "Nähdään",
+  tapahtumatHeading = "Tulevat tapahtumat",
   tapahtumatCount = 3,
 }: Props) {
   const [ottelut, huuhkajat, tapahtumat] = await Promise.all([
@@ -91,7 +91,7 @@ export async function OtteluohjelmaBlock({
           <div aria-labelledby="etusivu-tapahtumat" role="region" className="flex flex-col gap-3.5 sm:gap-7">
             <BlockHeading
               id="etusivu-tapahtumat"
-              eyebrow="Klubin tapahtumat"
+              eyebrow="Klubi"
               title={tapahtumatHeading}
             />
             <ul className={both ? "flex flex-col gap-3.5 sm:gap-5" : "grid gap-5 sm:grid-cols-2 lg:grid-cols-3"}>
