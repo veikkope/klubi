@@ -339,7 +339,7 @@ async function viimeinenPaneeli(page: Page, etuliite: string): Promise<Paneeli> 
       maara: paneelit.length,
       laji: onDokumentti ? "dokumentti" : onDokumenttilista ? "dokumenttilista" : "lista",
       linkit: [...new Set(linkit)],
-      tyhja: teksti.includes("Tuloksia ei löytynyt") || teksti.includes("Tämän tyyppisiä dokumentteja ei ole"),
+      tyhja: teksti.includes("Tuloksia ei löytynyt") || teksti.includes("Tämän tyyppisiä dokumentteja ei ole") || teksti.includes("Vastaavia dokumentteja ei löytynyt"),
     } as const;
   }, etuliite);
 }
@@ -473,10 +473,16 @@ async function suorita(page: Page, t: Tehtava, aikaraja: number): Promise<Tulos>
             page,
             `(() => { const p = [...document.querySelectorAll("[data-pane-index]")].at(-1); const t = p?.innerText ?? "";
               return [...p.querySelectorAll("a[href]")].some((a) => decodeURI(new URL(a.href).pathname).startsWith(${JSON.stringify(etuliite)}))
-                || t.includes("Tuloksia ei löytynyt") || t.includes("Tämän tyyppisiä dokumentteja ei ole"); })()`,
+                || t.includes("Tuloksia ei löytynyt") || t.includes("Tämän tyyppisiä dokumentteja ei ole") || t.includes("Vastaavia dokumentteja ei löytynyt"); })()`,
             aikaraja,
           );
-          if (!valmis) virheet.push("dokumenttilista ei latautunut aikarajassa");
+          if (!valmis) {
+            // Paneelin teksti mukaan: kertoo, jäikö lista lataamaan vai näyttääkö se virheen.
+            const nakyy = await page.evaluate(() =>
+              ([...document.querySelectorAll<HTMLElement>("[data-pane-index]")].at(-1)?.innerText ?? "").replace(/\s+/g, " ").trim().slice(0, 200),
+            );
+            virheet.push(`dokumenttilista ei latautunut aikarajassa (paneelissa: "${nakyy || "tyhjä"}")`);
+          }
           p = await viimeinenPaneeli(page, etuliite);
           const eka = p.linkit[0];
           if (eka && osat.length < MAKSIMISYVYYS) {
