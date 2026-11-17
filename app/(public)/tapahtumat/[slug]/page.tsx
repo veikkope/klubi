@@ -172,15 +172,24 @@ export default async function TapahtumaPage({
 
       {event.image?.asset && (
         <Container size="wide" className="mt-12">
-          <div className="overflow-hidden rounded-2xl">
-            <FramedImage
-              image={event.image}
-              width={1600}
-              sizes="(min-width: 1280px) 1152px, 100vw"
-              className="aspect-[16/9] w-full"
-              priority
-            />
-          </div>
+          {/* Kuvateksti näkyy kuvan alla, kuten Studion kenttä lupaa (sama malli kuin uutisessa). */}
+          <figure>
+            <div className="overflow-hidden rounded-2xl">
+              <FramedImage
+                image={event.image}
+                kuvateksti={event.image.caption}
+                width={1600}
+                sizes="(min-width: 1280px) 1152px, 100vw"
+                className="aspect-[16/9] w-full"
+                priority
+              />
+            </div>
+            {event.image.caption?.trim() && (
+              <figcaption className="mt-3 text-sm text-muted">
+                {event.image.caption}
+              </figcaption>
+            )}
+          </figure>
         </Container>
       )}
 

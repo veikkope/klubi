@@ -243,15 +243,24 @@ export default async function RavintolaPage({ params }: PageProps) {
       {hero && (
         <Container size="wide" className="max-sm:px-0">
           {/* Kuva kokonaan: 21:9-rajaus leikkasi ihmisiä pois vanhoista kuvista. */}
-          <KuvaSiirtyma nimi={`ravintola-${r.slug}`}>
-            <FramedImage
-              image={hero}
-              width={1920}
-              sizes="(min-width: 1440px) 1280px, 100vw"
-              className="aspect-[4/3] w-full sm:aspect-[2/1] sm:rounded-sm"
-              priority
-            />
-          </KuvaSiirtyma>
+          <figure>
+            <KuvaSiirtyma nimi={`ravintola-${r.slug}`}>
+              <FramedImage
+                image={hero}
+                kuvateksti={hero.caption}
+                width={1920}
+                sizes="(min-width: 1440px) 1280px, 100vw"
+                className="aspect-[4/3] w-full sm:aspect-[2/1] sm:rounded-sm"
+                priority
+              />
+            </KuvaSiirtyma>
+            {/* Mobiilissa kuva on reunasta reunaan, teksti saa sivun reunuksen. */}
+            {hero.caption?.trim() && (
+              <figcaption className="mt-3 text-sm text-muted max-sm:px-5">
+                {hero.caption}
+              </figcaption>
+            )}
+          </figure>
         </Container>
       )}
 
@@ -284,13 +293,20 @@ export default async function RavintolaPage({ params }: PageProps) {
           {pairImages.length > 0 && (
             <div className="my-3 grid grid-cols-2 gap-4">
               {pairImages.map((image, i) => (
-                <FramedImage
-                  key={image?._key ?? i}
-                  image={image}
-                  width={680}
-                  sizes="(min-width: 1024px) 340px, 50vw"
-                  className="aspect-square w-full rounded-sm"
-                />
+                <figure key={image?._key ?? i}>
+                  <FramedImage
+                    image={image}
+                    kuvateksti={image?.caption}
+                    width={680}
+                    sizes="(min-width: 1024px) 340px, 50vw"
+                    className="aspect-square w-full rounded-sm"
+                  />
+                  {image?.caption?.trim() && (
+                    <figcaption className="mt-2 text-sm text-muted">
+                      {image.caption}
+                    </figcaption>
+                  )}
+                </figure>
               ))}
             </div>
           )}
