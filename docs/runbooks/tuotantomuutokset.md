@@ -47,7 +47,7 @@ Ajo: `npx tsx scripts/kerta/<tiedosto>.ts [--production] [--vie]`. Kaikki ovat o
 | `2026-10-09-lisaa-kavijatilastot-tietosuojaan` | Kävijätilastot (GoatCounter) tietosuojaselosteeseen | tarkistamatta |
 | `2026-10-16-fifa-ranking` | FIFA-ranking taulukoksi `data/fifa-ranking.tsv`:stä ja kuvaaja päälle; vanha rankingkuva ja käsin kirjoitettu sija pois johdannosta, osiosivun tekstit (docs/decisions/002). Vasta deployn jälkeen | ajettu 16.10.2026 |
 | `2026-10-22-ravintolat-tiivistelma` | Ravintoloiden tuonnin tiivistelmä pois: ensin arvosana- ja osoitevirke (22.10.), sitten jäljelle jäänyt käyntivirke, jolloin kenttä poistetaan (23.10.). Luvut olivat jäädytettyjä; sivu laskee ne itse. Isän tekstiin ei kosketa. Ei vaadi deployta | ajettu 22.10.2026 (molemmat vaiheet) |
-| `2026-11-17-tapahtumien-otsikko` | Etusivun tapahtumien otsikko "Nähdään" pois (v3-migraation esimerkkiarvo, palaute 17.11.): kenttä poistetaan, sivu näyttää oletuksen "Tulevat tapahtumat". Isän omaan otsikkoon ei kosketa. Vasta deployn jälkeen | **odottaa** |
+| `2026-11-17-tapahtumien-otsikko` | Etusivun tapahtumien otsikko "Nähdään" pois (v3-migraation esimerkkiarvo, palaute 17.11.): kenttä poistetaan, sivu näyttää oletuksen "Tulevat tapahtumat". Isän omaan otsikkoon ei kosketa. Vasta deployn jälkeen | ajettu 17.11.2026 |
 
 `tyokalut:siivous` poistaa yli 3 kk vanhat ajetut kertaskriptit (git muistaa).
 
@@ -64,3 +64,4 @@ Ajo: `npx tsx scripts/kerta/<tiedosto>.ts [--production] [--vie]`. Kaikki ovat o
 | 16.10.2026 | FIFA-ranking taulukoksi ja kuvaaja päälle, vanha rankingkuva pois (docs/decisions/002) | `2026-10-16-fifa-ranking --production --vie` | `production-2026-10-16-1328.tar.gz` |
 | 22.10.2026 | Ravintoloiden tiivistelmästä arvosana- ja osoitevirke pois (498 kpl, palaute) | `2026-10-22-ravintolat-tiivistelma --production --vie` | `production-2026-10-22-2111.tar.gz` |
 | 22.10.2026 | Ravintoloiden tuonnin tiivistelmä kokonaan pois (käyntivirke, 498 kpl, palaute) | `2026-10-22-ravintolat-tiivistelma --production --vie` | `production-2026-10-22-2122.tar.gz` |
+| 17.11.2026 | Etusivun tapahtumien otsikko "Nähdään" pois (1 kenttä, palaute) | `2026-11-17-tapahtumien-otsikko --production --vie` | `production-2026-11-17-1952.tar.gz` |
