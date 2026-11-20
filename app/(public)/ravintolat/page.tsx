@@ -57,7 +57,10 @@ const OSIO = "ravintolat" as const;
 function buildLead(facets: RavintolatFacetData): string {
   const year = facets.firstVisitYear?.slice(0, 4);
   const since = year ? ` vuodesta ${year} alkaen` : "";
-  const count = facets.total > 0 ? `${facets.total}` : "satoja";
+  // Arvioitujen määrä: myös toimintansa lopettaneet on arvioitu (`total` on
+  // vain toimivat, koska hakemisto näyttää oletuksena ne).
+  const arvioituja = facets.total + facets.closedCount;
+  const count = arvioituja > 0 ? `${arvioituja}` : "satoja";
   return (
     `Klubi on arvioinut ${count} ravintolaa${since}. Jokainen saa ` +
     "arvosanan sekä osa-arviot ruoasta, hinnasta ja viihtyvyydestä."
