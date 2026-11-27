@@ -176,14 +176,15 @@ export const arvokisaBySlugQuery = defineQuery(`
 `);
 
 /**
- * Arvokisatilastot, joihin mikään kisa ei viittaa: MM- ja EM-kisojen sekä
- * Kansojen liigan mitalitaulukot. Lohkotaulukot näkyvät kisansa sivulla.
+ * Koko sarjan arvokisatilastot: MM- ja EM-kisojen mitalitaulukot (ei viittauksia)
+ * sekä Kansojen liigan mitalitaulukko, johon jokainen kausi viittaa. Yhden kisan
+ * lohkotaulukot (täsmälleen yksi viittaus) näkyvät vain kisansa sivulla.
  */
 export const arvokisaMitalitaulukotQuery = defineQuery(`
   *[
     _type == "jalkapalloTilasto"
     && category == "arvokisa"
-    && count(*[_type == "arvokisa" && references(^._id)]) == 0
+    && count(*[_type == "arvokisa" && references(^._id)]) != 1
   ] | order(coalesce(jarjestys, 1000) asc, title asc){
     _id,
       _updatedAt,

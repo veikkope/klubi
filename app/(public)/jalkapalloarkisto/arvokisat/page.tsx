@@ -13,6 +13,7 @@ import {
   CardEyebrow,
   CardTitle,
 } from "@/components/ui/card";
+import { taulukonKisatyyppi } from "@/lib/arvokisaosiot";
 import { arkistoNav, rootCrumb } from "@/lib/nav-sections";
 import { breadcrumbSchema, collectionPageSchema } from "@/lib/schema-org";
 import { buildMetadata } from "@/lib/seo";
@@ -55,13 +56,24 @@ const OSION_NIMI: Partial<Record<Kisatyyppi, string>> = {
   "u21-em": "Pikkuhuuhkajat",
 };
 
-/** Ryhmittelee kisat kisatyypin mukaan. Kyselyn järjestys (vuosi desc) säilyy. */
-function groupByKisatyyppi(items: (ArvokisaCard & { slug: string })[]) {
+/**
+ * Ryhmittelee kisat ja mitalitaulukot kisatyypin mukaan. Kyselyjen järjestys
+ * (kisat vuosi desc, taulukot jarjestys-kentän mukaan) säilyy.
+ */
+function groupByKisatyyppi(
+  items: (ArvokisaCard & { slug: string })[],
+  taulukot: TilastoDoc[],
+) {
   return KISATYYPIT.map((kisatyyppi) => ({
     kisatyyppi,
     label: OSION_NIMI[kisatyyppi] ?? kisatyyppiLabel(kisatyyppi),
     items: items.filter((item) => resolveKisatyyppi(item) === kisatyyppi),
-  })).filter((group) => group.items.length > 0);
+    taulukot: taulukot.filter((t) => taulukonOsio(t) === kisatyyppi),
+  })).filter((group) => group.items.length > 0 || group.taulukot.length > 0);
+}
+
+function taulukonOsio(taulukko: TilastoDoc) {
+  return taulukonKisatyyppi(stegaClean(taulukko.slug));
 }
 
 /** Tuntematon tai puuttuva kisatyyppi päätyy "Muut kisat" -ryhmään. */
@@ -93,7 +105,10 @@ export default async function ArvokisatPage() {
     { label: s.title },
   ];
 
-  const groups = groupByKisatyyppi(kisat);
+  const groups = groupByKisatyyppi(kisat, mitalitaulukot);
+  // Taulukot, jotka eivät päätyneet mihinkään osioon, näytetään sivun lopussa.
+  const sijoitetut = new Set(groups.flatMap((g) => g.taulukot.map((t) => t._id)));
+  const muutTaulukot = mitalitaulukot.filter((t) => !sijoitetut.has(t._id));
 
   return (
     <Container className="py-12 sm:py-16">
@@ -160,19 +175,24 @@ export default async function ArvokisatPage() {
               >
                 {group.label}
               </h2>
-              <ul className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {group.items.map((kisa) => (
-                  <li key={kisa._id}>
-                    <ArvokisaListCard kisa={kisa} />
-                  </li>
-                ))}
-              </ul>
+              {group.taulukot.length > 0 && (
+                <StatSections tilastot={group.taulukot} headingLevel="h3" className="mt-6" />
+              )}
+              {group.items.length > 0 && (
+                <ul className={`${group.taulukot.length > 0 ? "mt-10" : "mt-6"} grid gap-6 sm:grid-cols-2 lg:grid-cols-3`}>
+                  {group.items.map((kisa) => (
+                    <li key={kisa._id}>
+                      <ArvokisaListCard kisa={kisa} />
+                    </li>
+                  ))}
+                </ul>
+              )}
             </section>
           ))}
         </div>
       )}
 
-      {mitalitaulukot.length > 0 && (
+      {muutTaulukot.length > 0 && (
         <section aria-labelledby="mitalistit" className="mt-16">
           <h2
             id="mitalistit"
@@ -180,7 +200,7 @@ export default async function ArvokisatPage() {
           >
             Mitalistit
           </h2>
-          <StatSections tilastot={mitalitaulukot} headingLevel="h3" className="mt-6" />
+          <StatSections tilastot={muutTaulukot} headingLevel="h3" className="mt-6" />
         </section>
       )}
     </Container>
