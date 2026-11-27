@@ -46,11 +46,20 @@ export async function generateMetadata(): Promise<Metadata> {
   });
 }
 
+/**
+ * Listaussivun osioiden nimet, jos ne poikkeavat kisatyypin nimestä. Alle
+ * 21-vuotiaiden EM-kisat ovat klubilla Pikkuhuuhkajat (kisan oma sivu
+ * käyttää edelleen kisatyypin nimeä).
+ */
+const OSION_NIMI: Partial<Record<Kisatyyppi, string>> = {
+  "u21-em": "Pikkuhuuhkajat",
+};
+
 /** Ryhmittelee kisat kisatyypin mukaan. Kyselyn järjestys (vuosi desc) säilyy. */
 function groupByKisatyyppi(items: (ArvokisaCard & { slug: string })[]) {
   return KISATYYPIT.map((kisatyyppi) => ({
     kisatyyppi,
-    label: kisatyyppiLabel(kisatyyppi),
+    label: OSION_NIMI[kisatyyppi] ?? kisatyyppiLabel(kisatyyppi),
     items: items.filter((item) => resolveKisatyyppi(item) === kisatyyppi),
   })).filter((group) => group.items.length > 0);
 }
@@ -127,6 +136,22 @@ export default async function ArvokisatPage() {
         </p>
       ) : (
         <div className="mt-12 space-y-14">
+          {groups.length > 1 && (
+            <nav aria-label="Arvokisojen osiot">
+              <ul className="flex flex-wrap gap-x-6 gap-y-1">
+                {groups.map((group) => (
+                  <li key={group.kisatyyppi}>
+                    <a
+                      href={`#kisat-${group.kisatyyppi}`}
+                      className="inline-flex min-h-11 items-center font-display text-xl text-accent underline decoration-1 underline-offset-4 hover:decoration-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring sm:text-2xl"
+                    >
+                      {group.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          )}
           {groups.map((group) => (
             <section key={group.kisatyyppi} aria-labelledby={`kisat-${group.kisatyyppi}`}>
               <h2

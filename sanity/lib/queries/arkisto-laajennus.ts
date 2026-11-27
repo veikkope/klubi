@@ -65,13 +65,13 @@ export function withSlug<T extends { slug: string | null }>(
 /* Arvokisat                                                                  */
 /* -------------------------------------------------------------------------- */
 
-/** Kisatyypit listaussivun ryhmittelyjärjestyksessä. */
+/** Kisatyypit listaussivun ryhmittelyjärjestyksessä (asiakkaan toive 27.11.2026: MM, EM, Pikkuhuuhkajat, Kansojen liiga). */
 export const KISATYYPIT = [
   "mm",
   "em",
+  "u21-em",
   "kansojen-liiga",
   "olympialaiset",
-  "u21-em",
   "muu",
 ] as const;
 
